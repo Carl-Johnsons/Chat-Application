@@ -1,0 +1,100 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<style>
+    #chatBoxContainer {
+        height: 73vh;
+        background-color: #edf4fc;
+        border: 1px solid black;
+        overflow: auto;
+    }
+
+    .message#Sender {
+        background-color: #0084FF;
+        color: white;
+        clear: both;
+        float: right;
+    }
+
+    .message#Receiver {
+        background-color: #3E4042;
+        color: white;
+        clear: both;
+        float: left;
+    }
+
+    .message {
+        width: fit-content;
+        padding: 0.3rem 0.5rem;
+        margin: 0.2rem 0rem;
+        border: 1px solid black;
+        border-radius: 0.7rem;
+    }
+
+    #inputMessageContainer {
+        height: 6vh;
+    }
+
+    #txtMessage {
+        margin-top: 0.5rem;
+        margin-left: 0.3rem;
+        border-radius: 0.7rem;
+        width: 100%;
+    }
+
+    #btnSendMessage {
+        margin-top: 0.5rem;
+        height: 4vh;
+        padding: 0rem 0.75rem;
+        border-radius: 0.7rem;
+    }
+</style>
+
+
+<div class="container">
+
+    @* For displaying message *@
+    <div class="row">
+        <div class="col-md-10 offset-2">
+            <div id="chatBoxContainer">
+                <div class="message" id="Sender">
+                    @ViewBag._userName
+                </div>
+                <div class="message" id="Receiver">
+                    Welocome hsafjkahsfkjahsfkjasfhasfkj
+                </div>
+                <div class="message" id="Sender">
+                    Hello
+                </div>
+                <div class="message" id="Sender">
+                    Hello
+                </div>
+                <div class="message" id="Receiver">
+                    Welcome
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Sending input and btn *@
+    <div class="row">
+        <div class="col-md-10 offset-2">
+            <div id="inputMessageContainer">
+                <div class="row">
+                    <div class="col-md-11">
+                        <input id="txtMessage" />
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn-secondary" id="btnSendMessage">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/signalr.js"></script>
+<script src="~/js/ChatRoom/ChatRoom.js"></script>
+
