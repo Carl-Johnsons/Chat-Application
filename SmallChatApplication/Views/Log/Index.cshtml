@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<style>
+    body {
+        height: 100vh;
+        margin: 0px;
+    }
+
+    .container {
+        height: 100%;
+    }
+
+    #user-icon {
+        width: 10rem;
+    }
+
+    #register-form {
+        display: none;
+    }
+</style>
+
+<div class="row d-flex justify-content-center">
+    <div class="col-5 shadow-lg p-3 mb-5 bg-light rounded">
+
+        <ul class="nav nav-tabs nav-fill">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" id="login-form-link">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="register-form-link">Register</a>
+            </li>
+        </ul>
+
+
+
+        <div id="login-form">
+            @* User icon image *@
+            <div class="row d-flex justify-content-center">
+                <div class="col-4">
+                    <img id="user-icon" src="/img/user.png" />
+                </div>
+            </div>
+
+
+            <form action="@Url.ActionLink("Login","Log")" method="POST">
+
+                <div class="mb-3 input-group">
+                    <label for="txtPhone" class="input-group-text">Phone</label>
+                    <input type="text" class="form-control" id="txtPhone" name="txtPhone">
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="txtPassword" class="input-group-text">Password</label>
+                    <input type="password" class="form-control" id="txtPassword" name="txtPassword">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="cbRememberPassword">
+                    <label class="form-check-label" for="cbRememberPassword" name="cbRememberPassword">Remember Password</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+
+        <div id="register-form">
+            @* User icon image *@
+            <div class="row d-flex justify-content-center">
+                <div class="col-4">
+                    <img id="user-icon" src="/img/user.png" />
+                </div>
+            </div>
+
+
+            <form action="@Url.ActionLink("Register","Log")" method="POST">
+
+                <div class="mb-3 input-group">
+                    <label for="txtPhone" class="input-group-text">Phone</label>
+                    <input type="text" class="form-control" id="txtPhone" name="txtPhone">
+                </div>
+                <div class="mb-3 input-group">
+                    <label for="txtPassword" class="input-group-text">Password</label>
+                    <input type="password" class="form-control" id="txtPassword" name="txtPassword">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="cbRememberPassword">
+                    <label class="form-check-label" for="cbRememberPassword" name="cbRememberPassword">Remember Password</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        const loginForm = $("div#login-form");
+        const registerForm = $("div#register-form");
+
+        const loginLink = $("a#login-form-link");
+        const registerLink = $("a#register-form-link");
+
+
+        $(loginLink).click(function () {
+            loginLink.addClass("active");
+            registerLink.removeClass("active");
+
+            loginForm.show();
+            registerForm.hide();
+        });
+
+        $(registerLink).click(function () {
+            loginLink.removeClass("active");
+            registerLink.addClass("active");
+
+            loginForm.hide();
+            registerForm.show();
+        });
+    });
+
+</script>
+

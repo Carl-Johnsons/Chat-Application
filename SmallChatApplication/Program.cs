@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+//Add signalR service
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
@@ -32,6 +34,7 @@ app.MapRazorPages();
 // Set endpoint for a chat hub
 app.MapHub<ChatHub>("/chatHub");
 
+//Map controller in order to use MVC
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(

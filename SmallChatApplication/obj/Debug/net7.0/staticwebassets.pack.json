@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\SmallChatApplicationSolution\\SmallChatApplication\\wwwroot\\img\\user.png",
+      "PackagePath": "staticwebassets\\img\\user.png"
+    },
+    {
       "Id": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\SmallChatApplicationSolution\\SmallChatApplication\\wwwroot\\js\\ChatRoom\\ChatRoom.js",
       "PackagePath": "staticwebassets\\js\\ChatRoom\\ChatRoom.js"
     },
