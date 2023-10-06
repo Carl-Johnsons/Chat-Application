@@ -12,8 +12,8 @@ using SmallChatApplication.DatabaseContext;
 namespace SmallChatApplication.Migrations
 {
     [DbContext(typeof(ChatApplicationContext))]
-    [Migration("20231006103141_update_database_model")]
-    partial class update_database_model
+    [Migration("20231006125054_Add_New_Model")]
+    partial class Add_New_Model
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,60 @@ namespace SmallChatApplication.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SmallChatApplication.Models.GroupMessages", b =>
+                {
+                    b.Property<int?>("GroupID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MessageID")
+                        .HasColumnType("int");
+
+                    b.HasIndex("GroupID");
+
+                    b.HasIndex("MessageID");
+
+                    b.ToTable("GroupMessages");
+                });
+
+            modelBuilder.Entity("SmallChatApplication.Models.Groups", b =>
+                {
+                    b.Property<int>("GroupID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GroupID"));
+
+                    b.Property<string>("AvatarURL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GroupName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("GroupOwnerUserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("GroupID");
+
+                    b.HasIndex("GroupOwnerUserID");
+
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("SmallChatApplication.Models.IndividualMessages", b =>
+                {
+                    b.Property<int?>("MessageID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReceiverUserUserID")
+                        .HasColumnType("int");
+
+                    b.HasIndex("MessageID");
+
+                    b.HasIndex("ReceiverUserUserID");
+
+                    b.ToTable("IndividualMessages");
+                });
 
             modelBuilder.Entity("SmallChatApplication.Models.Messages", b =>
                 {
@@ -69,6 +123,9 @@ namespace SmallChatApplication.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GroupsGroupID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -86,9 +143,50 @@ namespace SmallChatApplication.Migrations
 
                     b.HasKey("UserID");
 
+                    b.HasIndex("GroupsGroupID");
+
                     b.HasIndex("UsersUserID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SmallChatApplication.Models.GroupMessages", b =>
+                {
+                    b.HasOne("SmallChatApplication.Models.Groups", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupID");
+
+                    b.HasOne("SmallChatApplication.Models.Messages", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageID");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Message");
+                });
+
+            modelBuilder.Entity("SmallChatApplication.Models.Groups", b =>
+                {
+                    b.HasOne("SmallChatApplication.Models.Users", "GroupOwner")
+                        .WithMany()
+                        .HasForeignKey("GroupOwnerUserID");
+
+                    b.Navigation("GroupOwner");
+                });
+
+            modelBuilder.Entity("SmallChatApplication.Models.IndividualMessages", b =>
+                {
+                    b.HasOne("SmallChatApplication.Models.Messages", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageID");
+
+                    b.HasOne("SmallChatApplication.Models.Users", "ReceiverUser")
+                        .WithMany()
+                        .HasForeignKey("ReceiverUserUserID");
+
+                    b.Navigation("Message");
+
+                    b.Navigation("ReceiverUser");
                 });
 
             modelBuilder.Entity("SmallChatApplication.Models.Messages", b =>
@@ -102,9 +200,18 @@ namespace SmallChatApplication.Migrations
 
             modelBuilder.Entity("SmallChatApplication.Models.Users", b =>
                 {
+                    b.HasOne("SmallChatApplication.Models.Groups", null)
+                        .WithMany("GroupDeputies")
+                        .HasForeignKey("GroupsGroupID");
+
                     b.HasOne("SmallChatApplication.Models.Users", null)
                         .WithMany("Friends")
                         .HasForeignKey("UsersUserID");
+                });
+
+            modelBuilder.Entity("SmallChatApplication.Models.Groups", b =>
+                {
+                    b.Navigation("GroupDeputies");
                 });
 
             modelBuilder.Entity("SmallChatApplication.Models.Users", b =>

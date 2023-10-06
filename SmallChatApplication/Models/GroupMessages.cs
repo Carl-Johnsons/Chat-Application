@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SmallChatApplication.Models
 {
     [Table("GroupMessages")]
+    [Keyless]
     public class GroupMessages
     {
         //Normal properties
       
-        public Messages Message { get; set; }
+        public Messages? Message { get; set; }
         public Groups? Group { get; set; }
-
        
     }
 
