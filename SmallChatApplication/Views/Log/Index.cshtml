@@ -47,12 +47,12 @@
             <form action="@Url.ActionLink("Login","Log")" method="POST">
 
                 <div class="mb-3 input-group">
-                    <label for="txtPhone" class="input-group-text">Phone</label>
-                    <input type="text" class="form-control" id="txtPhone" name="txtPhone">
+                    <label for="txtLoginPhone" class="input-group-text">Phone</label>
+                    <input type="text" class="form-control" id="txtLoginPhone" name="txtLoginPhone">
                 </div>
                 <div class="mb-3 input-group">
-                    <label for="txtPassword" class="input-group-text">Password</label>
-                    <input type="password" class="form-control" id="txtPassword" name="txtPassword">
+                    <label for="txtLoginPassword" class="input-group-text">Password</label>
+                    <input type="password" class="form-control" id="txtLoginPassword" name="txtLoginPassword">
                 </div>
                 <div class="mb-3 form-check">
                     <input type="checkbox" class="form-check-input" id="cbRememberPassword">
@@ -74,17 +74,18 @@
             <form action="@Url.ActionLink("Register","Log")" method="POST">
 
                 <div class="mb-3 input-group">
-                    <label for="txtPhone" class="input-group-text">Phone</label>
-                    <input type="text" class="form-control" id="txtPhone" name="txtPhone">
+                    <label for="txtRegisterPhone" class="input-group-text">Phone</label>
+                    <input type="text" class="form-control" id="txtRegisterPhone" name="txtRegisterPhone">
                 </div>
                 <div class="mb-3 input-group">
-                    <label for="txtPassword" class="input-group-text">Password</label>
-                    <input type="password" class="form-control" id="txtPassword" name="txtPassword">
+                    <label for="txtRegisterPassword" class="input-group-text">Password</label>
+                    <input type="password" class="form-control" id="txtRegisterPassword" name="txtRegisterPassword">
                 </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="cbRememberPassword">
-                    <label class="form-check-label" for="cbRememberPassword" name="cbRememberPassword">Remember Password</label>
+                <div class="mb-3 input-group">
+                    <label for="txtConfirmPassword" class="input-group-text">Confirm Password</label>
+                    <input type="password" class="form-control" id="txtConfirmPassword" name="txtConfirmPassword">
                 </div>
+
                 <button type="submit" class="btn btn-primary">Register</button>
             </form>
         </div>

@@ -14,6 +14,7 @@ namespace SmallChatApplication.Models
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+        public bool Active { get; set; } = true;
 
         //Navigation properties
         public List<Messages>? Messages { get; set; }

@@ -1,15 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SmallChatApplication.Models;
 using SmallChatApplication.DatabaseContext;
+using SmallChatApplication.Repositories;
+using SmallChatApplication.Exceptions;
 
 namespace SmallChatApplication.Controllers
 {
     public class LogController : Controller
     {
         private readonly ChatApplicationContext context;
+        private UserRepository userRepository;
         public LogController()
         {
             context = new ChatApplicationContext();
+            userRepository = new UserRepository();
         }
 
         // GET: LogController
@@ -18,24 +23,53 @@ namespace SmallChatApplication.Controllers
             return View();
         }
 
+        [HttpPost]
         public ActionResult Login()
         {
-            string? Phone = HttpContext.Request.Query["Phone"];
-            string? Password = HttpContext.Request.Query["Password"];
+            string? Phone = HttpContext.Request.Form["txtLoginPhone"];
+            string? Password = HttpContext.Request.Form["txtLoginPassword"];
 
-            var user = from u in context.Users
-                       where u.Phone == Phone && u.Password == Password
-                       select u;
-            if (user == null)
+            Users user;
+            try
             {
+                user = userRepository.GetActiveUsers(Phone, Password);
+            }
+            catch (AccountDisabledException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (AccountNotFoundException ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
-            return View();
+            Console.WriteLine("Login Successfully");
+
+            return Redirect("/Log");
         }
+
+        [HttpPost]
         public ActionResult Register()
         {
+            string? Phone = HttpContext.Request.Form["txtRegisterPhone"];
+            string? Password = HttpContext.Request.Form["txtRegisterPassword"];
 
-            return View();
+            Users user = new Users()
+            {
+                Phone = Phone,
+                Password = Password
+            };
+
+            bool result = userRepository.AddUser(user);
+            if (!result)
+            {
+                Console.WriteLine("Add failed");
+            }
+            else
+            {
+                Console.WriteLine("Add successful");
+            }
+            return Redirect("/Log");
         }
 
 
