@@ -20,8 +20,6 @@ namespace SmallChatApplication.Models
 
         //Navigation properties
         public List<Messages>? Messages { get; set; }
-
-        
         public List<Users>? Friends { get; set; }
         
 
