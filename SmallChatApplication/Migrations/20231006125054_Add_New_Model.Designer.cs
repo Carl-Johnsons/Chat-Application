@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmallChatApplication.DatabaseContext;
 
@@ -11,9 +12,11 @@ using SmallChatApplication.DatabaseContext;
 namespace SmallChatApplication.Migrations
 {
     [DbContext(typeof(ChatApplicationContext))]
-    partial class ChatApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231006125054_Add_New_Model")]
+    partial class Add_New_Model
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

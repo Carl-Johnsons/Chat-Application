@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace SmallChatApplication.Models
 {
@@ -14,10 +15,14 @@ namespace SmallChatApplication.Models
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+        public string? AvatarURL { get; set; }
         public bool Active { get; set; } = true;
 
         //Navigation properties
         public List<Messages>? Messages { get; set; }
+        public List<Users>? Friends { get; set; }
+        
+
     }
 }
     

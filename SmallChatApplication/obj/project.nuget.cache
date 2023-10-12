@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Tbjsi1LkQt0dQNHzqVKVtjJl1RZqBF82ngZkptOIJOZeIo6VBXPkn3d0V60uJchjc8E+B3e+1yxA25fWIQSKOg==",
+  "dgSpecHash": "fzUAxTanIIh0ZK1/U21lwzTXDlnP2EPA+rgQ3LCWKyAKDRpT4K9yLoWELi+hqHV7KEp1o39f/6PS0NmJUVP2Vg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\SmallChatApplicationSolution\\SmallChatApplication\\SmallChatApplication.csproj",
+  "projectFilePath": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Acer\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

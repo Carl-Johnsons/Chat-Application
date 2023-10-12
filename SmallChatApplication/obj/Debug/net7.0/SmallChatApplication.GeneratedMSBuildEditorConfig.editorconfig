@@ -9,45 +9,61 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SmallChatApplication
 build_property.RootNamespace = SmallChatApplication
-build_property.ProjectDir = C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\SmallChatApplicationSolution\SmallChatApplication\
+build_property.ProjectDir = C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Application\SmallChatApplication\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\SmallChatApplicationSolution\SmallChatApplication
+build_property.MSBuildProjectDirectory = C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Application\SmallChatApplication
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Pages/Error.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Pages/Index.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Pages/Privacy.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Pages/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Pages/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Pages/_ViewImports.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Pages/_ViewStart.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Views/ChatRoom/Index.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/ApplicationNavbar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQXBwbGljYXRpb25OYXZiYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/ConservationList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQ29uc2VydmF0aW9uTGlzdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Views/Log/Index.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/Log/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9nXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/SmallChatApplicationSolution/SmallChatApplication/Pages/Shared/_Layout.cshtml]
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/Log/LoginForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9nXExvZ2luRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/Log/RegisterForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9nXFJlZ2lzdGVyRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Pages/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-0psj8slycq

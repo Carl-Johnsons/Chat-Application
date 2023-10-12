@@ -1,0 +1,27 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@* User icon image *@
+<div class="row">
+    <div class="d-flex justify-content-center">
+        <img id="user-icon" src="/img/user.png" />
+    </div>
+</div>
+
+
+<form action="@Url.ActionLink("Register","Log")" method="POST">
+
+    <div class="mb-3 input-group">
+        <input type="text" class="form-control" id="txtRegisterPhone" name="txtRegisterPhone" placeholder="Phone">
+    </div>
+    <div class="mb-3 input-group">
+        <input type="password" class="form-control" id="txtRegisterPassword" name="txtRegisterPassword" placeholder="Password">
+    </div>
+    <div class="mb-3 input-group">
+        <input type="password" class="form-control" id="txtConfirmPassword" name="txtConfirmPassword" placeholder="Confirm Password">
+    </div>
+
+    <button type="submit" class="btn btn-primary" name="btn-Register">Register</button>
+</form>

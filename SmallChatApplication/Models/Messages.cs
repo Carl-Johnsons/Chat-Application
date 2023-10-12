@@ -10,14 +10,12 @@ namespace SmallChatApplication.Models
         //Normal properties
         [Key]
         public int MessageID { get; set; }
-        public int SenderUserID { get; set; }
+        public Users? SenderUser { get; set; }
         public string? Content { get; set; }
         public DateTime Timestamp { get; set; }
         public MessageTypes MessageType { get; set; }
 
         //Navigation properties
-        [ForeignKey("SenderUserID")]
-        public Users? SenderUser { get; set; }
     }
     public enum MessageTypes
     {

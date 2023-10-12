@@ -6,22 +6,40 @@
     body {
         height: 100vh;
         margin: 0px;
+        background: #0091CC;
     }
 
     .container {
+        display: flex;
         height: 100%;
+        justify-content: center;
+        align-items: center;
     }
 
+
     #user-icon {
-        width: 10rem;
+        max-width: 10rem;
+        width: 50%;
+        height: auto;
+        margin: 1rem 0rem;
     }
 
     #register-form {
         display: none;
     }
+
+    #row {
+        width: 55rem;
+        height: 100%;
+    }
+
+    button[type=submit] {
+        width: 100%;
+    }
+
 </style>
 
-<div class="row d-flex justify-content-center">
+<div class="row d-flex justify-content-center align-items-center" id="row">
     <div class="col-5 shadow-lg p-3 mb-5 bg-light rounded">
 
         <ul class="nav nav-tabs nav-fill">
@@ -34,60 +52,12 @@
         </ul>
 
 
-
         <div id="login-form">
-            @* User icon image *@
-            <div class="row d-flex justify-content-center">
-                <div class="col-4">
-                    <img id="user-icon" src="/img/user.png" />
-                </div>
-            </div>
-
-
-            <form action="@Url.ActionLink("Login","Log")" method="POST">
-
-                <div class="mb-3 input-group">
-                    <label for="txtLoginPhone" class="input-group-text">Phone</label>
-                    <input type="text" class="form-control" id="txtLoginPhone" name="txtLoginPhone">
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="txtLoginPassword" class="input-group-text">Password</label>
-                    <input type="password" class="form-control" id="txtLoginPassword" name="txtLoginPassword">
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="cbRememberPassword">
-                    <label class="form-check-label" for="cbRememberPassword" name="cbRememberPassword">Remember Password</label>
-                </div>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </form>
+            @Html.Partial("LoginForm.cshtml")
         </div>
 
         <div id="register-form">
-            @* User icon image *@
-            <div class="row d-flex justify-content-center">
-                <div class="col-4">
-                    <img id="user-icon" src="/img/user.png" />
-                </div>
-            </div>
-
-
-            <form action="@Url.ActionLink("Register","Log")" method="POST">
-
-                <div class="mb-3 input-group">
-                    <label for="txtRegisterPhone" class="input-group-text">Phone</label>
-                    <input type="text" class="form-control" id="txtRegisterPhone" name="txtRegisterPhone">
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="txtRegisterPassword" class="input-group-text">Password</label>
-                    <input type="password" class="form-control" id="txtRegisterPassword" name="txtRegisterPassword">
-                </div>
-                <div class="mb-3 input-group">
-                    <label for="txtConfirmPassword" class="input-group-text">Confirm Password</label>
-                    <input type="password" class="form-control" id="txtConfirmPassword" name="txtConfirmPassword">
-                </div>
-
-                <button type="submit" class="btn btn-primary">Register</button>
-            </form>
+            @Html.Partial("RegisterForm.cshtml")
         </div>
 
     </div>
