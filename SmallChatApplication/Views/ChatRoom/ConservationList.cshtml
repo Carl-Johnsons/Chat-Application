@@ -1,0 +1,191 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+    :root {
+        --search-bar-height: 10vh;
+        --container-list-container: calc(99vh - var(--search-bar-height));
+    }
+
+    /* Search bar rules */
+    .search-bar-container {
+        height: var(--search-bar-height);
+        background-color: red;
+        padding: 10px;
+    }
+
+        .search-bar-container input {
+            padding: 5px;
+            margin-right: 0.5rem;
+        }
+
+        .search-bar-container .btn-close-search-list,
+        .search-bar-container .btn-add-friend,
+        .search-bar-container .btn-create-group {
+            padding: 0rem 0.5rem;
+            font-weight: bold;
+        }
+
+        .search-bar-container .search-bar-icon {
+            width: 1rem;
+        }
+
+        .search-bar-container .btn-close-search-list {
+            display:none;
+        }
+
+    /* Conversation rules */
+    .conversations-list-container {
+        height: var(--container-list-container);
+        overflow: auto;
+    }
+
+    .conversation {
+        height: 4rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+
+        .conversation:hover {
+            background-color: #F3F5F6;
+        }
+
+        .conversation.active {
+            background-color: #E5EFFF;
+        }
+
+    .conversation-avatar > img {
+        width: 50px;
+        padding: 10px;
+    }
+
+    .conversation-last-message {
+        color: #788BA4;
+        /* Truncate long text */
+        width: 14.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .conversation-description {
+        padding-left: 0.5rem;
+    }
+</style>
+
+<div class="search-bar-container">
+    <div class="search-input-container d-flex">
+        <input type="text" class="form-control" placeholder="Tìm kiếm" />
+        <button class="btn btn-add-friend">
+            <img class="search-bar-icon" src="~/img/add-user.png" />
+        </button>
+        <button class="btn btn-create-group">
+            <img class="search-bar-icon" src="~/img/add-user.png" />
+        </button>
+        <button class="btn btn-close-search-list"> Đóng </button>
+    </div>
+</div>
+
+<div class="conversations-list-container ">
+    <div class="conversation active d-flex">
+
+        <div class="conversation-avatar">
+            <img src="~/img/user.png" />
+        </div>
+        <div class="conversation-description">
+            <div class="conversation-name">
+                Group 2
+            </div>
+            <div class="conversation-last-message">
+                You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    //Search-bar script
+    $(document).ready(function () {
+        let container = $(".search-bar-container");
+        let btnAddUser = container.find(".btn-add-friend");
+        let btnCreateGroup = container.find(".btn-create-group");
+        let btnCloseSearchList = container.find(".btn-close-search-list");
+
+        btnCloseSearchList.click(function () {
+            btnAddUser.show();
+            btnCreateGroup.show();
+            btnCloseSearchList.hide();
+        });
+
+
+    });
+</script>
+
+
+<script>
+    // Conservation list script
+    $(document).ready(function () {
+        let container = $(".conversations-list-container");
+
+
+        for (let i = 0; i < 2; i++) {
+            renderConversation(i);
+        }
+
+        let conversations = $(".conversation");
+        conversations.each(function () {
+            $(this).click(function () {
+                disableAllConversations();
+                activateConversation($(this));
+            });
+        });
+
+        function disableAllConversations() {
+            conversations.each(function () {
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                }
+            })
+        }
+        function activateConversation(conversationDiv) {
+            conversationDiv.addClass("active");
+        }
+
+
+
+        function renderConversation(index) {
+            let conversationDiv = document.createElement("div");
+            conversationDiv.className = "conversation d-flex";
+            container.append(conversationDiv);
+
+            // Creating avatar
+            let conversationAvatarDiv = document.createElement("div");
+            conversationAvatarDiv.className = "conversation-avatar";
+            let avatarImage = document.createElement("img");
+            avatarImage.src = "/img/user.png";
+            conversationAvatarDiv.append(avatarImage);
+
+            //Create description
+            let conversationDescriptionDiv = document.createElement("div");
+            conversationDescriptionDiv.className = "conversation-description";
+
+            let conversationNameDiv = document.createElement("div");
+            conversationNameDiv.className = "conversation-name";
+            conversationNameDiv.textContent = "Group " + index;
+
+            let converstationLastMessageDiv = document.createElement("div");
+            converstationLastMessageDiv.className = "conversation-last-message";
+            converstationLastMessageDiv.textContent = "You: Heloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo";
+
+            conversationDescriptionDiv.append(conversationNameDiv);
+            conversationDescriptionDiv.append(converstationLastMessageDiv);
+
+            conversationDiv.append(conversationAvatarDiv);
+            conversationDiv.append(conversationDescriptionDiv);
+        }
+
+    });
+</script>

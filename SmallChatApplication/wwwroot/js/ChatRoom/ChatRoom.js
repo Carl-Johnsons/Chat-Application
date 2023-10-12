@@ -2,9 +2,9 @@
 const urlSearch = new URLSearchParams(window.location.search);
 const userName = urlSearch.get("txtUser");
 const room = urlSearch.get("txtRoom");
-const btnSendMessage = document.querySelector("button#btnSendMessage");
+const btnSendMessage = document.querySelector("button#btn-send-message");
 
-const msgContainer = document.querySelector("div#chatBoxContainer");
+const msgContainer = document.querySelector("div#message-container");
 
 
 

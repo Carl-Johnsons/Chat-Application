@@ -6,6 +6,7 @@
     body {
         height: 100vh;
         margin: 0px;
+        background: #0091CC;
     }
 
     .container {
@@ -32,6 +33,10 @@
         height: 100%;
     }
 
+    button[type=submit] {
+        width: 100%;
+    }
+
 </style>
 
 <div class="row d-flex justify-content-center align-items-center" id="row">
@@ -48,11 +53,11 @@
 
 
         <div id="login-form">
-          @Html.Partial("LoginForm.cshtml");
+            @Html.Partial("LoginForm.cshtml")
         </div>
 
         <div id="register-form">
-            @Html.Partial("RegisterForm.cshtml");
+            @Html.Partial("RegisterForm.cshtml")
         </div>
 
     </div>
