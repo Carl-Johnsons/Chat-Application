@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "fzUAxTanIIh0ZK1/U21lwzTXDlnP2EPA+rgQ3LCWKyAKDRpT4K9yLoWELi+hqHV7KEp1o39f/6PS0NmJUVP2Vg==",
+  "dgSpecHash": "Smsv2ztIPA3XSDQ1edTUWeIVPa3k6j7CIuuRxrCJ+wL/oHgBJ02qtwLzfdlp6RcjKuyWVTMiSrWsF+eMVEg9TQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj",
   "expectedPackageFiles": [
@@ -101,6 +101,7 @@
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.identitymodel.protocols\\6.24.0\\microsoft.identitymodel.protocols.6.24.0.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\6.24.0\\microsoft.identitymodel.protocols.openidconnect.6.24.0.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.identitymodel.tokens\\6.24.0\\microsoft.identitymodel.tokens.6.24.0.nupkg.sha512",
+    "C:\\Users\\Acer\\.nuget\\packages\\microsoft.net.sdk.razor\\3.1.32\\microsoft.net.sdk.razor.3.1.32.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.net.stringtools\\17.3.2\\microsoft.net.stringtools.17.3.2.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
