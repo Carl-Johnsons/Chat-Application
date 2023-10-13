@@ -16,6 +16,7 @@
     .row {
         --bs-gutter-x: 0rem;
     }
+
     .container-fluid {
         height: 100%;
         margin: 0px;
@@ -27,61 +28,16 @@
             margin: 0px;
         }
 
-    .message-container {
-        height: 80vh;
-        background-color: #edf4fc;
-        border: 1px solid black;
-        overflow: auto;
-    }
 
-    .message.sender {
-        background-color: #0084FF;
-        color: white;
-        clear: both;
-        float: right;
-    }
-
-    .message.receiver {
-        background-color: #3E4042;
-        color: white;
-        clear: both;
-        float: left;
-    }
-
-    .message {
-        width: fit-content;
-        padding: 0.3rem 0.5rem;
-        margin: 0.2rem 0rem;
-        border: 1px solid black;
-        border-radius: 0.7rem;
-    }
-
-    .input-message-container {
-        height: 6vh;
-    }
-
-    #txtMessage {
-        margin-top: 0.5rem;
-        margin-left: 0.3rem;
-        border-radius: 0.7rem;
-        width: 100%;
-    }
-
-    #btn-send-message {
-        margin-top: 0.5rem;
-        height: 4vh;
-        padding: 0rem 0.75rem;
-        border-radius: 0.7rem;
-    }
-
-    .chat-box-container {
-        padding-left: 0px;
-    }
 
     .left {
         padding: 0px;
         height: 100%;
     }
+
+        .left .row {
+            width: 100%;
+        }
 
         .left * {
             padding: 0px;
@@ -90,9 +46,16 @@
 
     .right {
         padding: 0px;
+        height: 100%;
     }
-    /* Conversation css rule */
 
+        .right * {
+            padding: 0px;
+        }
+
+    .conversation-page {
+        display: none;
+    }
 </style>
 
 
@@ -105,35 +68,23 @@
             </div>
 
             <div class="col-sm-10">
-                @Html.Partial("ConservationList.cshtml")
+                <div class="conversation-page">
+                    @Html.Partial("ConversationPage/ConservationList.cshtml")
+                </div>
+                <div class="contact-page">
+                    @Html.Partial("ContactPage/ContactTypeList.cshtml")
+                </div>
             </div>
-
         </div>
 
     </div>
 
     <div class="col-sm-9  right">
-        <div class="chat-box-container">
-            @* Using viewbag to display data *@
-            <div class="message-container">
-                <div class="message sender">
-                    Hello @ViewBag._userName
-                </div>
-                <div class="message receiver">
-                    Hello
-                </div>
-            </div>
-
-            <div class="input-message-container">
-                <div class="row">
-                    <div class="col-md-11">
-                        <input id="txtMessage" />
-                    </div>
-                    <div class="col-md-1">
-                        <button class="btn-secondary" id="btn-send-message">Send</button>
-                    </div>
-                </div>
-            </div>
+        <div class="conversation-page">
+            @Html.Partial("ConversationPage/Conversation.cshtml")
+        </div>
+        <div class="contact-page">
+            @Html.Partial("ContactPage/ContactList.cshtml")
         </div>
     </div>
 </div>
@@ -141,6 +92,7 @@
 
 
 <script src="~/js/signalr.js"></script>
-<script src="~/js/ChatRoom/ChatRoom.js"></script>
+
+
 
 

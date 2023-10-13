@@ -44,8 +44,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQXBwbGljYXRpb25OYXZiYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/ConservationList.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQ29uc2VydmF0aW9uTGlzdC5jc2h0bWw=
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/ContactPage/ContactList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQ29udGFjdFBhZ2VcQ29udGFjdExpc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/ContactPage/ContactTypeList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQ29udGFjdFBhZ2VcQ29udGFjdFR5cGVMaXN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/ConversationPage/ConservationList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQ29udmVyc2F0aW9uUGFnZVxDb25zZXJ2YXRpb25MaXN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/ConversationPage/Conversation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFJvb21cQ29udmVyc2F0aW9uUGFnZVxDb252ZXJzYXRpb24uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Acer/OneDrive/Desktop/\#FA23/PRN211/Small Chat Application/Chat-Application/SmallChatApplication/Views/ChatRoom/Index.cshtml]

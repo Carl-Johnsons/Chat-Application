@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "fh0HKpoXuP+XZVAkAQuIOonVjeuHA0Y84DAgyOrrKBQ=",
+  "Hash": "IORRpwGfkTH3t3NMPpV6uejSsB71aUKBWbKYNDsXdP0=",
   "Source": "SmallChatApplication",
   "BasePath": "_content/SmallChatApplication",
   "Mode": "Default",
@@ -83,6 +83,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\wwwroot\\img\\add-user.png",
+      "SourceId": "SmallChatApplication",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\wwwroot\\",
+      "BasePath": "_content/SmallChatApplication",
+      "RelativePath": "img/add-user.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\img\\add-user.png"
     },
     {
       "Identity": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\wwwroot\\img\\user.png",

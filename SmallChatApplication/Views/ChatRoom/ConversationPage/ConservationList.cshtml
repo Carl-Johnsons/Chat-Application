@@ -4,21 +4,25 @@
 @{
 }
 <style>
-    :root {
-        --search-bar-height: 10vh;
-        --container-list-container: calc(99vh - var(--search-bar-height));
-    }
+
 
     /* Search bar rules */
     .search-bar-container {
+        /* Define vairable for search bar */
+        --search-bar-height: 10vh;
+        --container-list-container: calc(99vh - var(--search-bar-height));
         height: var(--search-bar-height);
-        background-color: red;
         padding: 10px;
+        border-bottom: 1px solid black;
     }
 
         .search-bar-container input {
             padding: 5px;
             margin-right: 0.5rem;
+        }
+
+        .search-bar-container .search-bar-btn-container {
+            width: 5rem;
         }
 
         .search-bar-container .btn-close-search-list,
@@ -33,7 +37,7 @@
         }
 
         .search-bar-container .btn-close-search-list {
-            display:none;
+            display: none;
         }
 
     /* Conversation rules */
@@ -77,20 +81,21 @@
 
 <div class="search-bar-container">
     <div class="search-input-container d-flex">
-        <input type="text" class="form-control" placeholder="Tìm kiếm" />
-        <button class="btn btn-add-friend">
-            <img class="search-bar-icon" src="~/img/add-user.png" />
-        </button>
-        <button class="btn btn-create-group">
-            <img class="search-bar-icon" src="~/img/add-user.png" />
-        </button>
-        <button class="btn btn-close-search-list"> Đóng </button>
+        <input type="text" class="search-bar-input form-control" placeholder="Tìm kiếm" />
+        <div class="search-bar-btn-container d-flex">
+            <button class="btn btn-add-friend">
+                <img class="search-bar-icon" src="~/img/add-user.png" />
+            </button>
+            <button class="btn btn-create-group">
+                <img class="search-bar-icon" src="~/img/add-user.png" />
+            </button>
+            <button class="btn btn-close-search-list"> Đóng </button>
+        </div>
     </div>
 </div>
 
 <div class="conversations-list-container ">
     <div class="conversation active d-flex">
-
         <div class="conversation-avatar">
             <img src="~/img/user.png" />
         </div>
@@ -102,7 +107,6 @@
                 You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
             </div>
         </div>
-
     </div>
 </div>
 
@@ -113,12 +117,21 @@
         let btnAddUser = container.find(".btn-add-friend");
         let btnCreateGroup = container.find(".btn-create-group");
         let btnCloseSearchList = container.find(".btn-close-search-list");
+        let searchBarInput = container.find(".search-bar-input");
 
         btnCloseSearchList.click(function () {
             btnAddUser.show();
             btnCreateGroup.show();
             btnCloseSearchList.hide();
         });
+
+        searchBarInput.focus(function () {
+            btnAddUser.hide();
+            btnCreateGroup.hide();
+            btnCloseSearchList.show();
+        });
+
+
 
 
     });
