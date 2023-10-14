@@ -775,3 +775,5 @@ C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Applicat
 C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Application\SmallChatApplication\obj\Debug\net7.0\staticwebassets\SmallChatApplication.StaticWebAssets.xml
 C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Application\SmallChatApplication\obj\Debug\net7.0\SmallChatApplication.genruntimeconfig.cache
 C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Application\SmallChatApplication\obj\Debug\net7.0\ref\SmallChatApplication.dll
+C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Application\SmallChatApplication\obj\Debug\net7.0\Razor\Views\ChatRoom\Popups\InfoPopup.cshtml.g.cs
+C:\Users\Acer\OneDrive\Desktop\#FA23\PRN211\Small Chat Application\Chat-Application\SmallChatApplication\obj\Debug\net7.0\Razor\Views\ChatRoom\Popups\UpdateInfoPopup.cshtml.g.cs

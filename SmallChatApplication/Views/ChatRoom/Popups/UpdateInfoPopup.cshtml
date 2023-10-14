@@ -1,0 +1,215 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<style>
+    .update-info-popup-container {
+        position: absolute;
+        top: 0px;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+        .update-info-popup-container .row {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+    .update-info-popup {
+        background-color: white;
+        border-radius: 0.5rem;
+        height: 80vh;
+        --top-pop-up-height: 7.5vh;
+        --bottom-pop-up-height: 40vh;
+        --middle-pop-up-height: calc(80vh - var(--top-pop-up-height) - var(--bottom-pop-up-height));
+    }
+
+        .update-info-popup .top-pop-up {
+            height: var(--top-pop-up-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: solid 1px black;
+        }
+
+            .update-info-popup .top-pop-up .pop-up-name {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: fit-content;
+                font-size: large;
+                font-weight: bold;
+            }
+
+                .update-info-popup .top-pop-up .pop-up-name p {
+                    padding: 0rem 1rem;
+                    margin-bottom: 0px !important;
+                }
+
+            .update-info-popup .top-pop-up .btn-close-pop-up {
+                width: 2rem;
+                height: 2rem;
+                margin: 0rem 1rem;
+                border-radius: 50%;
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+        .update-info-popup .middle-pop-up {
+            height: var(--middle-pop-up-height);
+        }
+
+            .update-info-popup .middle-pop-up .background-img-container {
+                width: 100%;
+                height: 60%;
+            }
+
+                .update-info-popup .middle-pop-up .background-img-container img {
+                    object-fit: cover;
+                    width: 100%;
+                    height: 100%;
+                }
+
+            .update-info-popup .middle-pop-up .avatar-img-container {
+                position: relative;
+                height: 20%;
+                display: flex;
+                justify-content: center;
+            }
+
+                .update-info-popup .middle-pop-up .avatar-img-container img {
+                    position: absolute;
+                    width: 5rem;
+                    height: 5rem;
+                    border: 2px solid white;
+                    transform: translateY(-50%);
+                    border-radius: 50%;
+                }
+
+            .update-info-popup .middle-pop-up .user-name {
+                height: 20%;
+                display: flex;
+                justify-content: center;
+                font-weight: bold;
+            }
+
+                .update-info-popup .middle-pop-up .user-name p {
+                    font-size: large;
+                }
+
+
+        .update-info-popup .bottom-pop-up {
+            height: var(--bottom-pop-up-height);
+            margin: 0rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-bottom: 1rem;
+        }
+
+            .update-info-popup .bottom-pop-up .personal-information-container {
+                height: 60%;
+                display: flex;
+                flex-direction: column;
+            }
+
+                .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 0.3rem 0rem;
+                }
+
+                    .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row:not(:has(.personal-information-row-name)) {
+                        font-weight: bold;
+                        font-size: large;
+                    }
+
+                .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row-name {
+                    color: #7C8FA6;
+                }
+
+    .bottom-pop-up .btn-update-information {
+        width: 100%;
+        background-color: #EAEDF0;
+        font-weight: bold;
+    }
+</style>
+
+
+<div class="update-info-popup-container">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="update-info-popup">
+
+                <div class="top-pop-up">
+                    <div class="pop-up-name">
+                        <p>Cập nhật thông tin a</p>
+                    </div>
+                    <button class="btn btn-close-pop-up">X</button>
+                </div>
+
+                <div class="middle-pop-up">
+                    <div class="background-img-container">
+                        <img src="~/img/default_background_img.png" />
+                    </div>
+                    <div class="avatar-img-container">
+                        <img src="~/img/default_avatar_img.png" />
+                    </div>
+                    <div class="user-name">
+                        <p>Đức</p>
+                    </div>
+                </div>
+
+                <div class="bottom-pop-up">
+                    <div class="personal-information-container">
+                        <div class="personal-information-row">
+                            <p>Thông tin cá nhân</p>
+                        </div>
+                        <div class="personal-information-row">
+                            <div class="personal-information-row-name">
+                                Điện thoại
+                            </div>
+                            <div class="personal-information-row-detail">
+                                +84123456789
+                            </div>
+                        </div>
+
+                        <div class="personal-information-row">
+                            <div class="personal-information-row-name">
+                                Giới tính
+                            </div>
+                            <div class="personal-information-row-detail">
+                                Nam
+                            </div>
+                        </div>
+
+                        <div class="personal-information-row">
+                            <div class="personal-information-row-name">
+                                Ngày sinh
+                            </div>
+                            <div class="personal-information-row-detail">
+                                Ngày 01 tháng 01, 2000
+                            </div>
+                        </div>
+
+                    </div>
+                    <button class="btn btn-update-information"> Cập nhật thông tin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
