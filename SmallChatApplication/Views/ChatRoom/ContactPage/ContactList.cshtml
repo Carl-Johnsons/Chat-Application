@@ -1,0 +1,91 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+    .contact-page-container {
+        --contact-page-container-height: 100vh;
+        --page-info-container-height: 7.5vh;
+        --contact-list-container-height: calc(var(--contact-page-container-height) - var(--page-info-container-height));
+        height: var(--contact-page-container);
+        border-left: 1px solid black;
+    }
+
+    .page-info-container {
+        height: var(--page-info-container-height);
+        background-color: white;
+        border-bottom: 1px solid black;
+    }
+
+    .page-info-container {
+        height: var(--page-info-container-height);
+        border-bottom: 1px solid black;
+    }
+
+        .page-info-container .info-container {
+            margin: 0.5rem 1rem;
+        }
+
+            .page-info-container .info-container p {
+                font-size: 1.5rem;
+                font-weight: 600;
+            }
+
+        .page-info-container .avatar-container .avatar-image {
+            width: 2rem;
+            margin: calc((var(--page-info-container-height) - 2rem)/2);
+        }
+
+
+    .contact-list-container {
+        height: var(--contact-list-container-height);
+        background-color: #EEF0F1;
+    }
+
+</style>
+
+
+
+<div class="contact-page-container">
+
+    <div class="friend-list-container">
+        <div class="page-info-container d-flex">
+            <div class="avatar-container">
+                <img class="avatar-image" src="/img/add-user.png" />
+            </div>
+            <div class="info-container">
+                <p> Danh sách bạn bè </p>
+            </div>
+        </div>
+        <div class="contact-list-container">
+        </div>
+    </div>
+    
+    <div class="group-list-container">
+        <div class="page-info-container d-flex">
+            <div class="avatar-container">
+                <img class="avatar-image" src="/img/add-user.png" />
+            </div>
+            <div class="info-container">
+                <p> Danh sách nhóm </p>
+            </div>
+        </div>
+        <div class="contact-list-container">
+        </div>
+    </div>
+
+    <div class="friend-request-list-container">
+        <div class="page-info-container d-flex">
+            <div class="avatar-container">
+                <img class="avatar-image" src="/img/add-user.png" />
+            </div>
+            <div class="info-container">
+                <p> Lời mời kết bạn </p>
+            </div>
+        </div>
+        <div class="contact-list-container">
+        </div>
+    </div>
+
+</div>

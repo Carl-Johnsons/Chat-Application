@@ -1,0 +1,318 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+
+    .chat-box-container {
+        --chat-box-container-height: 100vh;
+        --user-info-container-height: 7.5vh;
+        --input-message-container-height: 7.5vh;
+        --message-container-height: calc(var(--chat-box-container-height) - var(--input-message-container-height) - var(--user-info-container-height));
+        
+        
+        height: var(--chat-box-container-height);
+        padding-left: 0px;
+        border: 1px solid black;
+    }
+
+    .user-info-container {
+        height: var(--user-info-container-height);
+        border-bottom: 1px solid black;
+    }
+
+        .user-info-container .user-name-container {
+            margin: 0.5rem 1rem;
+        }
+
+            .user-info-container .user-name-container p {
+                font-size: 1.5rem;
+                font-weight: 600;
+            }
+
+        .user-info-container .avatar-container .avatar-image {
+            width: 2.8rem;
+            margin: calc((var(--user-info-container-height) - 2.8rem)/2);
+        }
+
+    .message-container {
+        height: var(--message-container-height);
+        overflow: auto;
+        background-color: #EEF0F1;
+    }
+
+        .message-container .message-item-container {
+            display: flex;
+        }
+
+            .message-container .message-item-container.receiver {
+                justify-content: flex-start;
+            }
+
+            .message-container .message-item-container.sender {
+                justify-content: flex-end;
+            }
+            /* For aligining consecutive message */
+            .message-container .message-item-container.receiver .message-list {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .message-container .message-item-container.sender .message-list {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+
+            .message-container .message-item-container .message-item {
+                display: flex;
+            }
+
+            .message-container .message-item-container .avatar-image {
+                width: 2.8rem;
+                margin: 0 0.5rem;
+            }
+
+            .message-container .message-item-container .message {
+                width: fit-content;
+                max-width: 40rem;
+                padding: 0.3rem 0.5rem;
+                margin: 0.2rem 0rem;
+                border: 1px solid black;
+                border-radius: 0.7rem;
+            }
+
+            .message-container .message-item-container.sender .message {
+                background-color: #E5EFFF;
+            }
+
+            .message-container .message-item-container.receiver .message {
+                background-color: white;
+            }
+
+            .message-container .message-item-container .message .user-name,
+            .message-container .message-item-container .message .message-time {
+                font-size: 0.8rem;
+                color: #476285;
+            }
+
+
+
+            .message-container .message-item-container .message {
+                padding: 0.7rem;
+            }
+
+
+    .input-message-container {
+        height: var(--input-message-container-height);
+    }
+
+        .input-message-container .row {
+            height: 100%;
+        }
+
+            .input-message-container .row .input-message {
+                width: 100%;
+                height: 100%;
+                padding: 1rem;
+            }
+
+            .input-message-container .row .btn-send-message {
+                width: 100%;
+                height: 100%;
+                font-size: x-large;
+                font-weight: bold;
+            }
+
+</style>
+
+
+
+
+<div class="chat-box-container">
+
+    <div class="user-info-container d-flex">
+        <div class="avatar-container">
+            <img class="avatar-image" src="/img/user.png" />
+        </div>
+        <div class="user-name-container">
+            <p> Group 2 </p>
+        </div>
+    </div>
+
+
+    @* Using viewbag to display data *@
+    <div class="message-container">
+
+        <div class="message-item-container sender">
+            <div class="message-item">
+                <div class="message-list">
+
+                    <div class="message-row">
+                        <div class="message ">
+                            <div class="message-content">
+                                Helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa @ViewBag._userName
+                                asfhasfjasfhkjasf
+                                asfjhasfkjashf
+                                askfasfhasfjhsaf
+                                asfakshfasf
+
+                                asfhasjfsaf
+                                asjhfasjf
+                                sajfhasfashjfashjfasfkhasfkjhaskjfhasfkjhaskjfhasfkjhasfkjh
+                            </div>
+                            <div class="message-time">
+                                11:00
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message-row">
+                        <div class="message ">
+                            <div class="message-content">
+                                Helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa @ViewBag._userName
+                            </div>
+                            <div class="message-time">
+                                11:00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="message-item-container receiver">
+            <div class="message-item">
+                <div class="user-avatar">
+                    <img class="avatar-image" src="~/img/user.png" />
+                </div>
+                <div class="message-list">
+                    <div class="message-row">
+
+                        <div class="message">
+                            <div class="user-name">
+                                Lê Thị B
+                            </div>
+                            <div class="message-content">
+                                Helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa @ViewBag._userName
+                                asfhasfjasfhkjasf
+                                asfjhasfkjashf
+                                askfasfhasfjhsaf
+                                asfakshfasf
+
+                                asfhasjfsaf
+                                asjhfasjf
+                                sajfhasfashjfashjfasfkhasfkjhaskjfhasfkjhaskjfhasfkjhasfkjh
+                            </div>
+                            <div class="message-time">
+                                11:00
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="message-row">
+                        <div class="message">
+                            <div class="message-content">
+                                Helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa @ViewBag._userName
+                            </div>
+                            <div class="message-time">
+                                11:00
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message-row">
+                        <div class="message">
+                            <div class="message-content">
+                                Helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa @ViewBag._userName
+                            </div>
+                            <div class="message-time">
+                                11:00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-message-container">
+        <div class="row">
+            <div class="col-md-10">
+                <input class="input-message" />
+            </div>
+            <div class="col-md-2">
+                <button class="btn-secondary btn-send-message">Gửi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    const urlSearch = new URLSearchParams(window.location.search);
+    const userName = urlSearch.get("txtUser");
+    const room = urlSearch.get("txtRoom");
+    const btnSendMessage = document.querySelector("button.btn-send-message");
+
+    const msgContainer = document.querySelector("div.message-container");
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+    connection.start().then(function () {
+        connection.invoke("JoinRoom", userName, room).then(function () {
+            console.log("it's working");
+        });
+    });
+
+    //console.log(connection);
+    connection.on("ReceiveMessage", function (user, message) {
+        renderMessage(user, message);
+    });
+
+    function renderMessage(user, message) {
+        //Creating msgItemContainer
+        let msgItemContainer = document.createElement("div");
+        msgItemContainer.className = "message";
+        msgItemContainer.id = user == userName ? "Sender" : "Receiver";
+        msgItemContainer.innerText = message;
+
+        msgContainer.appendChild(msgItemContainer);
+
+        //Scroll to child element
+        msgItemContainer.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    }
+    function generateDivElement(className, text) {
+        let divElement = document.createElement("div");
+        divElement.className = className;
+        divElement.innerText = text;
+    }
+
+
+    btnSendMessage.addEventListener("click", function () {
+        sendMessageToGroup();
+    });
+    txtMessage.addEventListener("focus", function () {
+        txtMessage.addEventListener("keyup", function (event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                sendMessageToGroup();
+
+            }
+        });
+    })
+
+
+    function sendMessageToGroup() {
+        const inputMsg = document.querySelector("input#txtMessage");
+        if (inputMsg.value.length != 0) {
+            connection.invoke("SendMessageToGroup", { Name: userName, Room: room }, inputMsg.value);
+            //Reset input
+            txtMessage.value = '';
+        }
+    }
+
+</script>

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj": {}
+    "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj": {}
   },
   "projects": {
-    "D:\\Project\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj": {
+    "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj",
+        "projectUniqueName": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj",
         "projectName": "SmallChatApplication",
-        "projectPath": "D:\\Project\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\Chat-Application\\SmallChatApplication\\obj\\",
+        "projectPath": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\SmallChatApplication.csproj",
+        "packagesPath": "C:\\Users\\Acer\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -49,6 +49,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.11, )"
+            },
+            "Microsoft.NET.Sdk.Razor": {
+              "target": "Package",
+              "version": "[3.1.32, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
