@@ -40,7 +40,7 @@
 </style>
 
 <div class="contact-type-list-container">
-    <div class="contact-type active d-flex">
+    <div class="contact-type active d-flex" id="friend-list-container">
         <div class="contact-type-icon">
             <img src="~/img/add-user.png" />
         </div>
@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <div class="contact-type d-flex">
+    <div class="contact-type d-flex" id="group-list-container">
         <div class="contact-type-icon">
             <img src="~/img/add-user.png" />
         </div>
@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    <div class="contact-type d-flex">
+    <div class="contact-type d-flex" id="friend-request-list-container">
         <div class="contact-type-icon">
             <img src="~/img/add-user.png" />
         </div>
@@ -76,12 +76,19 @@
 
 <script>
     $(document).ready(function () {
+        const FRIEND_LIST_PAGE = "friend-list-container";
+        const GROUP_LIST_PAGE = "group-list-container";
+        const FRIEND_REQUEST_LIST_PAGE = "friend-request-list-container";
+
+
         let contactTypeListContainer = $("div.contact-type-list-container");
         let contactTypes = $(contactTypeListContainer).find(".contact-type");
         console.log(contactTypes);
         contactTypes.each(function () {
             $(this).click(function () {
-                console.log($(this));
+                hideAllPages();
+                let clickId = $(this).prop("id");
+                showPage(clickId);
                 disableAllContactType();
                 activateContactType($(this));
             });
@@ -97,8 +104,16 @@
                 }
             });
         }
+        function showPage(className) {
+            $("." + className).show();
+        }
 
-    })
+        function hideAllPages() {
+            $("." + FRIEND_LIST_PAGE).hide();
+            $("." + GROUP_LIST_PAGE).hide();
+            $("." + FRIEND_REQUEST_LIST_PAGE).hide();
+        }
 
+    });
 
 </script>
