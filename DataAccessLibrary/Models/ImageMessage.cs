@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DataAccessLibrary.Models;
+namespace BussinessObject.Models;
 
 public partial class ImageMessage
 {

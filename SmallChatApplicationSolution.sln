@@ -3,9 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmallChatApplication", "SmallChatApplication\SmallChatApplication.csproj", "{F392FAC7-859C-4313-B45B-CF0A0CA38252}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebChatApplication", "SmallChatApplication\WebChatApplication.csproj", "{F392FAC7-859C-4313-B45B-CF0A0CA38252}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLibrary", "DataAccessLibrary\DataAccessLibrary.csproj", "{3E4CDD9D-2F87-4527-A0DA-BD7D6AACFFFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BussinessObject", "DataAccessLibrary\BussinessObject.csproj", "{3E4CDD9D-2F87-4527-A0DA-BD7D6AACFFFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFChatApplication", "WFChatApplication\WFChatApplication.csproj", "{36186BCF-53DB-4145-AB56-0EF5331D90B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Presentation Layer", "1.Presentation Layer", "{92D13C75-B93B-4B36-8B12-A8681ADC571D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.Bussiness Layer", "2.Bussiness Layer", "{FD64B19E-6F49-420E-9078-36B9CAE9B3E7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.Data Layer", "3.Data Layer", "{1ACDA751-8EA1-4154-A4B3-969FF9218D25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +29,18 @@ Global
 		{3E4CDD9D-2F87-4527-A0DA-BD7D6AACFFFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E4CDD9D-2F87-4527-A0DA-BD7D6AACFFFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E4CDD9D-2F87-4527-A0DA-BD7D6AACFFFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36186BCF-53DB-4145-AB56-0EF5331D90B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36186BCF-53DB-4145-AB56-0EF5331D90B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36186BCF-53DB-4145-AB56-0EF5331D90B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36186BCF-53DB-4145-AB56-0EF5331D90B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F392FAC7-859C-4313-B45B-CF0A0CA38252} = {92D13C75-B93B-4B36-8B12-A8681ADC571D}
+		{3E4CDD9D-2F87-4527-A0DA-BD7D6AACFFFF} = {FD64B19E-6F49-420E-9078-36B9CAE9B3E7}
+		{36186BCF-53DB-4145-AB56-0EF5331D90B1} = {92D13C75-B93B-4B36-8B12-A8681ADC571D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {727B8E0A-B219-4A81-A81D-0EA08FDC4B85}

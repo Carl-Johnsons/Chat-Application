@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccessLibrary.Models;
+namespace BussinessObject.Models;
 
 public partial class ChatApplicationContext : DbContext
 {

@@ -103,13 +103,16 @@
             .update-info-popup .middle-pop-up .user-name {
                 height: 20%;
                 display: flex;
-                justify-content: center;
-                font-weight: bold;
+                flex-direction: column;
+                align-items: flex-start;
+                margin: 0rem 2rem;
             }
 
-                .update-info-popup .middle-pop-up .user-name p {
-                    font-size: large;
+                .update-info-popup .middle-pop-up .user-name input {
+                    width: 100%;
+                    padding: 0px;
                 }
+
 
 
         .update-info-popup .bottom-pop-up {
@@ -134,13 +137,22 @@
                 }
 
                     .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row:not(:has(.personal-information-row-name)) {
-                        font-weight: bold;
-                        font-size: large;
+                        font-size: medium;
                     }
 
                 .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row-name {
                     color: #7C8FA6;
                 }
+
+                .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row-detail.input-date {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                    .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row-detail.input-date input {
+                        width: 30%;
+                    }
 
     .bottom-pop-up .btn-update-information {
         width: 100%;
@@ -154,61 +166,71 @@
     <div class="row">
         <div class="col-sm-3">
             <div class="update-info-popup">
-
-                <div class="top-pop-up">
-                    <div class="pop-up-name">
-                        <p>Cập nhật thông tin a</p>
-                    </div>
-                    <button class="btn btn-close-pop-up">X</button>
-                </div>
-
-                <div class="middle-pop-up">
-                    <div class="background-img-container">
-                        <img src="~/img/default_background_img.png" />
-                    </div>
-                    <div class="avatar-img-container">
-                        <img src="~/img/default_avatar_img.png" />
-                    </div>
-                    <div class="user-name">
-                        <p>Đức</p>
-                    </div>
-                </div>
-
-                <div class="bottom-pop-up">
-                    <div class="personal-information-container">
-                        <div class="personal-information-row">
-                            <p>Thông tin cá nhân</p>
+                <form>
+                    <div class="top-pop-up">
+                        <div class="pop-up-name">
+                            <p>Cập nhật thông tin</p>
                         </div>
-                        <div class="personal-information-row">
-                            <div class="personal-information-row-name">
-                                Điện thoại
-                            </div>
-                            <div class="personal-information-row-detail">
-                                +84123456789
-                            </div>
-                        </div>
-
-                        <div class="personal-information-row">
-                            <div class="personal-information-row-name">
-                                Giới tính
-                            </div>
-                            <div class="personal-information-row-detail">
-                                Nam
-                            </div>
-                        </div>
-
-                        <div class="personal-information-row">
-                            <div class="personal-information-row-name">
-                                Ngày sinh
-                            </div>
-                            <div class="personal-information-row-detail">
-                                Ngày 01 tháng 01, 2000
-                            </div>
-                        </div>
-
+                        <button class="btn btn-close-pop-up">X</button>
                     </div>
-                    <button class="btn btn-update-information"> Cập nhật thông tin</button>
-                </div>
+
+                    <div class="middle-pop-up">
+                        <div class="background-img-container">
+                            <img src="~/img/default_background_img.png" />
+                        </div>
+                        <div class="avatar-img-container">
+                            <img src="~/img/default_avatar_img.png" />
+                        </div>
+                        <div class="user-name">
+                            <label>Tên hiển thị</label>
+                            <input type="text" value="Đức" name="txtUsername" />
+                        </div>
+                    </div>
+
+                    <div class="bottom-pop-up">
+                        <div class="personal-information-container">
+                            <div class="personal-information-row">
+                                <p>Thông tin cá nhân</p>
+                            </div>
+
+                            <div class="personal-information-row">
+                                <div class="personal-information-row-name">
+                                    Giới tính
+                                </div>
+                            </div>
+                            <div class="personal-information-row">
+                                <div class="personal-information-row-detail input-gender">
+                                    <input type="radio" value="Nam" name="rdoGender" id="radio-gender-male" />
+                                    <label for="radio-gender-male">Nam</label>
+                                </div>
+                                <div class="personal-information-row-detail">
+                                    <input type="radio" value="Nữ" name="rdoGender" id="radio-gender-female" />
+                                    <label for="radio-gender-female">Nữ</label>
+                                </div>
+                                <div class="personal-information-row-detail">
+                                </div>
+                                <div class="personal-information-row-detail">
+                                </div>
+                            </div>
+
+                            <div class="personal-information-row">
+                                <div class="personal-information-row-name">
+                                    Ngày sinh
+                                </div>
+
+                            </div>
+                            <div class="personal-information-row">
+                                <div class="personal-information-row-detail input-date">
+                                    <input />
+                                    <input />
+                                    <input />
+                                </div>
+                            </div>
+
+                        </div>
+                        <button class="btn btn-update-information"> Cập nhật thông tin</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
