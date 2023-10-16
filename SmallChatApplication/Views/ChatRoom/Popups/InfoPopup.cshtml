@@ -142,6 +142,10 @@
         background-color: #EAEDF0;
         font-weight: bold;
     }
+    /* Update Info rules */
+    .update-info-popup-container {
+        display: none;
+    }
 
 </style>
 
@@ -208,3 +212,36 @@
         </div>
     </div>
 </div>
+@Html.Partial("UpdateInfoPopup.cshtml")
+
+
+<script>
+    $(document).ready(function () {
+        const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
+        let closeBtn = $(".info-pop-up-container button.btn-close-pop-up");
+        closeBtn.click(function (e) {
+            INFO_POPUP_CONTAINER.hide();
+        });
+
+
+        let infoPopUp = document.querySelector("div.info-pop-up");
+        INFO_POPUP_CONTAINER.click(function (e) {
+            //jquery.contains only work with native Dom element not jquery Element
+            //so i had to use querySelector from native Dom
+            if (!$.contains(infoPopUp, e.target)) {
+                INFO_POPUP_CONTAINER.hide();
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
+        const UPDATE_INFO_POPUP_CONTAINER = $(".update-info-popup-container");
+        let updateBtn = $("button.btn-update-information");
+        updateBtn.click(function (e) {
+            UPDATE_INFO_POPUP_CONTAINER.show();
+        });
+    });
+</script>

@@ -41,74 +41,78 @@
 <div class="application-nav-bar">
     <ul class="nav nav-tabs nav-fill">
         <li class="nav-item">
-            <a class="nav-link active" href="#" id="login-form-link">
+            <a class="nav-link" href="#" id="info-pop-up-container">
                 <img src="~/img/user.png" class="nav-bar-icon" />
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#" id="register-form-link">
+            <a class="nav-link active" href="#" id="conversation-page">
                 <img src="~/img/user.png" class="nav-bar-icon" />
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#" id="register-form-link">
-                <img src="~/img/user.png" class="nav-bar-icon" />
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" id="register-form-link">
+            <a class="nav-link" href="#" id="contact-page">
                 <img src="~/img/user.png" class="nav-bar-icon" />
             </a>
         </li>
 
     </ul>
     <ul class="nav nav-tabs nav-fill">
-        <li class="nav-item">
-            <a class="nav-link" href="#" id="login-form-link">
-                <img src="~/img/user.png" class="nav-bar-icon" />
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" id="register-form-link">
-                <img src="~/img/user.png" class="nav-bar-icon" />
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" id="register-form-link">
-                <img src="~/img/user.png" class="nav-bar-icon" />
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" id="register-form-link">
-                <img src="~/img/user.png" class="nav-bar-icon" />
-            </a>
-        </li>
     </ul>
 </div>
 
 <script>
     $(document).ready(function () {
+        const CONVERSATION_PAGE = "conversation-page";
+        const CONTACT_PAGE = "contact-page";
+        const INFO_POPUP = "info-pop-up-container";
+        const UPDATE_INFO_POPUP = "update-info-popup-container";
+
+
+        // Animation
         let navLinks = $(".application-nav-bar .nav-link")
         navLinks.each(function () {
             $(this).click(function () {
+                let clickId = $(this).prop("id");
+                if (clickId === "info-pop-up-container") {
+                    hideAllPopUps();
+                    showPopUp(clickId);
+                } else {
+                    hideAllPages();
+                    showPage(clickId);
+                }
+
                 disableAllNavLinks();
                 activateNavLinks($(this));
             });
 
 
-            function disableAllNavLinks() { 
+            function disableAllNavLinks() {
                 navLinks.each(function () {
-                    if ($(this).hasClass("active")) { 
-                        $(this).removeClass("active");                   
+                    if ($(this).hasClass("active")) {
+                        $(this).removeClass("active");
                     }
                 });
             }
-            function activateNavLinks(navLinkObject) { 
+            function activateNavLinks(navLinkObject) {
                 navLinkObject.addClass("active");
             }
+            function hideAllPages() {
+                $("." + CONVERSATION_PAGE + "").hide();
+                $("." + CONTACT_PAGE + "").hide();
+            }
+            function showPage(className) {
+                $("." + className + "").show();
+            }
+            function hideAllPopUps() {
+                $("." + INFO_POPUP + "").hide();
+                $("." + UPDATE_INFO_POPUP + "").hide();
+            }
+            function showPopUp(popUpName) {
+                $("." + popUpName + "").show();
+            }
         });
-
-
+        // Functionality
 
     });
 </script>
