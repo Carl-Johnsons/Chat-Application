@@ -128,6 +128,7 @@
                 height: 60%;
                 display: flex;
                 flex-direction: column;
+                margin: 1rem 0rem;
             }
 
                 .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row {
@@ -150,7 +151,7 @@
                     justify-content: space-between;
                 }
 
-                    .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row-detail.input-date input {
+                    .update-info-popup .bottom-pop-up .personal-information-container .personal-information-row-detail.input-date select {
                         width: 30%;
                     }
 
@@ -166,72 +167,200 @@
     <div class="row">
         <div class="col-sm-3">
             <div class="update-info-popup">
-                <form>
-                    <div class="top-pop-up">
-                        <div class="pop-up-name">
-                            <p>Cập nhật thông tin</p>
-                        </div>
-                        <button class="btn btn-close-pop-up">X</button>
+                <div class="top-pop-up">
+                    <div class="pop-up-name">
+                        <p>Cập nhật thông tin</p>
                     </div>
+                    <button class="btn btn-close-pop-up">X</button>
+                </div>
 
-                    <div class="middle-pop-up">
-                        <div class="background-img-container">
-                            <img src="~/img/default_background_img.png" />
-                        </div>
-                        <div class="avatar-img-container">
-                            <img src="~/img/default_avatar_img.png" />
-                        </div>
-                        <div class="user-name">
-                            <label>Tên hiển thị</label>
-                            <input type="text" value="Đức" name="txtUsername" />
-                        </div>
+                <div class="middle-pop-up">
+                    <div class="background-img-container">
+                        <img src="~/img/default_background_img.png" />
                     </div>
+                    <div class="avatar-img-container">
+                        <img src="~/img/default_avatar_img.png" />
+                    </div>
+                    <div class="user-name">
+                        <label><b>Tên hiển thị</b></label>
+                        <input type="text" value="Đức" name="txtUsername" />
+                    </div>
+                </div>
 
-                    <div class="bottom-pop-up">
-                        <div class="personal-information-container">
-                            <div class="personal-information-row">
-                                <p>Thông tin cá nhân</p>
-                            </div>
+                <div class="bottom-pop-up">
+                    <div class="personal-information-container">
+                        <div class="personal-information-row">
+                            <p><b> Thông tin cá nhân</b></p>
+                        </div>
 
-                            <div class="personal-information-row">
-                                <div class="personal-information-row-name">
-                                    Giới tính
-                                </div>
+                        <div class="personal-information-row">
+                            <div class="personal-information-row-name">
+                                Giới tính
                             </div>
-                            <div class="personal-information-row">
-                                <div class="personal-information-row-detail input-gender">
-                                    <input type="radio" value="Nam" name="rdoGender" id="radio-gender-male" />
-                                    <label for="radio-gender-male">Nam</label>
-                                </div>
-                                <div class="personal-information-row-detail">
-                                    <input type="radio" value="Nữ" name="rdoGender" id="radio-gender-female" />
-                                    <label for="radio-gender-female">Nữ</label>
-                                </div>
-                                <div class="personal-information-row-detail">
-                                </div>
-                                <div class="personal-information-row-detail">
-                                </div>
+                        </div>
+                        <div class="personal-information-row">
+                            <div class="personal-information-row-detail">
+                                <input type="radio" value="Nam" name="rdoGender" id="radio-gender-male" />
+                                <label for="radio-gender-male">Nam</label>
                             </div>
+                            <div class="personal-information-row-detail">
+                                <input type="radio" value="Nữ" name="rdoGender" id="radio-gender-female" />
+                                <label for="radio-gender-female">Nữ</label>
+                            </div>
+                            <div class="personal-information-row-detail">
+                            </div>
+                            <div class="personal-information-row-detail">
+                            </div>
+                        </div>
 
-                            <div class="personal-information-row">
-                                <div class="personal-information-row-name">
-                                    Ngày sinh
-                                </div>
-
-                            </div>
-                            <div class="personal-information-row">
-                                <div class="personal-information-row-detail input-date">
-                                    <input />
-                                    <input />
-                                    <input />
-                                </div>
+                        <div class="personal-information-row">
+                            <div class="personal-information-row-name">
+                                Ngày sinh
                             </div>
 
                         </div>
-                        <button class="btn btn-update-information"> Cập nhật thông tin</button>
+                        <div class="personal-information-row">
+                            <div class="personal-information-row-detail input-date">
+                                <select name="date"></select>
+                                <select name="month"></select>
+                                <select name="year"></select>
+                            </div>
+                        </div>
+
                     </div>
-                </form>
+                    <button class="btn btn-update-information"> Cập nhật thông tin</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        const UPDATE_INFO_POPUP_CONTAINER = $(".update-info-popup-container");
+        let closeBtn = $(".update-info-popup-container button.btn-close-pop-up");
+        closeBtn.click(function (e) {
+            UPDATE_INFO_POPUP_CONTAINER.hide();
+        });
+
+
+        let infoPopUp = document.querySelector("div.info-pop-up");
+        UPDATE_INFO_POPUP_CONTAINER.click(function (e) {
+            //jquery.contains only work with native Dom element not jquery Element
+            //so i had to use querySelector from native Dom
+            if (!$.contains(infoPopUp, e.target)) {
+                UPDATE_INFO_POPUP_CONTAINER.hide();
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        let selectDoBContainer = $("div.personal-information-row-detail.input-date");
+        let dateSelect = selectDoBContainer.find("select[name=date]");
+        let monthSelect = selectDoBContainer.find("select[name=month]");
+        let yearSelect = selectDoBContainer.find("select[name=year]");
+        let genderRadiobtns = $("div.personal-information-row-detail > input[name=rdoGender]");
+        let userNameInput = $("div.user-name > input");
+        const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+
+        for (let i = 1; i <= 31; i++) {
+            addOption(dateSelect, i);
+            if (i <= 12) {
+                addOption(monthSelect, i);
+            }
+        }
+        for (let i = 2023 - 50; i <= 2023 + 6; i++) {
+            addOption(yearSelect, i);
+        }
+
+        monthSelect.change(function () {
+            checkDate();
+        });
+
+        yearSelect.change(function () {
+            checkDate();
+        });
+        function checkDate() {
+            let maxDay = getMaxDayinMonth(monthSelect.val(), yearSelect.val());
+            let currentDate = dateSelect.val();
+            dateSelect.empty();
+            for (let i = 1; i <= maxDay; i++) {
+                addOption(dateSelect, i);
+            }
+            if (currentDate > maxDay) {
+                dateSelect.val(maxDay);
+            } else {
+                dateSelect.val(currentDate);
+            }
+        }
+
+
+        //================== Demo load data dynamically ==================
+        let user = {
+            name: "Đức",
+            gender: "Nam",
+            DoB: "10-02-2003"
+        };
+
+        loadData(user);
+        //================== Demo load data dynamically ==================
+        function loadData(userObject) {
+            if (userObject === null) {
+                return;
+            }
+            userNameInput.text = userObject.name;
+            if (userObject.gender === "Nam") {
+                $(genderRadiobtns[0]).prop('checked', true);
+            } else if (userObject.gender === "Nữ") {
+                $(genderRadiobtns[1]).prop('checked', true);
+            }
+            const [date, month, year] = userObject.DoB.split("-");
+            yearSelect.val(parseInt(year));
+            monthSelect.val(parseInt(month));
+            dateSelect.val(parseInt(date));
+            checkDate();
+        }
+
+
+
+        function getMaxDayinMonth(month, year) {
+            switch (parseInt(month)) {
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 8:
+                case 10:
+                case 12:
+                    return 31;
+                case 2:
+                    return 28 + (isLeapYear(parseInt(year)) ? 1 : 0);
+                case 4:
+                case 6:
+                case 9:
+                case 11:
+                    return 30;
+            }
+
+        }
+
+        function isLeapYear(year) {
+            return (year % 400 === 0) || (year !== 100 && year % 4 === 0);
+        }
+
+        function addOption(select, optionValue) {
+            let optionElement = document.createElement("option");
+            optionElement.value = optionValue;
+            optionElement.text = optionValue;
+
+            optionElement.click(function () {
+                optionElement.prop('selected', true);
+            });
+
+            select.append(optionElement);
+        }
+    });
+</script>
