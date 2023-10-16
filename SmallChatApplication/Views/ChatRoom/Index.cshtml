@@ -54,10 +54,14 @@
         }
 
     .conversation-page {
-        display: none;
+        /*         display: none; */
     }
 
     .contact-page {
+        display: none;
+    }
+
+    .info-pop-up-container {
         display: none;
     }
 
@@ -95,7 +99,7 @@
 </div>
 
 
-@Html.Partial("Popups/UpdateInfoPopup.cshtml")
+@Html.Partial("Popups/InfoPopup.cshtml")
 
 
 <script src="~/js/signalr.js"></script>
