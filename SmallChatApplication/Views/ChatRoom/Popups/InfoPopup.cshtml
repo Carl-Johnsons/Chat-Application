@@ -163,10 +163,10 @@
 
                 <div class="middle-pop-up">
                     <div class="background-img-container">
-                        <img src="~/img/default_background_img.png" />
+                        <img src="/img/default_background_img.png" />
                     </div>
                     <div class="avatar-img-container">
-                        <img src="~/img/default_avatar_img.png" />
+                        <img src="/img/default_avatar_img.png" />
                     </div>
                     <div class="user-name">
                         <p>Đức</p>
@@ -214,6 +214,43 @@
 </div>
 @Html.Partial("UpdateInfoPopup.cshtml")
 
+@* Load Data dynamically *@
+<script>
+    $(document).ready(function () {
+        const INFO_POP_UP = $(".info-pop-up-container");
+
+        let user = {
+            name: "Đứca",
+            gender: "Nam",
+            DoB: "10-02-2003",
+            phoneNumber: "+84123",
+            backgroundImgURL: "https://carwow-uk-wp-3.imgix.net/18015-MC20BluInfinito-scaled-e1666008987698.jpg",
+            avatarURL: "https://static2-images.vnncdn.net/files/publish/2022/12/8/meo-1-1416.jpg",
+        };
+
+        loadData(user);
+        function loadData(user) {
+            const backgroundImg = INFO_POP_UP.find(".background-img-container > img");
+            const avatarImg = INFO_POP_UP.find(".avatar-img-container > img");
+            const name = INFO_POP_UP.find(".user-name > p");
+            const infoDetail = INFO_POP_UP.find(".personal-information-container .personal-information-row-detail");
+            // 0: Dien thoai
+            // 1: Gioi tinh
+            // 2: Ngay sinh
+
+
+            backgroundImg.attr("src", user.backgroundImgURL);
+            avatarImg.attr("src", user.avatarURL);
+            name.val(user.name);
+            infoDetail.eq(0).text(user.phoneNumber);
+            infoDetail.eq(1).text(user.gender);
+            const [date, month, year] = user.DoB.split("-");
+
+
+            infoDetail.eq(2).text(`${date} tháng ${month}, ${year}`);
+        }
+    });
+</script>
 
 <script>
     $(document).ready(function () {
@@ -224,20 +261,16 @@
         });
 
 
-        let infoPopUp = document.querySelector("div.info-pop-up");
-        INFO_POPUP_CONTAINER.click(function (e) {
-            //jquery.contains only work with native Dom element not jquery Element
-            //so i had to use querySelector from native Dom
-            if (!$.contains(infoPopUp, e.target)) {
-                INFO_POPUP_CONTAINER.hide();
-            }
-        });
-    });
-</script>
+        // let infoPopUp = document.querySelector("div.info-pop-up");
+        // INFO_POPUP_CONTAINER.click(function (e) {
+        //     //jquery.contains only work with native Dom element not jquery Element
+        //     //so i had to use querySelector from native Dom
+        //     if (!$.contains(infoPopUp, e.target)) {
+        //         INFO_POPUP_CONTAINER.hide();
+        //     }
+        // });
 
-<script>
-    $(document).ready(function () {
-        const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
+        // Load update-info-popup-container
         const UPDATE_INFO_POPUP_CONTAINER = $(".update-info-popup-container");
         let updateBtn = $("button.btn-update-information");
         updateBtn.click(function (e) {
