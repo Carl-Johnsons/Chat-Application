@@ -11302,19 +11302,20 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {}
+    "C:\\Users\\ACER\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\project\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
+
+      "projectUniqueName": "E:\\PRN211\\FINAL_PROJECT\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
       "projectName": "WebChatApplication",
-      "projectPath": "D:\\project\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
-      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\project\\Chat-Application\\SmallChatApplication\\obj\\",
+      "projectPath": "E:\\PRN211\\FINAL_PROJECT\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
+      "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+      "outputPath": "E:\\PRN211\\FINAL_PROJECT\\Chat-Application\\SmallChatApplication\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
