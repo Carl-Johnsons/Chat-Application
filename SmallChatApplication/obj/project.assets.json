@@ -11302,19 +11302,20 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Acer\\.nuget\\packages\\": {}
+    "C:\\Users\\ACER\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
+
+      "projectUniqueName": "E:\\PRN211\\FINAL_PROJECT\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
       "projectName": "WebChatApplication",
-      "projectPath": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
-      "packagesPath": "C:\\Users\\Acer\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Acer\\OneDrive\\Desktop\\#FA23\\PRN211\\Small Chat Application\\Chat-Application\\SmallChatApplication\\obj\\",
+      "projectPath": "E:\\PRN211\\FINAL_PROJECT\\Chat-Application\\SmallChatApplication\\WebChatApplication.csproj",
+      "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+      "outputPath": "E:\\PRN211\\FINAL_PROJECT\\Chat-Application\\SmallChatApplication\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -11378,7 +11379,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
       }
     }
   }
