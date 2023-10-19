@@ -11,6 +11,7 @@ namespace DataAccess.Repositories
     {
         IEnumerable<User> GetUserList();
         User GetUserByID(int userId);
+        User? Login(string? phoneNumber, string? password);
         int InsertUser(User user);
         int UpdateUser(User userUpdate);
         int DeleteUser(int userId);

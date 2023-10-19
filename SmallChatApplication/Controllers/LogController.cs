@@ -1,20 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BussinessObject.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SmallChatApplication.Models;
-using SmallChatApplication.DatabaseContext;
-using SmallChatApplication.Repositories;
+using Newtonsoft.Json;
 using SmallChatApplication.Exceptions;
 
 namespace SmallChatApplication.Controllers
 {
     public class LogController : Controller
     {
-        private readonly ChatApplicationContext context;
-        private UserRepository userRepository;
+        const string BASE_ADDRESS = "https://localhost:7190";
+        private readonly HttpClient _client;
+
         public LogController()
         {
-            context = new ChatApplicationContext();
-            userRepository = new UserRepository();
+            _client = new HttpClient();
         }
 
         // GET: LogController
@@ -24,28 +23,44 @@ namespace SmallChatApplication.Controllers
         }
 
         [HttpPost]
-        public ActionResult Login()
+        public async Task<IActionResult> Login()
         {
             string? Phone = HttpContext.Request.Form["txtLoginPhone"];
             string? Password = HttpContext.Request.Form["txtLoginPassword"];
 
-            Users user;
-            try
+            if (Phone == null || Password == null)
             {
-                user = userRepository.GetActiveUsers(Phone, Password);
+                return View();
             }
-            catch (AccountDisabledException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            catch (AccountNotFoundException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            //Encode URI string to avoid special symbol such as "/" or "&" 
+            string encodePhone = Uri.EscapeUriString(Phone);
+            string encodePassword = Uri.EscapeUriString(Password);
+            string url = BASE_ADDRESS + "/api/Users/Login/" + encodePhone + "/" + encodePassword;
 
-            Console.WriteLine("Login Successfully");
-
-            return Redirect("/Log");
+            var message = new HttpRequestMessage(HttpMethod.Post, url);
+            var response = await _client.SendAsync(message);
+            //Receive response as JSON
+            var resultContent = response.Content.ReadAsStringAsync().Result;
+            var user = JsonConvert.DeserializeObject<User>(resultContent);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Login Successfully");
+                //Add cookie
+                CookieOptions cookieOptions = new CookieOptions()
+                {
+                    Path = "/",
+                    Expires = DateTime.Now.AddDays(1)
+                };
+                string cookieName = "user";
+                string cookieValue = user.PhoneNumber;
+                Response.Cookies.Append(cookieName, cookieValue, cookieOptions);
+                return Redirect("/ChatRoom");
+            }
+            else
+            {
+                Console.WriteLine("Login Falied");
+                return Redirect("/Log");
+            }
         }
 
         [HttpPost]
@@ -54,21 +69,6 @@ namespace SmallChatApplication.Controllers
             string? Phone = HttpContext.Request.Form["txtRegisterPhone"];
             string? Password = HttpContext.Request.Form["txtRegisterPassword"];
 
-            Users user = new Users()
-            {
-                Phone = Phone,
-                Password = Password
-            };
-
-            bool result = userRepository.AddUser(user);
-            if (!result)
-            {
-                Console.WriteLine("Add failed");
-            }
-            else
-            {
-                Console.WriteLine("Add successful");
-            }
             return Redirect("/Log");
         }
 

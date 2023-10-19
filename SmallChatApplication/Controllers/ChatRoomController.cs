@@ -1,52 +1,33 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SmallChatApplication.Models;
+using BussinessObject.Models;
+using WebChatApplication.Filter;
 
 namespace SmallChatApplication.Controllers
 {
     public class ChatRoomController : Controller
     {
-        public Users user;
 
 
         // GET: ChatRoomController
         [HttpGet]
+        [Filter]
         public ActionResult Index()
         {
-            Console.WriteLine("Im in chat room yay");
-            string userName = HttpContext.Request.Query["txtUser"];
-            string room = HttpContext.Request.Query["txtRoom"];
-            Console.WriteLine($"{userName} has joined {room}");
-
-            user = new Users()
-            {
-                Name = userName,
-                Room = room
-            };
-
-
-
-            if (user != null)
-            {
-                ViewData["_userName"] = user.Name;
-            }
-            else { 
-                ViewData["_userName"] = "No one";
-
-            }
-
 
             return View();
         }
 
 
         // GET: ChatRoomController/Details/5
+        [Filter]
         public ActionResult Details(int id)
         {
             return View();
         }
 
         // GET: ChatRoomController/Create
+        [Filter]
         public ActionResult Create()
         {
             return View();
@@ -55,6 +36,7 @@ namespace SmallChatApplication.Controllers
         // POST: ChatRoomController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Filter]
         public ActionResult Create(IFormCollection collection)
         {
             try
@@ -68,6 +50,7 @@ namespace SmallChatApplication.Controllers
         }
 
         // GET: ChatRoomController/Edit/5
+        [Filter]
         public ActionResult Edit(int id)
         {
             return View();
@@ -76,6 +59,7 @@ namespace SmallChatApplication.Controllers
         // POST: ChatRoomController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Filter]
         public ActionResult Edit(int id, IFormCollection collection)
         {
             try
@@ -97,6 +81,7 @@ namespace SmallChatApplication.Controllers
         // POST: ChatRoomController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Filter]
         public ActionResult Delete(int id, IFormCollection collection)
         {
             try
