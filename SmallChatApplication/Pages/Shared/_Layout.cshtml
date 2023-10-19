@@ -11,28 +11,60 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* set the global variable to use in partial view and external script *@
+    <script>
+        var BASE_ADDRESS = "https://localhost:7190";
+    </script>
+    @* Defining namespace for extenal script to run *@
+    <script src="~/js/Namespaces/ApplicationNavbarNamespace.js"></script>
+    <script src="~/js/Namespaces/InfoPopupNamespace.js"></script>
+    <script src="~/js/Namespaces/UpdateInfoPopupNamespace.js"></script>
+
+    @* set the global variable to use in partial view *@
+    <script>
+        $(document).ready(function () {
+            var user;
+            $.ajax({
+                url: BASE_ADDRESS + "/api/Users/" + @ViewBag.ID,
+                dataType: 'json',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data, textStatus, jQxhr) {
+
+                    //User json format
+                    /*
+                        "userId": 1,
+                        "phoneNumber": "",
+                        "password": "",
+                        "name": "",
+                        "dob": "",
+                        "gender": "Nam"
+                        "avatarUrl": "",
+                        "backgroundUrl": "",
+                        "introduction": "fix bug :(",
+                        "email": "",
+                        "active": true,
+                        "groupGroupDeputies": [],
+                        "groupGroupLeaders": [],
+                        "messages": []
+                    */
+                    user = data;
+                    //Use namespace so i can access other script file without having to include it here
+                    ApplicationNavbarNamespace.LoadData(user);
+                    InfoPopupNamespace.LoadData(user);
+                    UpdateInfoPopupNamespace.LoadData(user);
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        });
+    </script>
+
 </head>
 <body>
     <header>
-        @*  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container">
-        <a class="navbar-brand" asp-area="" asp-page="/Index">SmallChatApplication</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-        aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-        <ul class="navbar-nav flex-grow-1">
-        <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-        </li>
-        <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-        </li>
-        </ul>
-        </div>
-        </div>
-        </nav> *@
     </header>
 
     <div class="container-fluid">

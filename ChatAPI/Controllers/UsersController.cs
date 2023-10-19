@@ -79,6 +79,8 @@ namespace ChatAPI.Controllers
             }
 
             int affectedRow = _userRepository.UpdateUser(user);
+            await Console.Out.WriteLineAsync(user.Name);
+            await Console.Out.WriteLineAsync(user.Gender);
             if (affectedRow == 0)
             {
                 return NotFound();

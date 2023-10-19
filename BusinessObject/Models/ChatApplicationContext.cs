@@ -230,8 +230,7 @@ public partial class ChatApplicationContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Gender)
-                .HasMaxLength(10)
-                .IsUnicode(false);
+                .HasMaxLength(10);
             entity.Property(e => e.Introduction).HasMaxLength(200);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Password)

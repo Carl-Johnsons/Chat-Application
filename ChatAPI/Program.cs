@@ -8,6 +8,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Add CORS to allow request API on different port
+builder.Services.AddCors(
+    options =>
+    {
+        options.AddDefaultPolicy(
+            policy =>
+            {
+                // The URI must be the exact like this, no trailing "/"
+                // Example: wrong origin: https://localhost:7093/
+                policy.WithOrigins("https://localhost:7093")
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            }
+    );
+    });
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -17,11 +34,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// use CORS
+app.UseCors();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();
 

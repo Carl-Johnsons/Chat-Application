@@ -119,26 +119,3 @@
         });
     });
 </script>
-
-@* Load data dynamically *@
-<script>
-    $(document).ready(function () {
-        const APPLICATION_NAVBAR = $(".application-nav-bar");
-
-        let user = {
-            name: "Đứca",
-            gender: "Nam",
-            DoB: "10-02-2003",
-            phoneNumber: "+84123",
-            backgroundImgURL: "https://carwow-uk-wp-3.imgix.net/18015-MC20BluInfinito-scaled-e1666008987698.jpg",
-            avatarURL: "https://static2-images.vnncdn.net/files/publish/2022/12/8/meo-1-1416.jpg",
-        };
-
-        loadData(user);
-
-        function loadData(user) {
-            const avatarImg = APPLICATION_NAVBAR.find("a.nav-link#info-pop-up-container > img.avatar-img");
-            avatarImg.attr("src", user.avatarURL);
-        }
-    });
-</script>

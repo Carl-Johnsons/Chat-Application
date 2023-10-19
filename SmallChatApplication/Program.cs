@@ -12,6 +12,10 @@ builder.Services.AddSignalR(options =>
     options.EnableDetailedErrors = true;
 });
 
+var AppCORS = "ChatApplicationCors";
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,5 +45,7 @@ app.UseEndpoints(endpoints =>
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 });
+
+
 
 app.Run();

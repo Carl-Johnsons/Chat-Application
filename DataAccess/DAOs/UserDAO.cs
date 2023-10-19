@@ -52,6 +52,21 @@ namespace DataAccess.DAOs
             }
             return user;
         }
+        public User GetUserByPhoneNumber(string? phoneNumber)
+        {
+            User user = null;
+            try
+            {
+                using var context = new ChatApplicationContext();
+                user = context.Users.SingleOrDefault(u => u.PhoneNumber == phoneNumber);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return user;
+        }
+
         public User? Login(string? phoneNumber, string? password)
         {
             if (phoneNumber == null || password == null)

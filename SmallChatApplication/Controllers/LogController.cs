@@ -19,6 +19,12 @@ namespace SmallChatApplication.Controllers
         // GET: LogController
         public ActionResult Index()
         {
+            var cookie = HttpContext.Request.Cookies["user"];
+            if (cookie != null)
+            {
+                return Redirect("/ChatRoom");
+            }
+
             return View();
         }
 
