@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BussinessObject.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace DataAccess.DAOs
 {
     internal class FriendRequestDAO
     {
-        private readonly YourDbContext dbContext; // Replace 'YourDbContext' with your actual DbContext class name
+        private readonly ChatApplicationContext dbContext; // Replace 'ChatApplicationContext' with your actual DbContext class name
 
-        public FriendRequestDAO(YourDbContext dbContext) // Replace 'YourDbContext'
+        public FriendRequestDAO(ChatApplicationContext dbContext) // Replace 'ChatApplicationContext'
         {
             this.dbContext = dbContext;
         }

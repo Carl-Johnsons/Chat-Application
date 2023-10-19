@@ -1,4 +1,5 @@
-﻿using DataAccess.DAOs;
+﻿using BussinessObject.Models;
+using DataAccess.DAOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace DataAccess.Repositories
 {
     internal class FriendRequestRepository
     {
-        private readonly YourDbContext dbContext; // Replace 'YourDbContext'
+        private readonly ChatApplicationContext dbContext; // Replace 'ChatApplicationContext'
 
-        public FriendRequestRepository(YourDbContext dbContext)
+        public FriendRequestRepository(ChatApplicationContext dbContext)
         {
             this.dbContext = dbContext;
         }

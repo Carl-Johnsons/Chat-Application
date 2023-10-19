@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BussinessObject.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace DataAccess.DAOs
 {
     internal class GroupDAO
     {
-        private readonly YourDbContext dbContext; // Replace 'YourDbContext'
+        private readonly ChatApplicationContext dbContext; // Replace 'ChatApplicationContext'
 
-        public GroupDAO(YourDbContext dbContext) // Replace 'YourDbContext'
+        public GroupDAO(ChatApplicationContext dbContext) // Replace 'ChatApplicationContext'
         {
             this.dbContext = dbContext;
         }
