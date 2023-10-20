@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using DataAccess.DAOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,39 +9,13 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
-    internal class FriendDAO
+    public class FriendRepository : IFriendRepository
     {
-        private readonly ChatApplicationContext dbContext; // Replace 'ChatApplicationContext' 
 
-        public FriendDAO(ChatApplicationContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
+        public int AddFriend(Friend friend) => FriendDAO.Instance.AddFriend(friend);
+        public List<Friend> GetFriendsByUserId(int userId) => FriendDAO.Instance.GetFriendsByUserId(userId);
 
-        public void AddFriend(Friend friend)
-        {
-            dbContext.Friends.Add(friend);
-            dbContext.SaveChanges();
-        }
-
-        public List<Friend> GetFriendsByUserId(int userId)
-        {
-            return dbContext.Friends.Where(f => f.UserId == userId).ToList();
-        }
-
-        public List<Friend> GetFriendsByFriendId(int friendId)
-        {
-            return dbContext.Friends.Where(f => f.FriendId == friendId).ToList();
-        }
-
-        public void RemoveFriend(int userId, int friendId)
-        {
-            Friend friendToRemove = dbContext.Friends.FirstOrDefault(f => f.UserId == userId && f.FriendId == friendId);
-            if (friendToRemove != null)
-            {
-                dbContext.Friends.Remove(friendToRemove);
-                dbContext.SaveChanges();
-            }
-        }
+        public List<Friend> GetFriendsByFriendId(int friendId) => FriendDAO.Instance.GetFriendsByFriendId(friendId);
+        public int RemoveFriend(int userId, int friendId) => FriendDAO.Instance.RemoveFriend(userId, friendId);
     }
 }

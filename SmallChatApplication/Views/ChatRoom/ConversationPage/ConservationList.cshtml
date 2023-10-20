@@ -89,51 +89,81 @@
             <button class="btn btn-create-group">
                 <img class="search-bar-icon" src="~/img/add-user.png" />
             </button>
-            <button class="btn btn-close-search-list"> Đóng </button>
         </div>
     </div>
 </div>
 
 <div class="conversations-list-container ">
-@*     <div class="conversation active d-flex">
-        <div class="conversation-avatar">
-            <img src="~/img/user.png" />
-        </div>
-        <div class="conversation-description">
-            <div class="conversation-name">
-                Group 2
-            </div>
-            <div class="conversation-last-message">
-                You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
-            </div>
-        </div>
+    @*     <div class="conversation active d-flex">
+    <div class="conversation-avatar">
+    <img src="~/img/user.png" />
+    </div>
+    <div class="conversation-description">
+    <div class="conversation-name">
+    Group 2
+    </div>
+    <div class="conversation-last-message">
+    You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
+    </div>
+    </div>
     </div> *@
 </div>
 
 <script>
     //Search-bar script
     $(document).ready(function () {
+        const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
         let container = $(".search-bar-container");
         let btnAddUser = container.find(".btn-add-friend");
         let btnCreateGroup = container.find(".btn-create-group");
-        let btnCloseSearchList = container.find(".btn-close-search-list");
         let searchBarInput = container.find(".search-bar-input");
 
-        btnCloseSearchList.click(function () {
-            btnAddUser.show();
-            btnCreateGroup.show();
-            btnCloseSearchList.hide();
+
+        $(btnAddUser).click(function () {
+            let searchValue = $(searchBarInput).val();
+            // Fix later
+            $.ajax({
+                url: BASE_ADDRESS + "/api/Users/Search/" + searchValue,
+                dataType: 'json',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data, textStatus, jQxhr) {
+
+                    //User json format
+                    /*
+                        "userId": 1,
+                        "phoneNumber": "",
+                        "password": "",
+                        "name": "",
+                        "dob": "",
+                        "gender": "Nam"
+                        "avatarUrl": "",
+                        "backgroundUrl": "",
+                        "introduction": "fix bug :(",
+                        "email": "",
+                        "active": true,
+                        "groupGroupDeputies": [],
+                        "groupGroupLeaders": [],
+                        "messages": []
+                    */
+                    let userType = "Stranger";
+                    if (data.userId === user.userId) {
+                        userType = "Self";
+                    }
+                    for (let friendObject of friendList) {
+                        if (friendObject.userId === data.userId) {
+                            userType = "Friend";
+                        }
+                    }
+
+                    ChatApplicationNamespace.LoadInfoPopupData(data, userType);
+                    $(INFO_POPUP_CONTAINER).show();
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
         });
-
-        searchBarInput.focus(function () {
-            btnAddUser.hide();
-            btnCreateGroup.hide();
-            btnCloseSearchList.show();
-        });
-
-
-
-
     });
 </script>
 

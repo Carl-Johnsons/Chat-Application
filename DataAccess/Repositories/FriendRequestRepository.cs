@@ -8,49 +8,12 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
-    internal class FriendRequestRepository
+    public class FriendRequestRepository : IFriendRequestRepository
     {
-        private readonly ChatApplicationContext dbContext; // Replace 'ChatApplicationContext'
-
-        public FriendRequestRepository(ChatApplicationContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
-
-        public void AddFriendRequest(FriendRequest friendRequest)
-        {
-            dbContext.FriendRequests.Add(friendRequest);
-            dbContext.SaveChanges();
-        }
-
-        public List<FriendRequest> GetFriendRequestsByReceiverId(int receiverId)
-        {
-            return dbContext.FriendRequests.Where(fr => fr.ReceiverId == receiverId).ToList();
-        }
-
-        public List<FriendRequest> GetFriendRequestsBySenderId(int senderId)
-        {
-            return dbContext.FriendRequests.Where(fr => fr.SenderId == senderId).ToList();
-        }
-
-        public void UpdateFriendRequestStatus(int senderId, int receiverId, string status)
-        {
-            FriendRequest friendRequestToUpdate = dbContext.FriendRequests.FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
-            if (friendRequestToUpdate != null)
-            {
-                friendRequestToUpdate.Status = status;
-                dbContext.SaveChanges();
-            }
-        }
-
-        public void DeleteFriendRequest(int senderId, int receiverId)
-        {
-            FriendRequest friendRequestToDelete = dbContext.FriendRequests.FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
-            if (friendRequestToDelete != null)
-            {
-                dbContext.FriendRequests.Remove(friendRequestToDelete);
-                dbContext.SaveChanges();
-            }
-        }
+        public int AddFriendRequest(FriendRequest friendRequest) => FriendRequestDAO.Instance.AddFriendRequest(friendRequest);
+        public List<FriendRequest> GetFriendRequestsByReceiverId(int receiverId) => FriendRequestDAO.Instance.GetFriendRequestsByReceiverId(receiverId);
+        public List<FriendRequest> GetFriendRequestsBySenderId(int senderId) => FriendRequestDAO.Instance.GetFriendRequestsBySenderId(senderId);
+        public int UpdateFriendRequestStatus(int senderId, int receiverId, string status) => FriendRequestDAO.Instance.UpdateFriendRequestStatus(senderId, receiverId, status);
+        public int RemoveFriendRequest(int senderId, int receiverId) => FriendRequestDAO.Instance.RemoveFriendRequest(senderId, receiverId);
     }
 }

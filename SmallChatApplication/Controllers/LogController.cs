@@ -1,8 +1,10 @@
 ﻿using BussinessObject.Models;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SmallChatApplication.Exceptions;
+using SmallChatApplication.Hubs;
 
 namespace SmallChatApplication.Controllers
 {
@@ -10,7 +12,6 @@ namespace SmallChatApplication.Controllers
     {
         const string BASE_ADDRESS = "https://localhost:7190";
         private readonly HttpClient _client;
-
         public LogController()
         {
             _client = new HttpClient();
@@ -68,6 +69,7 @@ namespace SmallChatApplication.Controllers
                 return Redirect("/Log");
             }
         }
+
 
         [HttpPost]
         public ActionResult Register()

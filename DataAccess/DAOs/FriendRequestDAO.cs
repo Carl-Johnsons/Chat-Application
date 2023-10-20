@@ -1,4 +1,6 @@
 ﻿using BussinessObject.Models;
+using DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,47 +11,81 @@ namespace DataAccess.DAOs
 {
     internal class FriendRequestDAO
     {
-        private readonly ChatApplicationContext dbContext; // Replace 'ChatApplicationContext' with your actual DbContext class name
-
-        public FriendRequestDAO(ChatApplicationContext dbContext) // Replace 'ChatApplicationContext'
+        //using singleton to access db by one instance variable
+        private static FriendRequestDAO instance = null;
+        private static readonly object instanceLock = new object();
+        private FriendRequestDAO() { }
+        public static FriendRequestDAO Instance
         {
-            this.dbContext = dbContext;
+            get
+            {
+                lock (instanceLock)
+                {
+                    if (instance == null)
+                    {
+                        instance = new FriendRequestDAO();
+                    }
+                    return instance;
+                }
+            }
         }
 
-        public void AddFriendRequest(FriendRequest friendRequest)
+
+        public int AddFriendRequest(FriendRequest friendRequest)
         {
+            using var dbContext = new ChatApplicationContext();
+            IFriendRepository friendRepository = new FriendRepository();
+            //Check 2-side
+            var friendList = friendRepository.GetFriendsByUserId(friendRequest.SenderId);
+            var friend = friendList.SingleOrDefault(x => x.FriendId == friendRequest.ReceiverId
+            || x.UserId == friendRequest.ReceiverId
+            );
+            if (friend != null)
+            {
+                throw new Exception("They are already friend! Aborting friend request");
+            }
+
             dbContext.FriendRequests.Add(friendRequest);
-            dbContext.SaveChanges();
+            return dbContext.SaveChanges();
         }
 
         public List<FriendRequest> GetFriendRequestsByReceiverId(int receiverId)
         {
-            return dbContext.FriendRequests.Where(fr => fr.ReceiverId == receiverId).ToList();
+            using var dbContext = new ChatApplicationContext();
+            return dbContext.FriendRequests
+                .Include(fr => fr.Sender)
+                .Where(fr => fr.ReceiverId == receiverId)
+                .ToList();
         }
 
         public List<FriendRequest> GetFriendRequestsBySenderId(int senderId)
         {
+            using var dbContext = new ChatApplicationContext();
             return dbContext.FriendRequests.Where(fr => fr.SenderId == senderId).ToList();
         }
 
-        public void UpdateFriendRequestStatus(int senderId, int receiverId, string status)
+        public int UpdateFriendRequestStatus(int senderId, int receiverId, string status)
         {
+            using var dbContext = new ChatApplicationContext();
             FriendRequest friendRequestToUpdate = dbContext.FriendRequests.FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
             if (friendRequestToUpdate != null)
             {
                 friendRequestToUpdate.Status = status;
-                dbContext.SaveChanges();
+                return dbContext.SaveChanges();
             }
+            return 0;
         }
 
-        public void DeleteFriendRequest(int senderId, int receiverId)
+        public int RemoveFriendRequest(int senderId, int receiverId)
         {
+            using var dbContext = new ChatApplicationContext();
             FriendRequest friendRequestToDelete = dbContext.FriendRequests.FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
             if (friendRequestToDelete != null)
             {
                 dbContext.FriendRequests.Remove(friendRequestToDelete);
-                dbContext.SaveChanges();
+                return dbContext.SaveChanges();
             }
+            return 0;
         }
     }
 }

@@ -44,9 +44,8 @@ public partial class ChatApplicationContext : DbContext
         modelBuilder.Entity<Friend>(entity =>
         {
             entity
-                .HasNoKey()
                 .ToTable("Friend");
-
+            entity.HasKey(e => new { e.FriendId, e.UserId });
             entity.Property(e => e.FriendId).HasColumnName("Friend_ID");
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 
@@ -64,9 +63,8 @@ public partial class ChatApplicationContext : DbContext
         modelBuilder.Entity<FriendRequest>(entity =>
         {
             entity
-                .HasNoKey()
                 .ToTable("FriendRequest");
-
+            entity.HasKey(e => new { e.SenderId, e.ReceiverId });
             entity.Property(e => e.Date).HasColumnType("datetime");
             entity.Property(e => e.ReceiverId).HasColumnName("Receiver_ID");
             entity.Property(e => e.SenderId).HasColumnName("Sender_ID");
@@ -113,9 +111,8 @@ public partial class ChatApplicationContext : DbContext
         modelBuilder.Entity<GroupBlock>(entity =>
         {
             entity
-                .HasNoKey()
                 .ToTable("GroupBlock");
-
+            entity.HasKey(e => new { e.GroupId, e.BlockedUserId });
             entity.Property(e => e.BlockedUserId).HasColumnName("Blocked_User_ID");
             entity.Property(e => e.GroupId).HasColumnName("Group_ID");
 
@@ -133,8 +130,8 @@ public partial class ChatApplicationContext : DbContext
         modelBuilder.Entity<GroupMessage>(entity =>
         {
             entity
-                .HasNoKey()
                 .ToTable("GroupMessage");
+            entity.HasKey(e => new { e.MessageId, e.GroupReceiverId });
 
             entity.Property(e => e.GroupReceiverId).HasColumnName("Group_Receiver_ID");
             entity.Property(e => e.MessageId).HasColumnName("Message_ID");
@@ -153,8 +150,8 @@ public partial class ChatApplicationContext : DbContext
         modelBuilder.Entity<ImageMessage>(entity =>
         {
             entity
-                .HasNoKey()
                 .ToTable("ImageMessage");
+            entity.HasKey(e => e.MessageId);
 
             entity.Property(e => e.ImageUrl).HasColumnName("Image_URL");
             entity.Property(e => e.MessageId).HasColumnName("Message_ID");
@@ -168,9 +165,9 @@ public partial class ChatApplicationContext : DbContext
         modelBuilder.Entity<IndividualMessage>(entity =>
         {
             entity
-                .HasNoKey()
                 .ToTable("IndividualMessage");
 
+            entity.HasKey(e => e.MessageId);
             entity.Property(e => e.MessageId).HasColumnName("Message_ID");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
@@ -245,9 +242,9 @@ public partial class ChatApplicationContext : DbContext
         modelBuilder.Entity<UserBlock>(entity =>
         {
             entity
-                .HasNoKey()
                 .ToTable("UserBlock");
 
+            entity.HasKey(e => new { e.UserId, e.BlockedUserId });
             entity.Property(e => e.BlockedUserId).HasColumnName("Blocked_User_ID");
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 

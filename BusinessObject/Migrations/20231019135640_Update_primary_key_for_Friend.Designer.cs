@@ -4,6 +4,7 @@ using BussinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BussinessObject.Migrations
 {
     [DbContext(typeof(ChatApplicationContext))]
-    partial class ChatApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231019135640_Update_primary_key_for_Friend")]
+    partial class Update_primary_key_for_Friend
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,28 +44,28 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.FriendRequest", b =>
                 {
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int")
-                        .HasColumnName("Sender_ID");
-
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("int")
-                        .HasColumnName("Receiver_ID");
-
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
 
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int")
+                        .HasColumnName("Receiver_ID");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int")
+                        .HasColumnName("Sender_ID");
+
                     b.Property<string>("Status")
                         .HasMaxLength(20)
                         .IsUnicode(false)
                         .HasColumnType("varchar(20)");
 
-                    b.HasKey("SenderId", "ReceiverId");
-
                     b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("FriendRequest", (string)null);
                 });
@@ -112,50 +115,50 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.GroupBlock", b =>
                 {
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int")
-                        .HasColumnName("Group_ID");
-
                     b.Property<int>("BlockedUserId")
                         .HasColumnType("int")
                         .HasColumnName("Blocked_User_ID");
 
-                    b.HasKey("GroupId", "BlockedUserId");
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("Group_ID");
 
                     b.HasIndex("BlockedUserId");
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("GroupBlock", (string)null);
                 });
 
             modelBuilder.Entity("BussinessObject.Models.GroupMessage", b =>
                 {
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int")
-                        .HasColumnName("Message_ID");
-
                     b.Property<int>("GroupReceiverId")
                         .HasColumnType("int")
                         .HasColumnName("Group_Receiver_ID");
 
-                    b.HasKey("MessageId", "GroupReceiverId");
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int")
+                        .HasColumnName("Message_ID");
 
                     b.HasIndex("GroupReceiverId");
+
+                    b.HasIndex("MessageId");
 
                     b.ToTable("GroupMessage", (string)null);
                 });
 
             modelBuilder.Entity("BussinessObject.Models.ImageMessage", b =>
                 {
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int")
-                        .HasColumnName("Message_ID");
-
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Image_URL");
 
-                    b.HasKey("MessageId");
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int")
+                        .HasColumnName("Message_ID");
+
+                    b.HasIndex("MessageId");
 
                     b.ToTable("ImageMessage", (string)null);
                 });
@@ -175,7 +178,7 @@ namespace BussinessObject.Migrations
                         .HasColumnType("int")
                         .HasColumnName("User_Receiver_ID");
 
-                    b.HasKey("MessageId");
+                    b.HasIndex("MessageId");
 
                     b.HasIndex("UserReceiverId");
 
@@ -296,17 +299,17 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.UserBlock", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("User_ID");
-
                     b.Property<int>("BlockedUserId")
                         .HasColumnType("int")
                         .HasColumnName("Blocked_User_ID");
 
-                    b.HasKey("UserId", "BlockedUserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("User_ID");
 
                     b.HasIndex("BlockedUserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserBlock", (string)null);
                 });

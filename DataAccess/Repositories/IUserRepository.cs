@@ -9,8 +9,8 @@ namespace DataAccess.Repositories
 {
     public interface IUserRepository
     {
-        public IEnumerable<User> GetUserList();
-        public User GetUserByID(int userId);
+        public List<User> GetUserList();
+        public User? GetUserByID(int userId);
         public User? Login(string? phoneNumber, string? password);
         public User GetUserByPhoneNumber(string? phoneNumber);
         public int InsertUser(User user);

@@ -83,6 +83,8 @@
                 if (clickId === "info-pop-up-container") {
                     hideAllPopUps();
                     showPopUp(clickId);
+                    //Load current user
+                    ChatApplicationNamespace.LoadInfoPopupData(user, "Self");
                 } else {
                     hideAllPages();
                     showPage(clickId);

@@ -41,12 +41,10 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
 
 
 
-    //================== Demo load data dynamically ==================
+    //==================  load data dynamically ==================
     loadData(user);
-    //================== Demo load data dynamically ==================
+    //==================  load data dynamically ==================
     function loadData(userObject) {
-
-
         if (userObject === null) {
             return;
         }
@@ -142,15 +140,14 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
 
         // Create a JavaScript Date object with the extracted values
         const dobDate = new Date(year, month - 1, day); // Subtract 1 from the month to match JavaScript's zero-based months.
-
         // Format the date as a string in "YYYY-MM-DD" format
-        const formattedDOB = dobDate.toISOString().slice(0, 10);
+        // toISOstring is wrong because it subtract day by 1 for some reason.
+        const formattedDOB = dobDate.toLocaleDateString('pt-br').split('/').reverse().join('-');;
         user.dob = formattedDOB;
 
 
         //Get gender value
         user.gender = $(genderRadiobtns).filter(":checked").val();
-        console.log("gender: " + $(genderRadiobtns).filter(":checked").val());
         user.avatarUrl = $(avatarImg).attr('src');
         user.backgroundUrl = $(backgroundImg).attr('src');
 
@@ -161,12 +158,16 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
             contentType: 'application/json',
             data: JSON.stringify(user),
             success: function (data, textStatus, jQxhr) {
-                console.log("User updated successfully:", data);
+                console.log("User updated successfully:");
+
+                $(UPDATE_INFO_POPUP_CONTAINER).hide();
+                ChatApplicationNamespace.LoadUserData(user);
             },
             error: function (jqXhr, textStatus, errorThrown) {
                 // Handle error response here
                 console.log("Error updating user:", errorThrown);
             }
         });
+
     });
 };
