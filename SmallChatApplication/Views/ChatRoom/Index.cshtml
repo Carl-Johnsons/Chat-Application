@@ -2,6 +2,8 @@
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
+
 <style>
     body {
         margin-bottom: 0px;
@@ -65,7 +67,15 @@
         display: none;
     }
 
+    /* Update Info rules */
+    .update-info-popup-container {
+        display: none;
+    }
+
 </style>
+
+
+
 
 
 <div class="row">
@@ -99,10 +109,10 @@
 </div>
 
 
-@Html.Partial("Popups/InfoPopup.cshtml")
+@Html.Partial("Popups/InfoPopup.cshtml");
+@Html.Partial("Popups/UpdateInfoPopup.cshtml");
 
 
-<script src="~/js/signalr.js"></script>
 
 
 

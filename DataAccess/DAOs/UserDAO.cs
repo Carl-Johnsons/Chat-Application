@@ -31,7 +31,7 @@ namespace DataAccess.DAOs
             }
         }
 
-        public IEnumerable<User> GetUserList()
+        public List<User> GetUserList()
         {
             using var context = new ChatApplicationContext();
             var users = context.Users.Include(u => u.GroupGroupDeputies).Include(u => u.GroupGroupLeaders).Include(u => u.Messages).ToList();
@@ -52,6 +52,45 @@ namespace DataAccess.DAOs
             }
             return user;
         }
+        public User? GetUserByPhoneNumber(string? phoneNumber)
+        {
+            if (phoneNumber == null)
+            {
+                throw new Exception("Phone number is null");
+            }
+            User user;
+            try
+            {
+                using var context = new ChatApplicationContext();
+                user = context.Users.SingleOrDefault(u => u.PhoneNumber == phoneNumber);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return user;
+        }
+
+        public User? Login(string? phoneNumber, string? password)
+        {
+            if (phoneNumber == null || password == null)
+            {
+                return null;
+            }
+            User? user = null;
+            try
+            {
+                using var context = new ChatApplicationContext();
+                user = context.Users.SingleOrDefault(u => u.PhoneNumber == phoneNumber && u.Password == password);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+            return user;
+        }
+
 
         public int AddUser(User user)
         {
@@ -108,6 +147,4 @@ namespace DataAccess.DAOs
         }
 
     }
-
-}
 }

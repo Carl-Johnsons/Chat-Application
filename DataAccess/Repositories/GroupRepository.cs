@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BussinessObject.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace DataAccess.Repositories
 {
     internal class GroupRepository
     {
-        private readonly YourDbContext dbContext;
+        private readonly ChatApplicationContext dbContext;
 
-        public GroupRepository(YourDbContext dbContext)
+        public GroupRepository(ChatApplicationContext dbContext)
         {
             this.dbContext = dbContext;
         }
