@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BussinessObject.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,38 +9,69 @@ using System.Threading.Tasks;
 
 namespace DataAccess.DAOs;
 
-internal class FriendDAO
+public class FriendDAO
 {
-    private readonly YourDbContext dbContext; // Replace 'YourDbContext'
-
-    public FriendDAO(YourDbContext dbContext) // Replace 'YourDbContext'
+    //using singleton to access db by one instance variable
+    private static FriendDAO instance = null;
+    private static readonly object instanceLock = new object();
+    private FriendDAO() { }
+    public static FriendDAO Instance
     {
-        this.dbContext = dbContext;
+        get
+        {
+            lock (instanceLock)
+            {
+                if (instance == null)
+                {
+                    instance = new FriendDAO();
+                }
+                return instance;
+            }
+        }
     }
-
-    public void AddFriend(Friend friend)
+    public int AddFriend(Friend friend)
     {
-        dbContext.Friends.Add(friend);
-        dbContext.SaveChanges();
+        using var context = new ChatApplicationContext();
+        context.Friends.Add(friend);
+        return context.SaveChanges();
     }
 
     public List<Friend> GetFriendsByUserId(int userId)
     {
-        return dbContext.Friends.Where(f => f.UserId == userId).ToList();
+        using var context = new ChatApplicationContext();
+        return context.Friends
+            .Where(f => f.UserId == userId || f.FriendId == userId)
+            .Select(f => new Friend
+            {
+                FriendId = f.FriendId,
+                UserId = f.UserId,
+                FriendNavigation = f.UserId == userId ? f.FriendNavigation : f.User
+            })
+            .ToList();
     }
 
     public List<Friend> GetFriendsByFriendId(int friendId)
     {
-        return dbContext.Friends.Where(f => f.FriendId == friendId).ToList();
+        using var context = new ChatApplicationContext();
+        return context.Friends
+            .Where(f => f.UserId == friendId || f.FriendId == friendId)
+            .Include(f => f.User)
+            .ToList();
     }
 
-    public void RemoveFriend(int userId, int friendId)
+    public int RemoveFriend(int userId, int friendId)
     {
-        Friend friendToRemove = dbContext.Friends.FirstOrDefault(f => f.UserId == userId && f.FriendId == friendId);
+        using var context = new ChatApplicationContext();
+        Friend friendToRemove = context.Friends.FirstOrDefault(
+            f =>
+            (f.UserId == userId && f.FriendId == friendId)
+            || (f.UserId == friendId && f.FriendId == userId)
+            );
         if (friendToRemove != null)
         {
-            dbContext.Friends.Remove(friendToRemove);
-            dbContext.SaveChanges();
+            context.Friends.Remove(friendToRemove);
+            return context.SaveChanges();
         }
+        return 0;
     }
 }

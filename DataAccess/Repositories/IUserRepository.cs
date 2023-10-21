@@ -9,10 +9,12 @@ namespace DataAccess.Repositories
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetUserList();
-        User GetUserByID(int userId);
-        int InsertUser(User user);
-        int UpdateUser(User userUpdate);
-        int DeleteUser(int userId);
+        public List<User> GetUserList();
+        public User? GetUserByID(int userId);
+        public User? Login(string? phoneNumber, string? password);
+        public User GetUserByPhoneNumber(string? phoneNumber);
+        public int InsertUser(User user);
+        public int UpdateUser(User userUpdate);
+        public int DeleteUser(int userId);
     }
 }

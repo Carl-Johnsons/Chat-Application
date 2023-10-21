@@ -1,0 +1,321 @@
+﻿using DataAccess.Repositories;
+using BussinessObject.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Newtonsoft.Json;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace ChatAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UsersController : ControllerBase
+    {
+        IUserRepository _userRepository;
+        IFriendRepository _friendRepository;
+        IFriendRequestRepository _friendRequestRepository;
+        private readonly string BASE_ADDRESS = "https://localhost:7190";
+        public UsersController()
+        {
+            _userRepository = new UserRepository();
+            _friendRepository = new FriendRepository();
+            _friendRequestRepository = new FriendRequestRepository();
+        }
+
+        // GET: api/<UsersController>
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            List<User> userList = (List<User>)_userRepository.GetUserList();
+
+            if (userList.IsNullOrEmpty())
+            {
+                return NotFound();
+            }
+            return Ok(userList);
+        }
+
+        // GET api/<UsersController>/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var user = _userRepository.GetUserByID(id);
+            if (user == null)
+            {
+                return NotFound();
+
+            }
+            return Ok(user);
+        }
+        [HttpGet("GetFriend/{userId}")]
+        public async Task<IActionResult> GetFriend(int userId)
+        {
+            var friends = _friendRepository.GetFriendsByUserId(userId);
+            if (friends == null)
+            {
+                return NotFound();
+
+            }
+            return Ok(friends);
+        }
+        [HttpGet("Search/{phoneNumber}")]
+        public async Task<IActionResult> Search(string phoneNumber)
+        {
+            if (phoneNumber == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                var user = _userRepository.GetUserByPhoneNumber(phoneNumber);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Aborting search for user by phone number:\n" + ex.Message);
+            }
+
+        }
+        [HttpGet("GetFriendRequest/{receiverId}")]
+        public async Task<IActionResult> GetFriendRequest(int? receiverId)
+        {
+            if (receiverId == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var friendRequestsList = _friendRequestRepository.GetFriendRequestsByReceiverId((int)receiverId);
+                if (friendRequestsList.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                return Ok(friendRequestsList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST api/<UsersController>
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] User user)
+        {
+            _userRepository.InsertUser(user);
+            return CreatedAtAction("Get", new { id = user.UserId }, user);
+        }
+
+        [HttpPost("Login/{phoneNumber}/{password}")]
+        public async Task<IActionResult> Login(string? phoneNumber, string? password)
+        {
+            User? user = null;
+            try
+            {
+                user = _userRepository.Login(phoneNumber, password);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+        [HttpPost("SendFriendRequest/{senderId}/{receiverId}")]
+        public async Task<IActionResult> SendFriendRequest(int? senderId, int? receiverId, [FromForm] string content)
+        {
+            if (senderId == null || receiverId == null)
+            {
+                return NotFound();
+            }
+            FriendRequest friendRequest = new FriendRequest()
+            {
+                SenderId = (int)senderId,
+                ReceiverId = (int)receiverId,
+                Content = content,
+                Date = DateTime.Now,
+                Status = "Pending"
+            };
+            try
+            {
+                int affectedRow = _friendRequestRepository.AddFriendRequest(friendRequest);
+                if (affectedRow == 0)
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return CreatedAtAction("GetFriendRequest", new { receiverId }, friendRequest);
+        }
+        [HttpPost("AddFriend/{senderId}/{receiverId}")]
+        public async Task<IActionResult> AddFriend(int? senderId, int? receiverId)
+        {
+
+            // Check if friendRequest is existed
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var getFriendRequestsUrl = $"{BASE_ADDRESS}/api/Users/GetFriendRequest/{receiverId}";
+                    var response = await client.GetAsync(getFriendRequestsUrl);
+
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest("Friend request list of this user is empty! Aborting operation add friend");
+                    }
+
+                    var responseContent = response.Content.ReadAsStringAsync().Result;
+                    var friendRequestList = JsonConvert.DeserializeObject<List<FriendRequest>>(responseContent);
+
+                    bool hasFriendRequest = false;
+                    foreach (var friendRequest in friendRequestList)
+                    {
+                        if ((friendRequest.SenderId == (int)senderId && friendRequest.ReceiverId == (int)receiverId)
+                        || (friendRequest.SenderId == (int)receiverId && friendRequest.ReceiverId == (int)senderId))
+                        {
+                            hasFriendRequest = true;
+                        }
+                    }
+                    if (!hasFriendRequest)
+                    {
+                        return BadRequest("Friend request does not exist! Aborting operation add friend");
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
+            //Add friend
+            if (senderId == null || receiverId == null)
+            {
+                return NotFound();
+            }
+            Friend friend = new Friend()
+            {
+                UserId = (int)senderId,
+                FriendId = (int)receiverId
+            };
+
+            int affectedRow = _friendRepository.AddFriend(friend);
+            if (affectedRow == 0)
+            {
+                return NotFound();
+            }
+
+            // After adding the friend, send a request to remove the friend request
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var removeFriendRequestUrl = $"{BASE_ADDRESS}/api/Users/RemoveFriendRequest/{senderId}/{receiverId}";
+                    var response = await client.DeleteAsync(removeFriendRequestUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return NoContent();
+                    }
+                    else
+                    {
+                        return BadRequest("Failed to remove friend request.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        // PUT api/<UsersController>/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] User user)
+        {
+            if (id != user.UserId)
+            {
+                return BadRequest("Id mismatch when updating user");
+            }
+            int affectedRow = _userRepository.UpdateUser(user);
+            await Console.Out.WriteLineAsync(user.Name);
+            await Console.Out.WriteLineAsync(user.Gender);
+            if (affectedRow == 0)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        // DELETE api/<UsersController>/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            int affectRow = _userRepository.DeleteUser(id);
+            if (affectRow == 0)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+
+        [HttpDelete("RemoveFriend/{userId}/{friendId}")]
+        public async Task<IActionResult> RemoveFriend(int? userId, int? friendId)
+        {
+            if (userId == null || friendId == null)
+            {
+                return NotFound();
+            }
+
+            int affectedRow = _friendRepository.RemoveFriend((int)userId, (int)friendId);
+            if (affectedRow == 0)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("RemoveFriendRequest/{senderId}/{receiverId}")]
+        public async Task<IActionResult> RemoveFriendRequest(int? senderId, int? receiverId)
+        {
+            if (senderId == null || receiverId == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                int affectedRow = _friendRequestRepository.RemoveFriendRequest((int)senderId, (int)receiverId);
+                if (affectedRow == 0)
+                {
+                    return NotFound();
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+    }
+}

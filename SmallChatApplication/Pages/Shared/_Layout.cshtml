@@ -3,36 +3,231 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+    <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
     <title>@ViewData["Title"] - SmallChatApplication</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
 
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @* Use signalR client-side library *@
+    <script src="~/js/signalr.js"></script>
+
+    @* set the global variable to use in partial view and external script *@
+    <script>
+        var BASE_ADDRESS = "https://localhost:7190";
+
+        var UserType = {
+            Self: 1,
+            Friend: 2,
+            Stranger: 3
+        }
+
+        //Start connection to map the connection string to userId in database
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+    </script>
+    @* Defining namespace for extenal script to run *@
+    <script src="~/js/Namespaces/ApplicationNavbarNamespace.js"></script>
+    <script src="~/js/Namespaces/InfoPopupNamespace.js"></script>
+    <script src="~/js/Namespaces/UpdateInfoPopupNamespace.js"></script>
+    <script src="~/js/Namespaces/ContactListNamespace.js"></script>
+
+    <script>
+        var ChatApplicationNamespace = ChatApplicationNamespace || {};
+        ChatApplicationNamespace.LoadUserData = function (userObject) {
+            ApplicationNavbarNamespace.LoadData(userObject);
+            ChatApplicationNamespace.LoadInfoPopupData(userObject, "Self");
+            ChatApplicationNamespace.LoadUpdateInfoPopup(userObject);
+        }
+        ChatApplicationNamespace.LoadInfoPopupData = function (userObject, userType) {
+            InfoPopupNamespace.LoadData(userObject, userType);
+        }
+        ChatApplicationNamespace.LoadUpdateInfoPopup = function (userObject) {
+            UpdateInfoPopupNamespace.LoadData(userObject);
+        }
+        ChatApplicationNamespace.LoadFriendData = function (friendObjectList) {
+            ContactListNamespace.LoadFriendList(friendObjectList);
+        }
+        ChatApplicationNamespace.LoadFriendRequestData = function (friendRequestObjectList) {
+            ContactListNamespace.LoadFriendRequestList(friendRequestObjectList);
+        }
+
+
+        ChatApplicationNamespace.StartConnection = function () {
+            connection.start().then(function () {
+                console.log("Connection successfully in client side")
+                ChatApplicationNamespace.GetCurrentUser();
+                ChatApplicationNamespace.GetFriendList();
+                ChatApplicationNamespace.GetFriendRequestList();
+            }).catch(function (err) {
+                console.log("Connection to hub failed: " + err);
+            });
+        }
+    </script>
+    @* set the global variable to use in partial view *@
+    <script>
+        var user;
+        var friendList;
+        var friendRequestList;
+        //Load data of current user
+
+        ChatApplicationNamespace.GetCurrentUser = function () {
+            $.ajax({
+                url: BASE_ADDRESS + "/api/Users/" + @ViewBag.ID,
+                dataType: 'json',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data, textStatus, jQxhr) {
+
+                    //User json format
+                    /*
+                        "userId": 1,
+                        "phoneNumber": "",
+                        "password": "",
+                        "name": "",
+                        "dob": "",
+                        "gender": "Nam"
+                        "avatarUrl": "",
+                        "backgroundUrl": "",
+                        "introduction": "fix bug :(",
+                        "email": "",
+                        "active": true,
+                        "groupGroupDeputies": [],
+                        "groupGroupLeaders": [],
+                        "messages": []
+                    */
+                    user = data;
+
+                    //Use namespace so i can access other script file without having to include it here
+                    console.log("Map user data begin");
+
+                    connection.invoke("MapUserData", data).catch(function (err) {
+                        console.error("error when send map user data: " + err.toString());
+                    });
+
+
+                    ChatApplicationNamespace.LoadUserData(user);
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        }
+        ChatApplicationNamespace.GetFriendList = function () {
+            //Load user's friend
+            $.ajax({
+                url: BASE_ADDRESS + "/api/Users/GetFriend/" + @ViewBag.ID,
+                dataType: 'json',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data, textStatus, jQxhr) {
+
+                    //FriendList json format
+                    // [
+                    //     {
+                    //         "userId": 1,
+                    //         "friendId": 3,
+                    //         "friendNavigation": {
+                    //             "userId": 3,
+                    //             "phoneNumber": "",
+                    //             "password": "",
+                    //             "name": "",
+                    //             "dob": "2002-11-02T00:00:00",
+                    //             "gender": "Nữ",
+                    //             "avatarUrl": "",
+                    //             "backgroundUrl": "",
+                    //             "introduction": "",
+                    //             "email": "",
+                    //             "active": true,
+                    //             "groupGroupDeputies": [],
+                    //             "groupGroupLeaders": [],
+                    //             "messages": []
+                    //         },
+                    //         "user": null
+                    //     }
+                    // ]
+
+
+                    // Only get friendNavigation then convert it to array
+                    friendList = data.map(item => item.friendNavigation);
+                    console.log("Done loading friendList");
+                    console.log({ friendList });
+                    ChatApplicationNamespace.LoadFriendData(friendList);
+                    //Use namespace so i can access other script file without having to include it here
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log("Error getting friend list :" + errorThrown);
+                }
+            });
+        };
+        ChatApplicationNamespace.GetFriendRequestList = function () {
+            //Load user's friend
+            $.ajax({
+                url: BASE_ADDRESS + "/api/Users/GetFriendRequest/" + @ViewBag.ID,
+                dataType: 'json',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (data, textStatus, jQxhr) {
+
+                    //Friend request json format
+                    //[
+                    //    {
+                    //        "senderId": 4,
+                    //        "receiverId": 3,
+                    //        "content": "string",
+                    //        "date": "2023-10-20T10:30:10.273",
+                    //        "status": "Pending",
+                    //        "receiver": null,
+                    //        "sender": {
+                    //            "userId": 4,
+                    //            "phoneNumber": "",
+                    //            "password": "",
+                    //            "name": "",
+                    //            "dob": "",
+                    //            "gender": "Nam",
+                    //            "avatarUrl": "",
+                    //            "backgroundUrl": "",
+                    //            "introduction": "",
+                    //            "email": "",
+                    //            "active": true,
+                    //            "groupGroupDeputies": [],
+                    //            "groupGroupLeaders": [],
+                    //            "messages": []
+                    //        }
+                    //    }
+                    //]
+
+
+                    // Only get sender then convert it to array
+                    friendRequestList = data.map(item => item.sender);
+                    console.log("Done loading friendRequestList");
+                    console.log({ friendRequestList });
+                    //Use namespace so i can access other script file without having to include it here
+                    ChatApplicationNamespace.LoadFriendRequestData(friendList);
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log("Error getting friend list :" + errorThrown);
+                }
+            });
+        }
+        //Start connection here
+        $(document).ready(function () {
+            ChatApplicationNamespace.StartConnection();
+        });
+
+    </script>
+
+    @* Notification via signalR *@
+    <script src="~/js/ChatRoom/ChatRoom.js"></script>
+
 </head>
 <body>
     <header>
-        @*  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container">
-        <a class="navbar-brand" asp-area="" asp-page="/Index">SmallChatApplication</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-        aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-        <ul class="navbar-nav flex-grow-1">
-        <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-        </li>
-        <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-        </li>
-        </ul>
-        </div>
-        </div>
-        </nav> *@
     </header>
 
     <div class="container-fluid">

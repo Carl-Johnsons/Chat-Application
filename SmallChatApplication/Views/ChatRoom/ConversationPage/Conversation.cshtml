@@ -10,8 +10,6 @@
         --user-info-container-height: 7.5vh;
         --input-message-container-height: 7.5vh;
         --message-container-height: calc(var(--chat-box-container-height) - var(--input-message-container-height) - var(--user-info-container-height));
-        
-        
         height: var(--chat-box-container-height);
         padding-left: 0px;
         border: 1px solid black;
@@ -255,64 +253,312 @@
 
 
 <script>
-    // const urlSearch = new URLSearchParams(window.location.search);
-    // const userName = urlSearch.get("txtUser");
-    // const room = urlSearch.get("txtRoom");
-    // const btnSendMessage = document.querySelector("button.btn-send-message");
+    $(document).ready(function () {
+        const CHAT_BOX_CONTAINER = $(".chat-box-container");
+        const MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".message-container");
+        const btnSendMessage = CHAT_BOX_CONTAINER.find("button.btn-send-message");
+        const inputSendMessage = CHAT_BOX_CONTAINER.find("input.input-message");
 
-    // const msgContainer = document.querySelector("div.message-container");
+        btnSendMessage.click(function () {
+            let messageValue = inputSendMessage.val();
+            if (messageValue === null || messageValue.length === 0) {
+                return;
+            }
+        });
 
-    // var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-    // connection.start().then(function () {
-    //     connection.invoke("JoinRoom", userName, room).then(function () {
-    //         console.log("it's working");
-    //     });
-    // });
+        // public int MessageId { get; set; }
 
-    // //console.log(connection);
-    // connection.on("ReceiveMessage", function (user, message) {
-    //     renderMessage(user, message);
-    // });
+        // public int SenderId { get; set; }
 
-    // function renderMessage(user, message) {
-    //     //Creating msgItemContainer
-    //     let msgItemContainer = document.createElement("div");
-    //     msgItemContainer.className = "message";
-    //     msgItemContainer.id = user == userName ? "Sender" : "Receiver";
-    //     msgItemContainer.innerText = message;
+        // public string ? Content { get; set; }
 
-    //     msgContainer.appendChild(msgItemContainer);
+        // public DateTime Time { get; set; }
 
-    //     //Scroll to child element
-    //     msgItemContainer.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
-    // }
-    // function generateDivElement(className, text) {
-    //     let divElement = document.createElement("div");
-    //     divElement.className = className;
-    //     divElement.innerText = text;
-    // }
+        // public string MessageType { get; set; } = null!;
+
+        // public string MessageFormat { get; set; } = null!;
+
+        let messageList = {
+            message: [
+                {
+                    id: 1,
+                    senderName: "Đứca",
+                    content: "Message 1",
+                    time: "10:01",
+                    receiverName: "World"
+                },
+                {
+                    id: 2,
+                    senderName: "Đứca",
+                    content: "Message 2",
+                    time: "10:01",
+                    receiverName: "World"
+                },
+                {
+                    id: 3,
+                    senderName: "World",
+                    content: "Message 3",
+                    time: "10:01",
+                    receiverName: "Đứca"
+                },
+                {
+                    id: 4,
+                    senderName: "World",
+                    content: "Message 4",
+                    time: "23:00",
+                    receiverName: "Đứca"
+                },
+                {
+                    id: 5,
+                    senderName: "Hello",
+                    content: "Message 5",
+                    time: "23:00",
+                    receiverName: "Đứca"
+                },
+                {
+                    id: 6,
+                    senderName: "Lol",
+                    content: "Message 6",
+                    time: "23:00",
+                    receiverName: "Đứca"
+                },
+                {
+                    id: 7,
+                    senderName: "Đứca",
+                    content: "Message 7",
+                    time: "10:01",
+                    receiverName: "World"
+                },
+                {
+                    id: 8,
+                    senderName: "Đứca",
+                    content: "Message 8",
+                    time: "10:01",
+                    receiverName: "World"
+                },
+                {
+                    id: 9,
+                    senderName: "Đứca",
+                    content: "Message 9",
+                    time: "10:01",
+                    receiverName: "World"
+                }
+            ]
+        };
+
+        let user = {
+            name: "Đứca",
+            gender: "Nam",
+            DoB: "10-02-2003",
+            phoneNumber: "+84123",
+            backgroundImgURL: "https://carwow-uk-wp-3.imgix.net/18015-MC20BluInfinito-scaled-e1666008987698.jpg",
+            avatarURL: "https://static2-images.vnncdn.net/files/publish/2022/12/8/meo-1-1416.jpg",
+        };
+        let user2 = {
+            name: "World",
+            gender: "Nam",
+            DoB: "10-02-2003",
+            phoneNumber: "+84123",
+            backgroundImgURL: "https://carwow-uk-wp-3.imgix.net/18015-MC20BluInfinito-scaled-e1666008987698.jpg",
+            avatarURL: "https://static2-images.vnncdn.net/files/publish/2022/12/8/meo-1-1416.jpg",
+        };
 
 
-    // btnSendMessage.addEventListener("click", function () {
-    //     sendMessageToGroup();
-    // });
-    // txtMessage.addEventListener("focus", function () {
-    //     txtMessage.addEventListener("keyup", function (event) {
-    //         if (event.key === "Enter" || event.keyCode === 13) {
-    //             sendMessageToGroup();
 
-    //         }
-    //     });
-    // })
+        renderConversation(messageList.message, user);
 
 
-    // function sendMessageToGroup() {
-    //     const inputMsg = document.querySelector("input#txtMessage");
-    //     if (inputMsg.value.length != 0) {
-    //         connection.invoke("SendMessageToGroup", { Name: userName, Room: room }, inputMsg.value);
-    //         //Reset input
-    //         txtMessage.value = '';
-    //     }
-    // }
 
+        // <div class="message-item">
+        //     <div class="user-avatar">
+        //         <img class="avatar-image" src="~/img/user.png" />
+        //     </div>
+        //     <div class="message-list">
+        //         <div class="message-row">
+        //             <div class="message">
+        //                 <div class="user-name">
+        //                     Lê Thị B
+        //                 </div>
+        //                 <div class="message-content">
+        //                     Helloaaaaa
+        //                 </div>
+        //                 <div class="message-time">
+        //                     11:00
+        //                 </div>
+        //             </div>
+        //         </div>
+        //         <div class="message-row">
+        //             <div class="message">
+        //                 <div class="message-content">
+        //                     Helloaaaaaaa
+        //                 </div>
+        //                 <div class="message-time">
+        //                     11:00
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
+
+        function renderConversation(messageObjectList, currentUserObject) {
+            console.log("renderConversation: messageObjectList " + messageObjectList.length);
+            let currentUserName = currentUserObject.name;
+            let lastSenderName = messageObjectList[0].senderName;
+            let countSameUserMessage = 0;
+            let isSender = false;
+
+            let startIndex = 0;
+            let endIndex = 0;
+
+            while (true) {
+                //Handle the last message
+                if (endIndex == messageObjectList.length) {
+                    isSender = (currentUserObject.name === messageObjectList[startIndex].senderName);
+                    let subMessageList = messageObjectList.slice(startIndex, endIndex);
+                    let messageItemContainer = renderMessageItemContainer(subMessageList, isSender);
+                    $(MESSAGE_CONTAINER).append(messageItemContainer);
+                    break;
+                }
+
+                if (messageObjectList[endIndex].senderName === messageObjectList[startIndex].senderName) {
+                    endIndex += 1;
+                } else {
+                    isSender = (currentUserObject.name === messageObjectList[startIndex].senderName);
+                    let subMessageList = messageObjectList.slice(startIndex, endIndex);
+                    let messageItemContainer = renderMessageItemContainer(subMessageList, isSender);
+                    $(MESSAGE_CONTAINER).append(messageItemContainer);
+
+                    //update startIndex
+                    startIndex = endIndex;
+                }
+
+            }
+
+
+        }
+
+
+        function renderMessageItemContainer(messageObjectList, isSender) {
+            console.log("renderMessageItemContainer: " + messageObjectList.length);
+            let messageItemContainer = generateElement("div", "message-item-container " + (isSender ? "sender" : "receiver"));
+
+            let messageItem = generateElement("div", "message-item");
+
+            let messageList = generateElement("div", "message-list");
+            $(messageItem).append(messageList);
+            $(messageItemContainer).append(messageItem);
+            if (isSender) {
+                let userAvatar = generateElement("div", "user-avatar");
+                let imgAvatar = generateElement("img", "avatar-image");
+                //load data here
+                $(messageItem).append(userAvatar);
+                $(userAvatar).append(imgAvatar);
+            }
+
+            let messageRow = renderMessageRow(messageObjectList, isSender);
+            $(messageList).append(messageRow);
+
+            return messageItemContainer;
+        }
+
+        function renderMessageRow(messageObjectList, isSender) {
+            console.log("renderMessageRow");
+            let messageRow = generateElement("div", "message-row");
+            for (let i = 0; i < messageObjectList.length; i++) {
+                let message = renderMessage(messageObjectList[i], (i == 0 ? true : false), isSender);
+                $(messageRow).append(message);
+            }
+            return messageRow;
+        }
+
+        function renderMessage(messageObject, isFirstMessage, isSender) {
+            console.log("renderMessage");
+            let message = generateElement("div", "message");
+            // Only first message has name
+            if (isFirstMessage) {
+                let userName = generateElement("div", "user-name");
+
+                $(userName).text(messageObject.senderName);
+                $(message).append(userName);
+            }
+
+            let messageContent = generateElement("div", "message-content");
+            $(messageContent).text(messageObject.content);
+            let messageTime = generateElement("div", "message-time");
+            $(messageTime).text(messageObject.time);
+
+            $(message).append(messageContent);
+            $(message).append(messageTime);
+            return message;
+        }
+
+
+        function generateElement(eleName, className) {
+            let element = document.createElement(eleName);
+            element.className = className;
+            return element;
+        }
+
+
+
+        // const urlSearch = new URLSearchParams(window.location.search);
+        // const userName = urlSearch.get("txtUser");
+        // const room = urlSearch.get("txtRoom");
+        // const btnSendMessage = document.querySelector("button.btn-send-message");
+
+        // const msgContainer = document.querySelector("div.message-container");
+
+        // var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        // connection.start().then(function () {
+        //     connection.invoke("JoinRoom", userName, room).then(function () {
+        //         console.log("it's working");
+        //     });
+        // });
+
+        // //console.log(connection);
+        // connection.on("ReceiveMessage", function (user, message) {
+        //     renderMessage(user, message);
+        // });
+
+        // function renderMessage(user, message) {
+        //     //Creating msgItemContainer
+        //     let msgItemContainer = document.createElement("div");
+        //     msgItemContainer.className = "message";
+        //     msgItemContainer.id = user == userName ? "Sender" : "Receiver";
+        //     msgItemContainer.innerText = message;
+
+        //     msgContainer.appendChild(msgItemContainer);
+
+        //     //Scroll to child element
+        //     msgItemContainer.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+        // }
+        // function generateDivElement(className, text) {
+        //     let divElement = document.createElement("div");
+        //     divElement.className = className;
+        //     divElement.innerText = text;
+        // }
+
+
+        // btnSendMessage.addEventListener("click", function () {
+        //     sendMessageToGroup();
+        // });
+        // txtMessage.addEventListener("focus", function () {
+        //     txtMessage.addEventListener("keyup", function (event) {
+        //         if (event.key === "Enter" || event.keyCode === 13) {
+        //             sendMessageToGroup();
+
+        //         }
+        //     });
+        // })
+
+
+        // function sendMessageToGroup() {
+        //     const inputMsg = document.querySelector("input#txtMessage");
+        //     if (inputMsg.value.length != 0) {
+        //         connection.invoke("SendMessageToGroup", { Name: userName, Room: room }, inputMsg.value);
+        //         //Reset input
+        //         txtMessage.value = '';
+        //     }
+        // }
+    });
 </script>

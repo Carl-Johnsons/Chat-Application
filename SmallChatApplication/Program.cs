@@ -1,3 +1,4 @@
+using SmallChatApplication.Controllers;
 using SmallChatApplication.Hubs;
 
 
@@ -11,6 +12,9 @@ builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
 });
+
+var AppCORS = "ChatApplicationCors";
+
 
 var app = builder.Build();
 
@@ -34,12 +38,13 @@ app.MapRazorPages();
 // Set endpoint for a chat hub
 app.MapHub<ChatHub>("/chatHub");
 
-//Map controller in order to use MVC
+//Map default controller and action
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
+        pattern: "{controller=Home}/{action=Index}");
 });
+
 
 app.Run();

@@ -28,7 +28,13 @@
             background-color: #006EDC !important;
         }
 
-    .nav-bar-icon {
+    .application-nav-bar a.nav-link#info-pop-up-container > img.avatar-img {
+        border-radius: 50%;
+        margin: 2rem 0rem;
+    }
+
+    .nav-bar-icon,
+    .avatar-img {
         width: 50px;
         height: 50px;
     }
@@ -42,7 +48,7 @@
     <ul class="nav nav-tabs nav-fill">
         <li class="nav-item">
             <a class="nav-link" href="#" id="info-pop-up-container">
-                <img src="~/img/user.png" class="nav-bar-icon" />
+                <img src="~/img/user.png" class="avatar-img" />
             </a>
         </li>
         <li class="nav-item">
@@ -77,13 +83,14 @@
                 if (clickId === "info-pop-up-container") {
                     hideAllPopUps();
                     showPopUp(clickId);
+                    //Load current user
+                    ChatApplicationNamespace.LoadInfoPopupData(user, "Self");
                 } else {
                     hideAllPages();
                     showPage(clickId);
+                    disableAllNavLinks();
+                    activateNavLinks($(this));
                 }
-
-                disableAllNavLinks();
-                activateNavLinks($(this));
             });
 
 
@@ -112,7 +119,5 @@
                 $("." + popUpName + "").show();
             }
         });
-        // Functionality
-
     });
 </script>
