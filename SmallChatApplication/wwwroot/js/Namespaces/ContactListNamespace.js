@@ -1,11 +1,12 @@
 ﻿var ContactListNamespace = ContactListNamespace || {};
-//Global
-const CONTACT_PAGE_CONTAINER = $(".contact-page-container");
 
 ContactListNamespace.LoadFriendList = function (friendObjectList) {
     //define local
     const CONTACT_PAGE_CONTAINER = $(".contact-page-container");
     const FRIEND_CONTACT_LIST_CONTAINER = CONTACT_PAGE_CONTAINER.find(".friend-list-container .contact-list-container");
+    $(FRIEND_CONTACT_LIST_CONTAINER).html('');
+
+
     renderFriend(friendObjectList);
 
     function renderFriend(friendObjectList) {
@@ -108,6 +109,10 @@ ContactListNamespace.LoadFriendList = function (friendObjectList) {
     }
 }
 ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) {
+    const CONTACT_PAGE_CONTAINER = $(".contact-page-container");
+    const FRIEND_REQUEST_CONTACT_LIST_CONTAINER = CONTACT_PAGE_CONTAINER.find(".friend-request-list-container .contact-list-container");
+
+    $(FRIEND_REQUEST_CONTACT_LIST_CONTAINER).html('');
     //Friend request json format
     //[
     //    {
@@ -136,7 +141,8 @@ ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) 
     //    }
     //]
     for (let friendRequestObject of friendRequestObjectList) {
-        renderFriendRequest(friendRequestObject.sender);
+        console.log("\nDone loading friend request\n");
+        renderFriendRequest(friendRequestObject);
     }
 
     function renderFriendRequest(friendRequestObject) {
@@ -184,22 +190,80 @@ ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) 
         //btn container
         let btnAccept = generateElement("button", "btn btn-accept");
         $(btnAccept).text("Accept");
+        $(btnAccept).click(function () {
+            sendAddFriend(friendRequestObject.userId);
+        });
         let btnDetail = generateElement("button", "btn btn-detail");
         $(btnDetail).text("...");
         let btnDeleteFriend = generateElement("button", "btn btn-delete-friend");
+
         $(btnDeleteFriend).text("X");
+        $(btnDeleteFriend).click(function () {
+            sendDeleteFriendRequest(friendRequestObject.userId);
+        });
+
 
         $(btnContainer).append(btnAccept);
         $(btnContainer).append(btnDetail);
         $(btnContainer).append(btnDeleteFriend);
+        console.log(FRIEND_REQUEST_CONTACT_LIST_CONTAINER);
+        console.log(contactRow);
     }
+    function sendAddFriend(senderId) {
+        $.ajax({
+            //user is global attribute, it's declare in layout.cshtml
+            // Sender is the one who send the request not the current user
+            // The current user is the one who accept the friend request
+            url: BASE_ADDRESS + "/api/Users/RemoveFriendRequest/" + senderId + "/" + user.userId,
+            dataType: "json",
+            method: "DELETE",
+            contentType: "application/json",
+            success: function (data, textStatus, jQxhr) {
+                //Notify other user
+                //connection.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
+                //    console.log("Error when notify deleting friend");
+                //});
+
+                //Updating friend request list
+                ChatApplicationNamespace.GetFriendRequestList();
+            },
+            error: function (jQxhr, textStatus, errorThrown) {
+                console.log("Delete friend request error: " + errorThrown);
+            }
+        });
+    }
+
+
+    function sendDeleteFriendRequest(senderId) {
+        $.ajax({
+            //user is global attribute, it's declare in layout.cshtml
+            // Sender is the one who send the request not the current user
+            // The current user is the one who accept the friend request
+            url: BASE_ADDRESS + "/api/Users/RemoveFriendRequest/" + senderId + "/" + user.userId,
+            dataType: "json",
+            method: "DELETE",
+            contentType: "application/json",
+            success: function (data, textStatus, jQxhr) {
+                //Notify other user
+                //connection.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
+                //    console.log("Error when notify deleting friend");
+                //});
+
+                //Updating friend request list
+                ChatApplicationNamespace.GetFriendRequestList();
+            },
+            error: function (jQxhr, textStatus, errorThrown) {
+                console.log("Delete friend request error: " + errorThrown);
+            }
+        });
+    }
+
 }
 
 
 
 ContactListNamespace.LoadData = function (friendObjectList) {
     const GROUP_CONTACT_LIST_CONTAINER = CONTACT_PAGE_CONTAINER.find(".group-list-container .contact-list-container");
-    const FRIEND_REQUEST_CONTACT_LIST_CONTAINER = CONTACT_PAGE_CONTAINER.find(".friend-request-list-container .contact-list-container");
 
 
     ContactListNamespace.LoadFriendList(friendObjectList);

@@ -166,9 +166,10 @@
             });
         };
         ChatApplicationNamespace.GetFriendRequestList = function () {
+            console.log("\nget friend request list\n");
             //Load user's friend
             $.ajax({
-                url: BASE_ADDRESS + "/api/Users/GetFriendRequest/" + @ViewBag.ID,
+                url: BASE_ADDRESS + "/api/Users/GetFriendRequestsByReceiverId/" + @ViewBag.ID,
                 dataType: 'json',
                 type: 'GET',
                 contentType: 'application/json',
@@ -208,10 +209,17 @@
                     console.log("Done loading friendRequestList");
                     console.log({ friendRequestList });
                     //Use namespace so i can access other script file without having to include it here
-                    ChatApplicationNamespace.LoadFriendRequestData(friendList);
+                    ChatApplicationNamespace.LoadFriendRequestData(friendRequestList);
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
-                    console.log("Error getting friend list :" + errorThrown);
+                    if (jqXhr.status === 404) {
+                        friendRequestList = [];
+                        ChatApplicationNamespace.LoadFriendRequestData(friendRequestList);
+                        console.log("No friend request found!");
+                    } else {
+                        // Handle other types of errors
+                        console.log("Error getting friend list: " + errorThrown);
+                    }
                 }
             });
         }

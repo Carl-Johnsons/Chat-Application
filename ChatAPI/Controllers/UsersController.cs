@@ -83,8 +83,8 @@ namespace ChatAPI.Controllers
             }
 
         }
-        [HttpGet("GetFriendRequest/{receiverId}")]
-        public async Task<IActionResult> GetFriendRequest(int? receiverId)
+        [HttpGet("GetFriendRequestsByReceiverId/{receiverId}")]
+        public async Task<IActionResult> GetFriendRequestsByReceiverId(int? receiverId)
         {
             if (receiverId == null)
             {
@@ -94,6 +94,29 @@ namespace ChatAPI.Controllers
             try
             {
                 var friendRequestsList = _friendRequestRepository.GetFriendRequestsByReceiverId((int)receiverId);
+                if (friendRequestsList.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                return Ok(friendRequestsList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetFriendRequestsBySenderId/{senderId}")]
+        public async Task<IActionResult> GetFriendRequestsBySenderId(int? senderId)
+        {
+            if (senderId == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var friendRequestsList = _friendRequestRepository.GetFriendRequestsBySenderId((int)senderId);
                 if (friendRequestsList.IsNullOrEmpty())
                 {
                     return NotFound();
@@ -132,21 +155,11 @@ namespace ChatAPI.Controllers
             }
             return Ok(user);
         }
-        [HttpPost("SendFriendRequest/{senderId}/{receiverId}")]
-        public async Task<IActionResult> SendFriendRequest(int? senderId, int? receiverId, [FromForm] string content)
+        [HttpPost("SendFriendRequest")]
+        public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequest friendRequest)
         {
-            if (senderId == null || receiverId == null)
-            {
-                return NotFound();
-            }
-            FriendRequest friendRequest = new FriendRequest()
-            {
-                SenderId = (int)senderId,
-                ReceiverId = (int)receiverId,
-                Content = content,
-                Date = DateTime.Now,
-                Status = "Pending"
-            };
+            friendRequest.Status = "Status";
+            friendRequest.Date = DateTime.Now;
             try
             {
                 int affectedRow = _friendRequestRepository.AddFriendRequest(friendRequest);
@@ -160,7 +173,7 @@ namespace ChatAPI.Controllers
                 return BadRequest(ex.Message);
             }
 
-            return CreatedAtAction("GetFriendRequest", new { receiverId }, friendRequest);
+            return CreatedAtAction("GetFriendRequestsByReceiverId", new { friendRequest.ReceiverId }, friendRequest);
         }
         [HttpPost("AddFriend/{senderId}/{receiverId}")]
         public async Task<IActionResult> AddFriend(int? senderId, int? receiverId)
