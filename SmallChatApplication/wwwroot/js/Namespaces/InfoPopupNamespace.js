@@ -40,15 +40,20 @@ InfoPopupNamespace.LoadData = function loadData(userObject, userType) {
         $(btnAddFriend).show();
     }
 
-    $(btnAddFriend).click(function () {
+    // This popup i didn't generate and reuse the element so have to update the evenet listener
+    //Remove an existing event listener
+    $(btnAddFriend).off("click").click(function () {
+        let friendRequest = {
+            senderId: user.userId,
+            receiverId: userObject.userId,
+            content: "Xin chào! tôi là " + user.name
+        };
         $.ajax({
-            url: BASE_ADDRESS + "/api/Users/SendFriendRequest/" + user.userId + "/" + userObject.userId,
+            url: BASE_ADDRESS + "/api/Users/SendFriendRequest",
             dataType: 'json',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({
-                content: "Xin chào! tôi là " + user.name
-            }),
+            data: JSON.stringify(friendRequest),
             success: function (data, textStatus, jQxhr) {
                 console.log("send friend request successfully");
                 // Friend Request JSON format
@@ -63,11 +68,14 @@ InfoPopupNamespace.LoadData = function loadData(userObject, userType) {
                 //}
 
                 // Notfiy other user if they are online
-                // The data is FriendRequest datatype
-                ChatApplicationNamespace.GetFriendRequestList();
                 connection.invoke("SendFriendRequest", data).catch(function (err) {
                     console.error("error when SendFriendRequest: " + err.toString());
                 });
+                // The data is FriendRequest datatype
+
+                //This user send to other user friend request, so don't need to render the friend request here
+                //ChatApplicationNamespace.GetFriendRequestList();
+
             },
             error: function (jqXhr, textStatus, errorThrown) {
                 console.log(errorThrown);

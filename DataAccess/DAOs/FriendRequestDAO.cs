@@ -61,7 +61,10 @@ namespace DataAccess.DAOs
         public List<FriendRequest> GetFriendRequestsBySenderId(int senderId)
         {
             using var dbContext = new ChatApplicationContext();
-            return dbContext.FriendRequests.Where(fr => fr.SenderId == senderId).ToList();
+            return dbContext.FriendRequests
+                .Include(fr => fr.Receiver)
+                .Where(fr => fr.SenderId == senderId)
+                .ToList();
         }
 
         public int UpdateFriendRequestStatus(int senderId, int receiverId, string status)

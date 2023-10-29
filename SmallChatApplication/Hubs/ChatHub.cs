@@ -13,6 +13,7 @@ namespace SmallChatApplication.Hubs
         public ChatHub()
         {
         }
+
         public async Task MapUserData(User user)
         {
             UserConnectionMap[Context.ConnectionId] = user;
@@ -30,10 +31,19 @@ namespace SmallChatApplication.Hubs
             Console.WriteLine("Connected");
             return base.OnConnectedAsync();
         }
-        public override Task OnDisconnectedAsync(Exception? exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            Console.WriteLine("Disconnected");
-            return base.OnDisconnectedAsync(exception);
+            await Console.Out.WriteLineAsync("Disconnected");
+            if (UserConnectionMap.TryRemove(Context.ConnectionId, out _))
+            {
+                Console.WriteLine($"Connection {Context.ConnectionId} disconnected and removed from UserConnectionMap.");
+            }
+            else
+            {
+                Console.WriteLine($"Connection {Context.ConnectionId} disconnected, but it was not found in UserConnectionMap.");
+            }
+
+            await base.OnDisconnectedAsync(exception);
         }
 
         //Send
@@ -50,15 +60,23 @@ namespace SmallChatApplication.Hubs
 
         public async Task SendFriendRequest(FriendRequest friendRequest)
         {
-            var receiverConnectionId = UserConnectionMap.SingleOrDefault(key => key.Value.UserId == friendRequest.ReceiverId).Key;
+            // Have to get list because the 1 person can join on 2 different tab on browser
+            // So the connectionId may differnect but still 1 userId
+            var receiverConnectionIdList = UserConnectionMap.
+                Where(pair => pair.Value.UserId == friendRequest.ReceiverId)
+                .Select(pair => pair.Key)
+                .ToList();
 
             // If the receiver didn't online, simply do nothing
-            if (receiverConnectionId == null)
+            if (receiverConnectionIdList.Count <= 0)
             {
                 return;
             }
-            string receiverName = UserConnectionMap[receiverConnectionId].Name;
-            await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest");
+            foreach (var receiverConnectionId in receiverConnectionIdList)
+            {
+                await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest");
+            }
+
         }
 
         public async Task JoinRoom(string Name, string Room)
