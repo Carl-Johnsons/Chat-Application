@@ -9,9 +9,10 @@ namespace DataAccess.Repositories
 {
     public interface IMessageRepository
     {
-        IEnumerable<Message> GetMessageList();
-        Message GetMessageByID(int messageId);
-        int InsertMessage(Message message);
+         IEnumerable<Message> GetMessageList();
+        Message GetMessage(int messageId);
+        int AddIndividualMessage(IndividualMessage individualMessage);
+        int AddMessage(Message message);
         int UpdateMessage(Message messageUpdate);
         int DeleteMessage(int messageId);
     }

@@ -32,8 +32,14 @@ namespace DataAccess.DAOs
         public IEnumerable<Message> GetMessageList()
         {
             using var context = new ChatApplicationContext();
-            var messages = context.Messages.Include(m => m.SenderId).ToList();
+            var messages = context.Messages.ToList();
             return messages;
+        }
+        public IEnumerable<IndividualMessage> GetIndividualMessageList()
+        {
+            using var context = new ChatApplicationContext();
+            var individualMessages = context.IndividualMessages.Include(im => im.Message).ToList();
+            return individualMessages;
         }
 
         public Message GetMessageByID(int messageId)
@@ -53,20 +59,35 @@ namespace DataAccess.DAOs
 
         public int AddMessage(Message message)
         {
-
-            Message mess = GetMessageByID(message.MessageId);
-            if (mess == null)
-            {
-                using var context = new ChatApplicationContext();
-                context.Messages.Add(mess);
-                context.SaveChanges();
-
-                return context.SaveChanges();
-            } else
+            if (message == null)
             {
                 return 0;
+
             }
-            
+            using var context = new ChatApplicationContext();
+            context.Messages.Add(message);
+            return context.SaveChanges();
+        }
+
+        public int AddIndividualMessage(IndividualMessage individualMessage)
+        {
+            try
+            {
+                Console.WriteLine("individual message is " + individualMessage);
+                Console.WriteLine("Message is " + individualMessage.Message);
+                int result = AddMessage(individualMessage.Message);
+                if (result == 0)
+                {
+                    throw new Exception("Add individual message failed");
+                }
+                return IndividualMessageDAO.Instance.Add(individualMessage);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.InnerException.Message);
+            }
+
+
         }
 
         public int UpdateMessage(Message messageUpdate)
@@ -88,7 +109,7 @@ namespace DataAccess.DAOs
             return context.SaveChanges();
         }
 
-        public int RemoveMessage(int messageId)
+        public int DeleteMessage(int messageId)
         {
 
             Message mess = GetMessageByID(messageId);
@@ -102,6 +123,17 @@ namespace DataAccess.DAOs
             {
                 return 0;
             }
+        }
+        public int DeleteIndividualMessage(int messageId)
+        {
+            int result = IndividualMessageDAO.Instance.DeleteIndividualMessage(messageId);
+            if (result < 1)
+            {
+                throw new Exception("Deleted failed");
+            }
+            return DeleteMessage(messageId);
+
+
         }
     }
 }

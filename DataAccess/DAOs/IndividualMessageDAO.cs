@@ -47,7 +47,7 @@ namespace DataAccess.DAOs
             return individualMessage;
 
         }
-        public void AddIndividualMessage(IndividualMessage individualMessage)
+        public int Add(IndividualMessage individualMessage)
         {
 
             try
@@ -57,7 +57,7 @@ namespace DataAccess.DAOs
                 {
                     using var context = new ChatApplicationContext();
                     context.IndividualMessages.Add(individualMessage);
-                    context.SaveChanges();
+                    return context.SaveChanges();
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace DataAccess.DAOs
             }
 
         }
-        public void UpdateIndividualMessage(IndividualMessage individualMessage)
+        public int UpdateIndividualMessage(IndividualMessage individualMessage)
         {
 
             try
@@ -81,7 +81,7 @@ namespace DataAccess.DAOs
                 {
                     using var context = new ChatApplicationContext();
                     context.IndividualMessages.Update(individualMessage);
-                    context.SaveChanges();
+                    return context.SaveChanges();
                 }
                 else
                 {
@@ -95,7 +95,7 @@ namespace DataAccess.DAOs
             }
 
         }
-        public void DeleteIndividualMessage(int messageId)
+        public int DeleteIndividualMessage(int messageId)
         {
 
             try
@@ -104,8 +104,8 @@ namespace DataAccess.DAOs
                 if (_individualMessage != null)
                 {
                     using var context = new ChatApplicationContext();
-                    context.IndividualMessages .Remove(_individualMessage);
-                    context.SaveChanges();
+                    context.IndividualMessages.Remove(_individualMessage);
+                    return context.SaveChanges();
                 }
                 else
                 {
