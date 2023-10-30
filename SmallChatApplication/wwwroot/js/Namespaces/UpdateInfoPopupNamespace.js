@@ -127,6 +127,11 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
         select.append(optionElement);
     }
 
+    //for change Image action
+    const fileAvatar = document.getElementById("fileAvatar");
+    const fileBackground = document.getElementById("fileBackground");
+
+
     //Update profile action
     const btnUpdatebtn = UPDATE_INFO_POPUP_CONTAINER.find(".btn-update-information");
 
@@ -154,6 +159,7 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
         user.avatarUrl = $(avatarImg).attr('src');
         user.backgroundUrl = $(backgroundImg).attr('src');
 
+      
         $.ajax({
             url: BASE_ADDRESS + "/api/Users/" + user.userId,
             dataType: 'json',
@@ -172,5 +178,53 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
             }
         });
 
+        
+
+
+    });
+    //Call upload image api function
+    async function uploadImage(file) {
+        const url = BASE_ADDRESS + "/api/Tools/UploadImageImgur/";
+
+        const formData = new FormData();
+        formData.append("ImageFile", file);
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Error: ${error}`);
+        }
+
+        const result = await response.text();
+        return result;
+    }
+    //evt for  upload image to imgur when changing it
+    fileAvatar.addEventListener("change", async function () {
+        const file = fileAvatar.files[0];
+        try {
+            const imageUrl = await uploadImage(file);
+            console.log("Image uploaded successfully. URL:", imageUrl);
+            avatarImg.attr('src', imageUrl);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+        }
+    });
+    //evt for  upload image to imgur when changing it
+    fileBackground.addEventListener("change", async function () {
+        const file = fileBackground.files[0];
+        try {
+            const imageUrl = await uploadImage(file);
+            console.log("Image uploaded successfully. URL:", imageUrl);
+            backgroundImg.attr('src', imageUrl);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+        }
     });
 };
