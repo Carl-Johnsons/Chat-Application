@@ -1,10 +1,17 @@
 ﻿using BussinessObject.Models;
 using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmallChatApplication.Exceptions;
 using SmallChatApplication.Hubs;
+using System.Drawing;
+using System.Net.Http.Headers;
+using System.Text;
+using WebChatApplication.Libs;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmallChatApplication.Controllers
 {
@@ -70,15 +77,66 @@ namespace SmallChatApplication.Controllers
             }
         }
 
-
         [HttpPost]
-        public ActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            DateTime Dob;
+
             string? Phone = HttpContext.Request.Form["txtRegisterPhone"];
             string? Password = HttpContext.Request.Form["txtRegisterPassword"];
+            string? Name = HttpContext.Request.Form["txtName"];
+            string? Gender = HttpContext.Request.Form["txtGender"];
+            string? DobValue = Request.Form["txtDoB"];
+            DateTime.TryParse(DobValue, out Dob);
 
+            if (Phone == null || Password == null || Name == null || Gender == null || DobValue == null)
+            {
+                return Redirect("/Log");
+
+            }
+
+            IFormFile Background = Request.Form.Files[0];
+            IFormFile Avatar = Request.Form.Files[1];
+
+            string BackGroundImgUrl = await Tool.UploadImageToImgur(Background);
+            string AvatarImgUrl = await Tool.UploadImageToImgur(Avatar);
+
+
+
+            User RegisterUser = new User();
+            RegisterUser.PhoneNumber = Phone;
+            RegisterUser.Password = Password;
+            RegisterUser.Name = Name;
+            RegisterUser.Gender = Gender;
+            RegisterUser.Dob = Dob;
+            RegisterUser.AvatarUrl = AvatarImgUrl;
+            RegisterUser.BackgroundUrl = BackGroundImgUrl;
+
+            using (var client = new HttpClient())
+            {
+                string url = BASE_ADDRESS + "/api/Users";
+                var response = await client.PostAsJsonAsync(url, RegisterUser);
+                var resultContent = response.Content.ReadAsStringAsync().Result;
+                var user = JsonConvert.DeserializeObject<User>(resultContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Register Successfully");
+                    //Add cookie
+                    CookieOptions cookieOptions = new CookieOptions()
+                    {
+                        Path = "/",
+                        Expires = DateTime.Now.AddDays(1)
+                    };
+                    string cookieName = "user";
+                    string cookieValue = user.PhoneNumber;
+                    Response.Cookies.Append(cookieName, cookieValue, cookieOptions);
+                    return Redirect("/ChatRoom");
+                }
+            }
             return Redirect("/Log");
+
         }
+
 
 
 
@@ -150,5 +208,15 @@ namespace SmallChatApplication.Controllers
                 return View();
             }
         }
+    }
+
+    public class ImgurResponse
+    {
+        public ImgurData data { get; set; }
+    }
+
+    public class ImgurData
+    {
+        public string link { get; set; }
     }
 }

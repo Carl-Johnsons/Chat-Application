@@ -11,40 +11,84 @@
 </div>
 
 
-<form action="@Url.ActionLink("Register","Log")" method="POST">
+<form action="@Url.ActionLink("Register","Log")" method="POST" enctype="multipart/form-data" id="RegisterForm">
 
-    <div class="mb-3 input-group">
+    <div class="mb-3 form-group">
         <input type="text" class="form-control" id="txtRegisterPhone" name="txtRegisterPhone" placeholder="Phone">
     </div>
-    <div class="mb-3 input-group">
+    <div class="mb-3 form-group">
         <input type="password" class="form-control" id="txtRegisterPassword" name="txtRegisterPassword" placeholder="Password">
     </div>
-    <div class="mb-3 input-group">
+    <div class="mb-3 form-group">
         <input type="password" class="form-control" id="txtConfirmPassword" name="txtConfirmPassword" placeholder="Confirm Password">
     </div>
-    <div class="mb-3 input-group">
+    <div class="mb-3 form-group">
         <input type="text" class="form-control" id="txtName" name="txtName" placeholder="Name">
     </div>
-    <div class="mb-3 input-group d-flex justify-content-between">
-        <div>
-            <input type="radio" id="txtMale" name="txtGender">
-            <label for="txtMale">Nam</label>
-        </div>
-        <div>
-            <input type="radio" id="txtFemale" name="txtGender">
-            <label for="txtFemale">Nữ</label>
-        </div>
-
+    <div class="mb-3 form-group">
+        <input type="radio" id="txtMale" name="txtGender" value="Nam">
+        <label for="txtMale">Nam</label>
+        <input type="radio" id="txtFemale" name="txtGender" value="Nữ">
+        <label for="txtFemale">Nữ</label>
     </div>
-    <div class="mb-3 input-group">
+    <div class="mb-3 form-group">
+        <label>Date of birth</label>
         <input type="date" class="form-control" id="txtDoB" name="txtDoB">
     </div>
-    <div class="mb-3 input-group">
-        <input type="text" class="form-control" id="txtBackgroundUrl" name="txtBackgroundUrl" placeholder="https://conmeo.jpg">
+    <div class="mb-3 form-group">
+        <label>Avatar Image</label>
+        <input type="file" class="form-control" id="fileAvatarImg" name="fileAvatarImg">
     </div>
-    <div class="mb-3 input-group">
-        <input type="text" class="form-control" id="txtAvatarUrl" name="txtAvatarUrl" placeholder="https://conmeo.jpg">
+    <div class="mb-3 form-group">
+        <label>Background Image</label>
+        <input type="file" class="form-control" id="fileBackgroundImg" name="fileBackgroundImg">
     </div>
-
     <button type="submit" class="btn btn-primary" name="btn-Register">Register</button>
 </form>
+
+<script>
+    $().ready(function () {
+        $("#RegisterForm").validate({
+            rules: {
+                "txtRegisterPhone": {
+                    required: true,
+                    maxlength: 10,
+                    digits: true
+                },
+                "txtRegisterPassword": {
+                    required: true,
+                    minlength: 6,
+                    maxlength: 50
+                },
+                "txtConfirmPassword": {
+                    required: true,
+                    equalTo: "#txtRegisterPassword",
+                    minlength: 6,
+                    maxlength: 50
+                },
+                "txtName": {
+                    required: true,
+                    minlength: 1,
+                    maxlength: 50
+                },
+                "txtGender": {
+                    required: true
+                },
+
+                "txtDoB": {
+                    required: true
+                },
+                "fileBackgroundImg": {
+                    required: true
+                },
+                "fileAvatarImg": {
+                    required: true
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+            }
+        });
+
+    });
+</script>
