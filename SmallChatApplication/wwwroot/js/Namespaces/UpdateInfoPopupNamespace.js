@@ -1,6 +1,8 @@
 ﻿var UpdateInfoPopupNamespace = UpdateInfoPopupNamespace || {};
 
 UpdateInfoPopupNamespace.LoadData = function (user) {
+    console.log("load data update info")
+
     const UPDATE_INFO_POPUP_CONTAINER = $(".update-info-popup-container");
 
     //DoB
@@ -12,8 +14,11 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
 
 
     //img
-    const backgroundImg = UPDATE_INFO_POPUP_CONTAINER.find(".background-img-container > img");
-    const avatarImg = UPDATE_INFO_POPUP_CONTAINER.find(".avatar-img-container > img");
+    const backgroundImg = UPDATE_INFO_POPUP_CONTAINER.find(".background-img-container img");
+    const avatarImg = UPDATE_INFO_POPUP_CONTAINER.find(".avatar-img-container img");
+    console.log("==================================");
+    console.log(backgroundImg);
+    console.log(avatarImg);
     //name
     const userNameInput = UPDATE_INFO_POPUP_CONTAINER.find("div.user-name > input");
     //gender
