@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,49 +27,49 @@ namespace DataAccess.DAOs
 
             }
         }
-        public IEnumerable<IndividualMessage> GetIndividualMessageList()
+        public IEnumerable<IndividualMessage> Get()
         {
             using var context = new ChatApplicationContext();
-            var individualMessages = context.IndividualMessages.ToList();
+            var individualMessages = context.IndividualMessages.Include(im => im.Message).ToList();
             return individualMessages;
         }
-        public IndividualMessage GetIndividualMessageByID(int messageId)
+        public IEnumerable<IndividualMessage> Get(int senderId, int receiverId)
         {
-            IndividualMessage individualMessage = null;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                individualMessage = context.IndividualMessages.SingleOrDefault(im => im.MessageId == messageId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return individualMessage;
-
+            using var context = new ChatApplicationContext();
+            var individualMessages = context.IndividualMessages
+                .Include(im => im.Message)
+                .Where(im =>
+                (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
+                || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
+                .ToList();
+            return individualMessages;
         }
         public int Add(IndividualMessage individualMessage)
         {
             try
             {
+                if (individualMessage == null)
+                {
+                    return 0;
+                }
+
                 using var context = new ChatApplicationContext();
                 context.IndividualMessages.Add(individualMessage);
                 return context.SaveChanges();
-
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception(ex.InnerException.Message);
             }
-
         }
-        public int UpdateIndividualMessage(IndividualMessage individualMessage)
+
+        public int Update(IndividualMessage individualMessage)
         {
 
             try
             {
-                IndividualMessage _individualMessage = GetIndividualMessageByID(individualMessage.MessageId);
-                if (_individualMessage != null)
+                Message _message = MessageDAO.Instance.Get(individualMessage.MessageId);
+                if (_message != null)
                 {
                     using var context = new ChatApplicationContext();
                     context.IndividualMessages.Update(individualMessage);
@@ -87,29 +88,9 @@ namespace DataAccess.DAOs
 
         }
 
-        public int DeleteIndividualMessage(int messageId)
+        public int Delete(int messageId)
         {
-
-            try
-            {
-                IndividualMessage _individualMessage = GetIndividualMessageByID(messageId);
-                if (_individualMessage != null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.IndividualMessages.Remove(_individualMessage);
-                    return context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The individual message does not already exist.");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+            return MessageDAO.Instance.Delete(messageId);
         }
     }
 }

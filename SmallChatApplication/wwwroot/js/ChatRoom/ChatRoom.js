@@ -7,9 +7,10 @@ _CONNECTION.on("ReceiveFriendRequest", function () {
 // render friend list real time
 
 _CONNECTION.on("ReceiveAcceptFriendRequest", function () {
-    console.log("=========================================");
-    console.log("Receive accept friend request notification");
     ChatApplicationNamespace.GetFriendList();
-    console.log("abc");
 });
+
+_CONNECTION.on("ReceiveIndividualMessage", function (senderId) {
+    ChatApplicationNamespace.GetMessageList(senderId);
+})
 

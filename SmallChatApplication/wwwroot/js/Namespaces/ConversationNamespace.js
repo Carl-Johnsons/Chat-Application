@@ -1,7 +1,10 @@
 ﻿var ConversationNamespace = ConversationNamespace || {};
 
-ConversationNamespace.LoadConversation = function (messageList) {
 
+
+
+
+ConversationNamespace.LoadConversation = function (messageList) {
     const CHAT_BOX_CONTAINER = $(".chat-box-container");
     const USER_INFO_CONTAINER = CHAT_BOX_CONTAINER.find(".user-info-container");
     const user_info_avatar = USER_INFO_CONTAINER.find(".avatar-image");
@@ -12,18 +15,13 @@ ConversationNamespace.LoadConversation = function (messageList) {
 
 
     const MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".message-container");
-    const btnSendMessage = CHAT_BOX_CONTAINER.find("button.btn-send-message");
-    const inputSendMessage = CHAT_BOX_CONTAINER.find("input.input-message");
 
     //Reset message_container
     $(MESSAGE_CONTAINER).html("");
 
-    btnSendMessage.click(function () {
-        let messageValue = inputSendMessage.val();
-        if (messageValue === null || messageValue.length === 0) {
-            return;
-        }
-    });
+
+
+
 
     //MessageList json format
     //[
@@ -140,7 +138,6 @@ ConversationNamespace.LoadConversation = function (messageList) {
                 $(user_info_name).html(user.name);
             }
 
-
             $(messageItem).append(userAvatar);
             $(userAvatar).append(imgAvatar);
         }
@@ -205,3 +202,80 @@ ConversationNamespace.LoadConversation = function (messageList) {
     }
 }
 
+
+
+$(document).ready(function () {
+    AddSendMessageEvent();
+
+    function AddSendMessageEvent() {
+        const CHAT_BOX_CONTAINER = $(".chat-box-container");
+
+        const btnSendMessage = CHAT_BOX_CONTAINER.find("button.btn-send-message");
+        const inputSendMessage = CHAT_BOX_CONTAINER.find("input.input-message");
+
+        btnSendMessage.click(function () {
+            let messageValue = inputSendMessage.val();
+            let otherUserId = $(".conversations-list-container  div.conversation.d-flex.active").attr("data-user-id");
+
+
+            if (messageValue === null || messageValue.length === 0) {
+                return;
+            }
+            sendMessage(otherUserId, messageValue);
+        });
+        //For getting current time in js and formatt like this: 2023-10-30T17:15:22.234Z
+        function getCurrentDateTimeInISO8601() {
+            const now = new Date();
+
+            // Extract date and time components
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-based, so add 1
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+            // Build the ISO 8601 date-time string
+            const iso8601DateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+
+            return iso8601DateTime;
+        }
+
+        function sendMessage(userReceiverId, messageContent) {
+            //individual message object
+            let messageObject = {
+                userReceiverId: userReceiverId,
+                status: "string",
+                message: {
+                    senderId: _USER.userId,
+                    content: messageContent,
+                    time: getCurrentDateTimeInISO8601(),
+                    messageType: "Individual",
+                    messageFormat: "Text",
+                    active: true
+                }
+            };
+            console.log(JSON.stringify(messageObject));
+
+            $.ajax({
+                url: _BASE_ADDRESS + "/api/Messages/SendIndividualMessage",
+                dataType: 'json',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(messageObject),
+                success: function (data, textStatus, jQxhr) {
+                    console.log("send message successfully");
+
+                    _CONNECTION.invoke("SendIndividualMessage", _USER.userId, parseInt(userReceiverId)).catch(function (err) {
+                        console.error("error when SendIndividualMessage: " + err.toString());
+                    });
+                    ChatApplicationNamespace.GetMessageList(userReceiverId);
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        }
+    };
+})

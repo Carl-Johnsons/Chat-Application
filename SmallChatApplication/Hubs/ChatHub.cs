@@ -52,10 +52,25 @@ namespace SmallChatApplication.Hubs
             //await Console.Out.WriteLineAsync("I'm in SendMessageToGroup");
             //await Clients.Group(user.Room).SendAsync("ReceiveMessage", user.Name, message);
         }
-        public async Task SendMessage(string user, string message)
+        public async Task SendIndividualMessage(int senderId, int receiverId)
         {
-            await Console.Out.WriteLineAsync("I'm in SendMessage");
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            // Have to get list because the 1 person can join on 2 different tab on browser
+            // So the connectionId may differnect but still 1 userId
+            var receiverConnectionIdList = UserConnectionMap.
+                Where(pair => pair.Value.UserId == receiverId)
+                .Select(pair => pair.Key)
+                .ToList();
+
+            // If the receiver didn't online, simply do nothing
+            if (receiverConnectionIdList.Count <= 0)
+            {
+                return;
+            }
+            foreach (var receiverConnectionId in receiverConnectionIdList)
+            {
+                await Console.Out.WriteLineAsync(receiverConnectionId);
+                await Clients.Client(receiverConnectionId).SendAsync("ReceiveIndividualMessage", senderId);
+            }
         }
 
         public async Task SendFriendRequest(FriendRequest friendRequest)
