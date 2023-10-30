@@ -73,10 +73,16 @@
             height: var(--middle-pop-up-height);
         }
 
-            .update-info-popup .middle-pop-up .background-img-container {
+            .update-info-popup .middle-pop-up .background-img-container{
                 width: 100%;
                 height: 60%;
             }
+
+                .update-info-popup .middle-pop-up .background-img-container label {
+                    object-fit: cover;
+                    width: 100%;
+                    height: 100%;
+                }
 
                 .update-info-popup .middle-pop-up .background-img-container img {
                     object-fit: cover;
@@ -91,12 +97,17 @@
                 justify-content: center;
             }
 
-                .update-info-popup .middle-pop-up .avatar-img-container img {
+                .update-info-popup .middle-pop-up .avatar-img-container label {
                     position: absolute;
                     width: 5rem;
                     height: 5rem;
-                    border: 2px solid white;
                     transform: translateY(-50%);
+                }
+
+                .update-info-popup .middle-pop-up .avatar-img-container img {
+                    width: 5rem;
+                    height: 5rem;
+                    border: 2px solid white;
                     border-radius: 50%;
                 }
 
@@ -182,7 +193,10 @@
                         <input type="file" id="fileBackground" name="fileBackground" accept="image/*" style="display: none;" />
                     </div>
                     <div class="avatar-img-container">
-                        <img src="~/img/default_avatar_img.png" />
+                        <label for="fileBackground">
+                            <img src="~/img/default_avatar_img.png" />
+                        </label>
+                        <input type="file" id="fileAvatar" name="fileAvatar" accept="image/*" style="display: none;" />
                     </div>
                     <div class="user-name">
                         <label><b>Tên hiển thị</b></label>
