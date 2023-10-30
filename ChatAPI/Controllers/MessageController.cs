@@ -1,10 +1,6 @@
 ﻿using DataAccess.Repositories;
 using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Newtonsoft.Json;
 
 namespace ChatAPI.Controllers
 {

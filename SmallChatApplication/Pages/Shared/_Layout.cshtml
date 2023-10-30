@@ -20,23 +20,18 @@
 
     @* set the global variable to use in partial view and external script *@
     <script>
-        var BASE_ADDRESS = "https://localhost:7190";
-
-        var UserType = {
-            Self: 1,
-            Friend: 2,
-            Stranger: 3
-        }
+        var _BASE_ADDRESS = "https://localhost:7190";
 
         //Start connection to map the connection string to userId in database
-        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        var _CONNECTION = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
     </script>
     @* Defining namespace for extenal script to run *@
     <script src="~/js/Namespaces/ApplicationNavbarNamespace.js"></script>
+    <script src="~/js/Namespaces/ContactListNamespace.js"></script>
+    <script src="~/js/Namespaces/ConversationListNamespace.js"></script>
     <script src="~/js/Namespaces/InfoPopupNamespace.js"></script>
     <script src="~/js/Namespaces/UpdateInfoPopupNamespace.js"></script>
-    <script src="~/js/Namespaces/ContactListNamespace.js"></script>
 
     <script>
         var ChatApplicationNamespace = ChatApplicationNamespace || {};
@@ -60,7 +55,7 @@
 
 
         ChatApplicationNamespace.StartConnection = function () {
-            connection.start().then(function () {
+            _CONNECTION.start().then(function () {
                 console.log("Connection successfully in client side")
                 ChatApplicationNamespace.GetCurrentUser();
                 ChatApplicationNamespace.GetFriendList();
@@ -72,14 +67,14 @@
     </script>
     @* set the global variable to use in partial view *@
     <script>
-        var user;
-        var friendList;
-        var friendRequestList;
+        var _USER;
+        var _FRIEND_LIST;
+        var _FRIEND_REQUEST_LIST;
         //Load data of current user
 
         ChatApplicationNamespace.GetCurrentUser = function () {
             $.ajax({
-                url: BASE_ADDRESS + "/api/Users/" + @ViewBag.ID,
+                url: _BASE_ADDRESS + "/api/Users/" + @ViewBag.ID,
                 dataType: 'json',
                 type: 'GET',
                 contentType: 'application/json',
@@ -102,17 +97,17 @@
                         "groupGroupLeaders": [],
                         "messages": []
                     */
-                    user = data;
+                    _USER = data;
 
                     //Use namespace so i can access other script file without having to include it here
                     console.log("Map user data begin");
 
-                    connection.invoke("MapUserData", data).catch(function (err) {
+                    _CONNECTION.invoke("MapUserData", data).catch(function (err) {
                         console.error("error when send map user data: " + err.toString());
                     });
 
 
-                    ChatApplicationNamespace.LoadUserData(user);
+                    ChatApplicationNamespace.LoadUserData(_USER);
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
                     console.log(errorThrown);
@@ -122,7 +117,7 @@
         ChatApplicationNamespace.GetFriendList = function () {
             //Load user's friend
             $.ajax({
-                url: BASE_ADDRESS + "/api/Users/GetFriend/" + @ViewBag.ID,
+                url: _BASE_ADDRESS + "/api/Users/GetFriend/" + @ViewBag.ID,
                 dataType: 'json',
                 type: 'GET',
                 contentType: 'application/json',
@@ -155,10 +150,10 @@
 
 
                     // Only get friendNavigation then convert it to array
-                    friendList = data.map(item => item.friendNavigation);
-                    console.log("Done loading friendList");
-                    console.log({ friendList });
-                    ChatApplicationNamespace.LoadFriendData(friendList);
+                    _FRIEND_LIST = data.map(item => item.friendNavigation);
+                    console.log("Done loading _FRIEND_LIST");
+                    console.log({ _FRIEND_LIST });
+                    ChatApplicationNamespace.LoadFriendData(_FRIEND_LIST);
                     //Use namespace so i can access other script file without having to include it here
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
@@ -170,7 +165,7 @@
             console.log("\nget friend request list\n");
             //Load user's friend
             $.ajax({
-                url: BASE_ADDRESS + "/api/Users/GetFriendRequestsByReceiverId/" + @ViewBag.ID,
+                url: _BASE_ADDRESS + "/api/Users/GetFriendRequestsByReceiverId/" + @ViewBag.ID,
                 dataType: 'json',
                 type: 'GET',
                 contentType: 'application/json',
@@ -206,16 +201,17 @@
 
 
                     // Only get sender then convert it to array
-                    friendRequestList = data.map(item => item.sender);
-                    console.log("Done loading friendRequestList");
-                    console.log({ friendRequestList });
+                    _FRIEND_REQUEST_LIST = data.map(item => item.sender);
+                    console.log("Done loading _FRIEND_REQUEST_LIST");
+                    console.log({ _FRIEND_REQUEST_LIST });
                     //Use namespace so i can access other script file without having to include it here
-                    ChatApplicationNamespace.LoadFriendRequestData(friendRequestList);
+                    ChatApplicationNamespace.LoadFriendRequestData(_FRIEND_REQUEST_LIST);
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
                     if (jqXhr.status === 404) {
-                        friendRequestList = [];
-                        ChatApplicationNamespace.LoadFriendRequestData(friendRequestList);
+                        //set empty array so the website will work normaly
+                        _FRIEND_REQUEST_LIST = [];
+                        ChatApplicationNamespace.LoadFriendRequestData(_FRIEND_REQUEST_LIST);
                         console.log("No friend request found!");
                     } else {
                         // Handle other types of errors

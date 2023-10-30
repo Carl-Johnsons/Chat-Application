@@ -18,7 +18,7 @@ InfoPopupNamespace.LoadData = function loadData(userObject, userType) {
 
 
     // Parse the date string into a Date object
-    let date = new Date(user.dob);
+    let date = new Date(userObject.dob);
 
     let year = date.getFullYear();
     let month = date.getMonth() + 1; // Note that months are zero-based (0-11)
@@ -40,16 +40,16 @@ InfoPopupNamespace.LoadData = function loadData(userObject, userType) {
         $(btnAddFriend).show();
     }
 
-    // This popup i didn't generate and reuse the element so have to update the evenet listener
+    // This popup i didn't generate and reuse the element so have to update the event listener
     //Remove an existing event listener
     $(btnAddFriend).off("click").click(function () {
         let friendRequest = {
-            senderId: user.userId,
+            senderId: _USER.userId,
             receiverId: userObject.userId,
-            content: "Xin chào! tôi là " + user.name
+            content: "Xin chào! tôi là " + _USER.name
         };
         $.ajax({
-            url: BASE_ADDRESS + "/api/Users/SendFriendRequest",
+            url: _BASE_ADDRESS + "/api/Users/SendFriendRequest",
             dataType: 'json',
             type: 'POST',
             contentType: 'application/json',
@@ -68,7 +68,7 @@ InfoPopupNamespace.LoadData = function loadData(userObject, userType) {
                 //}
 
                 // Notfiy other user if they are online
-                connection.invoke("SendFriendRequest", data).catch(function (err) {
+                _CONNECTION.invoke("SendFriendRequest", data).catch(function (err) {
                     console.error("error when SendFriendRequest: " + err.toString());
                 });
                 // The data is FriendRequest datatype

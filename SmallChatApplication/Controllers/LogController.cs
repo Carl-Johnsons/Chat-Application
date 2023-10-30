@@ -1,6 +1,4 @@
 ﻿using BussinessObject.Models;
-using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

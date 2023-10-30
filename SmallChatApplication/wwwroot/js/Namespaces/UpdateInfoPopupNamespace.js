@@ -62,7 +62,7 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
             $(genderRadiobtns[1]).prop('checked', true);
         }
         // Parse the date string into a Date object
-        let date = new Date(user.dob);
+        let date = new Date(userObject.dob);
 
         let year = date.getFullYear();
         let month = date.getMonth() + 1; // Note that months are zero-based (0-11)
@@ -161,7 +161,7 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
 
       
         $.ajax({
-            url: BASE_ADDRESS + "/api/Users/" + user.userId,
+            url: _BASE_ADDRESS + "/api/Users/" + user.userId,
             dataType: 'json',
             type: 'PUT',
             contentType: 'application/json',
@@ -184,7 +184,7 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
     });
     //Call upload image api function
     async function uploadImage(file) {
-        const url = BASE_ADDRESS + "/api/Tools/UploadImageImgur/";
+        const url = _BASE_ADDRESS + "/api/Tools/UploadImageImgur/";
 
         const formData = new FormData();
         formData.append("ImageFile", file);
