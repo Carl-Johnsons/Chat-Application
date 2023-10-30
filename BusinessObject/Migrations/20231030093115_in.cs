@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BussinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial_Create : Migration
+    public partial class @in : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -96,37 +96,16 @@ namespace BussinessObject.Migrations
                 {
                     table.PrimaryKey("PK__Group__31981269A04A40CE", x => x.Group_ID);
                     table.ForeignKey(
-                        name: "FK__Group__Group_Dep__30F848ED",
+                        name: "FK_Group_User_Group_Deputy_ID",
                         column: x => x.Group_Deputy_ID,
                         principalTable: "User",
                         principalColumn: "User_ID");
                     table.ForeignKey(
-                        name: "FK__Group__Group_Lea__300424B4",
+                        name: "FK_Group_User_Group_Leader_ID",
                         column: x => x.Group_Leader_ID,
                         principalTable: "User",
-                        principalColumn: "User_ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GroupBlock",
-                columns: table => new
-                {
-                    Group_ID = table.Column<int>(type: "int", nullable: false),
-                    Blocked_User_ID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GroupBlock", x => new { x.Group_ID, x.Blocked_User_ID });
-                    table.ForeignKey(
-                        name: "FK__GroupBloc__Block__33D4B598",
-                        column: x => x.Blocked_User_ID,
-                        principalTable: "User",
-                        principalColumn: "User_ID");
-                    table.ForeignKey(
-                        name: "FK__GroupBloc__Group__32E0915F",
-                        column: x => x.Group_ID,
-                        principalTable: "User",
-                        principalColumn: "User_ID");
+                        principalColumn: "User_ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -175,6 +154,28 @@ namespace BussinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GroupBlock",
+                columns: table => new
+                {
+                    Group_ID = table.Column<int>(type: "int", nullable: false),
+                    Blocked_User_ID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupBlock", x => new { x.Group_ID, x.Blocked_User_ID });
+                    table.ForeignKey(
+                        name: "FK__GroupBloc__Block__33D4B598",
+                        column: x => x.Blocked_User_ID,
+                        principalTable: "User",
+                        principalColumn: "User_ID");
+                    table.ForeignKey(
+                        name: "FK__GroupBloc__Group__32E0915F",
+                        column: x => x.Group_ID,
+                        principalTable: "Group",
+                        principalColumn: "Group_ID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GroupMessage",
                 columns: table => new
                 {
@@ -187,8 +188,8 @@ namespace BussinessObject.Migrations
                     table.ForeignKey(
                         name: "FK__GroupMess__Group__3D5E1FD2",
                         column: x => x.Group_Receiver_ID,
-                        principalTable: "User",
-                        principalColumn: "User_ID",
+                        principalTable: "Group",
+                        principalColumn: "Group_ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__GroupMess__Messa__3C69FB99",
@@ -296,9 +297,6 @@ namespace BussinessObject.Migrations
                 name: "FriendRequest");
 
             migrationBuilder.DropTable(
-                name: "Group");
-
-            migrationBuilder.DropTable(
                 name: "GroupBlock");
 
             migrationBuilder.DropTable(
@@ -312,6 +310,9 @@ namespace BussinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserBlock");
+
+            migrationBuilder.DropTable(
+                name: "Group");
 
             migrationBuilder.DropTable(
                 name: "Message");
