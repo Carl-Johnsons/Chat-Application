@@ -31,6 +31,8 @@
 
         .user-info-container .avatar-container .avatar-image {
             width: 2.8rem;
+            height: 2.8rem;
+            border-radius: 50%;
             margin: calc((var(--user-info-container-height) - 2.8rem)/2);
         }
 
@@ -52,13 +54,13 @@
                 justify-content: flex-end;
             }
             /* For aligining consecutive message */
-            .message-container .message-item-container.receiver .message-list {
+            .message-container .message-item-container.receiver .message-row {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            .message-container .message-item-container.sender .message-list {
+            .message-container .message-item-container.sender .message-row {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-end;
@@ -70,8 +72,10 @@
             }
 
             .message-container .message-item-container .avatar-image {
-                width: 2.8rem;
+                width: 50px;
+                height: 50px;
                 margin: 0 0.5rem;
+                border-radius: 50%;
             }
 
             .message-container .message-item-container .message {
@@ -153,14 +157,6 @@
                         <div class="message ">
                             <div class="message-content">
                                 Helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa @ViewBag._userName
-                                asfhasfjasfhkjasf
-                                asfjhasfkjashf
-                                askfasfhasfjhsaf
-                                asfakshfasf
-
-                                asfhasjfsaf
-                                asjhfasjf
-                                sajfhasfashjfashjfasfkhasfkjhaskjfhasfkjhaskjfhasfkjhasfkjh
                             </div>
                             <div class="message-time">
                                 11:00
@@ -196,14 +192,6 @@
                             </div>
                             <div class="message-content">
                                 Helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa @ViewBag._userName
-                                asfhasfjasfhkjasf
-                                asfjhasfkjashf
-                                askfasfhasfjhsaf
-                                asfakshfasf
-
-                                asfhasjfsaf
-                                asjhfasjf
-                                sajfhasfashjfashjfasfkhasfkjhaskjfhasfkjhaskjfhasfkjhasfkjh
                             </div>
                             <div class="message-time">
                                 11:00
@@ -250,254 +238,3 @@
 </div>
 
 
-
-
-<script>
-    $(document).ready(function () {
-        const CHAT_BOX_CONTAINER = $(".chat-box-container");
-        const MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".message-container");
-        const btnSendMessage = CHAT_BOX_CONTAINER.find("button.btn-send-message");
-        const inputSendMessage = CHAT_BOX_CONTAINER.find("input.input-message");
-
-        btnSendMessage.click(function () {
-            let messageValue = inputSendMessage.val();
-            if (messageValue === null || messageValue.length === 0) {
-                return;
-            }
-        });
-
-        // public int MessageId { get; set; }
-
-        // public int SenderId { get; set; }
-
-        // public string ? Content { get; set; }
-
-        // public DateTime Time { get; set; }
-
-        // public string MessageType { get; set; } = null!;
-
-        // public string MessageFormat { get; set; } = null!;
-
-        let messageList = {
-            message: [
-                {
-                    id: 1,
-                    senderName: "Đứca",
-                    content: "Message 1",
-                    time: "10:01",
-                    receiverName: "World"
-                },
-                {
-                    id: 2,
-                    senderName: "Đứca",
-                    content: "Message 2",
-                    time: "10:01",
-                    receiverName: "World"
-                },
-                {
-                    id: 3,
-                    senderName: "World",
-                    content: "Message 3",
-                    time: "10:01",
-                    receiverName: "Đứca"
-                },
-                {
-                    id: 4,
-                    senderName: "World",
-                    content: "Message 4",
-                    time: "23:00",
-                    receiverName: "Đứca"
-                },
-                {
-                    id: 5,
-                    senderName: "Hello",
-                    content: "Message 5",
-                    time: "23:00",
-                    receiverName: "Đứca"
-                },
-                {
-                    id: 6,
-                    senderName: "Lol",
-                    content: "Message 6",
-                    time: "23:00",
-                    receiverName: "Đứca"
-                },
-                {
-                    id: 7,
-                    senderName: "Đứca",
-                    content: "Message 7",
-                    time: "10:01",
-                    receiverName: "World"
-                },
-                {
-                    id: 8,
-                    senderName: "Đứca",
-                    content: "Message 8",
-                    time: "10:01",
-                    receiverName: "World"
-                },
-                {
-                    id: 9,
-                    senderName: "Đứca",
-                    content: "Message 9",
-                    time: "10:01",
-                    receiverName: "World"
-                }
-            ]
-        };
-
-        let user = {
-            name: "Đứca",
-            gender: "Nam",
-            DoB: "10-02-2003",
-            phoneNumber: "+84123",
-            backgroundImgURL: "https://carwow-uk-wp-3.imgix.net/18015-MC20BluInfinito-scaled-e1666008987698.jpg",
-            avatarURL: "https://static2-images.vnncdn.net/files/publish/2022/12/8/meo-1-1416.jpg",
-        };
-        let user2 = {
-            name: "World",
-            gender: "Nam",
-            DoB: "10-02-2003",
-            phoneNumber: "+84123",
-            backgroundImgURL: "https://carwow-uk-wp-3.imgix.net/18015-MC20BluInfinito-scaled-e1666008987698.jpg",
-            avatarURL: "https://static2-images.vnncdn.net/files/publish/2022/12/8/meo-1-1416.jpg",
-        };
-
-
-
-        renderConversation(messageList.message, user);
-
-
-
-        // <div class="message-item">
-        //     <div class="user-avatar">
-        //         <img class="avatar-image" src="~/img/user.png" />
-        //     </div>
-        //     <div class="message-list">
-        //         <div class="message-row">
-        //             <div class="message">
-        //                 <div class="user-name">
-        //                     Lê Thị B
-        //                 </div>
-        //                 <div class="message-content">
-        //                     Helloaaaaa
-        //                 </div>
-        //                 <div class="message-time">
-        //                     11:00
-        //                 </div>
-        //             </div>
-        //         </div>
-        //         <div class="message-row">
-        //             <div class="message">
-        //                 <div class="message-content">
-        //                     Helloaaaaaaa
-        //                 </div>
-        //                 <div class="message-time">
-        //                     11:00
-        //                 </div>
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
-
-        function renderConversation(messageObjectList, currentUserObject) {
-            console.log("renderConversation: messageObjectList " + messageObjectList.length);
-            let currentUserName = currentUserObject.name;
-            let lastSenderName = messageObjectList[0].senderName;
-            let countSameUserMessage = 0;
-            let isSender = false;
-
-            let startIndex = 0;
-            let endIndex = 0;
-
-            while (true) {
-                //Handle the last message
-                if (endIndex == messageObjectList.length) {
-                    isSender = (currentUserObject.name === messageObjectList[startIndex].senderName);
-                    let subMessageList = messageObjectList.slice(startIndex, endIndex);
-                    let messageItemContainer = renderMessageItemContainer(subMessageList, isSender);
-                    $(MESSAGE_CONTAINER).append(messageItemContainer);
-                    break;
-                }
-
-                if (messageObjectList[endIndex].senderName === messageObjectList[startIndex].senderName) {
-                    endIndex += 1;
-                } else {
-                    isSender = (currentUserObject.name === messageObjectList[startIndex].senderName);
-                    let subMessageList = messageObjectList.slice(startIndex, endIndex);
-                    let messageItemContainer = renderMessageItemContainer(subMessageList, isSender);
-                    $(MESSAGE_CONTAINER).append(messageItemContainer);
-
-                    //update startIndex
-                    startIndex = endIndex;
-                }
-
-            }
-
-
-        }
-
-
-        function renderMessageItemContainer(messageObjectList, isSender) {
-            console.log("renderMessageItemContainer: " + messageObjectList.length);
-            let messageItemContainer = generateElement("div", "message-item-container " + (isSender ? "sender" : "receiver"));
-
-            let messageItem = generateElement("div", "message-item");
-
-            let messageList = generateElement("div", "message-list");
-            $(messageItem).append(messageList);
-            $(messageItemContainer).append(messageItem);
-            if (isSender) {
-                let userAvatar = generateElement("div", "user-avatar");
-                let imgAvatar = generateElement("img", "avatar-image");
-                //load data here
-                $(messageItem).append(userAvatar);
-                $(userAvatar).append(imgAvatar);
-            }
-
-            let messageRow = renderMessageRow(messageObjectList, isSender);
-            $(messageList).append(messageRow);
-
-            return messageItemContainer;
-        }
-
-        function renderMessageRow(messageObjectList, isSender) {
-            console.log("renderMessageRow");
-            let messageRow = generateElement("div", "message-row");
-            for (let i = 0; i < messageObjectList.length; i++) {
-                let message = renderMessage(messageObjectList[i], (i == 0 ? true : false), isSender);
-                $(messageRow).append(message);
-            }
-            return messageRow;
-        }
-
-        function renderMessage(messageObject, isFirstMessage, isSender) {
-            console.log("renderMessage");
-            let message = generateElement("div", "message");
-            // Only first message has name
-            if (isFirstMessage) {
-                let userName = generateElement("div", "user-name");
-
-                $(userName).text(messageObject.senderName);
-                $(message).append(userName);
-            }
-
-            let messageContent = generateElement("div", "message-content");
-            $(messageContent).text(messageObject.content);
-            let messageTime = generateElement("div", "message-time");
-            $(messageTime).text(messageObject.time);
-
-            $(message).append(messageContent);
-            $(message).append(messageTime);
-            return message;
-        }
-
-
-        function generateElement(eleName, className) {
-            let element = document.createElement(eleName);
-            element.className = className;
-            return element;
-        }
-
-    });
-</script>

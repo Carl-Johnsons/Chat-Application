@@ -6,10 +6,10 @@ namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MessageController : ControllerBase
+    public class MessagesController : ControllerBase
     {
         MessageRepository messageRepository;
-        public MessageController()
+        public MessagesController()
         {
             messageRepository = new MessageRepository();
         }
@@ -39,6 +39,17 @@ namespace ChatAPI.Controllers
         public IActionResult GetIndividualMessage()
         {
             var individualMessages = messageRepository.GetIndividualMessageList();
+            if (individualMessages == null)
+            {
+                return NotFound();
+            }
+            return Ok(individualMessages);
+        }
+
+        [HttpGet("GetIndividualMessage/{senderId}/{receiverId}")]
+        public IActionResult GetIndividualMessage(int senderId, int receiverId)
+        {
+            var individualMessages = messageRepository.GetIndividualMessageList(senderId, receiverId);
             if (individualMessages == null)
             {
                 return NotFound();

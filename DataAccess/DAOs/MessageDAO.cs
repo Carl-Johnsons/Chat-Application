@@ -41,6 +41,17 @@ namespace DataAccess.DAOs
             var individualMessages = context.IndividualMessages.Include(im => im.Message).ToList();
             return individualMessages;
         }
+        public IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId)
+        {
+            using var context = new ChatApplicationContext();
+            var individualMessages = context.IndividualMessages
+                .Include(im => im.Message)
+                .Where(im =>
+                (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
+                || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
+                .ToList();
+            return individualMessages;
+        }
 
         public Message GetMessageByID(int messageId)
         {

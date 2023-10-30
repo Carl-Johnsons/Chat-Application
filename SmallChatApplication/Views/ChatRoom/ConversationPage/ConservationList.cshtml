@@ -62,7 +62,14 @@
 
     .conversation-avatar > img {
         width: 50px;
-        padding: 10px;
+        height: 50px;
+        border-radius: 50%;
+        margin: 0.4rem;
+    }
+
+    .conversation-description .conversation-name {
+        margin-top: 0.5rem;
+        font-size: 1.1rem;
     }
 
     .conversation-last-message {
@@ -166,29 +173,4 @@
         });
     });
 </script>
-   
-<script>
-    // Conservation list script
-    $(document).ready(function () {
-        const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
 
-        let conversations = CONVERSATION_LIST_CONTAINER.find(".conversation");
-        conversations.each(function () {
-            $(this).click(function () {
-                disableAllConversations();
-                activateConversation($(this));
-            });
-        });
-
-        function disableAllConversations() {
-            conversations.each(function () {
-                if ($(this).hasClass("active")) {
-                    $(this).removeClass("active");
-                }
-            })
-        }
-        function activateConversation(conversationDiv) {
-            conversationDiv.addClass("active");
-        }
-    });
-</script>
