@@ -214,17 +214,18 @@ ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) 
             //user is global attribute, it's declare in layout.cshtml
             // Sender is the one who send the request not the current user
             // The current user is the one who accept the friend request
-            url: BASE_ADDRESS + "/api/Users/RemoveFriendRequest/" + senderId + "/" + user.userId,
+            url: BASE_ADDRESS + "/api/Users/AddFriend/" + senderId + "/" + user.userId,
             dataType: "json",
-            method: "DELETE",
+            method: "POST",
             contentType: "application/json",
             success: function (data, textStatus, jQxhr) {
-                //Notify other user
-                //connection.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
-                //    console.log("Error when notify deleting friend");
-                //});
+                //Notify who sent the friend request that they are friend
+                connection.invoke("SendAcceptFriendRequest", senderId).catch(function (err) {
+                    console.log("Error when notify add friend");
+                });
 
-                //Updating friend request list
+                //Updating friend request list in who accept friend request sides
+                ChatApplicationNamespace.GetFriendList();
                 ChatApplicationNamespace.GetFriendRequestList();
             },
             error: function (jQxhr, textStatus, errorThrown) {

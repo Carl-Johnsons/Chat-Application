@@ -76,8 +76,29 @@ namespace SmallChatApplication.Hubs
             {
                 await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest");
             }
-
         }
+
+        public async Task SendAcceptFriendRequest(int senderId)
+        {
+            // Notify a list of user because they might have open mulit tab in browsers
+            var senderConnectionIdList = UserConnectionMap.
+                Where(pair => pair.Value.UserId == senderId)
+                .Select(pair => pair.Key)
+                .ToList();
+
+            // If the receiver didn't online, simply do nothing
+            if (senderConnectionIdList.Count <= 0)
+            {
+                return;
+            }
+            foreach (var senderConnectionId in senderConnectionIdList)
+            {
+                await Console.Out.WriteLineAsync("====================================");
+                await Console.Out.WriteLineAsync("Notify sender:" + senderConnectionId + "| Name: " + UserConnectionMap[senderConnectionId].Name);
+                await Clients.Client(senderConnectionId).SendAsync("ReceiveAcceptFriendRequest");
+            }
+        }
+
 
         public async Task JoinRoom(string Name, string Room)
         {

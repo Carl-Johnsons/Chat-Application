@@ -13,7 +13,7 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
     const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 
-    //img
+    //img 
     const backgroundImg = UPDATE_INFO_POPUP_CONTAINER.find(".background-img-container img");
     const avatarImg = UPDATE_INFO_POPUP_CONTAINER.find(".avatar-img-container img");
 
