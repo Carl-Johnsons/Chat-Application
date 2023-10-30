@@ -10,5 +10,6 @@ connection.on("ReceiveAcceptFriendRequest", function () {
     console.log("=========================================");
     console.log("Receive accept friend request notification");
     ChatApplicationNamespace.GetFriendList();
+    console.log("abc");
 });
 
