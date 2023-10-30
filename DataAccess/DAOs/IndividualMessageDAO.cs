@@ -49,20 +49,11 @@ namespace DataAccess.DAOs
         }
         public int Add(IndividualMessage individualMessage)
         {
-
             try
             {
-                IndividualMessage _individualMessage = GetIndividualMessageByID(individualMessage.MessageId);
-                if (_individualMessage == null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.IndividualMessages.Add(individualMessage);
-                    return context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The individual message is already exist.");
-                }
+                using var context = new ChatApplicationContext();
+                context.IndividualMessages.Add(individualMessage);
+                return context.SaveChanges();
 
             }
             catch (Exception ex)
@@ -95,6 +86,7 @@ namespace DataAccess.DAOs
             }
 
         }
+
         public int DeleteIndividualMessage(int messageId)
         {
 

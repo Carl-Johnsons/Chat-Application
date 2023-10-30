@@ -138,12 +138,12 @@ public partial class ChatApplicationContext : DbContext
 
             entity.HasOne(d => d.GroupReceiver).WithMany()
                 .HasForeignKey(d => d.GroupReceiverId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupMess__Group__3D5E1FD2");
 
             entity.HasOne(d => d.Message).WithMany()
                 .HasForeignKey(d => d.MessageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupMess__Messa__3C69FB99");
         });
 
@@ -176,12 +176,12 @@ public partial class ChatApplicationContext : DbContext
 
             entity.HasOne(d => d.Message).WithMany()
                 .HasForeignKey(d => d.MessageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Individua__Messa__398D8EEE");
 
             entity.HasOne(d => d.UserReceiver).WithMany()
                 .HasForeignKey(d => d.UserReceiverId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Individua__User___3A81B327");
         });
 

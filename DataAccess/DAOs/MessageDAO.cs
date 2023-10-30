@@ -62,8 +62,9 @@ namespace DataAccess.DAOs
             if (message == null)
             {
                 return 0;
-
             }
+            Console.WriteLine("Message Id is :" + message.MessageId);
+
             using var context = new ChatApplicationContext();
             context.Messages.Add(message);
             return context.SaveChanges();
@@ -73,13 +74,18 @@ namespace DataAccess.DAOs
         {
             try
             {
+                if (individualMessage == null)
+                {
+                    return 0;
+                }
+
                 Console.WriteLine("individual message is " + individualMessage);
                 Console.WriteLine("Message is " + individualMessage.Message);
-                int result = AddMessage(individualMessage.Message);
-                if (result == 0)
-                {
-                    throw new Exception("Add individual message failed");
-                }
+                //int result = AddMessage(individualMessage.Message);
+                //if (result == 0)
+                //{
+                //    throw new Exception("Add individual message failed");
+                //}
                 return IndividualMessageDAO.Instance.Add(individualMessage);
             }
             catch (Exception ex)
@@ -111,17 +117,23 @@ namespace DataAccess.DAOs
 
         public int DeleteMessage(int messageId)
         {
-
-            Message mess = GetMessageByID(messageId);
-            if (mess != null)
+            try
             {
-                using var context = new ChatApplicationContext();
-                context.Messages.Remove(mess);
-                return context.SaveChanges();
+                Message mess = GetMessageByID(messageId);
+                if (mess != null)
+                {
+                    using var context = new ChatApplicationContext();
+                    context.Messages.Remove(mess);
+                    return context.SaveChanges();
+                }
+                else
+                {
+                    return 0;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return 0;
+                throw new Exception(ex.Message);
             }
         }
         public int DeleteIndividualMessage(int messageId)
