@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BussinessObject.Migrations
 {
     [DbContext(typeof(ChatApplicationContext))]
-    [Migration("20231030033732_Update_DeleteBehaviourCasadeForMessage")]
-    partial class Update_DeleteBehaviourCasadeForMessage
+    [Migration("20231030083450_Initial_Create")]
+    partial class Initial_Create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -97,15 +97,6 @@ public partial class ChatApplicationContext : DbContext
             entity.Property(e => e.GroupName)
                 .HasMaxLength(50)
                 .HasColumnName("Group_Name");
-
-            entity.HasOne(d => d.GroupDeputy).WithMany(p => p.GroupGroupDeputies)
-                .HasForeignKey(d => d.GroupDeputyId)
-                .HasConstraintName("FK__Group__Group_Dep__30F848ED");
-
-            entity.HasOne(d => d.GroupLeader).WithMany(p => p.GroupGroupLeaders)
-                .HasForeignKey(d => d.GroupLeaderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Group__Group_Lea__300424B4");
         });
 
         modelBuilder.Entity<GroupBlock>(entity =>
@@ -204,7 +195,7 @@ public partial class ChatApplicationContext : DbContext
             entity.Property(e => e.SenderId).HasColumnName("Sender_ID");
             entity.Property(e => e.Time).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Sender).WithMany(p => p.Messages)
+            entity.HasOne(d => d.Sender).WithMany()
                 .HasForeignKey(d => d.SenderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Message__Sender___37A5467C");

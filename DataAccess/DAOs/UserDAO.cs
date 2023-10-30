@@ -34,7 +34,7 @@ namespace DataAccess.DAOs
         public List<User> GetUserList()
         {
             using var context = new ChatApplicationContext();
-            var users = context.Users.Include(u => u.GroupGroupDeputies).Include(u => u.GroupGroupLeaders).Include(u => u.Messages).ToList();
+            var users = context.Users.ToList();
             return users;
         }
 

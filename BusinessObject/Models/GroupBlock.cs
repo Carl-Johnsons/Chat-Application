@@ -11,5 +11,5 @@ public partial class GroupBlock
 
     public virtual User BlockedUser { get; set; } = null!;
 
-    public virtual User Group { get; set; } = null!;
+    public virtual Group Group { get; set; } = null!;
 }
