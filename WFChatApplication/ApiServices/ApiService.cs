@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WFChatApplication.ApiServices
 {
-    public partial class ApiServices
+    public partial class ApiService
     {
     }
 }

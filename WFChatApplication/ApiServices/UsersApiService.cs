@@ -3,20 +3,26 @@ using System.Net.Http.Json;
 
 namespace WFChatApplication.ApiServices
 {
-    public partial class ApiServices
+    public partial class ApiService
     {
         public static async Task<List<User>> GetUserListAsync(string _path)
         {
-            using (var client = new HttpClient())
-            {
-                List<User> users = null;
-                HttpResponseMessage response = await client.GetAsync(_path);
-                if (response.IsSuccessStatusCode)
+            try {
+                using (var client = new HttpClient())
                 {
-                    users = await response.Content.ReadFromJsonAsync<List<User>>();
+                    List<User> users = null;
+                    HttpResponseMessage response = await client.GetAsync(_path);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        users = await response.Content.ReadFromJsonAsync<List<User>>();
+                    }
+                    return users;
                 }
-                return users;
             }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
         }
 
 

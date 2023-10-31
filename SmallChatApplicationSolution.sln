@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.Data Layer", "3.Data Laye
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{90EE1D50-0A4B-4540-B38F-41AFAEC07650}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatAPI", "ChatAPI\ChatAPI.csproj", "{630747FA-2543-4D4C-B29B-BDDB750C2DFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatAPI", "ChatAPI\ChatAPI.csproj", "{630747FA-2543-4D4C-B29B-BDDB750C2DFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

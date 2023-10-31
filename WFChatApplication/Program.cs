@@ -1,3 +1,6 @@
+using BussinessObject.Models;
+using WFChatApplication.ApiServices;
+
 namespace WFChatApplication
 {
     internal static class Program
@@ -13,5 +16,6 @@ namespace WFChatApplication
             ApplicationConfiguration.Initialize();
             Application.Run(new frmMain());
         }
+    
     }
 }

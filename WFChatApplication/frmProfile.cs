@@ -8,14 +8,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BussinessObject;
+using BussinessObject.Models;
 
 namespace WFChatApplication
 {
     public partial class frmProfile : Form
     {
+        public User UserInfo {  get; set; }
+
         public frmProfile()
         {
             InitializeComponent();
+            lb_name.Text = UserInfo.Name;
+            lb_Gender.Text = UserInfo.Gender;
+            lb_birthday.Text = UserInfo.Dob.ToString("dd/MM/yyyy");
+            lb_phoneNumber.Text = UserInfo.PhoneNumber;
+            ptb_avatar.ImageLocation = UserInfo.AvatarUrl;
+            ptb_background.ImageLocation = UserInfo.BackgroundUrl;
         }
 
 

@@ -79,15 +79,7 @@ namespace WFChatApplication
             this.BackColor = Color.White;
         }
 
-        //private void panel_item_hitbox_MouseEnter(object sender, EventArgs e)
-        //{
-        //    panel_item_MouseEnter(sender, e);
-        //}
-
-        //private void panel_item_hitbox_MouseLeave(object sender, EventArgs e)
-        //{
-        //    panel_item_hitbox_MouseLeave(sender, e);
-        //}
+        
 
 
     }

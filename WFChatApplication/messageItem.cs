@@ -96,7 +96,7 @@ namespace WFChatApplication
                 ReceiverdMessageSenderAvatar.Size = new Size(40, 40);
                 ReceiverdMessageSenderAvatar.SizeMode = PictureBoxSizeMode.StretchImage;
            
-                LoadImageFromUrl("https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-1/313404649_1449466208899373_2300191788456403089_n.jpg?stp=dst-jpg_p320x320&_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=3OVnbdQ-HBgAX93faQQ&_nc_ht=scontent.fsgn2-7.fna&oh=00_AfB5-xxlQBR8sEAo4nDAq-tIqKDjCLmuG83wsDSy0jwrJA&oe=653608AF", ReceiverdMessageSenderAvatar);
+                LoadImageFromUrl("https://www.hindustantimes.com/ht-img/img/2023/08/25/550x309/international_dog_day_1692974397743_1692974414085.jpg", ReceiverdMessageSenderAvatar);
                 
                 GraphicsPath gp = new GraphicsPath();
                 gp.AddEllipse(0, 0, ReceiverdMessageSenderAvatar.Width, ReceiverdMessageSenderAvatar.Height);
@@ -113,13 +113,6 @@ namespace WFChatApplication
             Console.WriteLine(height);
             MessageRowPanel.Size = new Size(0, height+50);
             MessageRowPanel.Dock = DockStyle.Bottom;
-
-
-
-          
-
-            //panel3.VerticalScroll.Value += childPanel.Height;
-
 
         }
 
