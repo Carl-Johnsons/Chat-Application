@@ -18,18 +18,18 @@ namespace WFChatApplication
 {
     public partial class frmMain : Form
     {
-        public User CurrentUser {  get; set; }
+        public User CurrentUser { get; set; }
 
         public frmMain()
         {
             InitializeComponent();
-           
+
         }
 
-      
-        
 
-       
+
+
+
 
         private bool isMaximized = false;
         private int normalWidth;
@@ -94,11 +94,17 @@ namespace WFChatApplication
 
         private void LoadChatList()
         {
-            for (int i = 0; i < 20; i++)
+            var FriendList = Task.Run(async () => await ApiService.GetFriendAsync(CurrentUser.UserId)).Result;
+            int i = 0;
+            foreach (var friend in FriendList)
             {
-                panelItem pnlItem = new panelItem(i);
-                panel_list.Controls.Add(pnlItem);
+                panelItem panelItem = new panelItem(i, friend.FriendNavigation);
+                i++;
             }
+
+
+
+
             panel_list.ResumeLayout(false);
             panel_list.PerformLayout();
 
@@ -186,7 +192,7 @@ namespace WFChatApplication
             normalWidth = this.Width;
             normalHeight = this.Height;
             normalLocation = this.Location;
-       
+
 
         }
 
@@ -254,7 +260,7 @@ namespace WFChatApplication
 
         private void btn_send_Click(object sender, EventArgs e)
         {
-       
+
 
             ShowSendedMessage(chat_textbox.Text);
         }
