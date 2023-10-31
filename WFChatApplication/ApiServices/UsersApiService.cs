@@ -131,7 +131,7 @@ namespace WFChatApplication.ApiServices
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(BASE_ADDRESS);
-                    string url = $"api/Users/Login/{phoneNumber}/{password}";
+                    string url = $"{USERS_API_BASE_ADDRESS}/Login/{phoneNumber}/{password}";
                     User user = null;
                     HttpResponseMessage response = await client.PostAsync(url, null);
                     if (response.IsSuccessStatusCode)
@@ -147,6 +147,23 @@ namespace WFChatApplication.ApiServices
             }
             return null;
         }
-
+        //================================== PUT SECTION ==================================
+        public static async Task UpdateUserAsync(int id, User user)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(BASE_ADDRESS);
+                    string url = $"{USERS_API_BASE_ADDRESS}/{id}";
+                    HttpResponseMessage response = await client.PostAsJsonAsync(url, user);
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+            }
+        }
     }
 }

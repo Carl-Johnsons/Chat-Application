@@ -75,7 +75,6 @@ namespace ChatAPI.Controllers
                 senderId = individualMessage.Message.SenderId,
                 receiverId = individualMessage.UserReceiverId
             }, individualMessage);
-
         }
         [HttpDelete("DeleteMessage/{messageId}")]
         public IActionResult DeleteMessage(int messageId)
