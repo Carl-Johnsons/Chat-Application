@@ -8,5 +8,6 @@ namespace WFChatApplication.ApiServices
 {
     public partial class ApiService
     {
+        private const string BASE_ADDRESS = "https://localhost:7190/";
     }
 }
