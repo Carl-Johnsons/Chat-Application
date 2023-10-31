@@ -11,9 +11,18 @@ _CONNECTION.on("ReceiveAcceptFriendRequest", function () {
 });
 
 _CONNECTION.on("ReceiveIndividualMessage", function (newIndividualMessage) {
+    //convert Pascal Case attribute (Violate json naming covention) into camel case
     let newMessageObj = convertToCamelCase(JSON.parse(newIndividualMessage));
     console.log(newMessageObj);
-    ChatApplicationNamespace.LoadNewMessage(newMessageObj);
+    let senderId = ConservationListNamespace.GetActiveConversationUserId();
+
+    if (newIndividualMessage && senderId == newMessageObj?.message?.senderId) {
+        console.log("active conversation: " + newMessageObj?.message?.senderId);
+        ChatApplicationNamespace.LoadNewMessage(newMessageObj);
+    } else {
+        console.log("the conversation didn't active: " + senderId + "|" + newMessageObj?.message?.senderId);
+    }
+
 })
 
 function convertToCamelCase(obj) {

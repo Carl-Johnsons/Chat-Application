@@ -110,3 +110,12 @@ ConservationListNamespace.AddClickEvent = function () {
         conversationDiv.addClass("active");
     }
 }
+
+ConservationListNamespace.GetActiveConversationUserId = function () {
+    const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
+    let activeConversation = CONVERSATION_LIST_CONTAINER.find("div.conversation.active");
+    let userId = $(activeConversation).attr("data-user-id");
+
+    return userId;
+};
+
