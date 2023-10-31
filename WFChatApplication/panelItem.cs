@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WFChatApplication.ApiServices;
 
 namespace WFChatApplication
 {
@@ -16,11 +17,16 @@ namespace WFChatApplication
 
         public Label itemContent { get; set; }
 
-    
+        public frmMain MainForm { get; set; }
+
+        public User User { get; set; }
 
 
-        public panelItem(int index, User UserInfo)
+        public panelItem(int index, User UserInfo, frmMain main)
         {
+            MainForm = main;
+            User = UserInfo;
+            main.Receiver = User;
             itemPictureBox = new PictureBox();
             itemContent = new Label();
             itemName = new Label();
@@ -29,7 +35,7 @@ namespace WFChatApplication
             this.itemPictureBox.Location = new Point(10, 10);
             this.itemPictureBox.Size = new Size(60,60);
             this.itemPictureBox.ImageLocation = UserInfo.AvatarUrl;
-            this.itemPictureBox.BackgroundImageLayout = ImageLayout.Zoom;
+            this.itemPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             GraphicsPath gp = new GraphicsPath();
             gp.AddEllipse(0, 0, itemPictureBox.Width, itemPictureBox.Height);
             Region rg = new Region(gp);
@@ -54,6 +60,7 @@ namespace WFChatApplication
 
 
             this.BackColor = Color.White;
+            this.Click += panel_item_Click;
             this.MouseEnter += panel_item_MouseEnter;
             this.MouseLeave += panel_item_MouseLeave;
             this.Size = new Size(340, 80);
@@ -76,6 +83,25 @@ namespace WFChatApplication
         private void panel_item_MouseLeave(object sender, EventArgs e)
         {
             this.BackColor = Color.White;
+        }
+
+        private async void panel_item_Click(object sender, EventArgs e)
+        {
+            MainForm.panel_message.Controls.Clear();
+            var IndividualMessages = await ApiService.GetIndividualMessageAsync(MainForm.CurrentUser.UserId, User.UserId);
+            foreach ( var im in IndividualMessages)
+            {
+                if(im.Message.SenderId == MainForm.CurrentUser.UserId)
+                {
+                    MainForm.ShowSendedMessage(im);
+                }
+                else
+                {
+                    MainForm.ShowReceivedMessage(im);
+                }
+            }
+            MainForm.Receiver = User;
+
         }
        
 

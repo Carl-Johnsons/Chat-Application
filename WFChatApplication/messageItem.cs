@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BussinessObject.Models;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -14,7 +15,7 @@ namespace WFChatApplication
 
         public int ReceivedMessageSenderID { get; set; }
         public bool SendOrReceive { get; set; }
-        public string MessageContent { get; set; }
+        public IndividualMessage IndividualMessage { get; set; }
         public string Time { get; set; }
         public Panel MessagePanel { get; set; }
 
@@ -27,16 +28,14 @@ namespace WFChatApplication
 
         public PictureBox ReceiverdMessageSenderAvatar { get; set; }
 
-        public messageItem(bool isSend, string content, bool isHaveAvatar)
+        public messageItem(bool isSend, IndividualMessage _IndividualMessage, bool isHaveAvatar, frmMain frmMain)
         {
 
 
             SendOrReceive = isSend;
-            Time = "10:24";
-            MessageContent = content;
+         
+    
            
-
-
             MessageLabel = new Label();
             MessageLabel.AutoEllipsis = true;
             MessageLabel.AutoSize = true;
@@ -46,7 +45,7 @@ namespace WFChatApplication
             MessageLabel.Name = "message_label";
             //MessageLabel.Size = new Size(52, 24);
             MessageLabel.TabIndex = 1;
-            MessageLabel.Text = content;
+            MessageLabel.Text = _IndividualMessage.Message.Content;
 
             TimeLabel = new Label();
             TimeLabel.AutoSize = true;
@@ -54,7 +53,7 @@ namespace WFChatApplication
             TimeLabel.ForeColor = SystemColors.ControlDarkDark;
             TimeLabel.Name = "time_label";
             //TimeLabel.Size = new Size(43, 20);
-            TimeLabel.Text = "10:24";
+            TimeLabel.Text = _IndividualMessage.Message.Time.ToString("dd/MM/yyyy");
 
             MessagePanel = new Panel();
             MessagePanel.AutoSize = true;
@@ -71,7 +70,7 @@ namespace WFChatApplication
                 MessagePanel.BackColor = Color.FromArgb(229, 239, 255);
                 MessagePanel.Dock = DockStyle.Right;
             }
-            if (!isSend) {
+            else {
                 MessagePanel.BackColor = Color.FromArgb(255, 255, 255);
                 MessagePanel.Dock = DockStyle.Left;
 
@@ -96,7 +95,7 @@ namespace WFChatApplication
                 ReceiverdMessageSenderAvatar.Size = new Size(40, 40);
                 ReceiverdMessageSenderAvatar.SizeMode = PictureBoxSizeMode.StretchImage;
            
-                LoadImageFromUrl("https://www.hindustantimes.com/ht-img/img/2023/08/25/550x309/international_dog_day_1692974397743_1692974414085.jpg", ReceiverdMessageSenderAvatar);
+                LoadImageFromUrl(frmMain.Receiver.AvatarUrl, ReceiverdMessageSenderAvatar);
                 
                 GraphicsPath gp = new GraphicsPath();
                 gp.AddEllipse(0, 0, ReceiverdMessageSenderAvatar.Width, ReceiverdMessageSenderAvatar.Height);

@@ -180,7 +180,6 @@ namespace WFChatApplication
             ptbUserAvatar.TabIndex = 13;
             ptbUserAvatar.TabStop = false;
             ptbUserAvatar.Click += ptbUserAvatar_Click;
-            ptbUserAvatar.Paint += ptbUserAvatar_Paint;
             // 
             // panel_contact_btn
             // 
@@ -439,7 +438,6 @@ namespace WFChatApplication
             ptb_chatbox_info_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
             ptb_chatbox_info_avatar.TabIndex = 7;
             ptb_chatbox_info_avatar.TabStop = false;
-            ptb_chatbox_info_avatar.Paint += ptb_chatbox_info_avatar_Paint;
             // 
             // panel_contain_list
             // 
@@ -462,6 +460,7 @@ namespace WFChatApplication
             Controls.Add(panel_layout_screen);
             Controls.Add(panel_vertical_tab);
             Controls.Add(panel_tab);
+            DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.None;
             Name = "frmMain";
             StartPosition = FormStartPosition.CenterScreen;
@@ -522,6 +521,6 @@ namespace WFChatApplication
         private Panel panel_chatextbox_margin;
         private Button btn_receive;
         private Button btn_send;
-        private Panel panel_message;
+        public  Panel panel_message { get; set; }
     }
 }

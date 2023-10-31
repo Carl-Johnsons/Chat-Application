@@ -79,7 +79,7 @@ namespace WFChatApplication.ApiServices
             }
             return null;
         }
-        public static async Task<IndividualMessage> GetIndividualMessageAsync(int senderId, int receiverId)
+        public static async Task<List<IndividualMessage>> GetIndividualMessageAsync(int senderId, int receiverId)
         {
             try
             {
@@ -87,13 +87,13 @@ namespace WFChatApplication.ApiServices
                 {
                     client.BaseAddress = new Uri(BASE_ADDRESS);
                     string url = $"{MESSAGES_API_BASE_ADDRESS}/GetIndividualMessage/{senderId}/{receiverId}";
-                    IndividualMessage individualMessage = null;
+                    List<IndividualMessage> individualMessages = null;
                     HttpResponseMessage response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode)
                     {
-                        individualMessage = await response.Content.ReadFromJsonAsync<IndividualMessage>();
+                        individualMessages = await response.Content.ReadFromJsonAsync<List<IndividualMessage>>();
                     }
-                    return individualMessage;
+                    return individualMessages;
                 }
             }
             catch (Exception ex)

@@ -13,6 +13,7 @@ using WFChatApplication.ApiServices;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using BussinessObject;
 using BussinessObject.Models;
+using Message = BussinessObject.Models.Message;
 
 namespace WFChatApplication
 {
@@ -38,7 +39,7 @@ namespace WFChatApplication
         private System.Drawing.Point normalLocation;
         int TotalHeightPanelMessageScreen = 0;
         private string lastMessageId = "send";
-
+        public User Receiver {  get; set; }
 
         private void LoadImageFromUrl(string url, PictureBox pictureBox)
         {
@@ -58,25 +59,10 @@ namespace WFChatApplication
         }
 
 
+
+
         //For paint circle avatar--------------------------------------------------------------------------------
-        private void ptbUserAvatar_Paint(object sender, PaintEventArgs e)
-        {
-            LoadImageFromUrl(CurrentUser.AvatarUrl, ptbUserAvatar);
-            GraphicsPath gp = new GraphicsPath();
-            gp.AddEllipse(0, 0, ptbUserAvatar.Width, ptbUserAvatar.Height);
-            Region rg = new Region(gp);
-            ptbUserAvatar.Region = rg;
-        }
-
-        private void ptb_chatbox_info_avatar_Paint(object sender, PaintEventArgs e)
-        {
-            LoadImageFromUrl("https://www.hindustantimes.com/ht-img/img/2023/08/25/550x309/international_dog_day_1692974397743_1692974414085.jpg", ptb_chatbox_info_avatar);
-            GraphicsPath gp = new GraphicsPath();
-            gp.AddEllipse(0, 0, ptb_chatbox_info_avatar.Width, ptb_chatbox_info_avatar.Height);
-            Region rg = new Region(gp);
-            ptb_chatbox_info_avatar.Region = rg;
-        }
-
+        
         //**For paint circle avatar--------------------------------------------------------------------------------
 
 
@@ -92,13 +78,14 @@ namespace WFChatApplication
         }
 
 
-        private void LoadChatList()
+        private async void LoadChatList()
         {
-            var FriendList = Task.Run(async () => await ApiService.GetFriendAsync(CurrentUser.UserId)).Result;
+            var FriendList = await ApiService.GetFriendAsync(CurrentUser.UserId);
             int i = 0;
             foreach (var friend in FriendList)
             {
-                panelItem panelItem = new panelItem(i, friend.FriendNavigation);
+                panelItem panelItem = new panelItem(i, friend.FriendNavigation, this);
+                panel_list.Controls.Add(panelItem);
                 i++;
             }
 
@@ -189,6 +176,25 @@ namespace WFChatApplication
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            //avatar
+            Console.WriteLine("ptbUserAvatar_Paint");
+            LoadImageFromUrl(CurrentUser.AvatarUrl, ptbUserAvatar);
+            GraphicsPath gp = new GraphicsPath();
+            gp.AddEllipse(0, 0, ptbUserAvatar.Width, ptbUserAvatar.Height);
+            Region rg = new Region(gp);
+            ptbUserAvatar.Region = rg;
+
+
+            //chat avatar
+            Console.WriteLine("ptb_chatbox_info_avatar_Paint2");
+            //ptb_chatbox_info_avatar.ImageLocation = CurrentUser.AvatarUrl;
+            LoadImageFromUrl("https://www.hindustantimes.com/ht-img/img/2023/08/25/550x309/international_dog_day_1692974397743_1692974414085.jpg", ptb_chatbox_info_avatar);
+            GraphicsPath gp1 = new GraphicsPath();
+            gp1.AddEllipse(0, 0, ptb_chatbox_info_avatar.Width, ptb_chatbox_info_avatar.Height);
+            Region rg2 = new Region(gp1);
+            ptb_chatbox_info_avatar.Region = rg2;
+
+
             normalWidth = this.Width;
             normalHeight = this.Height;
             normalLocation = this.Location;
@@ -224,9 +230,9 @@ namespace WFChatApplication
             }
         }
 
-        public void ShowSendedMessage(string messageContent)
+        public void ShowSendedMessage(IndividualMessage IndividualMessage)
         {
-            messageItem messageItem = new messageItem(true, messageContent, false);
+            messageItem messageItem = new messageItem(true, IndividualMessage, false, this);
 
             panel_message.Controls.Add(messageItem.MessageRowPanel);
             panel_message.AutoScrollMinSize = new Size(0, messageItem.MessageRowPanel.Height);
@@ -234,7 +240,7 @@ namespace WFChatApplication
             lastMessageId = "send";
         }
 
-        public void ShowReceivedMessage(string messageContent)
+        public void ShowReceivedMessage(IndividualMessage individualMessage)
         {
             bool isHaveAvatar = false;
             if (lastMessageId == "received")
@@ -245,7 +251,7 @@ namespace WFChatApplication
             {
                 isHaveAvatar = true;
             }
-            messageItem messageItem = new messageItem(false, messageContent, isHaveAvatar);
+            messageItem messageItem = new messageItem(false, individualMessage, isHaveAvatar, this);
             panel_message.Controls.Add(messageItem.MessageRowPanel);
             panel_message.AutoScrollMinSize = new Size(0, messageItem.MessageRowPanel.Height);
             panel_message.AutoScrollPosition = new Point(0, panel_message_screen.VerticalScroll.Maximum + 100);
@@ -258,16 +264,32 @@ namespace WFChatApplication
 
         }
 
-        private void btn_send_Click(object sender, EventArgs e)
+        private async void btn_send_Click(object sender, EventArgs e)
         {
+            string Content = chat_textbox.Text;
+       
+            IndividualMessage message = new IndividualMessage {
+                UserReceiverId = Receiver.UserId,
+                Status = "string",
+                Message = new Message {
+                    SenderId = CurrentUser.UserId,
+                    Content = Content,
+                    Time = DateTime.Now,
+                    MessageType = "Individual",
+                    MessageFormat = "Text",
+                    Active = true
+                }
+            };
 
-
-            ShowSendedMessage(chat_textbox.Text);
+            await ApiService.SendIndividualMessageAsync(message);
+            ShowSendedMessage(message);
         }
 
         private void btn_receive_Click(object sender, EventArgs e)
         {
-            ShowReceivedMessage(chat_textbox.Text);
+
+
+            //ShowReceivedMessage(chat_textbox.Text);
         }
 
         private void ptbUserAvatar_Click(object sender, EventArgs e)
