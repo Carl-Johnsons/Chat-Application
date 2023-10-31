@@ -5,7 +5,7 @@ namespace WFChatApplication.ApiServices
 {
     public partial class ApiService
     {
-        private const string USERS_API_BASE_ADDRESS = "api/Users/";
+        private const string USERS_API_BASE_ADDRESS = "api/Users";
         //================================== GET SECTION ==================================
         public static async Task<List<User>> GetUserListAsync()
         {

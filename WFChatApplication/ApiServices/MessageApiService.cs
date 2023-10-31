@@ -7,7 +7,7 @@ namespace WFChatApplication.ApiServices
 {
     public partial class ApiService
     {
-        private const string MESSAGES_API_BASE_ADDRESS = "api/Messages/";
+        private const string MESSAGES_API_BASE_ADDRESS = "api/Messages";
         //================================== GET SECTION ==================================
         public static async Task<List<Message>> GetMessageListAsync()
         {
@@ -86,7 +86,7 @@ namespace WFChatApplication.ApiServices
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(BASE_ADDRESS);
-                    string url = $"{MESSAGES_API_BASE_ADDRESS}/{id}";
+                    string url = $"{MESSAGES_API_BASE_ADDRESS}/GetIndividualMessage/{senderId}/{receiverId}";
                     IndividualMessage individualMessage = null;
                     HttpResponseMessage response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode)
