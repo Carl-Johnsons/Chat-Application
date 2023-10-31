@@ -156,7 +156,7 @@ namespace WFChatApplication.ApiServices
                 {
                     client.BaseAddress = new Uri(BASE_ADDRESS);
                     string url = $"{USERS_API_BASE_ADDRESS}/{id}";
-                    HttpResponseMessage response = await client.PostAsJsonAsync(url, user);
+                    HttpResponseMessage response = await client.PutAsJsonAsync(url, user);
                     response.EnsureSuccessStatusCode();
                 }
             }
