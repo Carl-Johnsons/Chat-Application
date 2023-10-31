@@ -18,23 +18,18 @@ namespace WFChatApplication
 {
     public partial class frmMain : Form
     {
+        public User CurrentUser {  get; set; }
+
         public frmMain()
         {
             InitializeComponent();
-
+           
         }
 
-        public async Task test()
-        {
+      
+        
 
-            List<User> Users = await ApiService.GetUserListAsync("https://localhost:7190/api/Users");
-            Console.WriteLine("=======================================================================");
-            Console.WriteLine(Users);
-            foreach (var User in Users)
-            {
-                Console.WriteLine(User.Name);
-            }
-        }
+       
 
         private bool isMaximized = false;
         private int normalWidth;
@@ -66,7 +61,7 @@ namespace WFChatApplication
         //For paint circle avatar--------------------------------------------------------------------------------
         private void ptbUserAvatar_Paint(object sender, PaintEventArgs e)
         {
-            LoadImageFromUrl("https://scontent.fsgn2-9.fna.fbcdn.net/v/t1.6435-9/205708395_1504353913236212_3220869659595925862_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=be3454&_nc_ohc=Q-DDIeUYLXkAX8pWfa7&_nc_ht=scontent.fsgn2-9.fna&oh=00_AfDQTl-W4ZwGI5B9ZEAUEuTEiCHBT35mmaX8fze4ECsWuA&oe=65597CBA", ptbUserAvatar);
+            LoadImageFromUrl(CurrentUser.AvatarUrl, ptbUserAvatar);
             GraphicsPath gp = new GraphicsPath();
             gp.AddEllipse(0, 0, ptbUserAvatar.Width, ptbUserAvatar.Height);
             Region rg = new Region(gp);
@@ -259,7 +254,7 @@ namespace WFChatApplication
 
         private void btn_send_Click(object sender, EventArgs e)
         {
-            test();
+       
 
             ShowSendedMessage(chat_textbox.Text);
         }
@@ -272,6 +267,7 @@ namespace WFChatApplication
         private void ptbUserAvatar_Click(object sender, EventArgs e)
         {
             frmProfile frmProfile = new frmProfile();
+            frmProfile.UserInfo = CurrentUser;
             frmProfile.ShowDialog();
         }
 

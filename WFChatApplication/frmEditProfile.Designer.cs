@@ -40,12 +40,13 @@
             label_update = new Label();
             ptb_camera = new PictureBox();
             label1 = new Label();
-            textBox1 = new TextBox();
+            tbName = new TextBox();
             rdo_male = new RadioButton();
             rdo_femail = new RadioButton();
-            dateTimePicker1 = new DateTimePicker();
+            dtpDoB = new DateTimePicker();
             panel1 = new Panel();
             label4 = new Label();
+            gbGender = new GroupBox();
             panel_tab.SuspendLayout();
             panel_exit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
@@ -54,6 +55,7 @@
             panel_update.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptb_camera).BeginInit();
             panel1.SuspendLayout();
+            gbGender.SuspendLayout();
             SuspendLayout();
             // 
             // panel_tab
@@ -190,14 +192,14 @@
             label1.TabIndex = 14;
             label1.Text = "Display name";
             // 
-            // textBox1
+            // tbName
             // 
-            textBox1.Font = new Font("Arial", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox1.Location = new Point(12, 295);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(465, 34);
-            textBox1.TabIndex = 15;
-            textBox1.TextChanged += textBox1_TextChanged;
+            tbName.Font = new Font("Arial", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            tbName.Location = new Point(12, 295);
+            tbName.Name = "tbName";
+            tbName.Size = new Size(465, 34);
+            tbName.TabIndex = 15;
+            tbName.TextChanged += textBox1_TextChanged;
             // 
             // rdo_male
             // 
@@ -205,12 +207,12 @@
             rdo_male.Checked = true;
             rdo_male.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point);
             rdo_male.ForeColor = SystemColors.ControlDarkDark;
-            rdo_male.Location = new Point(16, 445);
+            rdo_male.Location = new Point(6, 26);
             rdo_male.Name = "rdo_male";
-            rdo_male.Size = new Size(72, 25);
+            rdo_male.Size = new Size(71, 25);
             rdo_male.TabIndex = 16;
             rdo_male.TabStop = true;
-            rdo_male.Text = "Male";
+            rdo_male.Text = "Nam";
             rdo_male.UseVisualStyleBackColor = true;
             // 
             // rdo_femail
@@ -218,22 +220,22 @@
             rdo_femail.AutoSize = true;
             rdo_femail.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point);
             rdo_femail.ForeColor = SystemColors.ControlDarkDark;
-            rdo_femail.Location = new Point(140, 445);
+            rdo_femail.Location = new Point(114, 26);
             rdo_femail.Name = "rdo_femail";
-            rdo_femail.Size = new Size(96, 25);
+            rdo_femail.Size = new Size(57, 25);
             rdo_femail.TabIndex = 17;
             rdo_femail.TabStop = true;
-            rdo_femail.Text = "Female";
+            rdo_femail.Text = "Nữ";
             rdo_femail.UseVisualStyleBackColor = true;
             // 
-            // dateTimePicker1
+            // dtpDoB
             // 
-            dateTimePicker1.CalendarForeColor = SystemColors.ControlDarkDark;
-            dateTimePicker1.Font = new Font("Arial", 10.8F, FontStyle.Regular, GraphicsUnit.Point);
-            dateTimePicker1.Location = new Point(16, 537);
-            dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(260, 28);
-            dateTimePicker1.TabIndex = 18;
+            dtpDoB.CalendarForeColor = SystemColors.ControlDarkDark;
+            dtpDoB.Font = new Font("Arial", 10.8F, FontStyle.Regular, GraphicsUnit.Point);
+            dtpDoB.Location = new Point(16, 537);
+            dtpDoB.Name = "dtpDoB";
+            dtpDoB.Size = new Size(260, 28);
+            dtpDoB.TabIndex = 18;
             // 
             // panel1
             // 
@@ -256,6 +258,16 @@
             label4.TabIndex = 14;
             label4.Text = "Cancel";
             // 
+            // gbGender
+            // 
+            gbGender.Controls.Add(rdo_male);
+            gbGender.Controls.Add(rdo_femail);
+            gbGender.Location = new Point(16, 429);
+            gbGender.Name = "gbGender";
+            gbGender.Size = new Size(247, 60);
+            gbGender.TabIndex = 20;
+            gbGender.TabStop = false;
+            // 
             // frmEditProfile
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -263,11 +275,10 @@
             BackColor = Color.White;
             ClientSize = new Size(500, 657);
             ControlBox = false;
+            Controls.Add(gbGender);
             Controls.Add(panel1);
-            Controls.Add(dateTimePicker1);
-            Controls.Add(rdo_femail);
-            Controls.Add(rdo_male);
-            Controls.Add(textBox1);
+            Controls.Add(dtpDoB);
+            Controls.Add(tbName);
             Controls.Add(label1);
             Controls.Add(ptb_camera);
             Controls.Add(panel_update);
@@ -294,6 +305,8 @@
             ((System.ComponentModel.ISupportInitialize)ptb_camera).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            gbGender.ResumeLayout(false);
+            gbGender.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -312,11 +325,12 @@
         private PictureBox pictureBox4;
         private PictureBox ptb_camera;
         private Label label1;
-        private TextBox textBox1;
+        private TextBox tbName;
         private RadioButton rdo_male;
         private RadioButton rdo_femail;
-        private DateTimePicker dateTimePicker1;
+        private DateTimePicker dtpDoB;
         private Panel panel1;
         private Label label4;
+        private GroupBox gbGender;
     }
 }

@@ -8,11 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BussinessObject;
+using BussinessObject.Models;
 
 namespace WFChatApplication
 {
     public partial class frmEditProfile : Form
     {
+        public User UserInfo { get; set; }
         public frmEditProfile()
         {
             InitializeComponent();
@@ -29,6 +32,14 @@ namespace WFChatApplication
             gp1.AddEllipse(0, 0, ptb_camera.Width, ptb_camera.Height);
             Region rg1 = new Region(gp1);
             ptb_camera.Region = rg1;
+
+            ptb_avatar.ImageLocation = UserInfo.AvatarUrl;
+            ptb_background.ImageLocation = UserInfo.BackgroundUrl;
+
+            rdo_male.Checked = (UserInfo.Gender == "Nam");
+            rdo_femail.Checked = (UserInfo.Gender == "Nữ");
+
+            dtpDoB.Value = UserInfo.Dob;
         }
 
         private void panel_exit_MouseEnter(object sender, EventArgs e)
