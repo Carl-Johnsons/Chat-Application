@@ -1,4 +1,4 @@
-﻿var ApplicationNavbarNamespace = ApplicationNavbarNamespace || {};
+﻿
 
 ApplicationNavbarNamespace.LoadData = function loadData(user) {
     const APPLICATION_NAVBAR = $(".application-nav-bar");

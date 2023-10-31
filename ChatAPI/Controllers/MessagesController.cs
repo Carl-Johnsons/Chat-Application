@@ -70,7 +70,11 @@ namespace ChatAPI.Controllers
             {
                 return BadRequest("Operation add individual message failed");
             }
-            return NoContent();
+            return CreatedAtAction(nameof(GetIndividualMessage), new
+            {
+                senderId = individualMessage.Message.SenderId,
+                receiverId = individualMessage.UserReceiverId
+            }, individualMessage);
 
         }
         [HttpDelete("DeleteMessage/{messageId}")]

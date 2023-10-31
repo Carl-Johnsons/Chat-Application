@@ -1,4 +1,4 @@
-﻿var ContactListNamespace = ContactListNamespace || {};
+﻿
 
 ContactListNamespace.LoadFriendList = function (friendObjectList) {
     //define local
@@ -262,7 +262,7 @@ ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) 
 }
 
 
-
+// Don't use this
 ContactListNamespace.LoadData = function (friendObjectList) {
     const GROUP_CONTACT_LIST_CONTAINER = CONTACT_PAGE_CONTAINER.find(".group-list-container .contact-list-container");
 

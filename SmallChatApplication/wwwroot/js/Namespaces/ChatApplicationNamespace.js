@@ -1,4 +1,4 @@
-﻿var ChatApplicationNamespace = ChatApplicationNamespace || {};
+﻿
 
 ChatApplicationNamespace.LoadUserData = function (user) {
     ApplicationNavbarNamespace.LoadData(user);
@@ -22,8 +22,12 @@ ChatApplicationNamespace.LoadConversationList = function (friendList) {
     ConservationListNamespace.LoadConversationList(friendList);
 }
 ChatApplicationNamespace.LoadConversation = function (messageList) {
-    ConversationNamespace.LoadConversation(messageList);
+    ConversationNamespace.LoadConversation(messageList, "RELOAD");
 };
+ChatApplicationNamespace.LoadNewMessage = function (newMessage) {
+    //this function accept an array so new message has to be an list message with one element
+    ConversationNamespace.LoadConversation([newMessage], "NEW MESSAGE");
+}
 
 
 ChatApplicationNamespace.StartConnection = function () {
@@ -80,10 +84,7 @@ ChatApplicationNamespace.GetCurrentUser = function () {
                 console.error("error when send map user data: " + err.toString());
             });
 
-
             ChatApplicationNamespace.LoadUserData(_USER);
-                    //Test user with id 2, refactor later
-            ChatApplicationNamespace.GetMessageList(2);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -218,7 +219,7 @@ ChatApplicationNamespace.GetFriendRequestList = function () {
 }
 ChatApplicationNamespace.GetMessageList = function (senderId) {
     console.log("Get message list");
-    //User id is the receiver while the other user is the sender
+
     $.ajax({
         url: _BASE_ADDRESS + "/api/Messages/GetIndividualMessage/" + senderId + "/" + _USER_ID,
         dataType: 'json',
@@ -262,6 +263,7 @@ ChatApplicationNamespace.GetMessageList = function (senderId) {
         }
     });
 }
+
 
 
 //Start connection here

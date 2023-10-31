@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using BussinessObject.Models;
 using System.Collections.Concurrent;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SmallChatApplication.Hubs
 {
@@ -52,12 +54,12 @@ namespace SmallChatApplication.Hubs
             //await Console.Out.WriteLineAsync("I'm in SendMessageToGroup");
             //await Clients.Group(user.Room).SendAsync("ReceiveMessage", user.Name, message);
         }
-        public async Task SendIndividualMessage(int senderId, int receiverId)
+        public async Task SendIndividualMessage(IndividualMessage individualMessage)
         {
             // Have to get list because the 1 person can join on 2 different tab on browser
             // So the connectionId may differnect but still 1 userId
             var receiverConnectionIdList = UserConnectionMap.
-                Where(pair => pair.Value.UserId == receiverId)
+                Where(pair => pair.Value.UserId == individualMessage.UserReceiverId)
                 .Select(pair => pair.Key)
                 .ToList();
 
@@ -66,10 +68,19 @@ namespace SmallChatApplication.Hubs
             {
                 return;
             }
+            // Create the settings with CamelCasePropertyNamesContractResolver
+            // if not setting like this, the attribute will be Pascal case will break the data in client-side
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
             foreach (var receiverConnectionId in receiverConnectionIdList)
             {
                 await Console.Out.WriteLineAsync(receiverConnectionId);
-                await Clients.Client(receiverConnectionId).SendAsync("ReceiveIndividualMessage", senderId);
+                // Serialize your object to JSON with camel case attribute names
+                string json = JsonConvert.SerializeObject(individualMessage, settings);
+                await Clients.Client(receiverConnectionId).SendAsync("ReceiveIndividualMessage", json);
             }
         }
 

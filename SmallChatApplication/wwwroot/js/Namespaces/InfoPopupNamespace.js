@@ -1,5 +1,4 @@
-﻿var InfoPopupNamespace = InfoPopupNamespace || {};
-
+﻿
 InfoPopupNamespace.LoadData = function loadData(userObject, userType) {
     const INFO_POP_UP = $(".info-pop-up-container");
     const backgroundImg = INFO_POP_UP.find(".background-img-container > img");

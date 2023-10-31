@@ -1,4 +1,4 @@
-﻿var ConservationListNamespace = ConservationListNamespace || {};
+﻿
 
 ConservationListNamespace.LoadConversationList = function (friendList) {
 

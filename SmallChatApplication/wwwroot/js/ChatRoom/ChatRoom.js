@@ -10,7 +10,24 @@ _CONNECTION.on("ReceiveAcceptFriendRequest", function () {
     ChatApplicationNamespace.GetFriendList();
 });
 
-_CONNECTION.on("ReceiveIndividualMessage", function (senderId) {
-    ChatApplicationNamespace.GetMessageList(senderId);
+_CONNECTION.on("ReceiveIndividualMessage", function (newIndividualMessage) {
+    let newMessageObj = convertToCamelCase(JSON.parse(newIndividualMessage));
+    console.log(newMessageObj);
+    ChatApplicationNamespace.LoadNewMessage(newMessageObj);
 })
 
+function convertToCamelCase(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+
+    if (Array.isArray(obj)) {
+        return obj.map(item => convertToCamelCase(item));
+    }
+
+    return Object.keys(obj).reduce((acc, key) => {
+        const camelCaseKey = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+        acc[camelCaseKey] = convertToCamelCase(obj[key]);
+        return acc;
+    }, {});
+}

@@ -26,6 +26,14 @@
         //Start connection to map the connection string to userId in database
         var _CONNECTION = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
+        var ApplicationNavbarNamespace = ApplicationNavbarNamespace || {};
+        var ContactListNamespace = ContactListNamespace || {};
+        var ConservationListNamespace = ConservationListNamespace || {};
+        var ConversationNamespace = ConversationNamespace || {};
+        var InfoPopupNamespace = InfoPopupNamespace || {};
+        var UpdateInfoPopupNamespace = UpdateInfoPopupNamespace || {};
+
+        var ChatApplicationNamespace = ChatApplicationNamespace || {};
     </script>
     @* Defining namespace for extenal script to run *@
     <script src="~/js/Namespaces/ApplicationNavbarNamespace.js"></script>

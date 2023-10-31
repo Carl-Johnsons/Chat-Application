@@ -1,4 +1,4 @@
-﻿var UpdateInfoPopupNamespace = UpdateInfoPopupNamespace || {};
+﻿
 
 UpdateInfoPopupNamespace.LoadData = function (user) {
     console.log("load data update info")

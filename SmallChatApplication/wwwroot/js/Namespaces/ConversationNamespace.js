@@ -1,26 +1,10 @@
-﻿var ConversationNamespace = ConversationNamespace || {};
-
-
-
-
-
-ConversationNamespace.LoadConversation = function (messageList) {
+﻿
+ConversationNamespace.LoadConversation = function (messageList, mode) {
     const CHAT_BOX_CONTAINER = $(".chat-box-container");
     const USER_INFO_CONTAINER = CHAT_BOX_CONTAINER.find(".user-info-container");
     const user_info_avatar = USER_INFO_CONTAINER.find(".avatar-image");
     const user_info_name = USER_INFO_CONTAINER.find(".user-name-container > p");
-    //reset avatar and name
-    $(user_info_avatar).attr("src", "");
-    $(user_info_name).html("");
-
-
     const MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".message-container");
-
-    //Reset message_container
-    $(MESSAGE_CONTAINER).html("");
-
-
-
 
 
     //MessageList json format
@@ -43,8 +27,26 @@ ConversationNamespace.LoadConversation = function (messageList) {
     //    }
     //]
 
-    messageList = messageList.map(item => item.message);
-    renderConversation(messageList);
+    loadConversation(messageList, mode);
+
+    function loadConversation(messageList, mode) {
+        if (mode === "RELOAD") {
+            messageList = messageList.map(item => item.message);
+            //reset avatar and name
+            $(user_info_avatar).attr("src", "");
+            $(user_info_name).html("");
+            //Reset message_container
+            $(MESSAGE_CONTAINER).html("");
+            renderConversation(messageList);
+            return;
+        }
+        if (mode === "NEW MESSAGE") {
+            messageList = messageList.map(item => item.message);
+            renderConversation(messageList);
+            return;
+        }
+    }
+
 
 
 
@@ -79,10 +81,22 @@ ConversationNamespace.LoadConversation = function (messageList) {
     //     </div>
     // </div>
 
+    function scrollToElement(ele) {
+        const element = $(ele).get(0); // Get the DOM element
+
+        element.scrollTo({
+            top: element.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
     async function renderConversation(messageObjectList) {
         if (!messageObjectList || messageObjectList.length === 0) {
             return;
         }
+        // Show the "send message" button
+        const INPUT_MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".input-message-container");
+        $(INPUT_MESSAGE_CONTAINER).show();
 
         console.log("renderConversation: messageObjectList " + messageObjectList.length);
 
@@ -98,6 +112,9 @@ ConversationNamespace.LoadConversation = function (messageList) {
                 let subMessageList = messageObjectList.slice(startIndex, endIndex);
                 let messageItemContainer = await renderMessageItemContainer(subMessageList, isSender);
                 $(MESSAGE_CONTAINER).append(messageItemContainer);
+                //scroll to latest message
+                scrollToElement(MESSAGE_CONTAINER);
+
                 break;
             }
 
@@ -112,7 +129,6 @@ ConversationNamespace.LoadConversation = function (messageList) {
                 //update startIndex
                 startIndex = endIndex;
             }
-
         }
     }
 
@@ -205,10 +221,15 @@ ConversationNamespace.LoadConversation = function (messageList) {
 
 
 $(document).ready(function () {
+
+    const CHAT_BOX_CONTAINER = $(".chat-box-container");
+    const INPUT_MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".input-message-container");
+    $(INPUT_MESSAGE_CONTAINER).hide();
+    console.log("Input message hide");
+
     AddSendMessageEvent();
 
     function AddSendMessageEvent() {
-        const CHAT_BOX_CONTAINER = $(".chat-box-container");
 
         const btnSendMessage = CHAT_BOX_CONTAINER.find("button.btn-send-message");
         const inputSendMessage = CHAT_BOX_CONTAINER.find("input.input-message");
@@ -266,11 +287,29 @@ $(document).ready(function () {
                 data: JSON.stringify(messageObject),
                 success: function (data, textStatus, jQxhr) {
                     console.log("send message successfully");
+                    //individual message json format
+                    //{
+                    //    "messageId": 43,
+                    //    "userReceiverId": 1,
+                    //    "status": "string",
+                    //    "message": {
+                    //        "messageId": 43,
+                    //        "senderId": 2,
+                    //        "content": "string",
+                    //        "time": "2023-10-31T01:26:30.939Z",
+                    //        "messageType": "string",
+                    //        "messageFormat": "string",
+                    //        "active": true,
+                    //        "sender": null
+                    //    },
+                    //    "userReceiver": null
+                    //}
 
-                    _CONNECTION.invoke("SendIndividualMessage", _USER.userId, parseInt(userReceiverId)).catch(function (err) {
+
+                    _CONNECTION.invoke("SendIndividualMessage", data).catch(function (err) {
                         console.error("error when SendIndividualMessage: " + err.toString());
                     });
-                    ChatApplicationNamespace.GetMessageList(userReceiverId);
+                    ChatApplicationNamespace.LoadNewMessage(data);
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
                     console.log(errorThrown);
