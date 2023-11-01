@@ -328,13 +328,22 @@ namespace WFChatApplication
             // panel_message_screen
             // 
             panel_message_screen.BackColor = Color.WhiteSmoke;
+            panel_message_screen.Controls.Add(panel_message);
             panel_message_screen.Controls.Add(panel_chat_textbox_container);
             panel_message_screen.Dock = DockStyle.Fill;
             panel_message_screen.Location = new Point(0, 0);
             panel_message_screen.Name = "panel_message_screen";
             panel_message_screen.Size = new Size(1130, 756);
             panel_message_screen.TabIndex = 0;
-            // 
+            //
+            // panel_message
+            //
+            panel_message.Dock = DockStyle.Fill;
+            panel_message.Location = new Point(0, 0);
+            panel_message.Name = "panel_message";
+            panel_message.Size = new Size(1130, 631);
+            panel_message.TabIndex = 1;
+            //
             // panel_chat_textbox_container
             // 
             panel_chat_textbox_container.BackColor = Color.White;

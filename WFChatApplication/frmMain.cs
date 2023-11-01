@@ -281,25 +281,26 @@ namespace WFChatApplication
         private async void btn_send_Click(object sender, EventArgs e)
         {
             string Content = chat_textbox.Text;
-
-            IndividualMessage message = new IndividualMessage
-            {
-                UserReceiverId = Receiver.UserId,
-                Status = "string",
-                Message = new Message
+            if (Content != null && Content != "") {
+                IndividualMessage message = new IndividualMessage
                 {
-                    SenderId = CurrentUser.UserId,
-                    Content = Content,
-                    Time = DateTime.Now,
-                    MessageType = "Individual",
-                    MessageFormat = "Text",
-                    Active = true
-                }
-            };
+                    UserReceiverId = Receiver.UserId,
+                    Status = "string",
+                    Message = new Message
+                    {
+                        SenderId = CurrentUser.UserId,
+                        Content = Content,
+                        Time = DateTime.Now,
+                        MessageType = "Individual",
+                        MessageFormat = "Text",
+                        Active = true
+                    }
+                };
 
-            await ApiService.SendIndividualMessageAsync(message);
-            ShowSendedMessage(message);
-            chat_textbox.Text = "";
+                chat_textbox.Text = "";
+                await ApiService.SendIndividualMessageAsync(message);
+                ShowSendedMessage(message);
+            }
         }
         //==================================================================
 
@@ -333,9 +334,8 @@ namespace WFChatApplication
         {
             if (e.KeyCode == Keys.Enter)
             {
-                // Assuming you have a button named "button1"
                 btn_send.PerformClick();
-                e.Handled = true; // Set to true to prevent the key event from being passed on to the TextBox
+                e.Handled = true;
             }
         }
 
