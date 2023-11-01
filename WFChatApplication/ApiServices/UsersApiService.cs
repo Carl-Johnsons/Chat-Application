@@ -1,4 +1,6 @@
 ﻿using BussinessObject.Models;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace WFChatApplication.ApiServices
@@ -6,6 +8,31 @@ namespace WFChatApplication.ApiServices
     public partial class ApiService
     {
         private const string USERS_API_BASE_ADDRESS = "api/Users";
+        //------------------------------------ Tools --------------------------------------
+        public static async Task<string> UploadImageToImgur(string FilePath)
+        {
+            if (FilePath != null && FilePath.Length > 0)
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    using (var form = new MultipartFormDataContent())
+                    {
+                        byte[] fileBytes = File.ReadAllBytes(FilePath);
+                        form.Add(new ByteArrayContent(fileBytes, 0, fileBytes.Length), "image", "image.png");
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", "87da474f87f4754");
+                        var img_response = await httpClient.PostAsync("https://api.imgur.com/3/upload", form);
+                        var responseContent = await img_response.Content.ReadAsStringAsync();
+                        var responseObject = JObject.Parse(responseContent);
+                        // Get the URL of the uploaded image
+                        string imageId = responseObject["data"]["id"].Value<string>();
+                        string imageUrl = $"https://i.imgur.com/{imageId}.jpeg";
+                        return imageUrl;
+                    }
+                }
+            }
+            return "img/user.png";
+        }
+
         //================================== GET SECTION ==================================
         public static async Task<List<User>> GetUserListAsync()
         {

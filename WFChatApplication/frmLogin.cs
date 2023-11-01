@@ -31,8 +31,8 @@ namespace WFChatApplication
             {
                 lbLoginFail.Visible = true;
             }
-          
-            CurrentUser = Task.Run(async()=> await ApiService.LoginAsync(Phone, Password)).Result;
+
+            CurrentUser = Task.Run(async () => await ApiService.LoginAsync(Phone, Password)).Result;
 
             if (CurrentUser != null)
             {
@@ -53,7 +53,7 @@ namespace WFChatApplication
 
         }
 
-        
+
 
         private void panel_exit_MouseEnter(object sender, EventArgs e)
         {
@@ -68,7 +68,7 @@ namespace WFChatApplication
 
         }
 
-    
+
 
         private void panel_exit_Click(object sender, EventArgs e)
         {

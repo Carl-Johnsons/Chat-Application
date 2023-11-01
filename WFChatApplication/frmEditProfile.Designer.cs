@@ -38,7 +38,6 @@
             label5 = new Label();
             panel_update = new Panel();
             label_update = new Label();
-            ptb_camera = new PictureBox();
             label1 = new Label();
             tbName = new TextBox();
             rdo_male = new RadioButton();
@@ -53,7 +52,6 @@
             ((System.ComponentModel.ISupportInitialize)ptb_background).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ptb_avatar).BeginInit();
             panel_update.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ptb_camera).BeginInit();
             panel1.SuspendLayout();
             gbGender.SuspendLayout();
             SuspendLayout();
@@ -102,6 +100,7 @@
             ptb_background.SizeMode = PictureBoxSizeMode.StretchImage;
             ptb_background.TabIndex = 1;
             ptb_background.TabStop = false;
+            ptb_background.Click += ptb_background_Click;
             // 
             // ptb_avatar
             // 
@@ -112,6 +111,7 @@
             ptb_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
             ptb_avatar.TabIndex = 2;
             ptb_avatar.TabStop = false;
+            ptb_avatar.Click += ptb_avatar_Click;
             // 
             // label2
             // 
@@ -154,7 +154,7 @@
             panel_update.Name = "panel_update";
             panel_update.Size = new Size(113, 48);
             panel_update.TabIndex = 12;
-            panel_update.Click += panel_editProfile_Click;
+            panel_update.Click += panel_update_Click;
             panel_update.MouseEnter += panel_editProfile_MouseEnter;
             panel_update.MouseLeave += panel_editProfile_MouseLeave;
             // 
@@ -169,17 +169,6 @@
             label_update.Size = new Size(91, 27);
             label_update.TabIndex = 14;
             label_update.Text = "Update";
-            // 
-            // ptb_camera
-            // 
-            ptb_camera.BackColor = SystemColors.ControlLight;
-            ptb_camera.ImageLocation = "https://cdn-icons-png.flaticon.com/512/2956/2956744.png";
-            ptb_camera.Location = new Point(281, 227);
-            ptb_camera.Name = "ptb_camera";
-            ptb_camera.Size = new Size(30, 30);
-            ptb_camera.SizeMode = PictureBoxSizeMode.Zoom;
-            ptb_camera.TabIndex = 13;
-            ptb_camera.TabStop = false;
             // 
             // label1
             // 
@@ -199,7 +188,6 @@
             tbName.Name = "tbName";
             tbName.Size = new Size(465, 34);
             tbName.TabIndex = 15;
-            tbName.TextChanged += textBox1_TextChanged;
             // 
             // rdo_male
             // 
@@ -245,6 +233,7 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(113, 48);
             panel1.TabIndex = 19;
+            panel1.Click += panel1_Click;
             // 
             // label4
             // 
@@ -280,7 +269,6 @@
             Controls.Add(dtpDoB);
             Controls.Add(tbName);
             Controls.Add(label1);
-            Controls.Add(ptb_camera);
             Controls.Add(panel_update);
             Controls.Add(label5);
             Controls.Add(label3);
@@ -302,7 +290,6 @@
             ((System.ComponentModel.ISupportInitialize)ptb_avatar).EndInit();
             panel_update.ResumeLayout(false);
             panel_update.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)ptb_camera).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             gbGender.ResumeLayout(false);
@@ -323,7 +310,6 @@
         private Label label_update;
         private Panel panel_exit;
         private PictureBox pictureBox4;
-        private PictureBox ptb_camera;
         private Label label1;
         private TextBox tbName;
         private RadioButton rdo_male;

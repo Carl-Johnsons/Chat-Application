@@ -80,7 +80,20 @@ namespace WFChatApplication
             {
                 UserInfo = UserInfo
             };
+            frmEditProfile.FormClosed += frmEditProfile_Closed;
             frmEditProfile.ShowDialog();
+
+        }
+
+        private void frmEditProfile_Closed(object sender, FormClosedEventArgs e)
+        {
+            lb_name.Text = UserInfo.Name;
+            lb_Gender.Text = UserInfo.Gender;
+            lb_birthday.Text = UserInfo.Dob.ToString("dd/MM/yyyy");
+            lb_phoneNumber.Text = UserInfo.PhoneNumber;
+            ptb_avatar.ImageLocation = UserInfo.AvatarUrl;
+            ptb_background.ImageLocation = UserInfo.BackgroundUrl;
+
         }
     }
 }

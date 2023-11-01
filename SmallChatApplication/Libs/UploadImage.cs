@@ -37,5 +37,8 @@ namespace WebChatApplication.Libs
 
             return "img/user.png";
         }
+
+        
     }
 }
+

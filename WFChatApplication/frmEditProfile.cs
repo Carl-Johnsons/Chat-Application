@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BussinessObject;
 using BussinessObject.Models;
+using WFChatApplication.ApiServices;
 
 namespace WFChatApplication
 {
@@ -28,10 +29,9 @@ namespace WFChatApplication
             Region rg = new Region(gp);
             ptb_avatar.Region = rg;
 
-            GraphicsPath gp1 = new GraphicsPath();
-            gp1.AddEllipse(0, 0, ptb_camera.Width, ptb_camera.Height);
-            Region rg1 = new Region(gp1);
-            ptb_camera.Region = rg1;
+
+
+            tbName.Text = UserInfo.Name;
 
             ptb_avatar.ImageLocation = UserInfo.AvatarUrl;
             ptb_background.ImageLocation = UserInfo.BackgroundUrl;
@@ -72,15 +72,63 @@ namespace WFChatApplication
             //pictureBox3.BackColor = Color.FromArgb(234, 237, 240, 255);
         }
 
-        private void panel_editProfile_Click(object sender, EventArgs e)
+        private async void panel_update_Click(object sender, EventArgs e)
         {
-
+            User UserUpdate = GetUpdateInfo();
+            await ApiService.UpdateUserAsync(UserUpdate.UserId, UserUpdate);
+            this.Close();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private User GetUpdateInfo()
         {
+            User user = UserInfo;
+            user.Name = tbName.Text;
+            user.Dob = dtpDoB.Value;
+            user.Gender = (rdo_male.Checked ? "Nam" : "Nữ");
+            return user;
+        }
 
+        private async void ptb_avatar_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openSelectImage = new OpenFileDialog();
+
+            openSelectImage.InitialDirectory = "c:\\";
+            openSelectImage.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
+            openSelectImage.FilterIndex = 1;
+            openSelectImage.RestoreDirectory = true;
+
+            if (openSelectImage.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openSelectImage.FileName;
+                string NewAvtUrl = await ApiService.UploadImageToImgur(filePath);
+                UserInfo.AvatarUrl = NewAvtUrl;
+                ptb_avatar.ImageLocation = UserInfo.AvatarUrl;
+            }
+        }
+
+        private async void ptb_background_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openSelectImage = new OpenFileDialog();
+
+            openSelectImage.InitialDirectory = "c:\\";
+            openSelectImage.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
+            openSelectImage.FilterIndex = 1;
+            openSelectImage.RestoreDirectory = true;
+
+            if (openSelectImage.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openSelectImage.FileName;
+                string NewBackUrl = await ApiService.UploadImageToImgur(filePath);
+                UserInfo.BackgroundUrl = NewBackUrl;
+                ptb_background.ImageLocation = UserInfo.BackgroundUrl;
+            }
+        }
+
+        private void panel1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
+
 }
 

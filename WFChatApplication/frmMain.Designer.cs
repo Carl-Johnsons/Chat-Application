@@ -38,7 +38,7 @@ namespace WFChatApplication
             btn_close = new Button();
             panel_vertical_tab = new Panel();
             ptbUserAvatar = new PictureBox();
-            panel_contact_btn = new Panel();
+            panel_logout_btn = new Panel();
             ptbContact = new PictureBox();
             panel_chat_btn = new Panel();
             ptbMessage = new PictureBox();
@@ -64,7 +64,7 @@ namespace WFChatApplication
             panel_menu_strip_container.SuspendLayout();
             panel_vertical_tab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptbUserAvatar).BeginInit();
-            panel_contact_btn.SuspendLayout();
+            panel_logout_btn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptbContact).BeginInit();
             panel_chat_btn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptbMessage).BeginInit();
@@ -75,7 +75,6 @@ namespace WFChatApplication
             panel_message_screen.SuspendLayout();
             panel_chat_textbox_container.SuspendLayout();
             panel_chattextbox_margin1.SuspendLayout();
-            panel_chat_box_info.SuspendLayout();
             panel_contain_list.SuspendLayout();
             SuspendLayout();
             // 
@@ -158,7 +157,7 @@ namespace WFChatApplication
             // 
             panel_vertical_tab.BackColor = Color.FromArgb(0, 145, 255);
             panel_vertical_tab.Controls.Add(ptbUserAvatar);
-            panel_vertical_tab.Controls.Add(panel_contact_btn);
+            panel_vertical_tab.Controls.Add(panel_logout_btn);
             panel_vertical_tab.Controls.Add(panel_chat_btn);
             panel_vertical_tab.Dock = DockStyle.Left;
             panel_vertical_tab.Location = new Point(0, 32);
@@ -178,23 +177,24 @@ namespace WFChatApplication
             ptbUserAvatar.TabStop = false;
             ptbUserAvatar.Click += ptbUserAvatar_Click;
             // 
-            // panel_contact_btn
+            // panel_logout_btn
             // 
-            panel_contact_btn.BackColor = Color.FromArgb(0, 145, 255);
-            panel_contact_btn.Controls.Add(ptbContact);
-            panel_contact_btn.Location = new Point(0, 235);
-            panel_contact_btn.Name = "panel_contact_btn";
-            panel_contact_btn.Padding = new Padding(20);
-            panel_contact_btn.Size = new Size(75, 75);
-            panel_contact_btn.TabIndex = 12;
-            panel_contact_btn.MouseEnter += Panel_contact_btn_MouseEnter;
-            panel_contact_btn.MouseLeave += Panel_contact_btn_MouseLeave;
+            panel_logout_btn.BackColor = Color.FromArgb(0, 145, 255);
+            panel_logout_btn.Controls.Add(ptbContact);
+            panel_logout_btn.Location = new Point(0, 594);
+            panel_logout_btn.Name = "panel_logout_btn";
+            panel_logout_btn.Padding = new Padding(20);
+            panel_logout_btn.Size = new Size(75, 75);
+            panel_logout_btn.TabIndex = 12;
+            panel_logout_btn.Click += panel_logout_btn_Click;
+            panel_logout_btn.MouseEnter += Panel_logout_btn_MouseEnter;
+            panel_logout_btn.MouseLeave += Panel_logout_btn_MouseLeave;
             // 
             // ptbContact
             // 
             ptbContact.Dock = DockStyle.Fill;
             ptbContact.Enabled = false;
-            ptbContact.Image = Resources.notebook_of_contacts;
+            ptbContact.ImageLocation = "https://i.imgur.com/HyzJ1EB.png";
             ptbContact.Location = new Point(20, 20);
             ptbContact.Name = "ptbContact";
             ptbContact.Size = new Size(35, 35);
@@ -212,7 +212,6 @@ namespace WFChatApplication
             panel_chat_btn.Size = new Size(75, 75);
             panel_chat_btn.TabIndex = 11;
             panel_chat_btn.Click += panel_chat_btn_Click;
-            panel_chat_btn.Paint += panel_chat_btn_Paint;
             panel_chat_btn.MouseEnter += Panel_chat_btn_MouseEnter;
             panel_chat_btn.MouseLeave += Panel_chat_btn_MouseLeave;
             // 
@@ -329,21 +328,12 @@ namespace WFChatApplication
             // panel_message_screen
             // 
             panel_message_screen.BackColor = Color.WhiteSmoke;
-            panel_message_screen.Controls.Add(panel_message);
             panel_message_screen.Controls.Add(panel_chat_textbox_container);
             panel_message_screen.Dock = DockStyle.Fill;
             panel_message_screen.Location = new Point(0, 0);
             panel_message_screen.Name = "panel_message_screen";
             panel_message_screen.Size = new Size(1130, 756);
             panel_message_screen.TabIndex = 0;
-            // 
-            // panel_message
-            // 
-            panel_message.Dock = DockStyle.Fill;
-            panel_message.Location = new Point(0, 0);
-            panel_message.Name = "panel_message";
-            panel_message.Size = new Size(1130, 631);
-            panel_message.TabIndex = 1;
             // 
             // panel_chat_textbox_container
             // 
@@ -386,7 +376,6 @@ namespace WFChatApplication
             btn_receive.TabIndex = 1;
             btn_receive.Text = "receive";
             btn_receive.UseVisualStyleBackColor = true;
-            btn_receive.Click += btn_receive_Click;
             // 
             // btn_send
             // 
@@ -425,14 +414,6 @@ namespace WFChatApplication
             panel_chat_box_info.Size = new Size(1475, 90);
             panel_chat_box_info.TabIndex = 0;
             // 
-            // lb_chat_user_name
-            // 
-            
-            // 
-            // ptb_chatbox_info_avatar
-            // 
-            
-            // 
             // panel_contain_list
             // 
             panel_contain_list.BackColor = Color.White;
@@ -464,7 +445,7 @@ namespace WFChatApplication
             panel_menu_strip_container.ResumeLayout(false);
             panel_vertical_tab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptbUserAvatar).EndInit();
-            panel_contact_btn.ResumeLayout(false);
+            panel_logout_btn.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptbContact).EndInit();
             panel_chat_btn.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptbMessage).EndInit();
@@ -477,8 +458,6 @@ namespace WFChatApplication
             panel_chat_textbox_container.ResumeLayout(false);
             panel_chat_textbox_container.PerformLayout();
             panel_chattextbox_margin1.ResumeLayout(false);
-            panel_chat_box_info.ResumeLayout(false);
-            panel_chat_box_info.PerformLayout();
             panel_contain_list.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -499,7 +478,7 @@ namespace WFChatApplication
         private Panel panel_layout_screen;
         private Panel panel_chat_btn;
         private PictureBox ptbMessage;
-        private Panel panel_contact_btn;
+        private Panel panel_logout_btn;
         private PictureBox ptbContact;
         private Panel panel_contain_list;
         private Panel panel_chat_box_info;
@@ -514,7 +493,7 @@ namespace WFChatApplication
         private Panel panel_chatextbox_margin;
         private Button btn_receive;
         private Button btn_send;
-        
+
 
 
     }
