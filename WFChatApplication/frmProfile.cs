@@ -15,12 +15,12 @@ namespace WFChatApplication
 {
     public partial class frmProfile : Form
     {
-        public User UserInfo {  get; set; }
+        public User UserInfo { get; set; }
 
         public frmProfile()
         {
             InitializeComponent();
-            
+
         }
 
         private void frmProfile_Load(object sender, EventArgs e)

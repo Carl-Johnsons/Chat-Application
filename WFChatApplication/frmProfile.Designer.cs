@@ -106,7 +106,7 @@
             ptb_avatar.Location = new Point(180, 154);
             ptb_avatar.Name = "ptb_avatar";
             ptb_avatar.Size = new Size(90, 90);
-            ptb_avatar.SizeMode = PictureBoxSizeMode.Zoom;
+            ptb_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
             ptb_avatar.TabIndex = 2;
             ptb_avatar.TabStop = false;
             // 

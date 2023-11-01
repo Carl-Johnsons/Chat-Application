@@ -51,7 +51,6 @@ namespace WFChatApplication
             panel_sub_layout_screen = new Panel();
             panel_big_screen = new Panel();
             panel_message_screen = new Panel();
-            panel_message = new Panel();
             panel_chat_textbox_container = new Panel();
             chat_textbox = new TextBox();
             panel_chattextbox_margin1 = new Panel();
@@ -60,7 +59,6 @@ namespace WFChatApplication
             panel_chatextbox_margin = new Panel();
             panel_layout_sublist = new Panel();
             panel_chat_box_info = new Panel();
-            ptb_chatbox_info_avatar = new PictureBox();
             panel_contain_list = new Panel();
             panel_tab.SuspendLayout();
             panel_menu_strip_container.SuspendLayout();
@@ -78,7 +76,6 @@ namespace WFChatApplication
             panel_chat_textbox_container.SuspendLayout();
             panel_chattextbox_margin1.SuspendLayout();
             panel_chat_box_info.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).BeginInit();
             panel_contain_list.SuspendLayout();
             SuspendLayout();
             // 
@@ -369,6 +366,7 @@ namespace WFChatApplication
             chat_textbox.Name = "chat_textbox";
             chat_textbox.Size = new Size(879, 99);
             chat_textbox.TabIndex = 3;
+            chat_textbox.KeyDown += chat_textbox_KeyDown;
             // 
             // panel_chattextbox_margin1
             // 
@@ -421,23 +419,19 @@ namespace WFChatApplication
             // 
             panel_chat_box_info.BackColor = Color.White;
             panel_chat_box_info.BorderStyle = BorderStyle.FixedSingle;
-            panel_chat_box_info.Controls.Add(ptb_chatbox_info_avatar);
             panel_chat_box_info.Dock = DockStyle.Top;
             panel_chat_box_info.Location = new Point(0, 0);
             panel_chat_box_info.Name = "panel_chat_box_info";
             panel_chat_box_info.Size = new Size(1475, 90);
             panel_chat_box_info.TabIndex = 0;
             // 
+            // lb_chat_user_name
+            // 
+            
+            // 
             // ptb_chatbox_info_avatar
             // 
-            ptb_chatbox_info_avatar.BorderStyle = BorderStyle.FixedSingle;
-            ptb_chatbox_info_avatar.Location = new Point(370, 15);
-            ptb_chatbox_info_avatar.Margin = new Padding(3, 4, 3, 4);
-            ptb_chatbox_info_avatar.Name = "ptb_chatbox_info_avatar";
-            ptb_chatbox_info_avatar.Size = new Size(60, 60);
-            ptb_chatbox_info_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
-            ptb_chatbox_info_avatar.TabIndex = 7;
-            ptb_chatbox_info_avatar.TabStop = false;
+            
             // 
             // panel_contain_list
             // 
@@ -484,7 +478,7 @@ namespace WFChatApplication
             panel_chat_textbox_container.PerformLayout();
             panel_chattextbox_margin1.ResumeLayout(false);
             panel_chat_box_info.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).EndInit();
+            panel_chat_box_info.PerformLayout();
             panel_contain_list.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -509,7 +503,6 @@ namespace WFChatApplication
         private PictureBox ptbContact;
         private Panel panel_contain_list;
         private Panel panel_chat_box_info;
-        private PictureBox ptb_chatbox_info_avatar;
         private Panel panel_sub_layout_screen;
         private Panel panel_big_screen;
         private Panel panel_layout_sublist;
@@ -521,6 +514,8 @@ namespace WFChatApplication
         private Panel panel_chatextbox_margin;
         private Button btn_receive;
         private Button btn_send;
-        public  Panel panel_message { get; set; }
+        
+
+
     }
 }

@@ -14,23 +14,48 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using BussinessObject;
 using BussinessObject.Models;
 using Message = BussinessObject.Models.Message;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
 
 namespace WFChatApplication
 {
     public partial class frmMain : Form
     {
         public User CurrentUser { get; set; }
+        public PictureBox ptb_chatbox_info_avatar { get; set; }
+        public Panel panel_message { get; set; }
+        public Label lb_chat_user_name {  get; set; }
 
         public frmMain()
         {
+            panel_message = new Panel();
+            lb_chat_user_name = new Label();
+            ptb_chatbox_info_avatar = new PictureBox();
+            //panel_message.Dock = DockStyle.Fill;
+            //panel_message.Location = new Point(0, 0);
+            //panel_message.Name = "panel_message";
+            //panel_message.Size = new Size(1130, 631);
+            //panel_message.TabIndex = 1;
             InitializeComponent();
+            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).BeginInit();
+            panel_chat_box_info.Controls.Add(lb_chat_user_name);
+            panel_chat_box_info.Controls.Add(ptb_chatbox_info_avatar);
+            lb_chat_user_name.AutoSize = true;
+            lb_chat_user_name.Font = new Font("Arial", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            lb_chat_user_name.Location = new Point(436, 34);
+            lb_chat_user_name.Name = "lb_chat_user_name";
+            lb_chat_user_name.Size = new Size(71, 26);
+            lb_chat_user_name.TabIndex = 1;
+            lb_chat_user_name.Text = "label1";
+            ptb_chatbox_info_avatar.Location = new Point(359, 15);
+            ptb_chatbox_info_avatar.Name = "ptb_chatbox_info_avatar";
+            ptb_chatbox_info_avatar.Size = new Size(60, 60);
+            ptb_chatbox_info_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
+            ptb_chatbox_info_avatar.TabIndex = 0;
+            ptb_chatbox_info_avatar.TabStop = false;
+            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).EndInit();
+
 
         }
-
-
-
-
-
 
         private bool isMaximized = false;
         private int normalWidth;
@@ -38,10 +63,10 @@ namespace WFChatApplication
         private bool draggPanelMouseDown = false;
         private System.Drawing.Point normalLocation;
         int TotalHeightPanelMessageScreen = 0;
-        private string lastMessageId = "send";
-        public User Receiver {  get; set; }
+        public string lastMessageId = "send";
+        public User Receiver { get; set; }
 
-        private void LoadImageFromUrl(string url, PictureBox pictureBox)
+        public void LoadImageFromUrl(string url, PictureBox pictureBox)
         {
             try
             {
@@ -62,7 +87,7 @@ namespace WFChatApplication
 
 
         //For paint circle avatar--------------------------------------------------------------------------------
-        
+
         //**For paint circle avatar--------------------------------------------------------------------------------
 
 
@@ -233,7 +258,6 @@ namespace WFChatApplication
         public void ShowSendedMessage(IndividualMessage IndividualMessage)
         {
             messageItem messageItem = new messageItem(true, IndividualMessage, false, this);
-
             panel_message.Controls.Add(messageItem.MessageRowPanel);
             panel_message.AutoScrollMinSize = new Size(0, messageItem.MessageRowPanel.Height);
             panel_message.AutoScrollPosition = new Point(0, panel_message.VerticalScroll.Maximum);
@@ -267,11 +291,13 @@ namespace WFChatApplication
         private async void btn_send_Click(object sender, EventArgs e)
         {
             string Content = chat_textbox.Text;
-       
-            IndividualMessage message = new IndividualMessage {
+
+            IndividualMessage message = new IndividualMessage
+            {
                 UserReceiverId = Receiver.UserId,
                 Status = "string",
-                Message = new Message {
+                Message = new Message
+                {
                     SenderId = CurrentUser.UserId,
                     Content = Content,
                     Time = DateTime.Now,
@@ -283,6 +309,7 @@ namespace WFChatApplication
 
             await ApiService.SendIndividualMessageAsync(message);
             ShowSendedMessage(message);
+            chat_textbox.Text = "";
         }
 
         private void btn_receive_Click(object sender, EventArgs e)
@@ -297,6 +324,16 @@ namespace WFChatApplication
             frmProfile frmProfile = new frmProfile();
             frmProfile.UserInfo = CurrentUser;
             frmProfile.ShowDialog();
+        }
+
+        private void chat_textbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                // Assuming you have a button named "button1"
+                btn_send.PerformClick();
+                e.Handled = true; // Set to true to prevent the key event from being passed on to the TextBox
+            }
         }
 
 

@@ -53,7 +53,7 @@ namespace WFChatApplication
             TimeLabel.ForeColor = SystemColors.ControlDarkDark;
             TimeLabel.Name = "time_label";
             //TimeLabel.Size = new Size(43, 20);
-            TimeLabel.Text = _IndividualMessage.Message.Time.ToString("dd/MM/yyyy");
+            TimeLabel.Text = _IndividualMessage.Message.Time.ToString("HH:mm");
 
             MessagePanel = new Panel();
             MessagePanel.AutoSize = true;
@@ -131,6 +131,8 @@ namespace WFChatApplication
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
+
+
 
     }
 }

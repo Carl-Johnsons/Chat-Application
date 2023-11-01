@@ -11,7 +11,7 @@ namespace WFChatApplication
 {
     public class panelItem : Panel
     {
-        public PictureBox itemPictureBox {  get; set; }
+        public PictureBox itemPictureBox { get; set; }
 
         public Label itemName { get; set; }
 
@@ -26,22 +26,21 @@ namespace WFChatApplication
         {
             MainForm = main;
             User = UserInfo;
-            main.Receiver = User;
             itemPictureBox = new PictureBox();
             itemContent = new Label();
             itemName = new Label();
             //hitbox = new Panel();
-            
+
             this.itemPictureBox.Location = new Point(10, 10);
-            this.itemPictureBox.Size = new Size(60,60);
+            this.itemPictureBox.Size = new Size(60, 60);
             this.itemPictureBox.ImageLocation = UserInfo.AvatarUrl;
-            this.itemPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            this.itemPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
             GraphicsPath gp = new GraphicsPath();
             gp.AddEllipse(0, 0, itemPictureBox.Width, itemPictureBox.Height);
             Region rg = new Region(gp);
             itemPictureBox.Region = rg;
             this.itemPictureBox.Enabled = false;
-          
+
 
 
             this.itemName.AutoSize = true;
@@ -69,7 +68,7 @@ namespace WFChatApplication
             this.Controls.Add(this.itemContent);
             this.Controls.Add(this.itemName);
             this.Controls.Add(this.itemPictureBox);
-           
+
 
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -77,7 +76,7 @@ namespace WFChatApplication
 
         private void panel_item_MouseEnter(object sender, EventArgs e)
         {
-            this.BackColor = Color.Red;
+            this.BackColor = Color.FromArgb(243, 245, 246, 255);
         }
 
         private void panel_item_MouseLeave(object sender, EventArgs e)
@@ -89,24 +88,34 @@ namespace WFChatApplication
         {
             MainForm.panel_message.Controls.Clear();
             var IndividualMessages = await ApiService.GetIndividualMessageAsync(MainForm.CurrentUser.UserId, User.UserId);
-            foreach ( var im in IndividualMessages)
-            {
-                if(im.Message.SenderId == MainForm.CurrentUser.UserId)
-                {
-                    MainForm.ShowSendedMessage(im);
-                }
-                else
-                {
-                    MainForm.ShowReceivedMessage(im);
-                }
-            }
             MainForm.Receiver = User;
+            MainForm.lb_chat_user_name.Text = User.Name;
+            MainForm.LoadImageFromUrl(User.AvatarUrl, MainForm.ptb_chatbox_info_avatar);
+            Thread LoadMessage = new Thread(() =>
+            {
+                foreach (var im in IndividualMessages)
+                {
+                    if (im.Message.SenderId == MainForm.CurrentUser.UserId)
+                    {
+                        MainForm.Invoke(new MethodInvoker(delegate
+                        {
+                            MainForm.ShowSendedMessage(im);
+                        }));
+                    }
+                    else
+                    {
+                        MainForm.Invoke(new MethodInvoker(delegate
+                        {
+                            MainForm.ShowReceivedMessage(im);
+                        }));
+                    }
+                }
+            });
+
+            LoadMessage.Start();
 
         }
-       
-
-
-
-
     }
+
+
 }
