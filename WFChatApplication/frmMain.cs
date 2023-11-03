@@ -15,6 +15,11 @@ using BussinessObject;
 using BussinessObject.Models;
 using Message = BussinessObject.Models.Message;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
+using Microsoft.AspNetCore.SignalR.Client;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 namespace WFChatApplication
 {
@@ -24,6 +29,7 @@ namespace WFChatApplication
         public PictureBox ptb_chatbox_info_avatar { get; set; }
         public Panel panel_message { get; set; }
         public Label lb_chat_user_name { get; set; }
+        private HubConnection hubConnection;
 
         public frmMain()
         {
@@ -54,8 +60,23 @@ namespace WFChatApplication
             ptb_chatbox_info_avatar.TabStop = false;
             ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).EndInit();
 
-
+            //Make window form a chathub signalR client
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://localhost:7093/chatHub")
+                .WithAutomaticReconnect()
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddConsole();
+                })
+                .Build();
+            hubConnection.Closed += async (error) =>
+            {
+                await Task.Delay(new Random().Next(0, 5) * 1000);
+                await hubConnection.StartAsync();
+            };
         }
+
+
 
         private bool isMaximized = false;
         private int normalWidth;
@@ -111,9 +132,37 @@ namespace WFChatApplication
             normalHeight = this.Height;
             normalLocation = this.Location;
 
+            //Real time
+            StartConnection();
+        }
+        private async void StartConnection()
+        {
+
+
+            try
+            {
+                await hubConnection.StartAsync();
+                await Console.Out.WriteLineAsync("Connecting in window form client");
+                await hubConnection.InvokeAsync("MapUserData", CurrentUser);
+                await Console.Out.WriteLineAsync("Map user data to signalR completely");
+
+                // this didn't work
+                hubConnection.On<IndividualMessage>("ReceiveIndividualMessage", (Message) =>
+                {
+                    // Handle the received message
+                    // 'individualMessage' is now an instance of the IndividualMessage class
+                    //int userSender = individualMessage.Message.SenderId;
+                    //string messageContent = individualMessage.Message.Content;
+                    Console.WriteLine($"Successful: {Message.Message.Content}");
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.Out.WriteLine(ex.Message);
+            }
+
 
         }
-
 
         private async void LoadChatList()
         {
@@ -281,7 +330,8 @@ namespace WFChatApplication
         private async void btn_send_Click(object sender, EventArgs e)
         {
             string Content = chat_textbox.Text;
-            if (Content != null && Content != "") {
+            if (Content != null && Content != "")
+            {
                 IndividualMessage message = new IndividualMessage
                 {
                     UserReceiverId = Receiver.UserId,
@@ -339,6 +389,6 @@ namespace WFChatApplication
             }
         }
 
-       
+
     }
 }

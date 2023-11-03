@@ -1,15 +1,9 @@
-﻿using BussinessObject.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SmallChatApplication.Exceptions;
-using SmallChatApplication.Hubs;
-using System.Drawing;
-using System.Net.Http.Headers;
-using System.Text;
+using System.Net;
 using WebChatApplication.Libs;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmallChatApplication.Controllers
 {
@@ -32,6 +26,11 @@ namespace SmallChatApplication.Controllers
             }
 
             return View();
+        }
+        public ActionResult Logout()
+        {
+            Response.Cookies.Delete("user");
+            return Redirect("/Log");
         }
 
         [HttpPost]

@@ -13,8 +13,6 @@ builder.Services.AddSignalR(options =>
     options.EnableDetailedErrors = true;
 });
 
-var AppCORS = "ChatApplicationCors";
-
 
 var app = builder.Build();
 
