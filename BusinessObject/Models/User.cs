@@ -26,10 +26,4 @@ public partial class User
     public string? Email { get; set; }
 
     public bool? Active { get; set; }
-
-    public virtual ICollection<Group> GroupGroupDeputies { get; set; } = new List<Group>();
-
-    public virtual ICollection<Group> GroupGroupLeaders { get; set; } = new List<Group>();
-
-    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 }

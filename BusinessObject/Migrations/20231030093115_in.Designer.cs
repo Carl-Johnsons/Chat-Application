@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BussinessObject.Migrations
 {
     [DbContext(typeof(ChatApplicationContext))]
-    [Migration("20231019135640_Update_primary_key_for_Friend")]
-    partial class Update_primary_key_for_Friend
+    [Migration("20231030093115_in")]
+    partial class @in
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,28 +44,28 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.FriendRequest", b =>
                 {
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int")
+                        .HasColumnName("Sender_ID");
+
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int")
+                        .HasColumnName("Receiver_ID");
+
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("int")
-                        .HasColumnName("Receiver_ID");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int")
-                        .HasColumnName("Sender_ID");
-
                     b.Property<string>("Status")
                         .HasMaxLength(20)
                         .IsUnicode(false)
                         .HasColumnType("varchar(20)");
 
-                    b.HasIndex("ReceiverId");
+                    b.HasKey("SenderId", "ReceiverId");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("ReceiverId");
 
                     b.ToTable("FriendRequest", (string)null);
                 });
@@ -115,50 +115,50 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.GroupBlock", b =>
                 {
-                    b.Property<int>("BlockedUserId")
-                        .HasColumnType("int")
-                        .HasColumnName("Blocked_User_ID");
-
                     b.Property<int>("GroupId")
                         .HasColumnType("int")
                         .HasColumnName("Group_ID");
 
-                    b.HasIndex("BlockedUserId");
+                    b.Property<int>("BlockedUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("Blocked_User_ID");
 
-                    b.HasIndex("GroupId");
+                    b.HasKey("GroupId", "BlockedUserId");
+
+                    b.HasIndex("BlockedUserId");
 
                     b.ToTable("GroupBlock", (string)null);
                 });
 
             modelBuilder.Entity("BussinessObject.Models.GroupMessage", b =>
                 {
-                    b.Property<int>("GroupReceiverId")
-                        .HasColumnType("int")
-                        .HasColumnName("Group_Receiver_ID");
-
                     b.Property<int>("MessageId")
                         .HasColumnType("int")
                         .HasColumnName("Message_ID");
 
-                    b.HasIndex("GroupReceiverId");
+                    b.Property<int>("GroupReceiverId")
+                        .HasColumnType("int")
+                        .HasColumnName("Group_Receiver_ID");
 
-                    b.HasIndex("MessageId");
+                    b.HasKey("MessageId", "GroupReceiverId");
+
+                    b.HasIndex("GroupReceiverId");
 
                     b.ToTable("GroupMessage", (string)null);
                 });
 
             modelBuilder.Entity("BussinessObject.Models.ImageMessage", b =>
                 {
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int")
+                        .HasColumnName("Message_ID");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Image_URL");
 
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int")
-                        .HasColumnName("Message_ID");
-
-                    b.HasIndex("MessageId");
+                    b.HasKey("MessageId");
 
                     b.ToTable("ImageMessage", (string)null);
                 });
@@ -178,7 +178,7 @@ namespace BussinessObject.Migrations
                         .HasColumnType("int")
                         .HasColumnName("User_Receiver_ID");
 
-                    b.HasIndex("MessageId");
+                    b.HasKey("MessageId");
 
                     b.HasIndex("UserReceiverId");
 
@@ -299,17 +299,17 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.UserBlock", b =>
                 {
-                    b.Property<int>("BlockedUserId")
-                        .HasColumnType("int")
-                        .HasColumnName("Blocked_User_ID");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("User_ID");
 
-                    b.HasIndex("BlockedUserId");
+                    b.Property<int>("BlockedUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("Blocked_User_ID");
 
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId", "BlockedUserId");
+
+                    b.HasIndex("BlockedUserId");
 
                     b.ToTable("UserBlock", (string)null);
                 });
@@ -355,15 +355,14 @@ namespace BussinessObject.Migrations
             modelBuilder.Entity("BussinessObject.Models.Group", b =>
                 {
                     b.HasOne("BussinessObject.Models.User", "GroupDeputy")
-                        .WithMany("GroupGroupDeputies")
-                        .HasForeignKey("GroupDeputyId")
-                        .HasConstraintName("FK__Group__Group_Dep__30F848ED");
+                        .WithMany()
+                        .HasForeignKey("GroupDeputyId");
 
                     b.HasOne("BussinessObject.Models.User", "GroupLeader")
-                        .WithMany("GroupGroupLeaders")
+                        .WithMany()
                         .HasForeignKey("GroupLeaderId")
-                        .IsRequired()
-                        .HasConstraintName("FK__Group__Group_Lea__300424B4");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("GroupDeputy");
 
@@ -378,7 +377,7 @@ namespace BussinessObject.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__GroupBloc__Block__33D4B598");
 
-                    b.HasOne("BussinessObject.Models.User", "Group")
+                    b.HasOne("BussinessObject.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
                         .IsRequired()
@@ -391,15 +390,17 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.GroupMessage", b =>
                 {
-                    b.HasOne("BussinessObject.Models.User", "GroupReceiver")
+                    b.HasOne("BussinessObject.Models.Group", "GroupReceiver")
                         .WithMany()
                         .HasForeignKey("GroupReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__GroupMess__Group__3D5E1FD2");
 
                     b.HasOne("BussinessObject.Models.Message", "Message")
                         .WithMany()
                         .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__GroupMess__Messa__3C69FB99");
 
@@ -424,12 +425,14 @@ namespace BussinessObject.Migrations
                     b.HasOne("BussinessObject.Models.Message", "Message")
                         .WithMany()
                         .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__Individua__Messa__398D8EEE");
 
                     b.HasOne("BussinessObject.Models.User", "UserReceiver")
                         .WithMany()
                         .HasForeignKey("UserReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__Individua__User___3A81B327");
 
@@ -441,7 +444,7 @@ namespace BussinessObject.Migrations
             modelBuilder.Entity("BussinessObject.Models.Message", b =>
                 {
                     b.HasOne("BussinessObject.Models.User", "Sender")
-                        .WithMany("Messages")
+                        .WithMany()
                         .HasForeignKey("SenderId")
                         .IsRequired()
                         .HasConstraintName("FK__Message__Sender___37A5467C");
@@ -466,15 +469,6 @@ namespace BussinessObject.Migrations
                     b.Navigation("BlockedUser");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.User", b =>
-                {
-                    b.Navigation("GroupGroupDeputies");
-
-                    b.Navigation("GroupGroupLeaders");
-
-                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

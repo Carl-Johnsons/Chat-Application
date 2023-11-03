@@ -38,22 +38,22 @@
             label5 = new Label();
             panel_update = new Panel();
             label_update = new Label();
-            ptb_camera = new PictureBox();
             label1 = new Label();
-            textBox1 = new TextBox();
+            tbName = new TextBox();
             rdo_male = new RadioButton();
             rdo_femail = new RadioButton();
-            dateTimePicker1 = new DateTimePicker();
+            dtpDoB = new DateTimePicker();
             panel1 = new Panel();
             label4 = new Label();
+            gbGender = new GroupBox();
             panel_tab.SuspendLayout();
             panel_exit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ptb_background).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ptb_avatar).BeginInit();
             panel_update.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ptb_camera).BeginInit();
             panel1.SuspendLayout();
+            gbGender.SuspendLayout();
             SuspendLayout();
             // 
             // panel_tab
@@ -100,6 +100,7 @@
             ptb_background.SizeMode = PictureBoxSizeMode.StretchImage;
             ptb_background.TabIndex = 1;
             ptb_background.TabStop = false;
+            ptb_background.Click += ptb_background_Click;
             // 
             // ptb_avatar
             // 
@@ -107,9 +108,10 @@
             ptb_avatar.Location = new Point(205, 155);
             ptb_avatar.Name = "ptb_avatar";
             ptb_avatar.Size = new Size(90, 90);
-            ptb_avatar.SizeMode = PictureBoxSizeMode.Zoom;
+            ptb_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
             ptb_avatar.TabIndex = 2;
             ptb_avatar.TabStop = false;
+            ptb_avatar.Click += ptb_avatar_Click;
             // 
             // label2
             // 
@@ -152,7 +154,7 @@
             panel_update.Name = "panel_update";
             panel_update.Size = new Size(113, 48);
             panel_update.TabIndex = 12;
-            panel_update.Click += panel_editProfile_Click;
+            panel_update.Click += panel_update_Click;
             panel_update.MouseEnter += panel_editProfile_MouseEnter;
             panel_update.MouseLeave += panel_editProfile_MouseLeave;
             // 
@@ -168,17 +170,6 @@
             label_update.TabIndex = 14;
             label_update.Text = "Update";
             // 
-            // ptb_camera
-            // 
-            ptb_camera.BackColor = SystemColors.ControlLight;
-            ptb_camera.ImageLocation = "https://cdn-icons-png.flaticon.com/512/2956/2956744.png";
-            ptb_camera.Location = new Point(281, 227);
-            ptb_camera.Name = "ptb_camera";
-            ptb_camera.Size = new Size(30, 30);
-            ptb_camera.SizeMode = PictureBoxSizeMode.Zoom;
-            ptb_camera.TabIndex = 13;
-            ptb_camera.TabStop = false;
-            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -190,14 +181,13 @@
             label1.TabIndex = 14;
             label1.Text = "Display name";
             // 
-            // textBox1
+            // tbName
             // 
-            textBox1.Font = new Font("Arial", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox1.Location = new Point(12, 295);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(465, 34);
-            textBox1.TabIndex = 15;
-            textBox1.TextChanged += textBox1_TextChanged;
+            tbName.Font = new Font("Arial", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            tbName.Location = new Point(12, 295);
+            tbName.Name = "tbName";
+            tbName.Size = new Size(465, 34);
+            tbName.TabIndex = 15;
             // 
             // rdo_male
             // 
@@ -205,12 +195,12 @@
             rdo_male.Checked = true;
             rdo_male.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point);
             rdo_male.ForeColor = SystemColors.ControlDarkDark;
-            rdo_male.Location = new Point(16, 445);
+            rdo_male.Location = new Point(6, 26);
             rdo_male.Name = "rdo_male";
-            rdo_male.Size = new Size(72, 25);
+            rdo_male.Size = new Size(71, 25);
             rdo_male.TabIndex = 16;
             rdo_male.TabStop = true;
-            rdo_male.Text = "Male";
+            rdo_male.Text = "Nam";
             rdo_male.UseVisualStyleBackColor = true;
             // 
             // rdo_femail
@@ -218,22 +208,22 @@
             rdo_femail.AutoSize = true;
             rdo_femail.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point);
             rdo_femail.ForeColor = SystemColors.ControlDarkDark;
-            rdo_femail.Location = new Point(140, 445);
+            rdo_femail.Location = new Point(114, 26);
             rdo_femail.Name = "rdo_femail";
-            rdo_femail.Size = new Size(96, 25);
+            rdo_femail.Size = new Size(57, 25);
             rdo_femail.TabIndex = 17;
             rdo_femail.TabStop = true;
-            rdo_femail.Text = "Female";
+            rdo_femail.Text = "Nữ";
             rdo_femail.UseVisualStyleBackColor = true;
             // 
-            // dateTimePicker1
+            // dtpDoB
             // 
-            dateTimePicker1.CalendarForeColor = SystemColors.ControlDarkDark;
-            dateTimePicker1.Font = new Font("Arial", 10.8F, FontStyle.Regular, GraphicsUnit.Point);
-            dateTimePicker1.Location = new Point(16, 537);
-            dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(260, 28);
-            dateTimePicker1.TabIndex = 18;
+            dtpDoB.CalendarForeColor = SystemColors.ControlDarkDark;
+            dtpDoB.Font = new Font("Arial", 10.8F, FontStyle.Regular, GraphicsUnit.Point);
+            dtpDoB.Location = new Point(16, 537);
+            dtpDoB.Name = "dtpDoB";
+            dtpDoB.Size = new Size(260, 28);
+            dtpDoB.TabIndex = 18;
             // 
             // panel1
             // 
@@ -243,6 +233,7 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(113, 48);
             panel1.TabIndex = 19;
+            panel1.Click += panel1_Click;
             // 
             // label4
             // 
@@ -256,6 +247,16 @@
             label4.TabIndex = 14;
             label4.Text = "Cancel";
             // 
+            // gbGender
+            // 
+            gbGender.Controls.Add(rdo_male);
+            gbGender.Controls.Add(rdo_femail);
+            gbGender.Location = new Point(16, 429);
+            gbGender.Name = "gbGender";
+            gbGender.Size = new Size(247, 60);
+            gbGender.TabIndex = 20;
+            gbGender.TabStop = false;
+            // 
             // frmEditProfile
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -263,13 +264,11 @@
             BackColor = Color.White;
             ClientSize = new Size(500, 657);
             ControlBox = false;
+            Controls.Add(gbGender);
             Controls.Add(panel1);
-            Controls.Add(dateTimePicker1);
-            Controls.Add(rdo_femail);
-            Controls.Add(rdo_male);
-            Controls.Add(textBox1);
+            Controls.Add(dtpDoB);
+            Controls.Add(tbName);
             Controls.Add(label1);
-            Controls.Add(ptb_camera);
             Controls.Add(panel_update);
             Controls.Add(label5);
             Controls.Add(label3);
@@ -291,9 +290,10 @@
             ((System.ComponentModel.ISupportInitialize)ptb_avatar).EndInit();
             panel_update.ResumeLayout(false);
             panel_update.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)ptb_camera).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            gbGender.ResumeLayout(false);
+            gbGender.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -310,13 +310,13 @@
         private Label label_update;
         private Panel panel_exit;
         private PictureBox pictureBox4;
-        private PictureBox ptb_camera;
         private Label label1;
-        private TextBox textBox1;
+        private TextBox tbName;
         private RadioButton rdo_male;
         private RadioButton rdo_femail;
-        private DateTimePicker dateTimePicker1;
+        private DateTimePicker dtpDoB;
         private Panel panel1;
         private Label label4;
+        private GroupBox gbGender;
     }
 }

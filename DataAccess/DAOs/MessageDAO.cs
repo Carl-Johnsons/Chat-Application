@@ -29,14 +29,15 @@ namespace DataAccess.DAOs
             }
         }
 
-        public IEnumerable<Message> GetMessageList()
+        public IEnumerable<Message> Get()
         {
             using var context = new ChatApplicationContext();
-            var messages = context.Messages.Include(m => m.SenderId).ToList();
+            var messages = context.Messages.ToList();
             return messages;
         }
 
-        public Message GetMessageByID(int messageId)
+
+        public Message Get(int messageId)
         {
             Message message = null;
             try
@@ -51,32 +52,29 @@ namespace DataAccess.DAOs
             return message;
         }
 
-        public int AddMessage(Message message)
+        public int Add(Message message)
         {
-
-            Message mess = GetMessageByID(message.MessageId);
-            if (mess == null)
-            {
-                using var context = new ChatApplicationContext();
-                context.Messages.Add(mess);
-                context.SaveChanges();
-
-                return context.SaveChanges();
-            } else
+            if (message == null)
             {
                 return 0;
             }
-            
+            Console.WriteLine("Message Id is :" + message.MessageId);
+
+            using var context = new ChatApplicationContext();
+            context.Messages.Add(message);
+            return context.SaveChanges();
         }
 
-        public int UpdateMessage(Message messageUpdate)
+
+
+        public int Update(Message messageUpdate)
         {
             if (messageUpdate == null)
             {
                 return 0;
             }
             using var context = new ChatApplicationContext();
-            var message = GetMessageByID(messageUpdate.MessageId);
+            var message = Get(messageUpdate.MessageId);
             if (message == null)
             {
                 return 0;
@@ -88,20 +86,27 @@ namespace DataAccess.DAOs
             return context.SaveChanges();
         }
 
-        public int RemoveMessage(int messageId)
+        public int Delete(int messageId)
         {
-
-            Message mess = GetMessageByID(messageId);
-            if (mess != null)
+            try
             {
-                using var context = new ChatApplicationContext();
-                context.Messages.Remove(mess);
-                return context.SaveChanges();
+                Message mess = Get(messageId);
+                if (mess != null)
+                {
+                    using var context = new ChatApplicationContext();
+                    context.Messages.Remove(mess);
+                    return context.SaveChanges();
+                }
+                else
+                {
+                    return 0;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return 0;
+                throw new Exception(ex.Message);
             }
         }
+
     }
 }

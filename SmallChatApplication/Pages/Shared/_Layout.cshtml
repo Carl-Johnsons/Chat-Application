@@ -12,6 +12,7 @@
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @* Use signalR client-side library *@
@@ -19,216 +20,31 @@
 
     @* set the global variable to use in partial view and external script *@
     <script>
-        var BASE_ADDRESS = "https://localhost:7190";
-
-        var UserType = {
-            Self: 1,
-            Friend: 2,
-            Stranger: 3
-        }
-
+        var _BASE_ADDRESS = "https://localhost:7190";
+        //Get the id from the controller so i don't need to call API service to find out who the current user is
+        var _USER_ID = @ViewBag.ID;
         //Start connection to map the connection string to userId in database
-        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        var _CONNECTION = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
+        var ApplicationNavbarNamespace = ApplicationNavbarNamespace || {};
+        var ContactListNamespace = ContactListNamespace || {};
+        var ConservationListNamespace = ConservationListNamespace || {};
+        var ConversationNamespace = ConversationNamespace || {};
+        var InfoPopupNamespace = InfoPopupNamespace || {};
+        var UpdateInfoPopupNamespace = UpdateInfoPopupNamespace || {};
+
+        var ChatApplicationNamespace = ChatApplicationNamespace || {};
     </script>
     @* Defining namespace for extenal script to run *@
     <script src="~/js/Namespaces/ApplicationNavbarNamespace.js"></script>
+    <script src="~/js/Namespaces/ContactListNamespace.js"></script>
+    <script src="~/js/Namespaces/ConversationListNamespace.js"></script>
+    <script src="~/js/Namespaces/ConversationNamespace.js"></script>
     <script src="~/js/Namespaces/InfoPopupNamespace.js"></script>
     <script src="~/js/Namespaces/UpdateInfoPopupNamespace.js"></script>
-    <script src="~/js/Namespaces/ContactListNamespace.js"></script>
 
-    <script>
-        var ChatApplicationNamespace = ChatApplicationNamespace || {};
-        ChatApplicationNamespace.LoadUserData = function (userObject) {
-            ApplicationNavbarNamespace.LoadData(userObject);
-            ChatApplicationNamespace.LoadInfoPopupData(userObject, "Self");
-            ChatApplicationNamespace.LoadUpdateInfoPopup(userObject);
-        }
-        ChatApplicationNamespace.LoadInfoPopupData = function (userObject, userType) {
-            InfoPopupNamespace.LoadData(userObject, userType);
-        }
-        ChatApplicationNamespace.LoadUpdateInfoPopup = function (userObject) {
-            UpdateInfoPopupNamespace.LoadData(userObject);
-        }
-        ChatApplicationNamespace.LoadFriendData = function (friendObjectList) {
-            ContactListNamespace.LoadFriendList(friendObjectList);
-        }
-        ChatApplicationNamespace.LoadFriendRequestData = function (friendRequestObjectList) {
-            ContactListNamespace.LoadFriendRequestList(friendRequestObjectList);
-        }
-
-
-        ChatApplicationNamespace.StartConnection = function () {
-            connection.start().then(function () {
-                console.log("Connection successfully in client side")
-                ChatApplicationNamespace.GetCurrentUser();
-                ChatApplicationNamespace.GetFriendList();
-                ChatApplicationNamespace.GetFriendRequestList();
-            }).catch(function (err) {
-                console.log("Connection to hub failed: " + err);
-            });
-        }
-    </script>
-    @* set the global variable to use in partial view *@
-    <script>
-        var user;
-        var friendList;
-        var friendRequestList;
-        //Load data of current user
-
-        ChatApplicationNamespace.GetCurrentUser = function () {
-            $.ajax({
-                url: BASE_ADDRESS + "/api/Users/" + @ViewBag.ID,
-                dataType: 'json',
-                type: 'GET',
-                contentType: 'application/json',
-                success: function (data, textStatus, jQxhr) {
-
-                    //User json format
-                    /*
-                        "userId": 1,
-                        "phoneNumber": "",
-                        "password": "",
-                        "name": "",
-                        "dob": "",
-                        "gender": "Nam"
-                        "avatarUrl": "",
-                        "backgroundUrl": "",
-                        "introduction": "fix bug :(",
-                        "email": "",
-                        "active": true,
-                        "groupGroupDeputies": [],
-                        "groupGroupLeaders": [],
-                        "messages": []
-                    */
-                    user = data;
-
-                    //Use namespace so i can access other script file without having to include it here
-                    console.log("Map user data begin");
-
-                    connection.invoke("MapUserData", data).catch(function (err) {
-                        console.error("error when send map user data: " + err.toString());
-                    });
-
-
-                    ChatApplicationNamespace.LoadUserData(user);
-                },
-                error: function (jqXhr, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        }
-        ChatApplicationNamespace.GetFriendList = function () {
-            //Load user's friend
-            $.ajax({
-                url: BASE_ADDRESS + "/api/Users/GetFriend/" + @ViewBag.ID,
-                dataType: 'json',
-                type: 'GET',
-                contentType: 'application/json',
-                success: function (data, textStatus, jQxhr) {
-
-                    //FriendList json format
-                    // [
-                    //     {
-                    //         "userId": 1,
-                    //         "friendId": 3,
-                    //         "friendNavigation": {
-                    //             "userId": 3,
-                    //             "phoneNumber": "",
-                    //             "password": "",
-                    //             "name": "",
-                    //             "dob": "2002-11-02T00:00:00",
-                    //             "gender": "Nữ",
-                    //             "avatarUrl": "",
-                    //             "backgroundUrl": "",
-                    //             "introduction": "",
-                    //             "email": "",
-                    //             "active": true,
-                    //             "groupGroupDeputies": [],
-                    //             "groupGroupLeaders": [],
-                    //             "messages": []
-                    //         },
-                    //         "user": null
-                    //     }
-                    // ]
-
-
-                    // Only get friendNavigation then convert it to array
-                    friendList = data.map(item => item.friendNavigation);
-                    console.log("Done loading friendList");
-                    console.log({ friendList });
-                    ChatApplicationNamespace.LoadFriendData(friendList);
-                    //Use namespace so i can access other script file without having to include it here
-                },
-                error: function (jqXhr, textStatus, errorThrown) {
-                    console.log("Error getting friend list :" + errorThrown);
-                }
-            });
-        };
-        ChatApplicationNamespace.GetFriendRequestList = function () {
-            console.log("\nget friend request list\n");
-            //Load user's friend
-            $.ajax({
-                url: BASE_ADDRESS + "/api/Users/GetFriendRequestsByReceiverId/" + @ViewBag.ID,
-                dataType: 'json',
-                type: 'GET',
-                contentType: 'application/json',
-                success: function (data, textStatus, jQxhr) {
-
-                    //Friend request json format
-                    //[
-                    //    {
-                    //        "senderId": 4,
-                    //        "receiverId": 3,
-                    //        "content": "string",
-                    //        "date": "2023-10-20T10:30:10.273",
-                    //        "status": "Pending",
-                    //        "receiver": null,
-                    //        "sender": {
-                    //            "userId": 4,
-                    //            "phoneNumber": "",
-                    //            "password": "",
-                    //            "name": "",
-                    //            "dob": "",
-                    //            "gender": "Nam",
-                    //            "avatarUrl": "",
-                    //            "backgroundUrl": "",
-                    //            "introduction": "",
-                    //            "email": "",
-                    //            "active": true,
-                    //            "groupGroupDeputies": [],
-                    //            "groupGroupLeaders": [],
-                    //            "messages": []
-                    //        }
-                    //    }
-                    //]
-
-
-                    // Only get sender then convert it to array
-                    friendRequestList = data.map(item => item.sender);
-                    console.log("Done loading friendRequestList");
-                    console.log({ friendRequestList });
-                    //Use namespace so i can access other script file without having to include it here
-                    ChatApplicationNamespace.LoadFriendRequestData(friendRequestList);
-                },
-                error: function (jqXhr, textStatus, errorThrown) {
-                    if (jqXhr.status === 404) {
-                        friendRequestList = [];
-                        ChatApplicationNamespace.LoadFriendRequestData(friendRequestList);
-                        console.log("No friend request found!");
-                    } else {
-                        // Handle other types of errors
-                        console.log("Error getting friend list: " + errorThrown);
-                    }
-                }
-            });
-        }
-        //Start connection here
-        $(document).ready(function () {
-            ChatApplicationNamespace.StartConnection();
-        });
-
-    </script>
+    @* main namespace that will start connection *@
+    <script src="~/js/Namespaces/ChatApplicationNamespace.js"></script>
 
     @* Notification via signalR *@
     <script src="~/js/ChatRoom/ChatRoom.js"></script>

@@ -8,21 +8,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BussinessObject;
+using BussinessObject.Models;
 
 namespace WFChatApplication
 {
     public partial class frmProfile : Form
     {
+        public User UserInfo { get; set; }
+
         public frmProfile()
         {
             InitializeComponent();
+
         }
-
-
-
 
         private void frmProfile_Load(object sender, EventArgs e)
         {
+            lb_name.Text = UserInfo.Name;
+            lb_Gender.Text = UserInfo.Gender;
+            lb_birthday.Text = UserInfo.Dob.ToString("dd/MM/yyyy");
+            lb_phoneNumber.Text = UserInfo.PhoneNumber;
+            ptb_avatar.ImageLocation = UserInfo.AvatarUrl;
+            ptb_background.ImageLocation = UserInfo.BackgroundUrl;
+
             lb_name.Location = new Point(Width / 2 - lb_name.Width / 2, 255);
             GraphicsPath gp = new GraphicsPath();
             gp.AddEllipse(0, 0, ptb_avatar.Width, ptb_avatar.Height);
@@ -67,6 +76,23 @@ namespace WFChatApplication
 
         private void panel_editProfile_Click(object sender, EventArgs e)
         {
+            frmEditProfile frmEditProfile = new frmEditProfile
+            {
+                UserInfo = UserInfo
+            };
+            frmEditProfile.FormClosed += frmEditProfile_Closed;
+            frmEditProfile.ShowDialog();
+
+        }
+
+        private void frmEditProfile_Closed(object sender, FormClosedEventArgs e)
+        {
+            lb_name.Text = UserInfo.Name;
+            lb_Gender.Text = UserInfo.Gender;
+            lb_birthday.Text = UserInfo.Dob.ToString("dd/MM/yyyy");
+            lb_phoneNumber.Text = UserInfo.PhoneNumber;
+            ptb_avatar.ImageLocation = UserInfo.AvatarUrl;
+            ptb_background.ImageLocation = UserInfo.BackgroundUrl;
 
         }
     }

@@ -184,7 +184,7 @@ namespace ChatAPI.Controllers
             {
                 using (var client = new HttpClient())
                 {
-                    var getFriendRequestsUrl = $"{BASE_ADDRESS}/api/Users/GetFriendRequest/{receiverId}";
+                    var getFriendRequestsUrl = $"{BASE_ADDRESS}/api/Users/GetFriendRequestsByReceiverId/{receiverId}";
                     var response = await client.GetAsync(getFriendRequestsUrl);
 
 
@@ -209,8 +209,6 @@ namespace ChatAPI.Controllers
                     {
                         return BadRequest("Friend request does not exist! Aborting operation add friend");
                     }
-
-
                 }
             }
             catch (Exception ex)

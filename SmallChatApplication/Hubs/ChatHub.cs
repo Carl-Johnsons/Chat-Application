@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using BussinessObject.Models;
 using System.Collections.Concurrent;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SmallChatApplication.Hubs
 {
@@ -52,10 +54,43 @@ namespace SmallChatApplication.Hubs
             //await Console.Out.WriteLineAsync("I'm in SendMessageToGroup");
             //await Clients.Group(user.Room).SendAsync("ReceiveMessage", user.Name, message);
         }
-        public async Task SendMessage(string user, string message)
+        public async Task SendIndividualMessage(IndividualMessage individualMessage)
         {
-            await Console.Out.WriteLineAsync("I'm in SendMessage");
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            try
+            {
+                // Have to get list because the 1 person can join on 2 different tab on browser
+                // So the connectionId may differnect but still 1 userId
+                var receiverConnectionIdList = UserConnectionMap.
+                Where(pair => pair.Value.UserId == individualMessage.UserReceiverId)
+                .Select(pair => pair.Key)
+                .ToList();
+
+                // If the receiver didn't online, simply do nothing
+                if (receiverConnectionIdList.Count <= 0)
+                {
+                    return;
+                }
+                // Create the settings with CamelCasePropertyNamesContractResolver
+                // if not setting like this, the attribute will be Pascal case will break the data in client-side
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+
+                foreach (var receiverConnectionId in receiverConnectionIdList)
+                {
+                    await Console.Out.WriteLineAsync(receiverConnectionId);
+                    // Serialize your object to JSON with camel case attribute names
+                    string json = JsonConvert.SerializeObject(individualMessage, settings);
+                    await Clients.Client(receiverConnectionId).SendAsync("ReceiveIndividualMessage", json);
+                    //await Clients.All.SendAsync("ReceiveIndividualMessage", json);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+            }
+
         }
 
         public async Task SendFriendRequest(FriendRequest friendRequest)
@@ -76,8 +111,29 @@ namespace SmallChatApplication.Hubs
             {
                 await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest");
             }
-
         }
+
+        public async Task SendAcceptFriendRequest(int senderId)
+        {
+            // Notify a list of user because they might have open mulit tab in browsers
+            var senderConnectionIdList = UserConnectionMap.
+                Where(pair => pair.Value.UserId == senderId)
+                .Select(pair => pair.Key)
+                .ToList();
+
+            // If the receiver didn't online, simply do nothing
+            if (senderConnectionIdList.Count <= 0)
+            {
+                return;
+            }
+            foreach (var senderConnectionId in senderConnectionIdList)
+            {
+                await Console.Out.WriteLineAsync("====================================");
+                await Console.Out.WriteLineAsync("Notify sender:" + senderConnectionId + "| Name: " + UserConnectionMap[senderConnectionId].Name);
+                await Clients.Client(senderConnectionId).SendAsync("ReceiveAcceptFriendRequest");
+            }
+        }
+
 
         public async Task JoinRoom(string Name, string Room)
         {

@@ -9,7 +9,20 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNet.SignalR.Core" Version="2.4.3" />
+	  <Content Remove="wwwroot\img\chat.png" />
+	  <Content Remove="wwwroot\img\notebook-of-contacts.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="wwwroot\img\chat.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Include="wwwroot\img\notebook-of-contacts.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Sdk.Razor" Version="3.1.32" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.9" />
 	</ItemGroup>

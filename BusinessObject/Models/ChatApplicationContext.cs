@@ -37,7 +37,7 @@ public partial class ChatApplicationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(local);User ID=sa;Password=sa;Database=chatApplication;trustServerCertificate=true");
+        => optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=chatApplication;Trusted_Connection=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,15 +97,6 @@ public partial class ChatApplicationContext : DbContext
             entity.Property(e => e.GroupName)
                 .HasMaxLength(50)
                 .HasColumnName("Group_Name");
-
-            entity.HasOne(d => d.GroupDeputy).WithMany(p => p.GroupGroupDeputies)
-                .HasForeignKey(d => d.GroupDeputyId)
-                .HasConstraintName("FK__Group__Group_Dep__30F848ED");
-
-            entity.HasOne(d => d.GroupLeader).WithMany(p => p.GroupGroupLeaders)
-                .HasForeignKey(d => d.GroupLeaderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Group__Group_Lea__300424B4");
         });
 
         modelBuilder.Entity<GroupBlock>(entity =>
@@ -138,12 +129,12 @@ public partial class ChatApplicationContext : DbContext
 
             entity.HasOne(d => d.GroupReceiver).WithMany()
                 .HasForeignKey(d => d.GroupReceiverId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupMess__Group__3D5E1FD2");
 
             entity.HasOne(d => d.Message).WithMany()
                 .HasForeignKey(d => d.MessageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupMess__Messa__3C69FB99");
         });
 
@@ -176,12 +167,12 @@ public partial class ChatApplicationContext : DbContext
 
             entity.HasOne(d => d.Message).WithMany()
                 .HasForeignKey(d => d.MessageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Individua__Messa__398D8EEE");
 
             entity.HasOne(d => d.UserReceiver).WithMany()
                 .HasForeignKey(d => d.UserReceiverId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Individua__User___3A81B327");
         });
 
@@ -204,7 +195,7 @@ public partial class ChatApplicationContext : DbContext
             entity.Property(e => e.SenderId).HasColumnName("Sender_ID");
             entity.Property(e => e.Time).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Sender).WithMany(p => p.Messages)
+            entity.HasOne(d => d.Sender).WithMany()
                 .HasForeignKey(d => d.SenderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Message__Sender___37A5467C");

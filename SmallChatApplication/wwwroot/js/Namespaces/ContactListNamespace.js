@@ -1,4 +1,4 @@
-﻿var ContactListNamespace = ContactListNamespace || {};
+﻿
 
 ContactListNamespace.LoadFriendList = function (friendObjectList) {
     //define local
@@ -63,7 +63,7 @@ ContactListNamespace.LoadFriendList = function (friendObjectList) {
             //Send request to get friend detail
             $(btnDetail).click(function () {
                 $.ajax({
-                    url: BASE_ADDRESS + "/api/Users/" + friendObject.userId,
+                    url: _BASE_ADDRESS + "/api/Users/" + friendObject.userId,
                     dataType: "json",
                     method: 'GET',
                     contentType: "application/json",
@@ -83,14 +83,14 @@ ContactListNamespace.LoadFriendList = function (friendObjectList) {
             //Send request to remove Friend
             $(btnDeleteFriend).click(function () {
                 $.ajax({
-                    //user is global attribute, it's declare in layout.cshtml
-                    url: BASE_ADDRESS + "/api/Users/RemoveFriend/" + user.userId + "/" + friendObject.userId,
+                    //_USER is global attribute, it's declare in layout.cshtml
+                    url: _BASE_ADDRESS + "/api/Users/RemoveFriend/" + _USER.userId + "/" + friendObject.userId,
                     dataType: "json",
                     method: "DELETE",
                     contentType: "application/json",
                     success: function (data, textStatus, jQxhr) {
                         //Notify other user
-                        connection.invoke("DeleteFriend", friendObject.userId).catch(function (err) {
+                        _CONNECTION.invoke("DeleteFriend", friendObject.userId).catch(function (err) {
                             console.log("Error when notify deleting friend");
                         });
 
@@ -211,20 +211,21 @@ ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) 
     }
     function sendAddFriend(senderId) {
         $.ajax({
-            //user is global attribute, it's declare in layout.cshtml
+            //_USER is global attribute, it's declare in layout.cshtml
             // Sender is the one who send the request not the current user
             // The current user is the one who accept the friend request
-            url: BASE_ADDRESS + "/api/Users/RemoveFriendRequest/" + senderId + "/" + user.userId,
+            url: _BASE_ADDRESS + "/api/Users/AddFriend/" + senderId + "/" + _USER.userId,
             dataType: "json",
-            method: "DELETE",
+            method: "POST",
             contentType: "application/json",
             success: function (data, textStatus, jQxhr) {
-                //Notify other user
-                //connection.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
-                //    console.log("Error when notify deleting friend");
-                //});
+                //Notify who sent the friend request that they are friend
+                _CONNECTION.invoke("SendAcceptFriendRequest", senderId).catch(function (err) {
+                    console.log("Error when notify add friend");
+                });
 
-                //Updating friend request list
+                //Updating friend request list in who accept friend request sides
+                ChatApplicationNamespace.GetFriendList();
                 ChatApplicationNamespace.GetFriendRequestList();
             },
             error: function (jQxhr, textStatus, errorThrown) {
@@ -236,16 +237,16 @@ ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) 
 
     function sendDeleteFriendRequest(senderId) {
         $.ajax({
-            //user is global attribute, it's declare in layout.cshtml
+            //_USER is global attribute, it's declare in layout.cshtml
             // Sender is the one who send the request not the current user
             // The current user is the one who accept the friend request
-            url: BASE_ADDRESS + "/api/Users/RemoveFriendRequest/" + senderId + "/" + user.userId,
+            url: _BASE_ADDRESS + "/api/Users/RemoveFriendRequest/" + senderId + "/" + _USER.userId,
             dataType: "json",
             method: "DELETE",
             contentType: "application/json",
             success: function (data, textStatus, jQxhr) {
                 //Notify other user
-                //connection.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
+                //_CONNECTION.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
                 //    console.log("Error when notify deleting friend");
                 //});
 
@@ -261,7 +262,7 @@ ContactListNamespace.LoadFriendRequestList = function (friendRequestObjectList) 
 }
 
 
-
+// Don't use this
 ContactListNamespace.LoadData = function (friendObjectList) {
     const GROUP_CONTACT_LIST_CONTAINER = CONTACT_PAGE_CONTAINER.find(".group-list-container .contact-list-container");
 

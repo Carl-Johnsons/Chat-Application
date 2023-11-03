@@ -38,7 +38,7 @@ namespace WFChatApplication
             btn_close = new Button();
             panel_vertical_tab = new Panel();
             ptbUserAvatar = new PictureBox();
-            panel_contact_btn = new Panel();
+            panel_logout_btn = new Panel();
             ptbContact = new PictureBox();
             panel_chat_btn = new Panel();
             ptbMessage = new PictureBox();
@@ -50,30 +50,31 @@ namespace WFChatApplication
             panel_layout_screen = new Panel();
             panel_sub_layout_screen = new Panel();
             panel_big_screen = new Panel();
+            panel_message_screen = new Panel();
+            panel_chat_textbox_container = new Panel();
+            chat_textbox = new TextBox();
+            panel_chattextbox_margin1 = new Panel();
+            btn_receive = new Button();
+            btn_send = new Button();
+            panel_chatextbox_margin = new Panel();
             panel_layout_sublist = new Panel();
             panel_chat_box_info = new Panel();
-            ptb_chatbox_info_avatar = new PictureBox();
-            panel_line = new Panel();
-            textBox_chat = new TextBox();
-            panel5 = new Panel();
-            button2 = new Button();
-            button1 = new Button();
-            panel4 = new Panel();
             panel_contain_list = new Panel();
             panel_tab.SuspendLayout();
             panel_menu_strip_container.SuspendLayout();
             panel_vertical_tab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptbUserAvatar).BeginInit();
-            panel_contact_btn.SuspendLayout();
+            panel_logout_btn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptbContact).BeginInit();
             panel_chat_btn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptbMessage).BeginInit();
             panel_search.SuspendLayout();
             panel_layout_screen.SuspendLayout();
             panel_sub_layout_screen.SuspendLayout();
-            panel_chat_box_info.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).BeginInit();
-            panel5.SuspendLayout();
+            panel_big_screen.SuspendLayout();
+            panel_message_screen.SuspendLayout();
+            panel_chat_textbox_container.SuspendLayout();
+            panel_chattextbox_margin1.SuspendLayout();
             panel_contain_list.SuspendLayout();
             SuspendLayout();
             // 
@@ -156,7 +157,7 @@ namespace WFChatApplication
             // 
             panel_vertical_tab.BackColor = Color.FromArgb(0, 145, 255);
             panel_vertical_tab.Controls.Add(ptbUserAvatar);
-            panel_vertical_tab.Controls.Add(panel_contact_btn);
+            panel_vertical_tab.Controls.Add(panel_logout_btn);
             panel_vertical_tab.Controls.Add(panel_chat_btn);
             panel_vertical_tab.Dock = DockStyle.Left;
             panel_vertical_tab.Location = new Point(0, 32);
@@ -174,25 +175,26 @@ namespace WFChatApplication
             ptbUserAvatar.SizeMode = PictureBoxSizeMode.StretchImage;
             ptbUserAvatar.TabIndex = 13;
             ptbUserAvatar.TabStop = false;
-            ptbUserAvatar.Paint += ptbUserAvatar_Paint;
+            ptbUserAvatar.Click += ptbUserAvatar_Click;
             // 
-            // panel_contact_btn
+            // panel_logout_btn
             // 
-            panel_contact_btn.BackColor = Color.FromArgb(0, 145, 255);
-            panel_contact_btn.Controls.Add(ptbContact);
-            panel_contact_btn.Location = new Point(0, 235);
-            panel_contact_btn.Name = "panel_contact_btn";
-            panel_contact_btn.Padding = new Padding(20);
-            panel_contact_btn.Size = new Size(75, 75);
-            panel_contact_btn.TabIndex = 12;
-            panel_contact_btn.MouseEnter += Panel_contact_btn_MouseEnter;
-            panel_contact_btn.MouseLeave += Panel_contact_btn_MouseLeave;
+            panel_logout_btn.BackColor = Color.FromArgb(0, 145, 255);
+            panel_logout_btn.Controls.Add(ptbContact);
+            panel_logout_btn.Location = new Point(0, 594);
+            panel_logout_btn.Name = "panel_logout_btn";
+            panel_logout_btn.Padding = new Padding(20);
+            panel_logout_btn.Size = new Size(75, 75);
+            panel_logout_btn.TabIndex = 12;
+            panel_logout_btn.Click += panel_logout_btn_Click;
+            panel_logout_btn.MouseEnter += Panel_logout_btn_MouseEnter;
+            panel_logout_btn.MouseLeave += Panel_logout_btn_MouseLeave;
             // 
             // ptbContact
             // 
             ptbContact.Dock = DockStyle.Fill;
             ptbContact.Enabled = false;
-            ptbContact.Image = Resources.notebook_of_contacts;
+            ptbContact.ImageLocation = "https://i.imgur.com/HyzJ1EB.png";
             ptbContact.Location = new Point(20, 20);
             ptbContact.Name = "ptbContact";
             ptbContact.Size = new Size(35, 35);
@@ -210,7 +212,6 @@ namespace WFChatApplication
             panel_chat_btn.Size = new Size(75, 75);
             panel_chat_btn.TabIndex = 11;
             panel_chat_btn.Click += panel_chat_btn_Click;
-            panel_chat_btn.Paint += panel_chat_btn_Paint;
             panel_chat_btn.MouseEnter += Panel_chat_btn_MouseEnter;
             panel_chat_btn.MouseLeave += Panel_chat_btn_MouseLeave;
             // 
@@ -317,11 +318,91 @@ namespace WFChatApplication
             // 
             panel_big_screen.BackColor = Color.White;
             panel_big_screen.BorderStyle = BorderStyle.FixedSingle;
+            panel_big_screen.Controls.Add(panel_message_screen);
             panel_big_screen.Dock = DockStyle.Fill;
             panel_big_screen.Location = new Point(343, 0);
             panel_big_screen.Name = "panel_big_screen";
             panel_big_screen.Size = new Size(1132, 758);
             panel_big_screen.TabIndex = 3;
+            // 
+            // panel_message_screen
+            // 
+            panel_message_screen.BackColor = Color.WhiteSmoke;
+            panel_message_screen.Controls.Add(panel_message);
+            panel_message_screen.Controls.Add(panel_chat_textbox_container);
+            panel_message_screen.Dock = DockStyle.Fill;
+            panel_message_screen.Location = new Point(0, 0);
+            panel_message_screen.Name = "panel_message_screen";
+            panel_message_screen.Size = new Size(1130, 756);
+            panel_message_screen.TabIndex = 0;
+            //
+            // panel_message
+            //
+            panel_message.Dock = DockStyle.Fill;
+            panel_message.Location = new Point(0, 0);
+            panel_message.Name = "panel_message";
+            panel_message.Size = new Size(1130, 631);
+            panel_message.TabIndex = 1;
+            //
+            // panel_chat_textbox_container
+            // 
+            panel_chat_textbox_container.BackColor = Color.White;
+            panel_chat_textbox_container.BorderStyle = BorderStyle.FixedSingle;
+            panel_chat_textbox_container.Controls.Add(chat_textbox);
+            panel_chat_textbox_container.Controls.Add(panel_chattextbox_margin1);
+            panel_chat_textbox_container.Controls.Add(panel_chatextbox_margin);
+            panel_chat_textbox_container.Dock = DockStyle.Bottom;
+            panel_chat_textbox_container.Location = new Point(0, 631);
+            panel_chat_textbox_container.Name = "panel_chat_textbox_container";
+            panel_chat_textbox_container.Size = new Size(1130, 125);
+            panel_chat_textbox_container.TabIndex = 0;
+            // 
+            // chat_textbox
+            // 
+            chat_textbox.Dock = DockStyle.Bottom;
+            chat_textbox.Location = new Point(58, 24);
+            chat_textbox.Multiline = true;
+            chat_textbox.Name = "chat_textbox";
+            chat_textbox.Size = new Size(879, 99);
+            chat_textbox.TabIndex = 3;
+            chat_textbox.KeyDown += chat_textbox_KeyDown;
+            // 
+            // panel_chattextbox_margin1
+            // 
+            panel_chattextbox_margin1.Controls.Add(btn_receive);
+            panel_chattextbox_margin1.Controls.Add(btn_send);
+            panel_chattextbox_margin1.Dock = DockStyle.Right;
+            panel_chattextbox_margin1.Location = new Point(937, 0);
+            panel_chattextbox_margin1.Name = "panel_chattextbox_margin1";
+            panel_chattextbox_margin1.Size = new Size(191, 123);
+            panel_chattextbox_margin1.TabIndex = 2;
+            // 
+            // btn_receive
+            // 
+            btn_receive.Location = new Point(35, 84);
+            btn_receive.Name = "btn_receive";
+            btn_receive.Size = new Size(94, 29);
+            btn_receive.TabIndex = 1;
+            btn_receive.Text = "receive";
+            btn_receive.UseVisualStyleBackColor = true;
+            // 
+            // btn_send
+            // 
+            btn_send.Location = new Point(35, 23);
+            btn_send.Name = "btn_send";
+            btn_send.Size = new Size(94, 29);
+            btn_send.TabIndex = 0;
+            btn_send.Text = "send";
+            btn_send.UseVisualStyleBackColor = true;
+            btn_send.Click += btn_send_Click;
+            // 
+            // panel_chatextbox_margin
+            // 
+            panel_chatextbox_margin.Dock = DockStyle.Left;
+            panel_chatextbox_margin.Location = new Point(0, 0);
+            panel_chatextbox_margin.Name = "panel_chatextbox_margin";
+            panel_chatextbox_margin.Size = new Size(58, 123);
+            panel_chatextbox_margin.TabIndex = 0;
             // 
             // panel_layout_sublist
             // 
@@ -336,85 +417,11 @@ namespace WFChatApplication
             // 
             panel_chat_box_info.BackColor = Color.White;
             panel_chat_box_info.BorderStyle = BorderStyle.FixedSingle;
-            panel_chat_box_info.Controls.Add(ptb_chatbox_info_avatar);
             panel_chat_box_info.Dock = DockStyle.Top;
             panel_chat_box_info.Location = new Point(0, 0);
             panel_chat_box_info.Name = "panel_chat_box_info";
             panel_chat_box_info.Size = new Size(1475, 90);
             panel_chat_box_info.TabIndex = 0;
-            // 
-            // ptb_chatbox_info_avatar
-            // 
-            ptb_chatbox_info_avatar.BorderStyle = BorderStyle.FixedSingle;
-            ptb_chatbox_info_avatar.Location = new Point(370, 15);
-            ptb_chatbox_info_avatar.Margin = new Padding(3, 4, 3, 4);
-            ptb_chatbox_info_avatar.Name = "ptb_chatbox_info_avatar";
-            ptb_chatbox_info_avatar.Size = new Size(60, 60);
-            ptb_chatbox_info_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
-            ptb_chatbox_info_avatar.TabIndex = 7;
-            ptb_chatbox_info_avatar.TabStop = false;
-            ptb_chatbox_info_avatar.Paint += ptb_chatbox_info_avatar_Paint;
-            // 
-            // panel_line
-            // 
-            panel_line.Dock = DockStyle.Bottom;
-            panel_line.Location = new Point(25, 58);
-            panel_line.Name = "panel_line";
-            panel_line.Size = new Size(927, 2);
-            panel_line.TabIndex = 11;
-            // 
-            // textBox_chat
-            // 
-            textBox_chat.BorderStyle = BorderStyle.FixedSingle;
-            textBox_chat.Dock = DockStyle.Bottom;
-            textBox_chat.Font = new Font("Arial Narrow", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox_chat.Location = new Point(25, 60);
-            textBox_chat.Margin = new Padding(15, 30, 15, 30);
-            textBox_chat.Multiline = true;
-            textBox_chat.Name = "textBox_chat";
-            textBox_chat.ScrollBars = ScrollBars.Vertical;
-            textBox_chat.Size = new Size(927, 80);
-            textBox_chat.TabIndex = 11;
-            textBox_chat.GotFocus += textBox_chat_GetFocus;
-            textBox_chat.Leave += textBox_chat_Leave;
-            // 
-            // panel5
-            // 
-            panel5.Controls.Add(button2);
-            panel5.Controls.Add(button1);
-            panel5.Dock = DockStyle.Right;
-            panel5.Location = new Point(952, 0);
-            panel5.Name = "panel5";
-            panel5.Size = new Size(178, 140);
-            panel5.TabIndex = 12;
-            // 
-            // button2
-            // 
-            button2.Location = new Point(28, 31);
-            button2.Name = "button2";
-            button2.Size = new Size(94, 29);
-            button2.TabIndex = 1;
-            button2.Text = "button2";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(28, 67);
-            button1.Name = "button1";
-            button1.Size = new Size(94, 29);
-            button1.TabIndex = 0;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
-            // 
-            // panel4
-            // 
-            panel4.Dock = DockStyle.Left;
-            panel4.Location = new Point(0, 0);
-            panel4.Name = "panel4";
-            panel4.Size = new Size(25, 140);
-            panel4.TabIndex = 13;
             // 
             // panel_contain_list
             // 
@@ -437,6 +444,7 @@ namespace WFChatApplication
             Controls.Add(panel_layout_screen);
             Controls.Add(panel_vertical_tab);
             Controls.Add(panel_tab);
+            DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.None;
             Name = "frmMain";
             StartPosition = FormStartPosition.CenterScreen;
@@ -446,7 +454,7 @@ namespace WFChatApplication
             panel_menu_strip_container.ResumeLayout(false);
             panel_vertical_tab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptbUserAvatar).EndInit();
-            panel_contact_btn.ResumeLayout(false);
+            panel_logout_btn.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptbContact).EndInit();
             panel_chat_btn.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptbMessage).EndInit();
@@ -454,9 +462,11 @@ namespace WFChatApplication
             panel_search.PerformLayout();
             panel_layout_screen.ResumeLayout(false);
             panel_sub_layout_screen.ResumeLayout(false);
-            panel_chat_box_info.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).EndInit();
-            panel5.ResumeLayout(false);
+            panel_big_screen.ResumeLayout(false);
+            panel_message_screen.ResumeLayout(false);
+            panel_chat_textbox_container.ResumeLayout(false);
+            panel_chat_textbox_container.PerformLayout();
+            panel_chattextbox_margin1.ResumeLayout(false);
             panel_contain_list.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -475,24 +485,25 @@ namespace WFChatApplication
         private Button button4;
         private Panel panel_list;
         private Panel panel_layout_screen;
-
-        private TextBox textBox_chat;
-        private Panel panel5;
-        private Panel panel4;
-        private Panel panel_line;
         private Panel panel_chat_btn;
         private PictureBox ptbMessage;
-        private Panel panel_contact_btn;
+        private Panel panel_logout_btn;
         private PictureBox ptbContact;
         private Panel panel_contain_list;
         private Panel panel_chat_box_info;
-        private PictureBox ptb_chatbox_info_avatar;
         private Panel panel_sub_layout_screen;
         private Panel panel_big_screen;
         private Panel panel_layout_sublist;
         private PictureBox ptbUserAvatar;
-        private Button button1;
-        private Button button2;
+        private Panel panel_message_screen;
+        private Panel panel_chat_textbox_container;
+        private TextBox chat_textbox;
+        private Panel panel_chattextbox_margin1;
+        private Panel panel_chatextbox_margin;
+        private Button btn_receive;
+        private Button btn_send;
+
+
 
     }
 }

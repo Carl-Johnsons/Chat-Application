@@ -1,6 +1,8 @@
-﻿var UpdateInfoPopupNamespace = UpdateInfoPopupNamespace || {};
+﻿
 
 UpdateInfoPopupNamespace.LoadData = function (user) {
+    console.log("load data update info")
+
     const UPDATE_INFO_POPUP_CONTAINER = $(".update-info-popup-container");
 
     //DoB
@@ -11,9 +13,10 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
     const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 
-    //img
-    const backgroundImg = UPDATE_INFO_POPUP_CONTAINER.find(".background-img-container > img");
-    const avatarImg = UPDATE_INFO_POPUP_CONTAINER.find(".avatar-img-container > img");
+    //img 
+    const backgroundImg = UPDATE_INFO_POPUP_CONTAINER.find(".background-img-container img");
+    const avatarImg = UPDATE_INFO_POPUP_CONTAINER.find(".avatar-img-container img");
+
     //name
     const userNameInput = UPDATE_INFO_POPUP_CONTAINER.find("div.user-name > input");
     //gender
@@ -59,7 +62,7 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
             $(genderRadiobtns[1]).prop('checked', true);
         }
         // Parse the date string into a Date object
-        let date = new Date(user.dob);
+        let date = new Date(userObject.dob);
 
         let year = date.getFullYear();
         let month = date.getMonth() + 1; // Note that months are zero-based (0-11)
@@ -124,6 +127,11 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
         select.append(optionElement);
     }
 
+    //for change Image action
+    const fileAvatar = document.getElementById("fileAvatar");
+    const fileBackground = document.getElementById("fileBackground");
+
+
     //Update profile action
     const btnUpdatebtn = UPDATE_INFO_POPUP_CONTAINER.find(".btn-update-information");
 
@@ -151,8 +159,9 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
         user.avatarUrl = $(avatarImg).attr('src');
         user.backgroundUrl = $(backgroundImg).attr('src');
 
+      
         $.ajax({
-            url: BASE_ADDRESS + "/api/Users/" + user.userId,
+            url: _BASE_ADDRESS + "/api/Users/" + user.userId,
             dataType: 'json',
             type: 'PUT',
             contentType: 'application/json',
@@ -169,5 +178,53 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
             }
         });
 
+        
+
+
+    });
+    //Call upload image api function
+    async function uploadImage(file) {
+        const url = _BASE_ADDRESS + "/api/Tools/UploadImageImgur/";
+
+        const formData = new FormData();
+        formData.append("ImageFile", file);
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Error: ${error}`);
+        }
+
+        const result = await response.text();
+        return result;
+    }
+    //evt for  upload image to imgur when changing it
+    fileAvatar.addEventListener("change", async function () {
+        const file = fileAvatar.files[0];
+        try {
+            const imageUrl = await uploadImage(file);
+            console.log("Image uploaded successfully. URL:", imageUrl);
+            avatarImg.attr('src', imageUrl);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+        }
+    });
+    //evt for  upload image to imgur when changing it
+    fileBackground.addEventListener("change", async function () {
+        const file = fileBackground.files[0];
+        try {
+            const imageUrl = await uploadImage(file);
+            console.log("Image uploaded successfully. URL:", imageUrl);
+            backgroundImg.attr('src', imageUrl);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+        }
     });
 };

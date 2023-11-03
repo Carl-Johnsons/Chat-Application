@@ -9,32 +9,86 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WFChatApplication.ApiServices;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using BussinessObject;
+using BussinessObject.Models;
+using Message = BussinessObject.Models.Message;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
+using Microsoft.AspNetCore.SignalR.Client;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 namespace WFChatApplication
 {
     public partial class frmMain : Form
     {
+        public User CurrentUser { get; set; }
+        public PictureBox ptb_chatbox_info_avatar { get; set; }
+        public Panel panel_message { get; set; }
+        public Label lb_chat_user_name { get; set; }
+        private HubConnection hubConnection;
+
         public frmMain()
         {
+            panel_message = new Panel();
+            lb_chat_user_name = new Label();
+            ptb_chatbox_info_avatar = new PictureBox();
+            //panel_message.Dock = DockStyle.Fill;
+            //panel_message.Location = new Point(0, 0);
+            //panel_message.Name = "panel_message";
+            //panel_message.Size = new Size(1130, 631);
+            //panel_message.TabIndex = 1;
             InitializeComponent();
-            LoadMessageScreen();
-            LoadChatTextBox();
+            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).BeginInit();
+            panel_chat_box_info.Controls.Add(lb_chat_user_name);
+            panel_chat_box_info.Controls.Add(ptb_chatbox_info_avatar);
+            lb_chat_user_name.AutoSize = true;
+            lb_chat_user_name.Font = new Font("Arial", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            lb_chat_user_name.Location = new Point(436, 34);
+            lb_chat_user_name.Name = "lb_chat_user_name";
+            lb_chat_user_name.Size = new Size(71, 26);
+            lb_chat_user_name.TabIndex = 1;
+            lb_chat_user_name.Text = "label1";
+            ptb_chatbox_info_avatar.Location = new Point(359, 15);
+            ptb_chatbox_info_avatar.Name = "ptb_chatbox_info_avatar";
+            ptb_chatbox_info_avatar.Size = new Size(60, 60);
+            ptb_chatbox_info_avatar.SizeMode = PictureBoxSizeMode.StretchImage;
+            ptb_chatbox_info_avatar.TabIndex = 0;
+            ptb_chatbox_info_avatar.TabStop = false;
+            ((System.ComponentModel.ISupportInitialize)ptb_chatbox_info_avatar).EndInit();
 
+            //Make window form a chathub signalR client
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://localhost:7093/chatHub")
+                .WithAutomaticReconnect()
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddConsole();
+                })
+                .Build();
+            hubConnection.Closed += async (error) =>
+            {
+                await Task.Delay(new Random().Next(0, 5) * 1000);
+                await hubConnection.StartAsync();
+            };
         }
+
+
+
         private bool isMaximized = false;
         private int normalWidth;
         private int normalHeight;
         private bool draggPanelMouseDown = false;
         private System.Drawing.Point normalLocation;
         int TotalHeightPanelMessageScreen = 0;
-        private string lastMessageId = "send";
+        public string lastMessageId = "send";
+        public User Receiver { get; set; }
 
-        private Panel panel_message_screen;
-        private Panel panel_chat_textbox_container;
-
-
-        private void LoadImageFromUrl(string url, PictureBox pictureBox)
+        //========================= TOOLS ==================================================
+        public void LoadImageFromUrl(string url, PictureBox pictureBox)
         {
             try
             {
@@ -51,109 +105,111 @@ namespace WFChatApplication
             }
         }
 
+        //============================ LOAD  ==================================================
 
-        //For paint circle avatar--------------------------------------------------------------------------------
-        private void ptbUserAvatar_Paint(object sender, PaintEventArgs e)
+        private void frmMain_Load(object sender, EventArgs e)
         {
-            LoadImageFromUrl("https://scontent.fsgn2-9.fna.fbcdn.net/v/t1.6435-9/205708395_1504353913236212_3220869659595925862_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=be3454&_nc_ohc=Q-DDIeUYLXkAX8pWfa7&_nc_ht=scontent.fsgn2-9.fna&oh=00_AfDQTl-W4ZwGI5B9ZEAUEuTEiCHBT35mmaX8fze4ECsWuA&oe=65597CBA", ptbUserAvatar);
+            //avatar
+            Console.WriteLine("ptbUserAvatar_Paint");
+            LoadImageFromUrl(CurrentUser.AvatarUrl, ptbUserAvatar);
             GraphicsPath gp = new GraphicsPath();
             gp.AddEllipse(0, 0, ptbUserAvatar.Width, ptbUserAvatar.Height);
             Region rg = new Region(gp);
             ptbUserAvatar.Region = rg;
+
+
+            //chat avatar
+            Console.WriteLine("ptb_chatbox_info_avatar_Paint2");
+            //ptb_chatbox_info_avatar.ImageLocation = CurrentUser.AvatarUrl;
+            LoadImageFromUrl("https://www.hindustantimes.com/ht-img/img/2023/08/25/550x309/international_dog_day_1692974397743_1692974414085.jpg", ptb_chatbox_info_avatar);
+            GraphicsPath gp1 = new GraphicsPath();
+            gp1.AddEllipse(0, 0, ptb_chatbox_info_avatar.Width, ptb_chatbox_info_avatar.Height);
+            Region rg2 = new Region(gp1);
+            ptb_chatbox_info_avatar.Region = rg2;
+
+
+            normalWidth = this.Width;
+            normalHeight = this.Height;
+            normalLocation = this.Location;
+
+            //Real time
+            StartConnection();
         }
-
-        private void ptb_chatbox_info_avatar_Paint(object sender, PaintEventArgs e)
+        private async void StartConnection()
         {
-            LoadImageFromUrl("https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-1/313404649_1449466208899373_2300191788456403089_n.jpg?stp=dst-jpg_p320x320&_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=3OVnbdQ-HBgAX93faQQ&_nc_ht=scontent.fsgn2-7.fna&oh=00_AfB5-xxlQBR8sEAo4nDAq-tIqKDjCLmuG83wsDSy0jwrJA&oe=653608AF", ptb_chatbox_info_avatar);
-            GraphicsPath gp = new GraphicsPath();
-            gp.AddEllipse(0, 0, ptb_chatbox_info_avatar.Width, ptb_chatbox_info_avatar.Height);
-            Region rg = new Region(gp);
-            ptb_chatbox_info_avatar.Region = rg;
-        }
-
-        //**For paint circle avatar--------------------------------------------------------------------------------
 
 
-
-
-
-        private void txtSearchBar_Enter(object sender, EventArgs e)
-        {
-            GraphicsPath gp = new GraphicsPath();
-            gp.AddRectangle(new Rectangle(txtSearchBar.Location.X, txtSearchBar.Location.Y, txtSearchBar.Width, txtSearchBar.Height));
-            Region rg = new Region(gp);
-            ptbUserAvatar.Region = rg;
-        }
-
-
-        private void LoadChatList()
-        {
-            for (int i = 0; i < 20; i++)
+            try
             {
-                panelItem pnlItem = new panelItem(i);
-                panel_list.Controls.Add(pnlItem);
+                await hubConnection.StartAsync();
+                await Console.Out.WriteLineAsync("Connecting in window form client");
+                await hubConnection.InvokeAsync("MapUserData", CurrentUser);
+                await Console.Out.WriteLineAsync("Map user data to signalR completely");
+
+                // this didn't work
+                hubConnection.On<IndividualMessage>("ReceiveIndividualMessage", (Message) =>
+                {
+                    // Handle the received message
+                    // 'individualMessage' is now an instance of the IndividualMessage class
+                    //int userSender = individualMessage.Message.SenderId;
+                    //string messageContent = individualMessage.Message.Content;
+                    Console.WriteLine($"Successful: {Message.Message.Content}");
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.Out.WriteLine(ex.Message);
+            }
+
+
+        }
+
+        private async void LoadChatList()
+        {
+            var FriendList = await ApiService.GetFriendAsync(CurrentUser.UserId);
+            int i = 0;
+            foreach (var friend in FriendList)
+            {
+                panelItem panelItem = new panelItem(i, friend.FriendNavigation, this);
+                panel_list.Controls.Add(panelItem);
+                i++;
             }
             panel_list.ResumeLayout(false);
             panel_list.PerformLayout();
-
         }
 
-        private void LoadChatTextBox()
+
+
+        //========================= MESSAGE ===================================================
+        public void ShowSendedMessage(IndividualMessage IndividualMessage)
         {
-
-
-            panel_chat_textbox_container = new Panel();
-            panel_chat_textbox_container.SuspendLayout();
-            panel_chat_textbox_container.BackColor = Color.White;
-            panel_chat_textbox_container.Controls.Add(panel_line);
-            panel_chat_textbox_container.Controls.Add(textBox_chat);
-            panel_chat_textbox_container.Controls.Add(panel5);
-            panel_chat_textbox_container.Controls.Add(panel4);
-            panel_chat_textbox_container.Dock = DockStyle.Bottom;
-            panel_chat_textbox_container.Location = new Point(0, 616);
-            panel_chat_textbox_container.Name = "panel_chat_textbox_container";
-            panel_chat_textbox_container.Size = new Size(1130, 140);
-            panel_chat_textbox_container.ResumeLayout(false);
-            panel_chat_textbox_container.PerformLayout();
-            panel_chat_textbox_container.Visible = true;
-            panel_chat_textbox_container.Enabled = true;
-            panel_message_screen.Controls.Add(panel_chat_textbox_container);
+            messageItem messageItem = new messageItem(true, IndividualMessage, false, this);
+            panel_message.Controls.Add(messageItem.MessageRowPanel);
+            panel_message.AutoScrollMinSize = new Size(0, messageItem.MessageRowPanel.Height);
+            panel_message.AutoScrollPosition = new Point(0, panel_message.VerticalScroll.Maximum);
+            lastMessageId = "send";
         }
 
-        private void LoadMessageScreen()
+        public void ShowReceivedMessage(IndividualMessage individualMessage)
         {
-
-
-            panel_message_screen = new Panel();
-            panel_message_screen.AutoScroll = true;
-            panel_message_screen.AutoSize = true;
-            panel_message_screen.BackColor = Color.Silver;
-            panel_message_screen.Dock = DockStyle.Fill;
-            panel_message_screen.Name = "panel_message_screen";
-            panel_message_screen.Enabled = true;
-            panel_message_screen.Visible = true;
-            panel_big_screen.Controls.Add(panel_message_screen);
-
-
+            bool isHaveAvatar = false;
+            if (lastMessageId == "received")
+            {
+                isHaveAvatar = false;
+            }
+            if (lastMessageId == "send")
+            {
+                isHaveAvatar = true;
+            }
+            messageItem messageItem = new messageItem(false, individualMessage, isHaveAvatar, this);
+            panel_message.Controls.Add(messageItem.MessageRowPanel);
+            panel_message.AutoScrollMinSize = new Size(0, messageItem.MessageRowPanel.Height);
+            panel_message.AutoScrollPosition = new Point(0, panel_message_screen.VerticalScroll.Maximum + 100);
+            lastMessageId = "received";
         }
 
-        //For textBox_chat--------------------------------------------------------------------------------
-
-        private void textBox_chat_GetFocus(object sender, EventArgs e)
-        {
-            panel_line.BackColor = Color.Red;
-
-        }
-
-
-        private void textBox_chat_Leave(object sender, EventArgs e)
-        {
-            panel_line.BackColor = Color.Silver;
-
-        }
-        //**For textBox_chat--------------------------------------------------------------------------------
-
-
+        //============================== EVENT ======================================================================
+        //============================== MOUSE ======================================================================
 
         // For panel tab bar--------------------------------------------------------------------------------
 
@@ -181,18 +237,28 @@ namespace WFChatApplication
 
         //** For panel tab bar--------------------------------------------------------------------------------
 
-
-
         //for 2 button chat and contact-------------------------------------------------------------------
-        private void Panel_contact_btn_MouseEnter(object sender, EventArgs e)
+        private void Panel_logout_btn_MouseEnter(object sender, EventArgs e)
         {
-            panel_contact_btn.BackColor = Color.FromArgb(0, 110, 220);
+            panel_logout_btn.BackColor = Color.FromArgb(0, 110, 220);
         }
 
-        private void Panel_contact_btn_MouseLeave(object sender, EventArgs e)
+        private void Panel_logout_btn_MouseLeave(object sender, EventArgs e)
         {
-            panel_contact_btn.BackColor = Color.FromArgb(0, 145, 255);
+            panel_logout_btn.BackColor = Color.FromArgb(0, 145, 255);
 
+        }
+
+        private void panel_logout_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Do you want to logout?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult == DialogResult.Yes)
+            {
+                frmLogin frmLogin = new frmLogin();
+                Program.setMainForm(frmLogin);
+                Program.showMainForm();
+                this.Dispose();
+            }
         }
 
         private void Panel_chat_btn_MouseEnter(object sender, EventArgs e)
@@ -208,16 +274,10 @@ namespace WFChatApplication
         private void panel_chat_btn_Click(object sender, EventArgs e)
         {
             LoadChatList();
-            panel_chat_textbox_container.Visible = true;
-            panel_chat_textbox_container.Enabled = true;
-            panel_message_screen.Visible = true;
-            panel_message_screen.Enabled = true;
-            this.Focus();
+
         }
 
-
         //**for 2 button chat and contact-------------------------------------------------------------------
-
 
         //For menu strip bar button-------------------------------------------------------------------------
 
@@ -232,12 +292,7 @@ namespace WFChatApplication
             this.WindowState = FormWindowState.Minimized;
         }
 
-        private void frmMain_Load(object sender, EventArgs e)
-        {
-            normalWidth = this.Width;
-            normalHeight = this.Height;
-            normalLocation = this.Location;
-        }
+
 
         private void btn_form_size_Click(object sender, EventArgs e)
         {
@@ -265,98 +320,75 @@ namespace WFChatApplication
                 //panel_line.Width = textBox_chat.Width;
 
             }
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
 
         }
-
-        private void panel_chat_box_container_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-
-
-        public void ShowSendedMessage(string messageContent, int messageRowSize)
-        {
-            messageItem messageItem = new messageItem(true, messageContent, false);
-
-            panel_message_screen.Controls.Add(messageItem.MessageRowPanel);
-
-            panel_message_screen.AutoScrollMinSize = new Size(0, messageItem.MessageRowPanel.Height);
-            panel_message_screen.AutoScrollPosition = new Point(0, panel_message_screen.VerticalScroll.Maximum);
-
-
-
-            lastMessageId = "send";
-
-            //panel3.VerticalScroll.Value += childPanel.Height;
-
-
-
-        }
-
-        public void ShowReceivedMessage(string messageContent, int messageRowSize)
-        {
-            bool isHaveAvatar = false;
-            if (lastMessageId == "received")
-            {
-                isHaveAvatar = false;
-            }
-            if (lastMessageId == "send")
-            {
-                isHaveAvatar = true;
-            }
-            messageItem messageItem = new messageItem(false, messageContent, isHaveAvatar);
-            panel_message_screen.Controls.Add(messageItem.MessageRowPanel);
-
-
-            panel_message_screen.AutoScrollMinSize = new Size(0, messageItem.MessageRowPanel.Height);
-            panel_message_screen.AutoScrollPosition = new Point(0, panel_message_screen.VerticalScroll.Maximum+100);
-
-
-            lastMessageId = "received";
-
-
-
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-            ShowSendedMessage(textBox_chat.Text, panel_message_screen.Width);
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            ShowReceivedMessage(textBox_chat.Text, panel_message_screen.Width);
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-        }
-
-        private void panel_chat_btn_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-
         //**For menu strip bar button-------------------------------------------------------------------------
+
+        //For message ----------------------------------------------------------------------------------------
+        //Send Message Button
+
+        private async void btn_send_Click(object sender, EventArgs e)
+        {
+            string Content = chat_textbox.Text;
+            if (Content != null && Content != "")
+            {
+                IndividualMessage message = new IndividualMessage
+                {
+                    UserReceiverId = Receiver.UserId,
+                    Status = "string",
+                    Message = new Message
+                    {
+                        SenderId = CurrentUser.UserId,
+                        Content = Content,
+                        Time = DateTime.Now,
+                        MessageType = "Individual",
+                        MessageFormat = "Text",
+                        Active = true
+                    }
+                };
+
+                chat_textbox.Text = "";
+                await ApiService.SendIndividualMessageAsync(message);
+                ShowSendedMessage(message);
+            }
+        }
+        //==================================================================
+
+        //For click user avatar=============================================
+        private void ptbUserAvatar_Click(object sender, EventArgs e)
+        {
+            frmProfile frmProfile = new frmProfile();
+            frmProfile.UserInfo = CurrentUser;
+            frmProfile.FormClosed += frmProfile_Closed;
+            frmProfile.ShowDialog();
+        }
+
+        //Update form main after update user information
+        private void frmProfile_Closed(object sender, FormClosedEventArgs e)
+        {
+            LoadImageFromUrl(CurrentUser.AvatarUrl, ptbUserAvatar);
+        }
+
+        //=========================================================================
+
+        //================================= KEY EVENT ================================
+        private void txtSearchBar_Enter(object sender, EventArgs e)
+        {
+            GraphicsPath gp = new GraphicsPath();
+            gp.AddRectangle(new Rectangle(txtSearchBar.Location.X, txtSearchBar.Location.Y, txtSearchBar.Width, txtSearchBar.Height));
+            Region rg = new Region(gp);
+            ptbUserAvatar.Region = rg;
+        }
+
+        private void chat_textbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btn_send.PerformClick();
+                e.Handled = true;
+            }
+        }
+
 
     }
 }
