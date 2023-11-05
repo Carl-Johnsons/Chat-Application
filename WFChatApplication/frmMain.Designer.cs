@@ -54,7 +54,6 @@ namespace WFChatApplication
             panel_chat_textbox_container = new Panel();
             chat_textbox = new TextBox();
             panel_chattextbox_margin1 = new Panel();
-            btn_receive = new Button();
             btn_send = new Button();
             panel_chatextbox_margin = new Panel();
             panel_layout_sublist = new Panel();
@@ -369,7 +368,6 @@ namespace WFChatApplication
             // 
             // panel_chattextbox_margin1
             // 
-            panel_chattextbox_margin1.Controls.Add(btn_receive);
             panel_chattextbox_margin1.Controls.Add(btn_send);
             panel_chattextbox_margin1.Dock = DockStyle.Right;
             panel_chattextbox_margin1.Location = new Point(937, 0);
@@ -377,20 +375,12 @@ namespace WFChatApplication
             panel_chattextbox_margin1.Size = new Size(191, 123);
             panel_chattextbox_margin1.TabIndex = 2;
             // 
-            // btn_receive
-            // 
-            btn_receive.Location = new Point(35, 84);
-            btn_receive.Name = "btn_receive";
-            btn_receive.Size = new Size(94, 29);
-            btn_receive.TabIndex = 1;
-            btn_receive.Text = "receive";
-            btn_receive.UseVisualStyleBackColor = true;
-            // 
             // btn_send
             // 
             btn_send.Location = new Point(35, 23);
             btn_send.Name = "btn_send";
             btn_send.Size = new Size(94, 29);
+            btn_send.Enabled = false;
             btn_send.TabIndex = 0;
             btn_send.Text = "send";
             btn_send.UseVisualStyleBackColor = true;
@@ -500,7 +490,6 @@ namespace WFChatApplication
         private TextBox chat_textbox;
         private Panel panel_chattextbox_margin1;
         private Panel panel_chatextbox_margin;
-        private Button btn_receive;
         private Button btn_send;
 
 

@@ -20,6 +20,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Button = System.Windows.Forms.Button;
 
 namespace WFChatApplication
 {
@@ -51,7 +52,7 @@ namespace WFChatApplication
             lb_chat_user_name.Name = "lb_chat_user_name";
             lb_chat_user_name.Size = new Size(71, 26);
             lb_chat_user_name.TabIndex = 1;
-            lb_chat_user_name.Text = "label1";
+            lb_chat_user_name.Text = "";
             ptb_chatbox_info_avatar.Location = new Point(359, 15);
             ptb_chatbox_info_avatar.Name = "ptb_chatbox_info_avatar";
             ptb_chatbox_info_avatar.Size = new Size(60, 60);
@@ -121,7 +122,7 @@ namespace WFChatApplication
             //chat avatar
             Console.WriteLine("ptb_chatbox_info_avatar_Paint2");
             //ptb_chatbox_info_avatar.ImageLocation = CurrentUser.AvatarUrl;
-            LoadImageFromUrl("https://www.hindustantimes.com/ht-img/img/2023/08/25/550x309/international_dog_day_1692974397743_1692974414085.jpg", ptb_chatbox_info_avatar);
+            LoadImageFromUrl("https://i.imgur.com/3vYsaze.png", ptb_chatbox_info_avatar);
             GraphicsPath gp1 = new GraphicsPath();
             gp1.AddEllipse(0, 0, ptb_chatbox_info_avatar.Width, ptb_chatbox_info_avatar.Height);
             Region rg2 = new Region(gp1);
@@ -387,6 +388,11 @@ namespace WFChatApplication
                 btn_send.PerformClick();
                 e.Handled = true;
             }
+        }
+
+        public Button getBtn_Send()
+        {
+            return btn_send;
         }
 
 

@@ -90,6 +90,7 @@ namespace WFChatApplication
             var IndividualMessages = await ApiService.GetIndividualMessageAsync(MainForm.CurrentUser.UserId, User.UserId);
             MainForm.Receiver = User;
             MainForm.lb_chat_user_name.Text = User.Name;
+            MainForm.getBtn_Send().Enabled = true;
             MainForm.LoadImageFromUrl(User.AvatarUrl, MainForm.ptb_chatbox_info_avatar);
             Thread LoadMessage = new Thread(() =>
             {
