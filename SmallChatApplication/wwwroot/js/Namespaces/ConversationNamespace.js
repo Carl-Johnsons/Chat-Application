@@ -181,23 +181,39 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
 
     function renderMessage(messageObject, isFirstMessage, user) {
         console.log("renderMessage");
-        let message = generateElement("div", "message");
-        // Only first message has name
+        let _name = user.name;
+        let _messageContent = messageObject.content;
+        let _messageTime = getShortDate(messageObject.time);
+
+        let messageHtml;
         if (isFirstMessage) {
-            let userName = generateElement("div", "user-name");
-            //change senderId to name later
-            $(userName).text(user.name);
-            $(message).append(userName);
+            messageHtml =
+                `
+                    <div class="user-name">
+                         ${_name}
+                    </div>
+                    <div class="message-content">
+                         ${_messageContent}
+                     </div>
+                     <div class="message-time">
+                         ${_messageTime}
+                     </div>
+            `;
+        } else {
+            messageHtml =
+                `
+                    <div class="message-content">
+                         ${_messageContent}
+                     </div>
+                     <div class="message-time">
+                         ${_messageTime}
+                     </div>
+            `;
         }
 
-        let messageContent = generateElement("div", "message-content");
-        $(messageContent).text(messageObject.content);
-        let messageTime = generateElement("div", "message-time");
-        // make the date custom
-        $(messageTime).text(getShortDate(messageObject.time));
+        let message = generateElement("div", "message");
+        $(message).html(messageHtml);
 
-        $(message).append(messageContent);
-        $(message).append(messageTime);
         return message;
     }
 

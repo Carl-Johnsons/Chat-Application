@@ -1,0 +1,90 @@
+﻿
+:root {
+    --left-width: 380px;
+    --navbar-section-width: 70px;
+    --conversation-list-section-width: calc(var(--left-width) - var(--navbar-section-width));
+}
+
+body {
+    margin-bottom: 0px;
+    height: 100vh;
+    padding: 0px;
+}
+
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+.row {
+    --bs-gutter-x: 0rem;
+}
+
+.container-fluid {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+    .container-fluid > .row {
+        height: 100%;
+        margin: 0px;
+    }
+
+
+
+.left {
+    padding: 0px;
+    height: 100%;
+    flex: 1 0 var(--left-width) !important;
+  
+}
+
+    .left * {
+        padding: 0px;
+    }
+
+    .left .navbar-section {
+        flex: 0 0 var(--navbar-section-width);
+    }
+
+    .left .conversation-list-section {
+        flex: 1 0 var(--conversation-list-section-width);
+    }
+
+@media (min-width: 768px) {
+
+    .left {
+        flex: 0 0 380px !important;
+    }
+
+        .left .conversation-list-section {
+            flex: 0 0 300px !important;
+        }
+}
+
+.right {
+    padding: 0px;
+    height: 100%;
+    flex: 14 1 10px !important
+}
+
+    .right * {
+        padding: 0px;
+    }
+
+.conversation-page {
+    /*         display: none; */
+}
+
+.contact-page {
+    display: none;
+}
+
+.info-pop-up-container {
+    display: none;
+}
+
+/* Update Info rules */
+.update-info-popup-container {
+    display: none;
+}
