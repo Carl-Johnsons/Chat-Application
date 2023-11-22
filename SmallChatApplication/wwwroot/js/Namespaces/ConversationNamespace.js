@@ -1,11 +1,11 @@
 ﻿
 ConversationNamespace.LoadConversation = function (messageList, mode) {
     const CHAT_BOX_CONTAINER = $(".chat-box-container");
-    const USER_INFO_CONTAINER = CHAT_BOX_CONTAINER.find(".user-info-container");
-    const user_info_avatar = USER_INFO_CONTAINER.find(".avatar-image");
-    const user_info_name = USER_INFO_CONTAINER.find(".user-name-container > p");
     const MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".message-container");
 
+    // Show the "send message" button even the message array is zero
+    const INPUT_MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".input-message-container");
+    $(INPUT_MESSAGE_CONTAINER).show();
 
     //MessageList json format
     //[
@@ -32,11 +32,12 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
     function loadConversation(messageList, mode) {
         if (mode === "RELOAD") {
             messageList = messageList.map(item => item.message);
-            //reset avatar and name
-            $(user_info_avatar).attr("src", "");
-            $(user_info_name).html("");
+
+
             //Reset message_container
             $(MESSAGE_CONTAINER).html("");
+
+
             renderConversation(messageList);
             return;
         }
@@ -46,8 +47,6 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
             return;
         }
     }
-
-
 
 
     // <div class="message-item">
@@ -89,14 +88,12 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
             behavior: 'smooth'
         });
     }
-
     async function renderConversation(messageObjectList) {
+
+
         if (!messageObjectList || messageObjectList.length === 0) {
             return;
         }
-        // Show the "send message" button
-        const INPUT_MESSAGE_CONTAINER = CHAT_BOX_CONTAINER.find(".input-message-container");
-        $(INPUT_MESSAGE_CONTAINER).show();
 
         console.log("renderConversation: messageObjectList " + messageObjectList.length);
 
@@ -131,11 +128,9 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
             }
         }
     }
-
     async function renderMessageItemContainer(messageObjectList, isSender) {
         console.log("renderMessageItemContainer: " + messageObjectList.length);
         let messageItemContainer = generateElement("div", "message-item-container " + (isSender ? "sender" : "receiver"));
-
         let messageItem = generateElement("div", "message-item");
 
         //get the information about this user
@@ -148,11 +143,6 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
             console.log({ user });
             $(imgAvatar).attr("src", user.avatarUrl);
 
-            //render only the first time. This is only useful if this is an individual conversation
-            if ($(user_info_avatar).attr("src") === "" && $(user_info_name).html() === "") {
-                $(user_info_avatar).attr("src", user.avatarUrl);
-                $(user_info_name).html(user.name);
-            }
 
             $(messageItem).append(userAvatar);
             $(userAvatar).append(imgAvatar);
@@ -168,7 +158,6 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
 
         return messageItemContainer;
     }
-
     function renderMessageRow(messageObjectList, user) {
         console.log("renderMessageRow");
         let messageRow = generateElement("div", "message-row");
@@ -178,7 +167,6 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
         }
         return messageRow;
     }
-
     function renderMessage(messageObject, isFirstMessage, user) {
         console.log("renderMessage");
         let _name = user.name;
@@ -216,7 +204,6 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
 
         return message;
     }
-
     function generateElement(eleName, className) {
         let element = document.createElement(eleName);
         element.className = className;
@@ -232,6 +219,18 @@ ConversationNamespace.LoadConversation = function (messageList, mode) {
         const shortDate = longDateObj.toLocaleString(undefined, options);
         return shortDate;
     }
+}
+ConversationNamespace.LoadConversationUserInfo = async function (userArrayId) {
+    // The param could be a group or an individual user
+    const CHAT_BOX_CONTAINER = $(".chat-box-container");
+    const USER_INFO_CONTAINER = CHAT_BOX_CONTAINER.find(".user-info-container");
+    const USER_INFO_AVATAR = USER_INFO_CONTAINER.find(".avatar-image");
+    const USER_INFO_NAME = USER_INFO_CONTAINER.find(".user-name-container > p");
+    //fetch individual user data
+    let user = await ChatApplicationNamespace.GetUser(userArrayId[0]);
+    //render only the first time. This is only useful if this is an individual conversation
+    $(USER_INFO_AVATAR).attr("src", user.avatarUrl);
+    $(USER_INFO_NAME).html(user.name);
 }
 
 

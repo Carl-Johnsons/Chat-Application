@@ -95,7 +95,6 @@ ConservationListNamespace.AddClickEvent = function () {
             activateConversation($(this));
             console.log(this);
             ChatApplicationNamespace.GetMessageList($(this).attr("data-user-id"));
-
         });
     });
 

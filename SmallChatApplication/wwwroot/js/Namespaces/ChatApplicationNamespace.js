@@ -21,8 +21,9 @@ ChatApplicationNamespace.LoadFriendRequestData = function (friendRequestList) {
 ChatApplicationNamespace.LoadConversationList = function (friendList) {
     ConservationListNamespace.LoadConversationList(friendList);
 }
-ChatApplicationNamespace.LoadConversation = function (messageList) {
+ChatApplicationNamespace.LoadConversation = function (messageList, userArrayId) {
     ConversationNamespace.LoadConversation(messageList, "RELOAD");
+    ConversationNamespace.LoadConversationUserInfo(userArrayId)
 };
 ChatApplicationNamespace.LoadNewMessage = function (newMessage) {
     //this function accept an array so new message has to be an list message with one element
@@ -250,16 +251,18 @@ ChatApplicationNamespace.GetMessageList = function (senderId) {
             console.log("Done loading _MESSAGE_LIST");
             console.log({ _MESSAGE_LIST });
             //Use namespace so i can access other script file without having to include it here
-            ChatApplicationNamespace.LoadConversation(_MESSAGE_LIST);
+            ChatApplicationNamespace.LoadConversation(_MESSAGE_LIST, [senderId]);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             if (jqXhr.status === 404) {
-                //set empty array so the website will work normaly
                 console.log("No messageList found!");
             } else {
                 // Handle other types of errors
                 console.log("Error getting MessageList: " + errorThrown);
             }
+            //set empty array so the website will work normaly
+            _MESSAGE_LIST = []
+            ChatApplicationNamespace.LoadConversation(_MESSAGE_LIST, [senderId]);
         }
     });
 }
