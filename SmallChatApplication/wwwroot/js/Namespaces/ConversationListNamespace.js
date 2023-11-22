@@ -1,5 +1,4 @@
 ﻿
-
 ConservationListNamespace.LoadConversationList = function (friendList) {
 
     const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
@@ -89,14 +88,60 @@ ConservationListNamespace.AddClickEvent = function () {
     const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
 
     let conversations = CONVERSATION_LIST_CONTAINER.find(".conversation");
-    conversations.each(function () {
-        $(this).click(function () {
-            disableAllConversations();
-            activateConversation($(this));
-            console.log(this);
-            ChatApplicationNamespace.GetMessageList($(this).attr("data-user-id"));
-        });
+
+    const LEFT_LIST_SECTION = $(".left .list-section");
+    const RIGHT_SECTION = $(".right");
+    //responsive event min-width 768px
+
+    let widthMatch = window.matchMedia("(min-width: 768px)");
+    if (widthMatch.matches) {
+        normalClickEvent();
+    } else {
+        phoneClickEvent();
+    }
+    //Detect width change
+    widthMatch.addEventListener('change', function () {
+        if (widthMatch.matches) {
+            normalClickEvent();
+        } else {
+            phoneClickEvent();
+        }
     });
+    function normalClickEvent() {
+        //reset 2 section to normal
+        if ($(LEFT_LIST_SECTION).hasClass("d-none")) {
+            $(LEFT_LIST_SECTION).addClass("d-none");
+        }
+        if (!$(RIGHT_SECTION).hasClass("d-md-block")) {
+            $(RIGHT_SECTION).removeClass("d-md-block");
+        }
+        conversations.each(function () {
+            $(this).off('click').click(function () {
+                disableAllConversations();
+                activateConversation($(this));
+                console.log(this);
+                ChatApplicationNamespace.GetMessageList($(this).attr("data-user-id"));
+            });
+        });
+    }
+    function phoneClickEvent() {
+
+        conversations.each(function () {
+            $(this).off('click').click(function () {
+                disableAllConversations();
+                activateConversation($(this));
+                if (!$(LEFT_LIST_SECTION).hasClass("d-none")) {
+                    $(LEFT_LIST_SECTION).addClass("d-none");
+                }
+                if ($(RIGHT_SECTION).hasClass("d-md-block")) {
+                    $(RIGHT_SECTION).removeClass("d-md-block");
+                }
+
+                console.log(this);
+                ChatApplicationNamespace.GetMessageList($(this).attr("data-user-id"));
+            });
+        });
+    }
 
     function disableAllConversations() {
         conversations.each(function () {
@@ -108,6 +153,8 @@ ConservationListNamespace.AddClickEvent = function () {
     function activateConversation(conversationDiv) {
         conversationDiv.addClass("active");
     }
+
+
 }
 
 ConservationListNamespace.GetActiveConversationUserId = function () {
