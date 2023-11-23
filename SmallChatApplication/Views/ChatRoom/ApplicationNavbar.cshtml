@@ -1,7 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
 }
 <style>
     .application-nav-bar {
@@ -74,58 +71,3 @@
     <ul class="nav nav-tabs nav-fill">
     </ul>
 </div>
-
-<script>
-    $(document).ready(function () {
-        const CONVERSATION_PAGE = "conversation-page";
-        const CONTACT_PAGE = "contact-page";
-        const INFO_POPUP = "info-pop-up-container";
-        const UPDATE_INFO_POPUP = "update-info-popup-container";
-
-
-        // Animation
-        let navLinks = $(".application-nav-bar .nav-link")
-        navLinks.each(function () {
-            $(this).click(function () {
-                let clickId = $(this).prop("id");
-                if (clickId === "info-pop-up-container") {
-                    hideAllPopUps();
-                    showPopUp(clickId);
-                    //Load current user
-                    ChatApplicationNamespace.LoadInfoPopupData(_USER, "Self");
-                } else {
-                    hideAllPages();
-                    showPage(clickId);
-                    disableAllNavLinks();
-                    activateNavLinks($(this));
-                }
-            });
-
-
-            function disableAllNavLinks() {
-                navLinks.each(function () {
-                    if ($(this).hasClass("active")) {
-                        $(this).removeClass("active");
-                    }
-                });
-            }
-            function activateNavLinks(navLinkObject) {
-                navLinkObject.addClass("active");
-            }
-            function hideAllPages() {
-                $("." + CONVERSATION_PAGE + "").hide();
-                $("." + CONTACT_PAGE + "").hide();
-            }
-            function showPage(className) {
-                $("." + className + "").show();
-            }
-            function hideAllPopUps() {
-                $("." + INFO_POPUP + "").hide();
-                $("." + UPDATE_INFO_POPUP + "").hide();
-            }
-            function showPopUp(popUpName) {
-                $("." + popUpName + "").show();
-            }
-        });
-    });
-</script>

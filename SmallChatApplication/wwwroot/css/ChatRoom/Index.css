@@ -50,16 +50,28 @@ body {
         flex: 1 0 var(--list-section-width);
     }
 
-@media (min-width: 768px) {
 
+
+/*Only use this class when the conversation list is display-none*/
+.left-mobile {
+    flex: 0 0 var(--navbar-section-width) !important;
+}
+@media (min-width: 768px) {
+    :root {
+        --left-width: 380px;
+        --navbar-section-width: 70px;
+        --list-section-width: calc(var(--left-width) - var(--navbar-section-width));
+    }
 
     .left {
-        flex: 0 0 380px !important;
+        flex: 0 0 var(--left-width) !important;
     }
 
         .left .list-section {
-            flex: 0 0 300px !important;
+            flex: 0 0 var(--list-section-width) !important;
         }
+
+
 }
 
 .right {

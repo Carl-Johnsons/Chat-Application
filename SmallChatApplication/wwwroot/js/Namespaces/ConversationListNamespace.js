@@ -88,8 +88,8 @@ ConservationListNamespace.AddClickEvent = function () {
     const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
 
     let conversations = CONVERSATION_LIST_CONTAINER.find(".conversation");
-
-    const LEFT_LIST_SECTION = $(".left .list-section");
+    const LEFT_SECTION = $(".left");
+    const LEFT_LIST_SECTION = LEFT_SECTION.find(".list-section");
     const RIGHT_SECTION = $(".right");
     //responsive event min-width 768px
 
@@ -108,13 +108,6 @@ ConservationListNamespace.AddClickEvent = function () {
         }
     });
     function normalClickEvent() {
-        //reset 2 section to normal
-        if ($(LEFT_LIST_SECTION).hasClass("d-none")) {
-            $(LEFT_LIST_SECTION).addClass("d-none");
-        }
-        if (!$(RIGHT_SECTION).hasClass("d-md-block")) {
-            $(RIGHT_SECTION).removeClass("d-md-block");
-        }
         conversations.each(function () {
             $(this).off('click').click(function () {
                 disableAllConversations();
@@ -128,15 +121,19 @@ ConservationListNamespace.AddClickEvent = function () {
 
         conversations.each(function () {
             $(this).off('click').click(function () {
+                // reset 2 section left and right when click
                 disableAllConversations();
                 activateConversation($(this));
+                // The left list section should display none to save space for the right section
                 if (!$(LEFT_LIST_SECTION).hasClass("d-none")) {
+                    $(LEFT_SECTION).addClass("left-mobile");
                     $(LEFT_LIST_SECTION).addClass("d-none");
                 }
-                if ($(RIGHT_SECTION).hasClass("d-md-block")) {
+                if ($(RIGHT_SECTION).hasClass("d-md-block")
+                    && $(RIGHT_SECTION).hasClass("d-none")) {
+                    $(RIGHT_SECTION).removeClass("d-none");
                     $(RIGHT_SECTION).removeClass("d-md-block");
                 }
-
                 console.log(this);
                 ChatApplicationNamespace.GetMessageList($(this).attr("data-user-id"));
             });
@@ -153,7 +150,6 @@ ConservationListNamespace.AddClickEvent = function () {
     function activateConversation(conversationDiv) {
         conversationDiv.addClass("active");
     }
-
 
 }
 
