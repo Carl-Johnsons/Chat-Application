@@ -17,6 +17,7 @@ namespace ChatAPI.Controllers
         IUserRepository _userRepository;
         IFriendRepository _friendRepository;
         IFriendRequestRepository _friendRequestRepository;
+
         private readonly string BASE_ADDRESS = "https://localhost:7190";
         public UsersController()
         {
@@ -46,7 +47,6 @@ namespace ChatAPI.Controllers
             if (user == null)
             {
                 return NotFound();
-
             }
             return Ok(user);
         }
@@ -268,8 +268,6 @@ namespace ChatAPI.Controllers
                 return BadRequest("Id mismatch when updating user");
             }
             int affectedRow = _userRepository.UpdateUser(user);
-            await Console.Out.WriteLineAsync(user.Name);
-            await Console.Out.WriteLineAsync(user.Gender);
             if (affectedRow == 0)
             {
                 return NotFound();
@@ -280,7 +278,7 @@ namespace ChatAPI.Controllers
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             int affectRow = _userRepository.DeleteUser(id);
             if (affectRow == 0)

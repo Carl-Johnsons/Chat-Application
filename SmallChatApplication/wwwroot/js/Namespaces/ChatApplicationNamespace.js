@@ -44,11 +44,7 @@ ChatApplicationNamespace.StartConnection = function () {
     });
 }
 
-//Set the global variable to use in partial view
-var _USER;
-var _FRIEND_LIST;
-var _FRIEND_REQUEST_LIST;
-var _MESSAGE_LIST;
+
 //Load data of current user
 
 ChatApplicationNamespace.GetCurrentUser = function () {
@@ -107,7 +103,6 @@ ChatApplicationNamespace.GetUser = function (userId) {
             }
         });
     });
-
 }
 
 

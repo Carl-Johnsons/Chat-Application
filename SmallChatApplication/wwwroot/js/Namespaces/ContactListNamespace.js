@@ -100,8 +100,7 @@ ContactListNamespace.LoadFriendList = function (friendObjectList) {
                     error: function (jQxhr, textStatus, errorThrown) {
                         console.log("Delete friend error: " + errorThrown);
                     }
-                })
-
+                });
             });
             $(btnContainer).append(btnDetail);
             $(btnContainer).append(btnDeleteFriend);
@@ -344,13 +343,4 @@ ContactListNamespace.LoadData = function (friendObjectList) {
         $(btnContainer).append(btnDetail);
         $(btnContainer).append(btnDeleteFriend);
     }
-
-
-
-}
-// For generating element
-function generateElement(elementName, className) {
-    let divElement = document.createElement(elementName);
-    divElement.className = className;
-    return divElement;
 }

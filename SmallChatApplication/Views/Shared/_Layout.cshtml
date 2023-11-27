@@ -6,13 +6,15 @@
     <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
     <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
     <title>@ViewData["Title"] - SmallChatApplication</title>
+    @* Boostrap and jquery library *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
     @* Use signalR client-side library *@
     <script src="~/js/signalr.js"></script>
 
@@ -21,10 +23,11 @@
         var _BASE_ADDRESS = "https://localhost:7190";
         //Get the id from the controller so i don't need to call API service to find out who the current user is
         var _USER_ID = @ViewBag.ID;
+
         //Start connection to map the connection string to userId in database
         var _CONNECTION = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        var ApplicationNavbarNamespace = ApplicationNavbarNamespace || {};
+
         var ContactListNamespace = ContactListNamespace || {};
         var ConservationListNamespace = ConservationListNamespace || {};
         var ConversationNamespace = ConversationNamespace || {};
@@ -33,20 +36,18 @@
 
         var ChatApplicationNamespace = ChatApplicationNamespace || {};
     </script>
-    @* Defining namespace for extenal script to run *@
-    <script src="~/js/Namespaces/ApplicationNavbarNamespace.js"></script>
-    <script src="~/js/Namespaces/ContactListNamespace.js"></script>
+    @*     <script src="~/js/Namespaces/ContactListNamespace.js"></script>
     <script src="~/js/Namespaces/ConversationListNamespace.js"></script>
     <script src="~/js/Namespaces/ConversationNamespace.js"></script>
     <script src="~/js/Namespaces/InfoPopupNamespace.js"></script>
     <script src="~/js/Namespaces/UpdateInfoPopupNamespace.js"></script>
 
-    @* main namespace that will start connection *@
     <script src="~/js/Namespaces/ChatApplicationNamespace.js"></script>
 
-    @* Notification via signalR *@
-    <script src="~/js/ChatRoom/ChatRoom.js"></script>
+    <script src="~/js/ChatRoom/ChatRoom.js"></script> *@
 
+    @* Main script *@
+    <script type="module" src="~/js/site.js"></script>
 </head>
 <body>
     <header>
@@ -63,7 +64,8 @@
     </footer> *@
 
 
-
+    <script src="~/js/ApplicationNavbar/ApplicationNavbarScript.js"></script>
+    <script src="~/js/Conversation/ConversationScript.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

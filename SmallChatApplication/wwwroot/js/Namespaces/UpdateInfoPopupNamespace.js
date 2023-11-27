@@ -177,10 +177,6 @@ UpdateInfoPopupNamespace.LoadData = function (user) {
                 console.log("Error updating user:", errorThrown);
             }
         });
-
-        
-
-
     });
     //Call upload image api function
     async function uploadImage(file) {
