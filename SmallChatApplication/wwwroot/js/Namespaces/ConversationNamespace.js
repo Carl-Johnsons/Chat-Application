@@ -1,4 +1,4 @@
-﻿const { default: APIConsumer } = require("../Lib/APIConsumers/APIConsumers");
+﻿const { default: APIConsumer } = require("../Lib/APIService/APIService");
 
 
 ConversationNamespace.LoadConversation = function (messageList, mode) {

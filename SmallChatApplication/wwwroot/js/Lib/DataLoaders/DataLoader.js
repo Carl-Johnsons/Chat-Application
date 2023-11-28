@@ -4,16 +4,17 @@ import InfoPopupDataLoader from "./InfoPopupDataLoader.js";
 import UpdateInfoPopupDataLoader from "./UpdateInfoPopupDataLoader.js";
 
 export default class DataLoader {
+    static elementName = {
+        ApplicationNavbar: "ApplicationNavbar",
+        ContactList: "ContactList",
+        ConversationList: "ConversationList",
+        Conversation: "Conversation",
+        InfoPopup: "InfoPopup",
+        UpdateInfoPopup: "UpdateInfoPopup"
+    }
 
     constructor() {
-        this.elementName = {
-            ApplicationNavbar: "ApplicationNavbar",
-            ContactList: "ContactList",
-            ConversationList: "ConversationList",
-            Conversation: "Conversation",
-            InfoPopup: "InfoPopup",
-            UpdateInfoPopup: "UpdateInfoPopup"
-        }
+
     }
 
     /**
@@ -26,7 +27,7 @@ export default class DataLoader {
      * @param {any} eleName
      * @param {any} userData
      */
-    loadUserData(eleName, userData) {
+    static loadUserData(eleName, userData) {
         if (!userData) {
             throw new Error("User data is not valid");
         }
@@ -45,10 +46,35 @@ export default class DataLoader {
         }
     }
     /**
-     * 
+     * Load friend data into InfoPopup component
+     * @param {any} userData
+     */
+
+    static loadFriendData(userData) {
+        if (!userData) {
+            throw new Error("User data is not valid");
+        }
+
+        InfoPopupDataLoader.loadUserData(userData, InfoPopupDataLoader.USER_TYPE.FRIEND);
+    }
+
+    /**
+     * Load friend data into InfoPopup component
+     * @param {any} userData
+     */
+    static loadStrangerData(userData) {
+        if (!userData) {
+            throw new Error("User data is not valid");
+        }
+        InfoPopupDataLoader.loadUserData(userData, InfoPopupDataLoader.USER_TYPE.STRANGER);
+    }
+
+
+    /**
+     * This function will load the friend list in the ContactList Component
      * @param {any} friendListData
      */
-    loadFriendListData(friendListData) {
+    static loadFriendListData(friendListData) {
         if (!friendListData) {
             throw new Error("Friend list data is not valid");
         }
@@ -57,10 +83,10 @@ export default class DataLoader {
     }
 
     /**
-     * 
+     * This function will load the friend request list in the ContactList Component
      * @param {any} friendRequestListData
      */
-    loadFriendRequestData(friendRequestListData) {
+    static loadFriendRequestData(friendRequestListData) {
         if (!friendRequestListData) {
             throw new Error("Friend request list data is not valid");
         }

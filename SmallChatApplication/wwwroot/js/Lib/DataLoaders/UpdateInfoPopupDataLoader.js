@@ -1,4 +1,4 @@
-﻿import APIConsumer from "../APIConsumers/APIConsumers.js";
+﻿import APIService from "../APIService/APIService.js";
 
 export default class UpdateInfoPopupDataLoader {
     constructor() {
@@ -164,7 +164,7 @@ export default class UpdateInfoPopupDataLoader {
 
 
             try {
-                const res = await APIConsumer.updateUser(user);
+                const res = await APIService.updateUser(user);
                 console.log({ res });
                 if (!res.ok) {
                     throw new Error("Update user failed!\n" + res.status);
@@ -183,7 +183,7 @@ export default class UpdateInfoPopupDataLoader {
         fileAvatar.addEventListener("change", async function () {
             const file = fileAvatar.files[0];
             try {
-                const imageUrl = await APIConsumer.uploadImage(file);
+                const imageUrl = await APIService.uploadImage(file);
                 console.log("Image uploaded successfully. URL:", imageUrl);
                 avatarImg.attr('src', imageUrl);
             } catch (error) {
@@ -194,7 +194,7 @@ export default class UpdateInfoPopupDataLoader {
         fileBackground.addEventListener("change", async function () {
             const file = fileBackground.files[0];
             try {
-                const imageUrl = await APIConsumer.uploadImage(file);
+                const imageUrl = await APIService.uploadImage(file);
                 console.log("Image uploaded successfully. URL:", imageUrl);
                 backgroundImg.attr('src', imageUrl);
             } catch (error) {

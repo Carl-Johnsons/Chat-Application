@@ -1,4 +1,4 @@
-﻿export default class APIConsumer {
+﻿export default class APIService {
     constructor() {
     }
 
@@ -31,6 +31,14 @@
             }
         });
     }
+
+
+    /**
+     * if you want only friend array, you can use this line
+     * data.map(item => item.friendNavigation)
+     * @param {any} userId
+     * @returns
+     */
     static getFriendList(userId) {
         if (!userId) {
             throw new Error("User id is not valid!");
@@ -81,7 +89,6 @@
 
                 // Only get friendNavigation then convert it to array
                 //resolve(data.map(item => item.friendNavigation));
-                //Use namespace so i can access other script file without having to include it here
 
                 //refactor later (Uncomment)
                 //ChatApplicationNamespace.LoadFriendData(_FRIEND_LIST);
@@ -93,6 +100,13 @@
             }
         });
     }
+
+    /**
+     * If you want to get only the sender array, you can use this line of code:
+     * data.map(item => item.sender)
+     * @param {any} userId
+     * @returns
+     */
     static getFriendRequestList(userId) {
         if (!userId) {
             throw new Error("userId is not valid");
@@ -141,9 +155,6 @@
                 //    }
                 //]
 
-
-                // Only get sender data then convert it to array
-                resolve(data.map(item => item.sender));
 
                 //refactor later (Uncomment)
                 //ChatApplicationNamespace.LoadFriendRequestData(_FRIEND_REQUEST_LIST);
@@ -369,6 +380,32 @@
 
     // MESSAGE API
     // ============================== GET Section ==============================
+
+
+    /**
+     * The individual message object is in json format. Ex:
+     *   [
+     *      {
+     *         "messageId": 1,
+     *         "userReceiverId": 2,
+     *         "status": "string",
+     *         "message": {
+     *             "messageId": 1,
+     *             "senderId": 1,
+     *             "content": "Hello testing testing",
+     *             "time": "2023-10-30T14:51:30.953",
+     *             "messageType": "string",
+     *             "messageFormat": "string",
+     *             "active": true,
+     *             "sender": null
+     *         },
+     *         "userReceiver": null
+     *      }
+     *   ]
+     * @param {any} senderId
+     * @param {any} receiverId
+     * @returns
+     */
     static getIndividualMessageList(senderId, receiverId) {
         if (!senderId || !receiverId) {
             throw new Error("sender id or receiver id is invalid");
@@ -390,26 +427,6 @@
 
                 resolve(response);
 
-                //MessageList json format
-                //[
-                //    {
-                //        "messageId": 1,
-                //        "userReceiverId": 2,
-                //        "status": "string",
-                //        "message": {
-                //            "messageId": 1,
-                //            "senderId": 1,
-                //            "content": "Hello testing testing",
-                //            "time": "2023-10-30T14:51:30.953",
-                //            "messageType": "string",
-                //            "messageFormat": "string",
-                //            "active": true,
-                //            "sender": null
-                //        },
-                //        "userReceiver": null
-                //    }
-                //]
-
                 //refactor later (Uncomment)
                 //ChatApplicationNamespace.LoadConversation(_MESSAGE_LIST, [senderId]);
 
@@ -429,6 +446,70 @@
             }
         });
     }
+
+    static sendIndividualMessage(senderId, receiverId, messageContent) {
+
+        //For getting current time in js and formatt like this: 2023-10-30T17:15:22.234Z
+        function getCurrentDateTimeInISO8601() {
+            const now = new Date();
+
+            // Extract date and time components
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-based, so add 1
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+            // Build the ISO 8601 date-time string
+            const iso8601DateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+
+            return iso8601DateTime;
+        }
+
+
+        console.log(JSON.stringify(messageObject));
+        return new Promise(async function (resolve, reject) {
+            try {
+                //individual message object
+                let messageObject = {
+                    userReceiverId: receiverId,
+                    status: "string",
+                    message: {
+                        senderId: senderId,
+                        content: messageContent,
+                        time: getCurrentDateTimeInISO8601(),
+                        messageType: "Individual",
+                        messageFormat: "Text",
+                        active: true
+                    }
+                };
+                const url = _BASE_ADDRESS + "/api/Messages/SendIndividualMessage";
+                const fetchConfig = {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(messageObject)
+                };
+                const response = await fetch(url, fetchConfig);
+
+                resolve(response);
+
+                //refactor later
+                //_CONNECTION.invoke("SendIndividualMessage", data).catch(function (err) {
+                //    console.error("error when SendIndividualMessage: " + err.toString());
+                //});
+                //ChatApplicationNamespace.LoadNewMessage(data);
+
+            } catch (err) {
+                reject(err);
+            }
+
+        });
+    }
+
 
     // TOOL API
     // ============================== POST Section ==============================

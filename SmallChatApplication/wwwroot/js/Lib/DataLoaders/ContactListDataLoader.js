@@ -1,10 +1,13 @@
-﻿import APIConsumer from "../APIConsumers/APIConsumers.js";
+﻿import UserInstance from "../../Models/User.js";
+import APIService from "../APIService/APIService.js";
 import HTMLGenerator from "../Generators/HTMLGenerator.js";
+import DataLoader from "./DataLoader.js";
 
 export default class ContactListDataLoader {
     constructor() {
 
     }
+
     static loadFriendListData(friendObjectList) {
         let generateElement = HTMLGenerator.generateElement;
         //define local
@@ -14,7 +17,6 @@ export default class ContactListDataLoader {
 
 
         renderFriend(friendObjectList);
-
         function renderFriend(friendObjectList) {
             //Clear html of this container first
             $(FRIEND_CONTACT_LIST_CONTAINER).html('');
@@ -69,9 +71,10 @@ export default class ContactListDataLoader {
                 //Send request to get friend detail
                 $(btnDetail).click(async function () {
                     try {
-                        let userData = await APIConsumer.getUser(friendObject.userId);
-                        //refactor later
-                        ChatApplicationNamespace.LoadInfoPopupData(userData, "Friend");
+                        let response = await APIService.getUser(friendObject.userId);
+                        let friendData = await response.json();
+
+                        DataLoader.loadFriendData(friendData);
                         const INFO_POP_UP = $(".info-pop-up-container");
                         $(INFO_POP_UP).show();
                     } catch (err) {
@@ -79,23 +82,23 @@ export default class ContactListDataLoader {
                     }
                 });
 
-                let btnDeleteFriendRequest = generateElement("button", "btn btn-delete-friend");
-                $(btnDeleteFriendRequest).text("X");
+                let btnDeleteFriend = generateElement("button", "btn btn-delete-friend");
+                $(btnDeleteFriend).text("X");
                 //Send request to remove Friend
-                $(btnDeleteFriendRequest).click(async function () {
+                $(btnDeleteFriend).click(async function () {
                     try {
-                        let xhr = await APIConsumer.deleteFriend(_USER.userId, friendObject.userId);
-                        if (xhr.status >= 200 && xhr.status <= 299) {
-                            console.log("Delete friend: " + friendObject.userName + " successufully!");
-                        } else {
-                            throw new Error("Something is wrong");
+                        let response = await APIService.deleteFriend(UserInstance.getUser().userId, friendObject.userId);
+                        if (!response.ok) {
+                            throw new Error("Something is wrong!: " + response.status);
                         }
+                        console.log("Delete friend: " + friendObject.userName + " successufully!");
+
                     } catch (err) {
                         console.error(err);
                     }
                 });
                 $(btnContainer).append(btnDetail);
-                $(btnContainer).append(btnDeleteFriendRequest);
+                $(btnContainer).append(btnDeleteFriend);
             }
         }
     }
@@ -185,12 +188,11 @@ export default class ContactListDataLoader {
             $(btnAccept).text("Accept");
             $(btnAccept).click(async function () {
                 try {
-                    let xhr = await APIConsumer.addFriend(friendRequestObject.userId);
-                    if (xhr.status >= 200 && xhr.status <= 299) {
-                        console.log("add friend successfully");
-                    } else {
-                        throw new Error("add friend failed");
+                    let response = await APIService.addFriend(friendRequestObject.userId);
+                    if (!response.ok) {
+                        throw new Error("add friend failed: " + response.status);
                     }
+                    console.log("add friend successfully");
                 } catch (err) {
                     console.error(err);
                 }
@@ -202,12 +204,11 @@ export default class ContactListDataLoader {
             $(btnDeleteFriendRequest).text("X");
             $(btnDeleteFriendRequest).click(async function () {
                 try {
-                    let xhr = await APIConsumer.deleteFriendRequest(friendRequestObject.userId);
-                    if (xhr.status >= 200 && xhr.status <= 299) {
-                        console.log("delete friend request successfully");
-                    } else {
+                    let response = await APIService.deleteFriendRequest(friendRequestObject.userId);
+                    if (!response.ok) {
                         throw new Error("delete friend request failed");
                     }
+                    console.log("delete friend request successfully");
                 } catch (err) {
                     console.error(err);
                 }

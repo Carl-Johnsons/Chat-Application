@@ -45,8 +45,6 @@
                     case "info-pop-up-container":
                         hideAllPopUps();
                         showPopUp($("." + clickId));
-                        //Load current user
-                        ChatApplicationNamespace.LoadInfoPopupData(_USER, "Self");
                         break;
                     default:
                         if (type === eventType.PHONE) {

@@ -26,27 +26,7 @@
 
         //Start connection to map the connection string to userId in database
         var _CONNECTION = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-
-
-        var ContactListNamespace = ContactListNamespace || {};
-        var ConservationListNamespace = ConservationListNamespace || {};
-        var ConversationNamespace = ConversationNamespace || {};
-        var InfoPopupNamespace = InfoPopupNamespace || {};
-        var UpdateInfoPopupNamespace = UpdateInfoPopupNamespace || {};
-
-        var ChatApplicationNamespace = ChatApplicationNamespace || {};
     </script>
-    @*     <script src="~/js/Namespaces/ContactListNamespace.js"></script>
-    <script src="~/js/Namespaces/ConversationListNamespace.js"></script>
-    <script src="~/js/Namespaces/ConversationNamespace.js"></script>
-    <script src="~/js/Namespaces/InfoPopupNamespace.js"></script>
-    <script src="~/js/Namespaces/UpdateInfoPopupNamespace.js"></script>
-
-    <script src="~/js/Namespaces/ChatApplicationNamespace.js"></script>
-
-    <script src="~/js/ChatRoom/ChatRoom.js"></script> *@
-
-    @* Main script *@
     <script type="module" src="~/js/site.js"></script>
 </head>
 <body>

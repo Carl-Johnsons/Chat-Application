@@ -1,22 +1,58 @@
-﻿import APIConsumer from "./Lib/APIConsumers/APIConsumers.js";
+﻿import APIService from "./Lib/APIService/APIService.js";
 import DataLoader from "./Lib/DataLoaders/DataLoader.js";
+import UserInstance from "./Models/User.js";
 
-const DATA_LOADER = new DataLoader();
-//Set the global variable to use in partial view
-var _USER;
-var _FRIEND_LIST;
-var _FRIEND_REQUEST_LIST;
-var _MESSAGE_LIST;
 
-APIConsumer.getUser(_USER_ID)
-    .then(res => res.json())
-    .then(data => {
-        console.log({ data });
+const createGetPromise = (request, successCallBack, errorCallBack) =>
+    request
+        .then(res => res.json())
+        .then(successCallBack)
+        .catch(errorCallBack);
 
-        _USER = data;
-        console.log(_USER);
-        DATA_LOADER.loadUserData(DATA_LOADER.elementName.ApplicationNavbar, _USER);
-        DATA_LOADER.loadUserData(DATA_LOADER.elementName.InfoPopup, _USER);
-        DATA_LOADER.loadUserData(DATA_LOADER.elementName.UpdateInfoPopup, _USER);
-    });
+const getUserPromise = createGetPromise(
+    APIService.getUser(_USER_ID),
+    userData => UserInstance.setUser(userData),
+    err => console.error(err)
+);
+
+const getFriendListPromise = createGetPromise(
+    APIService.getFriendList(_USER_ID),
+    data => UserInstance.setFriendList(data.map(item => item.friendNavigation)),
+    err => {
+        UserInstance.setFriendList([]);
+        console.error(err);
+    }
+);
+const getFriendRequestPromise = createGetPromise(
+    APIService.getFriendRequestList(_USER_ID),
+    data => UserInstance.setfriendRequestList(data.map(item => item.sender)),
+    err => {
+        UserInstance.setfriendRequestList([]);
+        console.error(err);
+    }
+);
+
+//Wait all the promise done than load data at once
+Promise.all(
+    [
+        getUserPromise,
+        getFriendListPromise,
+        getFriendRequestPromise
+    ])
+    .then(loadData)
+    .catch(err => console.error(err));
+
+function loadData() {
+    console.log("Load user data");
+    let user = UserInstance.getUser();
+    let friendList = UserInstance.getFriendList();
+    let friendRequestList = UserInstance.getFriendRequestList();
+    DataLoader.loadUserData(DataLoader.elementName.ApplicationNavbar, user);
+    DataLoader.loadUserData(DataLoader.elementName.InfoPopup, user);
+    DataLoader.loadUserData(DataLoader.elementName.UpdateInfoPopup, user);
+
+    DataLoader.loadFriendListData(friendList);
+    DataLoader.loadFriendRequestData(friendRequestList);
+}
+
 

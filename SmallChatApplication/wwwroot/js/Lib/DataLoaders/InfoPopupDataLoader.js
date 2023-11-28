@@ -1,4 +1,4 @@
-﻿import APIConsumer from "../APIConsumers/APIConsumers.js";
+﻿import APIService from "../APIService/APIService.js";
 
 export default class InfoPopupDataLoader {
     static USER_TYPE = {
@@ -14,7 +14,6 @@ export default class InfoPopupDataLoader {
         if (!userType) {
             throw new Error("User type is not valid");
         }
-
         const INFO_POP_UP = $(".info-pop-up-container");
         const BACKGROUND_IMG = INFO_POP_UP.find(".background-img-container > img");
         const AVATAR_IMG = INFO_POP_UP.find(".avatar-img-container > img");
@@ -58,12 +57,11 @@ export default class InfoPopupDataLoader {
         //Remove an existing event listener
         $(btnAddFriend).off("click").click(async function () {
             try {
-                let xhr = await APIConsumer.sendFriendRequest(_USER, userObject.userId);
-                if (xhr.status >= 200 && xhr.status <= 299) {
-                    console.log("send friend request successfully!");
-                } else {
+                let response = await APIService.sendFriendRequest(_USER, userObject.userId);
+                if (!response.ok) {
                     throw new Error("send friend request failed!");
                 }
+                console.log("send friend request successfully!");
             } catch (err) {
                 console.error(err);
             }
