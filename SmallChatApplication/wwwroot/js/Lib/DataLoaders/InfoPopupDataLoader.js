@@ -1,4 +1,5 @@
-﻿import APIService from "../APIService/APIService.js";
+﻿import UserInstance from "../../Models/User.js";
+import dataFacade from "../DataFacade/DataFacade.js";
 
 export default class InfoPopupDataLoader {
     static USER_TYPE = {
@@ -55,16 +56,12 @@ export default class InfoPopupDataLoader {
 
         // This popup i didn't generate and reuse the element so have to update the event listener
         //Remove an existing event listener
-        $(btnAddFriend).off("click").click(async function () {
-            try {
-                let response = await APIService.sendFriendRequest(_USER, userObject.userId);
-                if (!response.ok) {
-                    throw new Error("send friend request failed!");
-                }
-                console.log("send friend request successfully!");
-            } catch (err) {
-                console.error(err);
-            }
+        $(btnAddFriend).off("click").click(function () {
+            dataFacade.fetchSendFriendRequest(UserInstance.getUser(), userObject.userId);
+            //notify other person here
+            //_CONNECTION.invoke("SendFriendRequest", data).catch(function (err) {
+            //    console.error("error when SendFriendRequest: " + err.toString());
+            //});
         });
 
         function hideAllBtns() {

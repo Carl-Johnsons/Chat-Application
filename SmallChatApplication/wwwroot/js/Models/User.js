@@ -27,8 +27,6 @@ class User {
     getFriendRequestList() {
         return friendRequestList;
     }
-
-
 }
 
 const UserInstance = new User();

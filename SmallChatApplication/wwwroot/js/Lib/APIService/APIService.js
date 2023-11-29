@@ -5,11 +5,30 @@
     // USER API
 
     // ============================== GET Section ==============================
+    /**
+     * User json format
+     *  "userId": 1,
+     *  "phoneNumber": "",
+     *  "password": "",
+     *  "name": "",
+     *  "dob": "",
+     *  "gender": "Nam"
+     *  "avatarUrl": "",
+     *  "backgroundUrl": "",
+     *  "introduction": "fix bug :(",
+     *  "email": "",
+     *  "active": true,
+     *  "groupGroupDeputies": [],
+     *  "groupGroupLeaders": [],
+     *  "messages": []
+     *
+     * @param {any} userId
+     * @returns
+     */
     static getUser(userId) {
         if (!userId) {
             throw new Error("User id is not valid!");
         }
-
         return new Promise(async function (resolve, reject) {
             try {
                 const url = _BASE_ADDRESS + "/api/Users/" + userId;
@@ -32,10 +51,82 @@
         });
     }
 
+    static searchUser(phoneNumber) {
+        if (!phoneNumber) {
+            throw new Error("Phone number is not valid");
+        }
+        return new Promise(async function (resolve, reject) {
+            try {
+                const url = _BASE_ADDRESS + "/api/Users/Search/" + phoneNumber;
+                const fetchConfig = {
+                    method: 'GET',
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                };
+                const response = await fetch(url, fetchConfig);
+                if (!response.ok) {
+                    throw new Error("Fetch error: " + response.statusText);
+                }
+                resolve(response);
+            } catch (err) {
+                reject(err);
+            }
+        });
+
+
+        $.ajax({
+            url: _BASE_ADDRESS + "/api/Users/Search/" + searchValue,
+            dataType: 'json',
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (data, textStatus, jQxhr) {
+                let userType = "Stranger";
+                if (data.userId === _USER.userId) {
+                    userType = "Self";
+                }
+                for (let friendObject of _FRIEND_LIST) {
+                    if (friendObject.userId === data.userId) {
+                        userType = "Friend";
+                    }
+                }
+
+                ChatApplicationNamespace.LoadInfoPopupData(data, userType);
+                $(INFO_POPUP_CONTAINER).show();
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
+    }
 
     /**
      * if you want only friend array, you can use this line
      * data.map(item => item.friendNavigation)
+     * FriendList json format
+     *  [
+     *      {
+     *          "userId": 1,
+     *          "friendId": 3,
+     *          "friendNavigation": {
+     *              "userId": 3,
+     *              "phoneNumber": "",
+     *              "password": "",
+     *              "name": "",
+     *              "dob": "2002-11-02T00:00:00",
+     *              "gender": "Nữ",
+     *              "avatarUrl": "",
+     *              "backgroundUrl": "",
+     *              "introduction": "",
+     *              "email": "",
+     *              "active": true,
+     *              "groupGroupDeputies": [],
+     *              "groupGroupLeaders": [],
+     *              "messages": []
+     *          },
+     *          "user": null
+     *      }
+     *  ]
      * @param {any} userId
      * @returns
      */
@@ -43,7 +134,6 @@
         if (!userId) {
             throw new Error("User id is not valid!");
         }
-
         return new Promise(async function (resolve, reject) {
             try {
                 const url = _BASE_ADDRESS + "/api/Users/GetFriend/" + userId;
@@ -61,30 +151,7 @@
 
                 resolve(response);
 
-                //FriendList json format
-                // [
-                //     {
-                //         "userId": 1,
-                //         "friendId": 3,
-                //         "friendNavigation": {
-                //             "userId": 3,
-                //             "phoneNumber": "",
-                //             "password": "",
-                //             "name": "",
-                //             "dob": "2002-11-02T00:00:00",
-                //             "gender": "Nữ",
-                //             "avatarUrl": "",
-                //             "backgroundUrl": "",
-                //             "introduction": "",
-                //             "email": "",
-                //             "active": true,
-                //             "groupGroupDeputies": [],
-                //             "groupGroupLeaders": [],
-                //             "messages": []
-                //         },
-                //         "user": null
-                //     }
-                // ]
+
 
 
                 // Only get friendNavigation then convert it to array
@@ -104,6 +171,33 @@
     /**
      * If you want to get only the sender array, you can use this line of code:
      * data.map(item => item.sender)
+     * Friend request json format
+     * [
+     *     {
+     *         "senderId": 4,
+     *         "receiverId": 3,
+     *         "content": "string",
+     *         "date": "2023-10-20T10:30:10.273",
+     *         "status": "Pending",
+     *         "receiver": null,
+     *         "sender": {
+     *             "userId": 4,
+     *             "phoneNumber": "",
+     *             "password": "",
+     *             "name": "",
+     *             "dob": "",
+     *             "gender": "Nam",
+     *             "avatarUrl": "",
+     *             "backgroundUrl": "",
+     *             "introduction": "",
+     *             "email": "",
+     *             "active": true,
+     *             "groupGroupDeputies": [],
+     *             "groupGroupLeaders": [],
+     *             "messages": []
+     *         }
+     *     }
+     * ]
      * @param {any} userId
      * @returns
      */
@@ -127,35 +221,6 @@
                 }
 
                 resolve(response);
-                //Friend request json format
-                //[
-                //    {
-                //        "senderId": 4,
-                //        "receiverId": 3,
-                //        "content": "string",
-                //        "date": "2023-10-20T10:30:10.273",
-                //        "status": "Pending",
-                //        "receiver": null,
-                //        "sender": {
-                //            "userId": 4,
-                //            "phoneNumber": "",
-                //            "password": "",
-                //            "name": "",
-                //            "dob": "",
-                //            "gender": "Nam",
-                //            "avatarUrl": "",
-                //            "backgroundUrl": "",
-                //            "introduction": "",
-                //            "email": "",
-                //            "active": true,
-                //            "groupGroupDeputies": [],
-                //            "groupGroupLeaders": [],
-                //            "messages": []
-                //        }
-                //    }
-                //]
-
-
                 //refactor later (Uncomment)
                 //ChatApplicationNamespace.LoadFriendRequestData(_FRIEND_REQUEST_LIST);
             } catch (err) {
@@ -262,17 +327,6 @@
                 const response = await fetch(url, fetchConfig);
                 resolve(response);
 
-
-
-                //refactor later
-                //Notify who sent the friend request that they are friend
-                //_CONNECTION.invoke("SendAcceptFriendRequest", senderId).catch(function (err) {
-                //    console.log("Error when notify add friend");
-                //});
-                //refactor later
-                //Updating friend request list in who accept friend request sides
-                //ChatApplicationNamespace.GetFriendList();
-                //ChatApplicationNamespace.GetFriendRequestList();
             } catch (err) {
                 reject("Delete friend request error: " + err);
             }
@@ -309,14 +363,14 @@
     }
 
     // ============================== DELETE Section ==============================
-    static deleteFriend(senderId, receiverId) {
-        if (!senderId || !receiverId) {
-            throw new Error("SenderId or receiverId is not valid");
+    static deleteFriend(userId, friendId) {
+        if (!userId || !friendId) {
+            throw new Error("userId or friendId is not valid");
         }
 
         return new Promise(async function (resolve, reject) {
             try {
-                const url = _BASE_ADDRESS + "/api/Users/RemoveFriend/" + senderId + "/" + receiverId;
+                const url = _BASE_ADDRESS + "/api/Users/RemoveFriend/" + userId + "/" + friendId;
                 const fetchConfig = {
                     method: "DELETE",
                     headers: {
@@ -336,10 +390,6 @@
                 //refactor later
                 //Updating friend list
                 //ChatApplicationNamespace.GetFriendList();
-
-
-
-
             } catch (err) {
                 reject("Delete Friend Error:" + err);
             }
@@ -364,14 +414,6 @@
                 const response = await fetch(url, fetchConfig);
                 resolve(response);
 
-                //Notify other user
-                //_CONNECTION.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
-                //    console.log("Error when notify deleting friend");
-                //});
-
-                //refactor later
-                //Updating friend request list
-                //ChatApplicationNamespace.GetFriendRequestList();
             } catch (err) {
                 reject("Delete friend request error: " + err);
             }

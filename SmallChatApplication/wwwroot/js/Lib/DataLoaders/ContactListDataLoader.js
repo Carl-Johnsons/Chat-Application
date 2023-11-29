@@ -1,5 +1,6 @@
 ﻿import UserInstance from "../../Models/User.js";
 import APIService from "../APIService/APIService.js";
+import dataFacade from "../DataFacade/DataFacade.js";
 import HTMLGenerator from "../Generators/HTMLGenerator.js";
 import DataLoader from "./DataLoader.js";
 
@@ -70,32 +71,18 @@ export default class ContactListDataLoader {
 
                 //Send request to get friend detail
                 $(btnDetail).click(async function () {
-                    try {
-                        let response = await APIService.getUser(friendObject.userId);
-                        let friendData = await response.json();
-
-                        DataLoader.loadFriendData(friendData);
-                        const INFO_POP_UP = $(".info-pop-up-container");
-                        $(INFO_POP_UP).show();
-                    } catch (err) {
-                        console.error(err);
-                    }
+                    await dataFacade.loadFriendDataToInfoPopup(friendObject.userId);
+                    const INFO_POP_UP = $(".info-pop-up-container");
+                    $(INFO_POP_UP).show();
                 });
 
                 let btnDeleteFriend = generateElement("button", "btn btn-delete-friend");
                 $(btnDeleteFriend).text("X");
                 //Send request to remove Friend
                 $(btnDeleteFriend).click(async function () {
-                    try {
-                        let response = await APIService.deleteFriend(UserInstance.getUser().userId, friendObject.userId);
-                        if (!response.ok) {
-                            throw new Error("Something is wrong!: " + response.status);
-                        }
-                        console.log("Delete friend: " + friendObject.userName + " successufully!");
-
-                    } catch (err) {
-                        console.error(err);
-                    }
+                    await dataFacade.fetchDeleteFriend(UserInstance.getUser().userId, friendObject.userId);
+                    //Updating the friend list
+                    await dataFacade.loadFriendList();
                 });
                 $(btnContainer).append(btnDetail);
                 $(btnContainer).append(btnDeleteFriend);
@@ -137,9 +124,9 @@ export default class ContactListDataLoader {
         //    }
         //]
         for (let friendRequestObject of friendRequestObjectList) {
-            console.log("\nDone loading friend request\n");
             renderFriendRequest(friendRequestObject);
         }
+        console.log("Done loading friend request");
 
         function renderFriendRequest(friendRequestObject) {
             // <div class="contact-list-container">
@@ -187,33 +174,39 @@ export default class ContactListDataLoader {
             let btnAccept = generateElement("button", "btn btn-accept");
             $(btnAccept).text("Accept");
             $(btnAccept).click(async function () {
-                try {
-                    let response = await APIService.addFriend(friendRequestObject.userId);
-                    if (!response.ok) {
-                        throw new Error("add friend failed: " + response.status);
-                    }
-                    console.log("add friend successfully");
-                } catch (err) {
-                    console.error(err);
-                }
+                //The other user is the sender while the current user is the receiver 
+                await dataFacade.fetchAddFriend(friendRequestObject.userId, UserInstance.getUser().userId);
+                //Updating friend request list and friend list
+                await dataFacade.loadFriendList();
+                await dataFacade.loadFriendRequestList();
+
+                //refactor later
+                //Notify who sent the friend request that they are friend
+                //_CONNECTION.invoke("SendAcceptFriendRequest", senderId).catch(function (err) {
+                //    console.log("Error when notify add friend");
+                //});
             });
             let btnDetail = generateElement("button", "btn btn-detail");
             $(btnDetail).text("...");
+
+            $(btnDetail).click(async function () {
+                await dataFacade.loadFriendDataToInfoPopup(friendRequestObject.userId);
+                const INFO_POP_UP = $(".info-pop-up-container");
+                $(INFO_POP_UP).show();
+            });
+
             let btnDeleteFriendRequest = generateElement("button", "btn btn-delete-friend");
 
             $(btnDeleteFriendRequest).text("X");
             $(btnDeleteFriendRequest).click(async function () {
-                try {
-                    let response = await APIService.deleteFriendRequest(friendRequestObject.userId);
-                    if (!response.ok) {
-                        throw new Error("delete friend request failed");
-                    }
-                    console.log("delete friend request successfully");
-                } catch (err) {
-                    console.error(err);
-                }
-
-                sendDeleteFriendRequest(friendRequestObject.userId);
+                //The other user is the sender while the current user is the receiver 
+                await dataFacade.fetchDeleteFriendRequest(friendRequestObject.userId, UserInstance.getUser().userId);
+                //Updating friend request list
+                await dataFacade.loadFriendRequestList();
+                //Notify other user
+                //_CONNECTION.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
+                //    console.log("Error when notify deleting friend");
+                //});
             });
 
             $(btnContainer).append(btnAccept);

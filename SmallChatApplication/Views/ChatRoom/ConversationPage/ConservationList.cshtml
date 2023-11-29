@@ -5,7 +5,6 @@
 }
 <style>
 
-
     /* Search bar rules */
     .search-bar-container {
         /* Define vairable for search bar */
@@ -116,61 +115,6 @@
     </div> *@
 </div>
 
-<script>
-    //Search-bar script
-    $(document).ready(function () {
-        const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
-        let container = $(".search-bar-container");
-        let btnAddUser = container.find(".btn-add-friend");
-        let btnCreateGroup = container.find(".btn-create-group");
-        let searchBarInput = container.find(".search-bar-input");
+<script type="module" src="./js/ConversationList/SearchBarScript.js"></script>
 
-
-        $(btnAddUser).click(function () {
-            let searchValue = $(searchBarInput).val();
-            // Work right now, might need pop up to notify exception 404
-            $.ajax({
-                url: _BASE_ADDRESS + "/api/Users/Search/" + searchValue,
-                dataType: 'json',
-                type: 'GET',
-                contentType: 'application/json',
-                success: function (data, textStatus, jQxhr) {
-
-                    //User json format
-                    /*
-                        "userId": 1,
-                        "phoneNumber": "",
-                        "password": "",
-                        "name": "",
-                        "dob": "",
-                        "gender": "Nam"
-                        "avatarUrl": "",
-                        "backgroundUrl": "",
-                        "introduction": "fix bug :(",
-                        "email": "",
-                        "active": true,
-                        "groupGroupDeputies": [],
-                        "groupGroupLeaders": [],
-                        "messages": []
-                    */
-                    let userType = "Stranger";
-                    if (data.userId === _USER.userId) {
-                        userType = "Self";
-                    }
-                    for (let friendObject of _FRIEND_LIST) {
-                        if (friendObject.userId === data.userId) {
-                            userType = "Friend";
-                        }
-                    }
-
-                    ChatApplicationNamespace.LoadInfoPopupData(data, userType);
-                    $(INFO_POPUP_CONTAINER).show();
-                },
-                error: function (jqXhr, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
-    });
-</script>
 

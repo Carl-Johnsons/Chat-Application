@@ -1,0 +1,22 @@
+﻿import dataFacade from "../Lib/DataFacade/DataFacade.js";
+//import { $, jquery } from "../../lib/jquery";
+
+//window.$ = $;
+//window.jquery = jquery;
+
+//Search-bar script
+$(document).ready(function () {
+    const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
+    let container = $(".search-bar-container");
+    let btnAddUser = container.find(".btn-add-friend");
+    let btnCreateGroup = container.find(".btn-create-group");
+    let searchBarInput = container.find(".search-bar-input");
+
+
+    $(btnAddUser).click(async function () {
+        let searchValue = $(searchBarInput).val();
+        // Work right now, might need pop up to notify exception 404
+        await dataFacade.searchUser(searchValue);
+        $(INFO_POPUP_CONTAINER).show();
+    });
+});
