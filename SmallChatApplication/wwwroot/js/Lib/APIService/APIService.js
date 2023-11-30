@@ -489,6 +489,15 @@
         });
     }
 
+    // ============================== POST Section ==============================
+    /**
+     * The sender is the current User while the receiver is the other user
+     * The messageContent is a string
+     * @param {any} senderId
+     * @param {any} receiverId
+     * @param {any} messageContent
+     * @returns
+     */
     static sendIndividualMessage(senderId, receiverId, messageContent) {
 
         //For getting current time in js and formatt like this: 2023-10-30T17:15:22.234Z
@@ -509,9 +518,6 @@
 
             return iso8601DateTime;
         }
-
-
-        console.log(JSON.stringify(messageObject));
         return new Promise(async function (resolve, reject) {
             try {
                 //individual message object
@@ -543,7 +549,6 @@
                 //_CONNECTION.invoke("SendIndividualMessage", data).catch(function (err) {
                 //    console.error("error when SendIndividualMessage: " + err.toString());
                 //});
-                //ChatApplicationNamespace.LoadNewMessage(data);
 
             } catch (err) {
                 reject(err);

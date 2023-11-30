@@ -1,4 +1,5 @@
 ﻿import APIService from "../APIService/APIService.js";
+import dataFacade from "../DataFacade/DataFacade.js";
 
 export default class UpdateInfoPopupDataLoader {
     constructor() {
@@ -162,23 +163,13 @@ export default class UpdateInfoPopupDataLoader {
             user.avatarUrl = $(avatarImg).attr('src');
             user.backgroundUrl = $(backgroundImg).attr('src');
 
+            // carry out the update operation
+            await dataFacade.fetchUpdateUser(user);
+            await dataFacade.loadUser(user);
+            $(UPDATE_INFO_POPUP_CONTAINER).hide();
 
-            try {
-                const res = await APIService.updateUser(user);
-                console.log({ res });
-                if (!res.ok) {
-                    throw new Error("Update user failed!\n" + res.status);
-                }
-                $(UPDATE_INFO_POPUP_CONTAINER).hide();
-
-                //refactor later
-                //ChatApplicationNamespace.LoadUserData(user);
-                console.log("Update user succcessfully!");
-            } catch (err) {
-                console.error(err);
-            }
         });
-
+        //refactor later (Remove API serice only use dataFacade)
         //evt for  upload image to imgur when changing it
         fileAvatar.addEventListener("change", async function () {
             const file = fileAvatar.files[0];

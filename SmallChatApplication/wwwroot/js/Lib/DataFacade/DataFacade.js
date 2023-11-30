@@ -13,7 +13,7 @@ class DataFacade {
      * @param {any} errorCallBack
      * @returns
      */
-    #createGetPromise(request, successCallBack, errorCallBack) {
+    #createPromise(request, successCallBack, errorCallBack) {
         return request
             .then(res => res.json())
             .then(successCallBack)
@@ -63,23 +63,10 @@ class DataFacade {
         DataLoader.loadFriendData(await this.fetchUser(friendId));
     }
     /**
-     * This function will search user based on phone number
-     * @param {any} phoneNumber
-     * @returns
+     * This function will call the API to get the friendList if undefined
+     * then load the data to the ContactList Component and the Conversation List Component
+     * @param {any} friendList
      */
-    async fetchSearchUser(phoneNumber) {
-        if (!phoneNumber) {
-            throw new Error("Phone number is not valid");
-        }
-        let user;
-        await this.#createGetPromise(
-            APIService.searchUser(phoneNumber),
-            userData => user = userData,
-            err => console.error(err)
-        );
-
-        return user;
-    }
     async loadFriendList(friendList) {
         if (friendList === undefined) {
             friendList = await this.fetchFriendList();
@@ -87,6 +74,7 @@ class DataFacade {
             UserInstance.setFriendList(friendList);
         }
         DataLoader.loadFriendListData(friendList);
+        DataLoader.loadConversationListData(friendList);
     }
 
     /**
@@ -104,6 +92,21 @@ class DataFacade {
         }
         DataLoader.loadFriendRequestData(friendRequestList);
     }
+    async loadConversation(messageList, mode) {
+        if (!messageList) {
+            let otherUserId = this.getActiveConversationUserId();
+            if (!otherUserId) {
+                console.log("No active conversation!");
+                return;
+            }
+            messageList = await this.fetchIndividualMessageList(otherUserId, UserInstance.getUser().userId);
+        }
+        DataLoader.loadConversationData(messageList, mode);
+    }
+    async sendMessage(senderId, receiverId, messageContent) {
+        let newMessage = await this.fetchSendIndividualMessage(senderId, receiverId, messageContent);
+        this.loadConversation([newMessage], "New message");
+    }
 
     // ============================== FETCH SECTION ============================
 
@@ -115,7 +118,7 @@ class DataFacade {
     async fetchUser(userId = _USER_ID) {
         let user;
 
-        await this.#createGetPromise(
+        await this.#createPromise(
             APIService.getUser(userId),
             userData => user = userData,
             err => console.error(err)
@@ -132,7 +135,7 @@ class DataFacade {
     async fetchFriendList(userId = _USER_ID) {
         let friendList;
 
-        await this.#createGetPromise(
+        await this.#createPromise(
             APIService.getFriendList(userId),
             data => friendList = data.map(item => item.friendNavigation),
             err => {
@@ -149,7 +152,7 @@ class DataFacade {
     async fetchFriendRequestList(userId = _USER_ID) {
         let friendRequestList;
 
-        await this.#createGetPromise(
+        await this.#createPromise(
             APIService.getFriendRequestList(userId),
             data => friendRequestList = data.map(item => item.sender),
             err => {
@@ -158,6 +161,35 @@ class DataFacade {
             }
         );
         return friendRequestList;
+    }
+    /**
+     * This function will search user based on phone number
+     * @param {any} phoneNumber
+     * @returns
+     */
+    async fetchSearchUser(phoneNumber) {
+        if (!phoneNumber) {
+            throw new Error("Phone number is not valid");
+        }
+        let user;
+        await this.#createPromise(
+            APIService.searchUser(phoneNumber),
+            userData => user = userData,
+            err => console.error(err)
+        );
+
+        return user;
+    }
+    async fetchUpdateUser(user) {
+        try {
+            const res = await APIService.updateUser(user);
+            if (!res.ok) {
+                throw new Error("Update user failed!\n" + res.status);
+            }
+            console.log("Update user succcessfully!");
+        } catch (err) {
+            console.error(err);
+        }
     }
     async fetchSendFriendRequest(sender, receiverId) {
         try {
@@ -204,6 +236,51 @@ class DataFacade {
             console.error(err);
         }
     }
+    /**
+     * The other user is the sender while the current user is the reciever
+     * @param {any} senderId
+     * @param {any} receiverId
+     * @returns
+     */
+    async fetchIndividualMessageList(senderId, receiverId) {
+        if (!senderId || !receiverId) {
+            throw new Error("senderId or receiverId is not valid");
+        }
+        let messageList;
+        await this.#createPromise(
+            APIService.getIndividualMessageList(senderId, receiverId),
+            data => messageList = data,
+            err => console.error(err)
+        );
+
+        return messageList;
+    }
+    async fetchSendIndividualMessage(senderId, receiverId, messageContent) {
+        let newMessage;
+        await this.#createPromise(
+            APIService.sendIndividualMessage(senderId, receiverId, messageContent),
+            data => {
+                newMessage = data
+                console.log(data);
+            },
+            err => console.error(err)
+        );
+        return newMessage;
+    }
+
+    // ================================ Other Section ===========================
+    /**
+     * This function will return the active conversation userId
+     * @returns {userId}
+     */
+    getActiveConversationUserId() {
+        const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
+        let activeConversation = CONVERSATION_LIST_CONTAINER.find("div.conversation.active");
+        let userId = $(activeConversation).attr("data-user-id");
+
+        return userId;
+    }
+
 }
 
 const dataFacade = new DataFacade();

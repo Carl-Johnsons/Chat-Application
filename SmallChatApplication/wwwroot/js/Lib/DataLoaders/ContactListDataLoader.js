@@ -1,8 +1,6 @@
 ﻿import UserInstance from "../../Models/User.js";
-import APIService from "../APIService/APIService.js";
 import dataFacade from "../DataFacade/DataFacade.js";
 import HTMLGenerator from "../Generators/HTMLGenerator.js";
-import DataLoader from "./DataLoader.js";
 
 export default class ContactListDataLoader {
     constructor() {

@@ -1,5 +1,7 @@
 ﻿import ApplicationDataLoader from "./ApplicationDataLoader.js";
 import ContactListDataLoader from "./ContactListDataLoader.js";
+import ConversationDataLoader from "./ConversationDataLoader.js";
+import ConversationListDataLoader from "./ConversationListDataLoader.js";
 import InfoPopupDataLoader from "./InfoPopupDataLoader.js";
 import UpdateInfoPopupDataLoader from "./UpdateInfoPopupDataLoader.js";
 
@@ -69,7 +71,6 @@ export default class DataLoader {
         InfoPopupDataLoader.loadUserData(userData, InfoPopupDataLoader.USER_TYPE.STRANGER);
     }
 
-
     /**
      * This function will load the friend list in the ContactList Component
      * @param {any} friendListData
@@ -92,6 +93,20 @@ export default class DataLoader {
         }
 
         ContactListDataLoader.loadFriendRequestListData(friendRequestListData);
+    }
+    /**
+     * This function will load the friend list to the ConversationList Component
+     * @param {any} friendList
+     */
+    static loadConversationListData(friendList) {
+        if (!friendList) {
+            throw new Error("friendList data is not valid");
+        }
+        ConversationListDataLoader.loadConversationList(friendList);
+    }
+
+    static loadConversationData(messageList, mode) {
+        ConversationDataLoader.loadConversation(messageList, mode);
     }
 
 }
