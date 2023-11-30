@@ -18,6 +18,7 @@
 
     @* Use signalR client-side library *@
     <script src="~/js/signalr.js"></script>
+    <script src="~/js/Models/ChatHub.js"></script>
 
     @* set the global variable to use in partial view and external script *@
     <script>
@@ -26,7 +27,7 @@
         var _USER_ID = @ViewBag.ID;
 
         //Start connection to map the connection string to userId in database
-        var _CONNECTION = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        // var _CONNECTION = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
     </script>
     <script type="module" src="~/js/site.js"></script>
 </head>

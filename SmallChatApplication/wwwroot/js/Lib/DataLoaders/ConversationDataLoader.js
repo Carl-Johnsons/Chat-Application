@@ -25,7 +25,6 @@ export default class ConversationDataLoader {
      * @param {any} mode
      */
     static async loadConversation(messageList, mode) {
-        console.log(messageList);
         // Show the "send message" button even the message array is zero
         $(this.#INPUT_MESSAGE_CONTAINER).show();
         await this.#loadConversation(messageList, mode);
@@ -243,7 +242,6 @@ export default class ConversationDataLoader {
         const userArray = Array.from(this.#userMap, (value, key) => (key, value));
         const otherUserArray = userArray.filter(user => user[0] !== UserInstance.getUser().userId);
         const otherUser = otherUserArray[0][1];
-        console.log(otherUser);
 
         //render only the first time. This is only useful if this is an individual conversation
         $(USER_INFO_AVATAR).attr("src", otherUser.avatarUrl);

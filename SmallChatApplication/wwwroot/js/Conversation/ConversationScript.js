@@ -25,6 +25,7 @@ $(document).ready(function () {
 
             //send the message
             dataFacade.sendMessage(UserInstance.getUser().userId, otherUserId, messageValue);
+
         });
     };
 });

@@ -73,31 +73,6 @@
                 reject(err);
             }
         });
-
-
-        $.ajax({
-            url: _BASE_ADDRESS + "/api/Users/Search/" + searchValue,
-            dataType: 'json',
-            type: 'GET',
-            contentType: 'application/json',
-            success: function (data, textStatus, jQxhr) {
-                let userType = "Stranger";
-                if (data.userId === _USER.userId) {
-                    userType = "Self";
-                }
-                for (let friendObject of _FRIEND_LIST) {
-                    if (friendObject.userId === data.userId) {
-                        userType = "Friend";
-                    }
-                }
-
-                ChatApplicationNamespace.LoadInfoPopupData(data, userType);
-                $(INFO_POPUP_CONTAINER).show();
-            },
-            error: function (jqXhr, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-        });
     }
 
     /**
@@ -272,27 +247,6 @@
 
                 const response = await fetch(url, fetchConfig);
                 resolve(response);
-                // Friend Request JSON format
-                //{
-                //    "senderId": 1,
-                //    "receiverId": 3,
-                //    "content": "string",
-                //    "date": "2023-10-20T23:40:53.8730141+07:00",
-                //    "status": "Pending",
-                //    "receiver": null,
-                //    "sender": null
-                //}
-
-                //refactor later
-                // Notfiy other user if they are online
-                //_CONNECTION.invoke("SendFriendRequest", data).catch(function (err) {
-                //    console.error("error when SendFriendRequest: " + err.toString());
-                //});
-                // The data is FriendRequest datatype
-
-                //This user send to other user friend request, so don't need to render the friend request here
-                //ChatApplicationNamespace.GetFriendRequestList();
-                resolve(jQxhr);
             } catch (err) {
                 reject("Fetch error: " + err);
             }
@@ -335,7 +289,6 @@
     // ============================== PUT Section ==============================
 
     /**
-     * Update an user using AJAX
      * @param {any} user
      * @returns 
      */
@@ -545,18 +498,12 @@
 
                 resolve(response);
 
-                //refactor later
-                //_CONNECTION.invoke("SendIndividualMessage", data).catch(function (err) {
-                //    console.error("error when SendIndividualMessage: " + err.toString());
-                //});
-
             } catch (err) {
                 reject(err);
             }
 
         });
     }
-
 
     // TOOL API
     // ============================== POST Section ==============================

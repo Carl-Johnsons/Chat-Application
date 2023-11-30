@@ -24,8 +24,9 @@ namespace SmallChatApplication.Hubs
             Console.WriteLine("In MapUserData");
             foreach (var key in UserConnectionMap.Keys)
             {
-                Console.WriteLine($"{key}:{UserConnectionMap[key].Name}");
+                Console.WriteLine($"{key}: {UserConnectionMap[key].Name}");
             }
+            await Console.Out.WriteLineAsync("============================");
         }
 
         public override Task OnConnectedAsync()
@@ -47,7 +48,6 @@ namespace SmallChatApplication.Hubs
 
             await base.OnDisconnectedAsync(exception);
         }
-
         //Send
         public async Task SendMessageToGroup(User user, string message)
         {
@@ -58,6 +58,7 @@ namespace SmallChatApplication.Hubs
         {
             try
             {
+                await Console.Out.WriteLineAsync("Sending message");
                 // Have to get list because the 1 person can join on 2 different tab on browser
                 // So the connectionId may differnect but still 1 userId
                 var receiverConnectionIdList = UserConnectionMap.
@@ -90,9 +91,7 @@ namespace SmallChatApplication.Hubs
             {
                 await Console.Out.WriteLineAsync(ex.Message);
             }
-
         }
-
         public async Task SendFriendRequest(FriendRequest friendRequest)
         {
             // Have to get list because the 1 person can join on 2 different tab on browser
@@ -112,7 +111,6 @@ namespace SmallChatApplication.Hubs
                 await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest");
             }
         }
-
         public async Task SendAcceptFriendRequest(int senderId)
         {
             // Notify a list of user because they might have open mulit tab in browsers
@@ -128,13 +126,9 @@ namespace SmallChatApplication.Hubs
             }
             foreach (var senderConnectionId in senderConnectionIdList)
             {
-                await Console.Out.WriteLineAsync("====================================");
-                await Console.Out.WriteLineAsync("Notify sender:" + senderConnectionId + "| Name: " + UserConnectionMap[senderConnectionId].Name);
                 await Clients.Client(senderConnectionId).SendAsync("ReceiveAcceptFriendRequest");
             }
         }
-
-
         public async Task JoinRoom(string Name, string Room)
         {
             //Users userConnection = new Users()

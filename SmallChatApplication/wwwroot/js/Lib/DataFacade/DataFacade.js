@@ -1,4 +1,5 @@
 ﻿
+import connectionInstance from "../../Models/ChatHub.js";
 import UserInstance from "../../Models/User.js";
 import APIService from "../APIService/APIService.js";
 import DataLoader from "../DataLoaders/DataLoader.js";
@@ -36,6 +37,7 @@ class DataFacade {
         DataLoader.loadUserData(DataLoader.elementName.ApplicationNavbar, userData);
         DataLoader.loadUserData(DataLoader.elementName.InfoPopup, userData);
         DataLoader.loadUserData(DataLoader.elementName.UpdateInfoPopup, userData);
+        connectionInstance.notifyAction(connectionInstance.actionType.MapUserData, userData);
     }
     async searchUser(phoneNumber) {
         let searchResult = await this.fetchSearchUser(phoneNumber);
@@ -192,15 +194,16 @@ class DataFacade {
         }
     }
     async fetchSendFriendRequest(sender, receiverId) {
-        try {
-            let response = await APIService.sendFriendRequest(sender, receiverId);
-            if (!response.ok) {
-                throw new Error("send friend request failed!");
-            }
-            console.log("send friend request successfully!");
-        } catch (err) {
-            console.error(err);
-        }
+        let friendRequest;
+        await this.#createPromise(
+            APIService.sendFriendRequest(sender, receiverId),
+            friendRequestData => friendRequest = friendRequestData,
+            err => console.error(err)
+        );
+        connectionInstance.notifyAction(connectionInstance.actionType.SendFriendRequest, friendRequest);
+
+        return friendRequest;
+
     }
     async fetchDeleteFriendRequest(senderId, receiverId) {
         try {
@@ -208,6 +211,7 @@ class DataFacade {
             if (!response.ok) {
                 throw new Error("delete friend request failed");
             }
+            connectionInstance.notifyAction(connectionInstance.actionType.DeleteFriendRequest, friendObject.userId);
             console.log("delete friend request successfully");
         } catch (err) {
             console.error(err);
@@ -219,6 +223,8 @@ class DataFacade {
             if (!response.ok) {
                 throw new Error("add friend failed: " + response.status);
             }
+              //Notify other user
+              connectionInstance.notifyAction(connectionInstance.actionType.SendAcceptFriendRequest, senderId);
             console.log("add friend successfully");
         } catch (err) {
             console.error(err);
@@ -265,6 +271,8 @@ class DataFacade {
             },
             err => console.error(err)
         );
+        connectionInstance.notifyAction(connectionInstance.actionType.SendIndividualMessage, newMessage);
+
         return newMessage;
     }
 

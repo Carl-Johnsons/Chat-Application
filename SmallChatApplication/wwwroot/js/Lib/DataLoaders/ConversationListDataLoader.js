@@ -114,7 +114,6 @@ export default class ConversationListDataLoader {
                 $(this).off('click').click(async function () {
                     disableAllConversations();
                     activateConversation($(this));
-                    console.log(this);
                     //Load the messageList into active conversation
                     dataFacade.loadConversation(undefined, "Reload");
                 });

@@ -56,12 +56,8 @@ export default class InfoPopupDataLoader {
 
         // This popup i didn't generate and reuse the element so have to update the event listener
         //Remove an existing event listener
-        $(btnAddFriend).off("click").click(function () {
-            dataFacade.fetchSendFriendRequest(UserInstance.getUser(), userObject.userId);
-            //notify other person here
-            //_CONNECTION.invoke("SendFriendRequest", data).catch(function (err) {
-            //    console.error("error when SendFriendRequest: " + err.toString());
-            //});
+        $(btnAddFriend).off("click").click( function () {
+             dataFacade.fetchSendFriendRequest(UserInstance.getUser(), userObject.userId);
         });
 
         function hideAllBtns() {

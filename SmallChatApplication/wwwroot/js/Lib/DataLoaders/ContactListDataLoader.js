@@ -1,4 +1,5 @@
-﻿import UserInstance from "../../Models/User.js";
+﻿import connectionInstance from "../../Models/ChatHub.js";
+import UserInstance from "../../Models/User.js";
 import dataFacade from "../DataFacade/DataFacade.js";
 import HTMLGenerator from "../Generators/HTMLGenerator.js";
 
@@ -177,12 +178,7 @@ export default class ContactListDataLoader {
                 //Updating friend request list and friend list
                 await dataFacade.loadFriendList();
                 await dataFacade.loadFriendRequestList();
-
-                //refactor later
-                //Notify who sent the friend request that they are friend
-                //_CONNECTION.invoke("SendAcceptFriendRequest", senderId).catch(function (err) {
-                //    console.log("Error when notify add friend");
-                //});
+              
             });
             let btnDetail = generateElement("button", "btn btn-detail");
             $(btnDetail).text("...");
@@ -201,10 +197,8 @@ export default class ContactListDataLoader {
                 await dataFacade.fetchDeleteFriendRequest(friendRequestObject.userId, UserInstance.getUser().userId);
                 //Updating friend request list
                 await dataFacade.loadFriendRequestList();
-                //Notify other user
-                //_CONNECTION.invoke("DeleteFriendRequest", friendObject.userId).catch(function (err) {
-                //    console.log("Error when notify deleting friend");
-                //});
+
+             
             });
 
             $(btnContainer).append(btnAccept);
