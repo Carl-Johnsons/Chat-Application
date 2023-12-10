@@ -223,8 +223,8 @@ class DataFacade {
             if (!response.ok) {
                 throw new Error("add friend failed: " + response.status);
             }
-              //Notify other user
-              connectionInstance.notifyAction(connectionInstance.actionType.SendAcceptFriendRequest, senderId);
+            //Notify other user
+            connectionInstance.notifyAction(connectionInstance.actionType.SendAcceptFriendRequest, senderId);
             console.log("add friend successfully");
         } catch (err) {
             console.error(err);
@@ -286,9 +286,19 @@ class DataFacade {
         let activeConversation = CONVERSATION_LIST_CONTAINER.find("div.conversation.active");
         let userId = $(activeConversation).attr("data-user-id");
 
-        return userId;
+        return parseInt(userId);
     }
 
+    /**
+     * For notify other user that this current user is typing in the conversation
+     * @param {any} usernameArray
+     */
+    displayUserInputNotification(senderIdList) {
+        DataLoader.displayUserInputNotification(senderIdList);
+    }
+    hideUserInputNotification() {
+        DataLoader.hideUserInputNotification();
+    }
 }
 
 const dataFacade = new DataFacade();

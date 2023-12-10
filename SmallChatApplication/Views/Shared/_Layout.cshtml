@@ -8,17 +8,18 @@
     <title>@ViewData["Title"] - SmallChatApplication</title>
     @* Boostrap and jquery library *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    @* Custom style *@
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
+    @* Custom style *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     @* Use signalR client-side library *@
     <script src="~/js/signalr.js"></script>
-    <script src="~/js/Models/ChatHub.js"></script>
+    <script type="module" src="~/js/Models/ChatHub.js"></script>
 
     @* set the global variable to use in partial view and external script *@
     <script>

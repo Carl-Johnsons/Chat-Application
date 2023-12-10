@@ -108,5 +108,11 @@ export default class DataLoader {
     static loadConversationData(messageList, mode) {
         ConversationDataLoader.loadConversation(messageList, mode);
     }
+    static displayUserInputNotification(senderIdList) {
+        ConversationDataLoader.displayUserInputNotification(senderIdList);
+    }
+    static hideUserInputNotification() {
+        ConversationDataLoader.hideUserInputNotification();
+    }
 
 }

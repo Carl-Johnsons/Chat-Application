@@ -8,7 +8,9 @@ export default class ConversationDataLoader {
         NEW_MESSAGE: "New message"
     }
     static #CHAT_BOX_CONTAINER = $(".chat-box-container");
-    static #MESSAGE_CONTAINER = this.#CHAT_BOX_CONTAINER.find(".message-container");
+    static #CONVERSATION_CONTAINER = $(this.#CHAT_BOX_CONTAINER).find(".conversation-container");
+    static #MESSAGE_CONTAINER = this.#CONVERSATION_CONTAINER.find(".message-container");
+    static #USER_INPUT_NOTIFICATION = this.#CONVERSATION_CONTAINER.find(".user-input-notification");
     static #INPUT_MESSAGE_CONTAINER = this.#CHAT_BOX_CONTAINER.find(".input-message-container");
     static #generateElement = HTMLGenerator.generateElement;
     static #userMap = new Map();
@@ -227,7 +229,6 @@ export default class ConversationDataLoader {
         const shortDate = longDateObj.toLocaleString(undefined, options);
         return shortDate;
     }
-
     /**
      * This function will load the userInfo on top of the message container
      * If the array is greater than 2 meaning that the conversation is a group
@@ -247,5 +248,25 @@ export default class ConversationDataLoader {
         $(USER_INFO_AVATAR).attr("src", otherUser.avatarUrl);
         $(USER_INFO_NAME).html(otherUser.name);
 
+    }
+    static displayUserInputNotification(senderIdList) {
+        const limitedName = 3;
+        let notificationMessage = this.#userMap.get(senderIdList[0]).name;
+
+        for (let i = 1; i < senderIdList.length; i++) {
+            if (i >= limitedName) {
+                break;
+            }
+            let receiverName = this.#userMap.get(senderIdList[i]).name;
+            notificationMessage += `, ${receiverName}`;
+        }
+        notificationMessage += " is typing ...";
+
+        $(this.#USER_INPUT_NOTIFICATION).html(notificationMessage);
+        console.log("show typing")
+        $(this.#USER_INPUT_NOTIFICATION).show();
+    }
+    static hideUserInputNotification() {
+        $(this.#USER_INPUT_NOTIFICATION).hide();
     }
 }

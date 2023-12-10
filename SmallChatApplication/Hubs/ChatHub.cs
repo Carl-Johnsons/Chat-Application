@@ -3,6 +3,8 @@ using BussinessObject.Models;
 using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmallChatApplication.Hubs
 {
@@ -129,6 +131,52 @@ namespace SmallChatApplication.Hubs
                 await Clients.Client(senderConnectionId).SendAsync("ReceiveAcceptFriendRequest");
             }
         }
+        public async Task NotifyUserTyping(SenderReceiverArrayModel model)
+        {
+            List<int> ReceiverIdList = model.ReceiverIdList;
+            for (int i = 0; i < ReceiverIdList.Count; i++)
+            {
+                // Notify a list of user because they might have open mulit tab in browsers
+                var senderConnectionIdList = UserConnectionMap.
+                    Where(pair => pair.Value.UserId == ReceiverIdList[i])
+                    .Select(pair => pair.Key)
+                    .ToList();
+
+                // If the receiver didn't online, simply do nothing
+                if (senderConnectionIdList.Count <= 0)
+                {
+                    return;
+                }
+                foreach (var senderConnectionId in senderConnectionIdList)
+                {
+                    await Clients.Client(senderConnectionId).SendAsync("ReceiveNotifyUserTyping", model);
+                }
+            }
+        }
+
+        public async Task DisableNotifyUserTyping(SenderReceiverArrayModel model)
+        {
+            List<int> ReceiverIdList = model.ReceiverIdList;
+            for (int i = 0; i < ReceiverIdList.Count; i++)
+            {
+                // Notify a list of user because they might have open mulit tab in browsers
+                var senderConnectionIdList = UserConnectionMap.
+                    Where(pair => pair.Value.UserId == ReceiverIdList[i])
+                    .Select(pair => pair.Key)
+                    .ToList();
+
+                // If the receiver didn't online, simply do nothing
+                if (senderConnectionIdList.Count <= 0)
+                {
+                    return;
+                }
+                foreach (var senderConnectionId in senderConnectionIdList)
+                {
+                    await Clients.Client(senderConnectionId).SendAsync("ReceiveDisableNotifyUserTyping");
+                }
+            }
+        }
+
         public async Task JoinRoom(string Name, string Room)
         {
             //Users userConnection = new Users()
@@ -148,4 +196,15 @@ namespace SmallChatApplication.Hubs
             //        "Welcome to the chat room!");
         }
     }
+    public class SenderReceiverArrayModel
+    {
+        [Required]
+        [JsonPropertyName("senderIdList")]
+        public List<int> SenderIdList { get; set; }
+
+        [Required]
+        [JsonPropertyName("receiverIdList")]
+        public List<int> ReceiverIdList { get; set; }
+    }
+
 }

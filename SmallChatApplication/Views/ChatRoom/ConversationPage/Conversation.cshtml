@@ -36,76 +36,81 @@
             margin: calc((var(--user-info-container-height) - 2.8rem)/2);
         }
 
-    .message-container {
+    .conversation-container {
+        position: relative;
         height: var(--message-container-height);
-        overflow: auto;
-        background-color: #EEF0F1;
     }
 
-        .message-container .message-item-container {
+        .conversation-container .message-container {
+            height: 100%;
+            overflow: auto;
+            background-color: #EEF0F1;
+        }
+
+    .message-container .message-item-container {
+        display: flex;
+    }
+
+        .message-container .message-item-container.receiver {
+            justify-content: flex-start;
+        }
+
+        .message-container .message-item-container.sender {
+            justify-content: flex-end;
+        }
+        /* For aligining consecutive message */
+        .message-container .message-item-container.receiver .message-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .message-container .message-item-container.sender .message-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+
+        .message-container .message-item-container .message-item {
             display: flex;
         }
 
-            .message-container .message-item-container.receiver {
-                justify-content: flex-start;
-            }
+        .message-container .message-item-container .avatar-image {
+            width: 50px;
+            height: 50px;
+            margin: 0 0.5rem;
+            border-radius: 50%;
+        }
 
-            .message-container .message-item-container.sender {
-                justify-content: flex-end;
-            }
-            /* For aligining consecutive message */
-            .message-container .message-item-container.receiver .message-row {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .message-container .message-item-container .message {
+            width: fit-content;
+            max-width: 40rem;
+            padding: 0.3rem 0.5rem;
+            margin: 0.2rem 0rem;
+            border: 1px solid black;
+            border-radius: 0.7rem;
+        }
 
-            .message-container .message-item-container.sender .message-row {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-            }
+        .message-container .message-item-container.sender .message {
+            background-color: #E5EFFF;
+        }
 
+        .message-container .message-item-container.receiver .message {
+            background-color: white;
+        }
 
-            .message-container .message-item-container .message-item {
-                display: flex;
-            }
-
-            .message-container .message-item-container .avatar-image {
-                width: 50px;
-                height: 50px;
-                margin: 0 0.5rem;
-                border-radius: 50%;
-            }
-
-            .message-container .message-item-container .message {
-                width: fit-content;
-                max-width: 40rem;
-                padding: 0.3rem 0.5rem;
-                margin: 0.2rem 0rem;
-                border: 1px solid black;
-                border-radius: 0.7rem;
-            }
-
-            .message-container .message-item-container.sender .message {
-                background-color: #E5EFFF;
-            }
-
-            .message-container .message-item-container.receiver .message {
-                background-color: white;
-            }
-
-            .message-container .message-item-container .message .user-name,
-            .message-container .message-item-container .message .message-time {
-                font-size: 0.8rem;
-                color: #476285;
-            }
+        .message-container .message-item-container .message .user-name,
+        .message-container .message-item-container .message .message-time {
+            font-size: 0.8rem;
+            color: #476285;
+        }
 
 
 
-            .message-container .message-item-container .message {
-                padding: 0.7rem;
-            }
+        .message-container .message-item-container .message {
+            padding: 0.7rem;
+        }
 
 
     .input-message-container {
@@ -129,6 +134,14 @@
                 font-weight: bold;
             }
 
+    .user-input-notification {
+        position: absolute;
+        bottom: 0px;
+        padding-left: 1rem;
+        background: #E5EFFFBF;
+        width: 100%;
+    }
+
 </style>
 
 
@@ -145,85 +158,90 @@
         </div>
     </div>
 
+    <div class="conversation-container">
+        <div class="message-container">
+            @* Example of one conversation. DO NOT DELETE *@
+            <template>
+                <div class="message-item-container sender">
+                    <div class="message-item">
+                        <div class="message-list">
 
-    <div class="message-container">
-
-    @* Example of one conversation. DO NOT DELETE *@
-@*         <div class="message-item-container sender">
-            <div class="message-item">
-                <div class="message-list">
-
-                    <div class="message-row">
-                        <div class="message ">
-                            <div class="message-content">
-                                message content
+                            <div class="message-row">
+                                <div class="message ">
+                                    <div class="message-content">
+                                        message content
+                                    </div>
+                                    <div class="message-time">
+                                        time
+                                    </div>
+                                </div>
                             </div>
-                            <div class="message-time">
-                                time
-                            </div>
-                        </div>
-                    </div>
-                    <div class="message-row">
-                        <div class="message ">
-                            <div class="message-content">
-                                message content 
-                            </div>
-                            <div class="message-time">
-                                 time 
+                            <div class="message-row">
+                                <div class="message ">
+                                    <div class="message-content">
+                                        message content
+                                    </div>
+                                    <div class="message-time">
+                                        time
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+
+                <div class="message-item-container receiver">
+                    <div class="message-item">
+                        <div class="user-avatar">
+                            <img class="avatar-image" src="~/img/user.png" />
+                        </div>
+                        <div class="message-list">
+                            <div class="message-row">
+
+                                <div class="message">
+                                    <div class="user-name">
+                                        name
+                                    </div>
+                                    <div class="message-content">
+                                        mesage content
+                                    </div>
+                                    <div class="message-time">
+                                        time
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="message-row">
+                                <div class="message">
+                                    <div class="message-content">
+                                        mesage content
+                                    </div>
+                                    <div class="message-time">
+                                        time
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message-row">
+                                <div class="message">
+                                    <div class="message-content">
+                                        mesage content
+                                    </div>
+                                    <div class="message-time">
+                                        time
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            @* Example of one conversation. DO NOT DELETE *@
         </div>
-
-
-        <div class="message-item-container receiver">
-            <div class="message-item">
-                <div class="user-avatar">
-                    <img class="avatar-image" src="~/img/user.png" />
-                </div>
-                <div class="message-list">
-                    <div class="message-row">
-
-                        <div class="message">
-                            <div class="user-name">
-                                name
-                            </div>
-                            <div class="message-content">
-                                mesage content
-                            </div>
-                            <div class="message-time">
-                                time
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="message-row">
-                        <div class="message">
-                            <div class="message-content">
-                                mesage content
-                            </div>
-                            <div class="message-time">
-                                time
-                            </div>
-                        </div>
-                    </div>
-                    <div class="message-row">
-                        <div class="message">
-                            <div class="message-content">
-                                mesage content
-                            </div>
-                            <div class="message-time">
-                                time
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> *@
-
+        <div class="user-input-notification">
+            User A is typing ...
+        </div>
     </div>
 
     <div class="input-message-container">

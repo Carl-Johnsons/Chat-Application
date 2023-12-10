@@ -1,5 +1,4 @@
-﻿import connectionInstance from "../../Models/ChatHub.js";
-import UserInstance from "../../Models/User.js";
+﻿import UserInstance from "../../Models/User.js";
 import dataFacade from "../DataFacade/DataFacade.js";
 import HTMLGenerator from "../Generators/HTMLGenerator.js";
 

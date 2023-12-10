@@ -5,6 +5,7 @@ import dataFacade from "../Lib/DataFacade/DataFacade.js";
 let chatHubEndPoint = "/chatHub";
 let connection;
 
+
 class ChatHub {
     constructor() {
         this.actionType = {
@@ -12,8 +13,16 @@ class ChatHub {
             SendIndividualMessage: "SendIndividualMessage",
             SendAcceptFriendRequest: "SendAcceptFriendRequest",
             SendFriendRequest: "SendFriendRequest",
-            DeleteFriendRequest: "DeleteFriendRequest"
+            DeleteFriendRequest: "DeleteFriendRequest",
+            NotifyUserTyping: "NotifyUserTyping",
+            DisableNotifyUserTyping: "DisableNotifyUserTyping"
         };
+
+        this.senderReceiverListModel = {
+            senderIdList: [],
+            receiverIdList: []
+        }
+
 
         connection = new signalR.HubConnectionBuilder()
             .withUrl(chatHubEndPoint)
@@ -33,7 +42,6 @@ class ChatHub {
         connection.on("ReceiveIndividualMessage", function (newIndividualMessage) {
             //convert Pascal Case attribute (Violate json naming covention) into camel case
             let newMessageObj = convertToCamelCase(JSON.parse(newIndividualMessage));
-            console.log(newMessageObj);
             let senderId = dataFacade.getActiveConversationUserId();
 
             if (newIndividualMessage && senderId == newMessageObj?.message?.senderId) {
@@ -43,7 +51,16 @@ class ChatHub {
                 console.log("the conversation didn't active: " + senderId + "|" + newMessageObj?.message?.senderId);
             }
 
-        })
+        });
+
+        connection.on("ReceiveNotifyUserTyping", function (model) {
+            //Using the senderReceiverListModel
+            dataFacade.displayUserInputNotification(model.senderIdList)
+        });
+        connection.on("ReceiveDisableNotifyUserTyping", function () {
+            dataFacade.hideUserInputNotification();
+        });
+
 
         function convertToCamelCase(obj) {
             if (obj === null || typeof obj !== 'object') {

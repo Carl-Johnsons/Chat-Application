@@ -1,8 +1,4 @@
 ﻿import dataFacade from "../Lib/DataFacade/DataFacade.js";
-//import { $, jquery } from "../../lib/jquery";
-
-//window.$ = $;
-//window.jquery = jquery;
 
 //Search-bar script
 $(document).ready(function () {
