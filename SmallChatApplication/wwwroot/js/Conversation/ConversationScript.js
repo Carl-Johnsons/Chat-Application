@@ -58,6 +58,7 @@ $(document).ready(function () {
                 // Your specific task goes here
                 console.log("User hasn't input anything for 2 seconds");
                 timeout = null;
+
                 let model = connectionInstance.senderReceiverListModel;
                 // for some reason the senderId is a string
                 model.senderIdList = [UserInstance.getUser().userId];

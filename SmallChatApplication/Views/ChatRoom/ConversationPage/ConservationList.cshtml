@@ -3,87 +3,7 @@
 *@
 @{
 }
-<style>
-
-    /* Search bar rules */
-    .search-bar-container {
-        /* Define vairable for search bar */
-        --search-bar-height: 10vh;
-        --container-list-container: calc(99vh - var(--search-bar-height));
-        height: var(--search-bar-height);
-        padding: 10px;
-        border-bottom: 1px solid black;
-    }
-
-        .search-bar-container input {
-            padding: 5px;
-            margin-right: 0.5rem;
-        }
-
-        .search-bar-container .search-bar-btn-container {
-            width: 5rem;
-        }
-
-        .search-bar-container .btn-close-search-list,
-        .search-bar-container .btn-add-friend,
-        .search-bar-container .btn-create-group {
-            padding: 0rem 0.5rem;
-            font-weight: bold;
-        }
-
-        .search-bar-container .search-bar-icon {
-            width: 1rem;
-        }
-
-        .search-bar-container .btn-close-search-list {
-            display: none;
-        }
-
-    /* Conversation rules */
-    .conversations-list-container {
-        height: var(--container-list-container);
-        overflow: auto;
-    }
-
-    .conversation {
-        height: 4rem;
-        cursor: pointer;
-        transition: background-color 0.15s ease-in-out;
-    }
-
-        .conversation:hover {
-            background-color: #F3F5F6;
-        }
-
-        .conversation.active {
-            background-color: #E5EFFF;
-        }
-
-    .conversation-avatar > img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin: 0.4rem;
-    }
-
-    .conversation-description .conversation-name {
-        margin-top: 0.5rem;
-        font-size: 1.1rem;
-    }
-
-    .conversation-last-message {
-        color: #788BA4;
-        /* Truncate long text */
-        width: 14.5rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .conversation-description {
-        padding-left: 0.5rem;
-    }
-</style>
+<link rel="stylesheet" href="~/css/ChatRoom/ConversationList/ConversationList.css" />
 
 <div class="search-bar-container">
     <div class="search-input-container d-flex">
@@ -100,19 +20,22 @@
 </div>
 
 <div class="conversations-list-container ">
-    @*     <div class="conversation active d-flex">
-    <div class="conversation-avatar">
-    <img src="~/img/user.png" />
-    </div>
-    <div class="conversation-description">
-    <div class="conversation-name">
-    Group 2
-    </div>
-    <div class="conversation-last-message">
-    You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
-    </div>
-    </div>
-    </div> *@
+    @*     DO NOT MODIFY TEMPLATE *@
+    <template>
+        <div class="conversation active d-flex">
+            <div class="conversation-avatar">
+                <img src="~/img/user.png" />
+            </div>
+            <div class="conversation-description">
+                <div class="conversation-name">
+                    Group 2
+                </div>
+                <div class="conversation-last-message">
+                    You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
+                </div>
+            </div>
+        </div>
+    </template>
 </div>
 
 <script type="module" src="./js/ConversationList/SearchBarScript.js"></script>
