@@ -42,15 +42,19 @@ class ChatHub {
         connection.on("ReceiveIndividualMessage", function (newIndividualMessage) {
             //convert Pascal Case attribute (Violate json naming covention) into camel case
             let newMessageObj = convertToCamelCase(JSON.parse(newIndividualMessage));
-            let senderId = dataFacade.getActiveConversationUserId();
-
-            if (newIndividualMessage && senderId == newMessageObj?.message?.senderId) {
-                console.log("active conversation: " + newMessageObj?.message?.senderId);
+            let activeConversationUserId = dataFacade.getActiveConversationUserId();
+            if (!newMessageObj) {
+                console.error("Invalid new message object");
+                return;
+            }
+            if (activeConversationUserId == newMessageObj.message.senderId) {
+                console.log("active conversation: " + newMessageObj.message.senderId);
                 dataFacade.loadConversation([newMessageObj], "New message");
             } else {
-                console.log("the conversation didn't active: " + senderId + "|" + newMessageObj?.message?.senderId);
+                console.log("the conversation didn't active: " + activeConversationUserId + "|" + newMessageObj.message.senderId);
             }
-
+            // The current user is the receiver
+            dataFacade.updateLastMessage(newMessageObj.message.senderId, newMessageObj);
         });
 
         connection.on("ReceiveNotifyUserTyping", function (model) {

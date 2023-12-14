@@ -83,7 +83,7 @@ class DataFacade {
     /**
      * This function will update the last message that display in the conversation list.
      * If the lastMessage is undefined this method will automatically fetch the last message from the api
-     * @param {any} friendId
+     * @param {int} friendId
      * @param {any} lastMessage
      */
     async updateLastMessage(friendId, lastMessage) {
