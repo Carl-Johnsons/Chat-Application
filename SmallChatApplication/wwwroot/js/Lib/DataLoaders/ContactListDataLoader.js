@@ -24,7 +24,7 @@ export default class ContactListDataLoader {
             //     <div class="contact-row">
             //         <div class="contact-info-container">
             //             <div class="avatar-container">
-            //                 <img class="avatar-image" src="/img/user.png" />
+            //                 <img draggable="false" class="avatar-image" src="/img/user.png" />
             //             </div>
             //             <div class="user-name">
             //                 <p>Lol</p>
@@ -51,6 +51,7 @@ export default class ContactListDataLoader {
                 //contact info container
                 let avatarContainer = generateElement("div", "avatar-container");
                 let avatarImg = generateElement("img", "avatar-image");
+                $(avatarImg).attr('draggable', false);
                 $(avatarImg).attr('src', friendObject.avatarUrl);
                 $(avatarContainer).append(avatarImg);
 
@@ -131,7 +132,7 @@ export default class ContactListDataLoader {
             //     <div class="contact-row">
             //         <div class="contact-info-container">
             //             <div class="avatar-container">
-            //                 <img class="avatar-image" src="/img/user.png" />
+            //                 <img draggable="false" class="avatar-image" src="/img/user.png" />
             //             </div>
             //             <div class="user-name">
             //                 <p>Lol</p>
@@ -156,6 +157,7 @@ export default class ContactListDataLoader {
             //contact info container
             let avatarContainer = generateElement("div", "avatar-container");
             let avatarImg = generateElement("img", "avatar-image");
+            $(avatarImg).attr('draggable', false);
             $(avatarImg).attr('src', friendRequestObject.avatarUrl);
             $(avatarContainer).append(avatarImg);
 
@@ -196,8 +198,6 @@ export default class ContactListDataLoader {
                 await dataFacade.fetchDeleteFriendRequest(friendRequestObject.userId, UserInstance.getUser().userId);
                 //Updating friend request list
                 await dataFacade.loadFriendRequestList();
-
-             
             });
 
             $(btnContainer).append(btnAccept);

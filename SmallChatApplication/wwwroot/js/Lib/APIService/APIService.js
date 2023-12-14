@@ -442,6 +442,36 @@
         });
     }
 
+    static getLastIndividualMessageList(senderId, receiverId) {
+        if (!senderId || !receiverId) {
+            throw new Error("sender id or receiver id is invalid");
+        }
+        return new Promise(async function (resolve, reject) {
+            try {
+                const url = _BASE_ADDRESS + "/api/Messages/GetLastIndividualMessage/" + senderId + "/" + receiverId;
+                const fetchConfig = {
+                    method: 'GET',
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                };
+
+                const response = await fetch(url, fetchConfig);
+                if (!response.ok) {
+                    throw new Error("Fetch error: " + response.statusText);
+                }
+
+                resolve(response);
+
+                //refactor later (Uncomment)
+                //ChatApplicationNamespace.LoadConversation(_MESSAGE_LIST, [senderId]);
+
+            } catch (err) {
+                reject("Get last individual message error:" + err);
+            }
+        });
+    }
+
     // ============================== POST Section ==============================
     /**
      * The sender is the current User while the receiver is the other user

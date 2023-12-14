@@ -12,6 +12,7 @@ namespace DataAccess.Repositories
         IEnumerable<Message> GetMessageList();
         IEnumerable<IndividualMessage> GetIndividualMessageList();
         IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId,int receiverId);
+        IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId);
 
         Message GetMessage(int messageId);
         int AddIndividualMessage(IndividualMessage individualMessage);

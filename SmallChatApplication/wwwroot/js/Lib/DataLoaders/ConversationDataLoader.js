@@ -27,6 +27,7 @@ export default class ConversationDataLoader {
      * @param {any} mode
      */
     static async loadConversation(messageList, mode) {
+        this.#userMap.clear();
         // Show the "send message" button even the message array is zero
         $(this.#INPUT_MESSAGE_CONTAINER).show();
         await this.#loadConversation(messageList, mode);
@@ -92,10 +93,10 @@ export default class ConversationDataLoader {
             $(this.#MESSAGE_CONTAINER).html("");
         }
         //New message append to the current message container without resetting it
-        await this.#renderConversation(messageList);
+        await this.#renderConversation(messageList, mode);
     }
 
-    static async #renderConversation(messageObjectList) {
+    static async #renderConversation(messageObjectList, mode) {
         if (!messageObjectList || messageObjectList.length === 0) {
             return;
         }
@@ -111,7 +112,11 @@ export default class ConversationDataLoader {
                 $(this.#MESSAGE_CONTAINER).append(messageItemContainer);
                 //scroll to latest message
                 //Convert jquery element to DOM element
-                this.#scrollToBottomOf($(this.#MESSAGE_CONTAINER)[0]);
+                if (mode == this.MODE.RELOAD) {
+                    this.#scrollToBottomOf($(this.#MESSAGE_CONTAINER)[0], "auto");
+                } else {
+                    this.#scrollToBottomOf($(this.#MESSAGE_CONTAINER)[0], "smooth");
+                }
                 break;
             }
 
@@ -147,7 +152,8 @@ export default class ConversationDataLoader {
         if (!isSender) {
             let userAvatar = this.#generateElement("div", "user-avatar");
             let imgAvatar = this.#generateElement("img", "avatar-image");
-            //load data here
+            //load data 
+            $(imgAvatar).attr("draggable", false);
             $(imgAvatar).attr("src", otherUser.avatarUrl);
             $(messageItem).append(userAvatar);
             $(userAvatar).append(imgAvatar);
@@ -209,14 +215,14 @@ export default class ConversationDataLoader {
         return message;
     }
 
-    static #scrollToBottomOf(ele) {
+    static #scrollToBottomOf(ele, behavior) {
         //Set time out because if don't the scrollTo didn't work
         setTimeout(() => {
             ele.scrollTo({
                 top: ele.scrollHeight,
-                behavior: "smooth",
+                behavior: behavior,
             });
-        }, 100);
+        }, 0);
     }
 
     static #getShortDate(longDate) {
@@ -233,16 +239,24 @@ export default class ConversationDataLoader {
      * This function will load the userInfo on top of the message container
      * If the array is greater than 2 meaning that the conversation is a group
      */
-    static #loadConversationUserInfo() {
-        //This shit still not work
+    static async #loadConversationUserInfo() {
         // The param could be a group or an individual user
         const USER_INFO_CONTAINER = this.#CHAT_BOX_CONTAINER.find(".user-info-container");
         const USER_INFO_AVATAR = USER_INFO_CONTAINER.find(".avatar-image");
         const USER_INFO_NAME = USER_INFO_CONTAINER.find(".user-name-container > p");
         //fetch individual user data
-        const userArray = Array.from(this.#userMap, (value, key) => (key, value));
-        const otherUserArray = userArray.filter(user => user[0] !== UserInstance.getUser().userId);
-        const otherUser = otherUserArray[0][1];
+        let otherUser;
+        let userArray;
+        // Load the user from the userMap in order not to send request to API
+        if (this.#userMap.size >= 2) {
+            userArray = Array.from(this.#userMap, (value, key) => (key, value));
+            let otherUserArray = userArray.filter(user => user[0] !== UserInstance.getUser().userId);
+            otherUser = otherUserArray[0][1];
+        } else {
+            // Change later for group conversation  getActiveConversationUserId should return an array instead of integer
+            userArray = [dataFacade.getActiveConversationUserId()];
+            otherUser = await dataFacade.fetchUser(userArray[0]);
+        }
 
         //render only the first time. This is only useful if this is an individual conversation
         $(USER_INFO_AVATAR).attr("src", otherUser.avatarUrl);
@@ -261,9 +275,7 @@ export default class ConversationDataLoader {
             notificationMessage += `, ${receiverName}`;
         }
         notificationMessage += " is typing ...";
-
         $(this.#USER_INPUT_NOTIFICATION).html(notificationMessage);
-        console.log("show typing")
         $(this.#USER_INPUT_NOTIFICATION).show();
     }
     static hideUserInputNotification() {

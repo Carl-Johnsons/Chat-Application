@@ -44,6 +44,24 @@ namespace DataAccess.DAOs
                 .ToList();
             return individualMessages;
         }
+
+        public IndividualMessage? GetLastMessage(int senderId, int receiverId)
+        {
+            using var context = new ChatApplicationContext();
+            var individualMessages = context.IndividualMessages
+                .Include(im => im.Message)
+                .Where(im =>
+                (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
+                || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
+                .ToList();
+            if (individualMessages.Count == 0)
+            {
+                return null;
+            }
+
+            return individualMessages[individualMessages.Count - 1];
+        }
+
         public int Add(IndividualMessage individualMessage)
         {
             try

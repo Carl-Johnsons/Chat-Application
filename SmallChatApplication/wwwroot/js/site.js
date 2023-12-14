@@ -3,8 +3,9 @@ import connectionInstance from "./Models/ChatHub.js";
 
 
 connectionInstance.startConnection()
-    .then(() => {
-        dataFacade.loadUser();
+    .then(async () => {
+        // wait for loading the current user because everything depend on it
+        await dataFacade.loadUser();
         dataFacade.loadFriendList();
         dataFacade.loadFriendRequestList();
     })

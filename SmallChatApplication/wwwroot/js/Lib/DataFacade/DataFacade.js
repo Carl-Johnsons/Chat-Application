@@ -33,6 +33,7 @@ class DataFacade {
             userData = await this.fetchUser();
             //Update the shared data
             UserInstance.setUser(userData);
+            console.log("Set user");
         }
         DataLoader.loadUserData(DataLoader.elementName.ApplicationNavbar, userData);
         DataLoader.loadUserData(DataLoader.elementName.InfoPopup, userData);
@@ -77,6 +78,19 @@ class DataFacade {
         }
         DataLoader.loadFriendListData(friendList);
         DataLoader.loadConversationListData(friendList);
+    }
+
+    /**
+     * This function will update the last message that display in the conversation list.
+     * If the lastMessage is undefined this method will automatically fetch the last message from the api
+     * @param {any} friendId
+     * @param {any} lastMessage
+     */
+    async updateLastMessage(friendId, lastMessage) {
+        if (lastMessage === undefined) {
+            lastMessage = await this.fetchLastIndividualMessage(UserInstance.getUser().userId, friendId);
+        }
+        DataLoader.updateLastMessage(friendId, lastMessage);
     }
 
     /**
@@ -260,6 +274,19 @@ class DataFacade {
         );
 
         return messageList;
+    }
+    async fetchLastIndividualMessage(senderId, receiverId) {
+        if (!senderId || !receiverId) {
+            throw new Error("senderId or receiverId is not valid");
+        }
+        let lastMessage;
+        await this.#createPromise(
+            APIService.getLastIndividualMessageList(senderId, receiverId),
+            data => lastMessage = data,
+            err => console.error(err)
+        );
+
+        return lastMessage;
     }
     async fetchSendIndividualMessage(senderId, receiverId, messageContent) {
         let newMessage;

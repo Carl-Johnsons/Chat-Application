@@ -1,4 +1,5 @@
-﻿import dataFacade from "../DataFacade/DataFacade.js";
+﻿import UserInstance from "../../Models/User.js";
+import dataFacade from "../DataFacade/DataFacade.js";
 
 export default class ConversationListDataLoader {
     constructor() {
@@ -7,7 +8,7 @@ export default class ConversationListDataLoader {
     static loadConversationList(friendList) {
         const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
         $(CONVERSATION_LIST_CONTAINER).html("");
-
+        let currentUserId = UserInstance.getUser().userId;
 
         //friend array json format
         //             "userId": 3,
@@ -24,11 +25,21 @@ export default class ConversationListDataLoader {
         //             "groupGroupDeputies": [],
         //             "groupGroupLeaders": [],
         //             "messages": []
-        for (let friend of friendList) {
-            renderIndividualConversation(friend);
+
+
+        let fetchAndRenderFriendList = async () => {
+            let lastMessage;
+            for (let friend of friendList) {
+                lastMessage = await dataFacade.fetchLastIndividualMessage(currentUserId, friend.userId);
+                renderIndividualConversation(friend, lastMessage);
+            }
+            //Add event click listener after generating html
+            this.#AddClickEvent();
         }
 
-        function renderIndividualConversation(friend, message) {
+        fetchAndRenderFriendList();
+
+        function renderIndividualConversation(friend, lastMessage) {
 
             //Struture of a conversation
 
@@ -72,8 +83,11 @@ export default class ConversationListDataLoader {
             //Create last message
             let converstationLastMessageDiv = document.createElement("div");
             converstationLastMessageDiv.className = "conversation-last-message";
-            if (message) {
-                converstationLastMessageDiv.textContent = `You: ${message.content}`;
+            if (lastMessage) {
+                let sender = (lastMessage.message.senderId == currentUserId ? "You:" : "")
+                converstationLastMessageDiv.textContent = `${sender} ${lastMessage.message.content}`;
+            } else {
+                converstationLastMessageDiv.textContent = `Hãy bắt đầu cuộc trò chuyện mới với ${friend.name}`;
             }
 
             conversationDescriptionDiv.append(conversationNameDiv);
@@ -82,11 +96,22 @@ export default class ConversationListDataLoader {
             conversationDiv.append(conversationAvatarDiv);
             conversationDiv.append(conversationDescriptionDiv);
         }
+    }
 
-        //Add event click listener after generating html
-        this.#AddClickEvent();
+    static updateLastMessage(friendId, lastMessage) {
+        if (!lastMessage) {
+            console.log("No new message");
+            return;
+        }
+        const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
+        const CONVERSATION = CONVERSATION_LIST_CONTAINER.find(`.conversation[data-user-id=${friendId}]`);
+        const LAST_MESSAGE_CONTAINER = CONVERSATION.find(".conversation-last-message");
+        let currentUserId = UserInstance.getUser().userId;
+        let sender = (lastMessage.message.senderId == currentUserId ? "You:" : "")
+        $(LAST_MESSAGE_CONTAINER).text(`${sender} ${lastMessage.message.content}`);
     }
     static #AddClickEvent() {
+        console.log("add click event for friend list");
         const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
 
         let conversations = CONVERSATION_LIST_CONTAINER.find(".conversation");
@@ -137,7 +162,7 @@ export default class ConversationListDataLoader {
                         $(RIGHT_SECTION).removeClass("d-md-block");
                     }
                     //Load the messageList into active conversation
-                    dataFacade.loadConversation();
+                    dataFacade.loadConversation(undefined, "Reload");
                 });
             });
         }

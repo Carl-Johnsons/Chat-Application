@@ -4,6 +4,9 @@
     --navbar-section-width: 70px;
     --list-section-width: calc(var(--left-width) - var(--navbar-section-width));
 }
+* {
+    user-select: none;
+}
 
 body {
     margin-bottom: 0px;
@@ -56,6 +59,7 @@ body {
 .left-mobile {
     flex: 0 0 var(--navbar-section-width) !important;
 }
+
 @media (min-width: 768px) {
     :root {
         --left-width: 380px;
@@ -70,8 +74,6 @@ body {
         .left .list-section {
             flex: 0 0 var(--list-section-width) !important;
         }
-
-
 }
 
 .right {

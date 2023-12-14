@@ -104,7 +104,9 @@ export default class DataLoader {
         }
         ConversationListDataLoader.loadConversationList(friendList);
     }
-
+    static updateLastMessage(friendId, lastMessage) {
+        ConversationListDataLoader.updateLastMessage(friendId, lastMessage);
+    }
     static loadConversationData(messageList, mode) {
         ConversationDataLoader.loadConversation(messageList, mode);
     }
@@ -114,5 +116,6 @@ export default class DataLoader {
     static hideUserInputNotification() {
         ConversationDataLoader.hideUserInputNotification();
     }
+
 
 }

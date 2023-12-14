@@ -57,6 +57,16 @@ namespace ChatAPI.Controllers
             return Ok(individualMessages);
         }
 
+        [HttpGet("GetLastIndividualMessage/{senderId}/{receiverId}")]
+        public IActionResult GetLastIndividualMessage(int senderId, int receiverId)
+        {
+            var lastIndividualMessage = messageRepository.GetLastIndividualMessage(senderId, receiverId);
+            if (lastIndividualMessage == null)
+            {
+                return NotFound();
+            }
+            return Ok(lastIndividualMessage);
+        }
 
         [HttpPost("SendIndividualMessage")]
         public IActionResult SendIndividualMessage([FromBody] IndividualMessage individualMessage)
