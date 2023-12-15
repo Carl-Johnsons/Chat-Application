@@ -2,8 +2,8 @@
 import ContactListDataLoader from "./ContactListDataLoader.js";
 import ConversationDataLoader from "./ConversationDataLoader.js";
 import ConversationListDataLoader from "./ConversationListDataLoader.js";
-import InfoPopupDataLoader from "./InfoPopupDataLoader.js";
-import UpdateInfoPopupDataLoader from "./UpdateInfoPopupDataLoader.js";
+import InfoModalDataLoader from "./InfoModalDataLoader.js";
+import UpdateInfoModalDataLoader from "./UpdateInfoModalDataLoader.js";
 
 export default class DataLoader {
     static elementName = {
@@ -11,8 +11,8 @@ export default class DataLoader {
         ContactList: "ContactList",
         ConversationList: "ConversationList",
         Conversation: "Conversation",
-        InfoPopup: "InfoPopup",
-        UpdateInfoPopup: "UpdateInfoPopup"
+        InfoModal: "InfoModal",
+        UpdateInfoModal: "UpdateInfoModal"
     }
 
     constructor() {
@@ -23,8 +23,8 @@ export default class DataLoader {
      * This function take eleName that match with its corresponding element name to load user data.
      * There are 3 elements:
      * - ApplicationNavbar
-     * - InfoPopup
-     * - UpdateInfoPopup
+     * - InfoModal
+     * - UpdateInfoModal
      * 
      * @param {any} eleName
      * @param {any} userData
@@ -37,18 +37,18 @@ export default class DataLoader {
             case this.elementName.ApplicationNavbar:
                 ApplicationDataLoader.loadUserData(userData);
                 break;
-            case this.elementName.InfoPopup:
-                InfoPopupDataLoader.loadUserData(userData, InfoPopupDataLoader.USER_TYPE.SELF);
+            case this.elementName.InfoModal:
+                InfoModalDataLoader.loadUserData(userData, InfoModalDataLoader.USER_TYPE.SELF);
                 break;
-            case this.elementName.UpdateInfoPopup:
-                UpdateInfoPopupDataLoader.loadUserData(userData);
+            case this.elementName.UpdateInfoModal:
+                UpdateInfoModalDataLoader.loadUserData(userData);
                 break;
             default:
                 throw new Error("eleName is not valid in this function!");
         }
     }
     /**
-     * Load friend data into InfoPopup component
+     * Load friend data into InfoModal component
      * @param {any} userData
      */
 
@@ -57,18 +57,18 @@ export default class DataLoader {
             throw new Error("User data is not valid");
         }
 
-        InfoPopupDataLoader.loadUserData(userData, InfoPopupDataLoader.USER_TYPE.FRIEND);
+        InfoModalDataLoader.loadUserData(userData, InfoModalDataLoader.USER_TYPE.FRIEND);
     }
 
     /**
-     * Load friend data into InfoPopup component
+     * Load friend data into InfoModal component
      * @param {any} userData
      */
     static loadStrangerData(userData) {
         if (!userData) {
             throw new Error("User data is not valid");
         }
-        InfoPopupDataLoader.loadUserData(userData, InfoPopupDataLoader.USER_TYPE.STRANGER);
+        InfoModalDataLoader.loadUserData(userData, InfoModalDataLoader.USER_TYPE.STRANGER);
     }
 
     /**

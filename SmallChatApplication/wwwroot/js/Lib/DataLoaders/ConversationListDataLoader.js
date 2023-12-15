@@ -66,9 +66,10 @@ export default class ConversationListDataLoader {
             // Creating avatar
             let conversationAvatarDiv = document.createElement("div");
             conversationAvatarDiv.className = "conversation-avatar";
-            let avatarImage = document.createElement("img");
-            avatarImage.src = friend.avatarUrl;
-            conversationAvatarDiv.append(avatarImage);
+            let avatarIcon = document.createElement("img");
+            avatarIcon.className = "avatar-icon";
+            avatarIcon.src = friend.avatarUrl;
+            conversationAvatarDiv.append(avatarIcon);
 
             //Create description
             let conversationDescriptionDiv = document.createElement("div");

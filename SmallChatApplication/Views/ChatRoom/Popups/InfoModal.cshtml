@@ -54,13 +54,9 @@
             }
 
                 #info-modal .modal-body .avatar-img-container img {
-                    object-fit: cover;
                     position: absolute;
-                    width: 5rem;
-                    height: 5rem;
                     border: 2px solid white;
                     transform: translateY(-50%);
-                    border-radius: 50%;
                 }
 
             #info-modal .modal-body .user-name {
@@ -125,7 +121,7 @@
                     <img draggable="false" src="~/img/default_background_img.png" />
                 </div>
                 <div class="avatar-img-container">
-                    <img draggable="false" src="~/img/default_avatar_img.png" />
+                    <img class="avatar-icon" draggable="false" src="~/img/default_avatar_img.png" />
                 </div>
                 <div class="user-name">
                     @* 50 characters to break the layout *@
@@ -166,7 +162,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-update-information"> Cập nhật thông tin</button>
-                <button class="btn btn-add-friend d-none"> Kết bạn</button>
+                <button class="btn btn-add-friend"> Kết bạn</button>
             </div>
         </div>
     </div>

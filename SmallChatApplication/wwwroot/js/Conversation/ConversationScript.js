@@ -24,7 +24,6 @@ $(document).ready(function () {
         btnSendMessage.click(async function () {
             let messageValue = inputSendMessage.val();
             let otherUserId = $(".conversations-list-container  div.conversation.d-flex.active").attr("data-user-id");
-
             if (messageValue === null || messageValue.length === 0) {
                 return;
             }
@@ -49,6 +48,7 @@ $(document).ready(function () {
                 model.senderIdList = [UserInstance.getUser().userId];
                 model.receiverIdList = [dataFacade.getActiveConversationUserId()];
 
+                console.log({model});
                 connectionInstance.notifyAction(connectionInstance.actionType.NotifyUserTyping, model);
             }
             // Set a new timeout for 2000 milliseconds (2 seconds)
@@ -59,6 +59,7 @@ $(document).ready(function () {
                 // for some reason the senderId is a string
                 model.senderIdList = [UserInstance.getUser().userId];
                 model.receiverIdList = [dataFacade.getActiveConversationUserId()];
+                console.log({ model });
                 connectionInstance.notifyAction(connectionInstance.actionType.DisableNotifyUserTyping, model);
             }, 2000);
         });

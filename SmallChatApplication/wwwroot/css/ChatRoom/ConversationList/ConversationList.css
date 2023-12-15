@@ -1,8 +1,8 @@
 ﻿/* Search bar rules */
 .search-bar-container {
     /* Define vairable for search bar */
-    --search-bar-height: 10vh;
-    --container-list-container: calc(99vh - var(--search-bar-height));
+    --search-bar-height: 69.52px;
+    --container-list-container: calc(100vh - var(--search-bar-height));
     height: var(--search-bar-height);
     padding: 10px;
     border-bottom: 1px solid black;
@@ -57,11 +57,10 @@
         background-color: #E5EFFF;
     }
 
-.conversation-avatar > img {
+.conversation-avatar > img.avatar-icon {
     width: var(--avatar-width);
     height: var(--avatar-width);
     margin: var(--avatar-margin);
-    border-radius: 50%;
 }
 
 .conversation-description {

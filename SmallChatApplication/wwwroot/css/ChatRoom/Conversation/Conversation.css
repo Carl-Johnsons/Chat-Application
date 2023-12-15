@@ -1,8 +1,8 @@
 ﻿
 .chat-box-container {
-    --chat-box-container-height: 100vh;
-    --user-info-container-height: 7.5vh;
-    --input-message-container-height: 7.5vh;
+    --chat-box-container-height: 695.2px;
+    --user-info-container-height: 52.14px;
+    --input-message-container-height: 52.14px;
     --message-container-height: calc(var(--chat-box-container-height) - var(--input-message-container-height) - var(--user-info-container-height));
     height: var(--chat-box-container-height);
     padding-left: 0px;
@@ -15,12 +15,11 @@
 }
 
     .user-info-container .user-name-container {
-
         /*
             The parent must be relative and the width must be 100%, otherwise it didn't show anything
         */
         position: relative;
-        width:100%;
+        width: 100%;
     }
 
         .user-info-container .user-name-container .user-name {
@@ -38,10 +37,9 @@
             left: 0;
         }
 
-    .user-info-container .avatar-container .avatar-image {
+    .user-info-container .avatar-container .avatar-icon {
         width: 2.7rem;
         height: 2.7rem;
-        border-radius: 50%;
         margin: calc((var(--user-info-container-height) - 2.8rem)/2);
     }
 
@@ -85,11 +83,10 @@
         display: flex;
     }
 
-    .message-container .message-item-container .avatar-image {
+    .message-container .message-item-container .avatar-icon {
         width: 50px;
         height: 50px;
         margin: 0 0.5rem;
-        border-radius: 50%;
     }
 
     .message-container .message-item-container .message {

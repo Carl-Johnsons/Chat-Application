@@ -1,7 +1,7 @@
 ﻿import APIService from "../APIService/APIService.js";
 import dataFacade from "../DataFacade/DataFacade.js";
 
-export default class UpdateInfoPopupDataLoader {
+export default class UpdateInfoModalDataLoader {
     constructor() {
 
     }

@@ -2,7 +2,7 @@
 
 //Search-bar script
 $(document).ready(function () {
-    const INFO_POPUP_CONTAINER = $(".modal#info-modal");
+    const INFO_MODAL = $(".modal#info-modal");
     let container = $(".search-bar-container");
     let btnAddUser = container.find(".btn-add-friend");
     let btnCreateGroup = container.find(".btn-create-group");
@@ -13,6 +13,6 @@ $(document).ready(function () {
         let searchValue = $(searchBarInput).val();
         // Work right now, might need pop up to notify exception 404
         await dataFacade.searchUser(searchValue);
-        $(INFO_POPUP_CONTAINER).show();
+        $(INFO_MODAL).modal("show");
     });
 });

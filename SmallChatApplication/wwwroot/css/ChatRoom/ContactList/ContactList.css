@@ -1,6 +1,6 @@
 ﻿.contact-page-container {
-    --contact-page-container-height: 100vh;
-    --page-info-container-height: 7.5vh;
+    --contact-page-container-height: 695.2px;
+    --page-info-container-height: 52.14px;
     --contact-list-container-height: calc(var(--contact-page-container-height) - var(--page-info-container-height));
     height: var(--contact-page-container);
     border-left: 1px solid black;
@@ -26,9 +26,11 @@
             font-weight: 600;
         }
 
-    .page-info-container .avatar-container .avatar-image {
-        width: 2rem;
-        margin: calc((var(--page-info-container-height) - 2rem)/2);
+    .page-info-container .avatar-container .avatar-icon {
+        width: 35px;
+        height: 35px;
+        margin: calc((var(--page-info-container-height) - 35px)/2);
+        border-radius: unset;
     }
 
 
@@ -38,8 +40,8 @@
 }
 
 .contact-row {
-    margin-left: clamp(1rem, 3rem,3rem);
-    margin-right: clamp(1rem, 3rem,3rem);
+    margin-left: clamp(1rem,5%, 3rem);
+    margin-right: clamp(1rem,5%, 3rem);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -55,6 +57,10 @@
         display: flex;
         align-items: center;
         padding: 0.5rem;
+        --contact-info-container-width: clamp(0px,90%,968px);
+        --avatar-icon-width: 50px;
+        --user-name-width: calc(var(--contact-info-container-width) - var(--avatar-icon-width));
+        width: var(--contact-info-container-width);
     }
 
     .contact-row .btn-container {
@@ -77,17 +83,16 @@
         font-size: large;
     }
 
-    .contact-row .avatar-image {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 50%;
+    .contact-row .avatar-icon {
+        width: var(--avatar-icon-width);
+        height: var(--avatar-icon-width);
     }
 
     .contact-row .user-name-container {
         /* For truncating text */
         position: relative;
-        width: 100%;
+        width: var(--user-name-width);
+        height: var(--avatar-icon-width);
     }
 
         .contact-row .user-name-container .user-name {
@@ -97,6 +102,9 @@
             left: 0;
             right: 0;
             bottom: 0;
+            padding: 12px;
+            font-weight: 500;
+            font-size: 1.1rem;
         }
 
 .group-list-container {

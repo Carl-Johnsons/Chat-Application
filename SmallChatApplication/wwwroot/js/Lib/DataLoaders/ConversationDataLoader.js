@@ -151,7 +151,7 @@ export default class ConversationDataLoader {
         $(messageItemContainer).append(messageItem);
         if (!isSender) {
             let userAvatar = this.#generateElement("div", "user-avatar");
-            let imgAvatar = this.#generateElement("img", "avatar-image");
+            let imgAvatar = this.#generateElement("img", "avatar-icon");
             //load data 
             $(imgAvatar).attr("draggable", false);
             $(imgAvatar).attr("src", otherUser.avatarUrl);
@@ -242,7 +242,7 @@ export default class ConversationDataLoader {
     static async #loadConversationUserInfo() {
         // The param could be a group or an individual user
         const USER_INFO_CONTAINER = this.#CHAT_BOX_CONTAINER.find(".user-info-container");
-        const USER_INFO_AVATAR = USER_INFO_CONTAINER.find(".avatar-image");
+        const USER_INFO_AVATAR = USER_INFO_CONTAINER.find(".avatar-icon");
         const USER_INFO_NAME = USER_INFO_CONTAINER.find(".user-name-container .user-name");
         //fetch individual user data
         let otherUser;

@@ -4,6 +4,7 @@
     --navbar-section-width: 70px;
     --list-section-width: calc(var(--left-width) - var(--navbar-section-width));
 }
+
 * {
     user-select: none;
 }
@@ -12,6 +13,7 @@ body {
     margin-bottom: 0px;
     height: 100vh;
     padding: 0px;
+    overflow: hidden;
 }
 
     body::-webkit-scrollbar {
@@ -93,4 +95,10 @@ body {
 .contact-page {
     display: none;
 }
-
+/*Define class that apply form whole page*/
+.avatar-icon {
+    object-fit: cover;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+}

@@ -48,7 +48,7 @@ export default class ContactListDataLoader {
 
                 //contact info container
                 let avatarContainer = generateElement("div", "avatar-container");
-                let avatarImg = generateElement("img", "avatar-image");
+                let avatarImg = generateElement("img", "avatar-icon");
                 $(avatarImg).attr('draggable', false);
                 $(avatarImg).attr('src', friendObject.avatarUrl);
                 $(avatarContainer).append(avatarImg);
@@ -152,7 +152,7 @@ export default class ContactListDataLoader {
 
             //contact info container
             let avatarContainer = generateElement("div", "avatar-container");
-            let avatarImg = generateElement("img", "avatar-image");
+            let avatarImg = generateElement("img", "avatar-icon");
             $(avatarImg).attr('draggable', false);
             $(avatarImg).attr('src', friendRequestObject.avatarUrl);
             $(avatarContainer).append(avatarImg);

@@ -1,11 +1,11 @@
 ﻿import UserInstance from "../../Models/User.js";
 import dataFacade from "../DataFacade/DataFacade.js";
 
-export default class InfoPopupDataLoader {
+export default class InfoModalDataLoader {
     static USER_TYPE = {
         SELF: "Self",
         FRIEND: "Friend",
-        STRANGER: "STRANGER"
+        STRANGER: "Stranger"
     };
 
     constructor() {
@@ -15,11 +15,11 @@ export default class InfoPopupDataLoader {
         if (!userType) {
             throw new Error("User type is not valid");
         }
-        const INFO_POP_UP = $(".modal#info-modal");
-        const BACKGROUND_IMG = INFO_POP_UP.find(".background-img-container > img");
-        const AVATAR_IMG = INFO_POP_UP.find(".avatar-img-container > img");
-        const USER_NAME = INFO_POP_UP.find(".user-name > p");
-        const INFO_DETAIL = INFO_POP_UP.find(".personal-information-container .personal-information-row-detail");
+        const INFO_MODAL = $(".modal#info-modal");
+        const BACKGROUND_IMG = INFO_MODAL.find(".background-img-container > img");
+        const AVATAR_IMG = INFO_MODAL.find(".avatar-img-container > img");
+        const USER_NAME = INFO_MODAL.find(".user-name > p");
+        const INFO_DETAIL = INFO_MODAL.find(".personal-information-container .personal-information-row-detail");
         // 0: Dien thoai
         // 1: Gioi tinh
         // 2: Ngay sinh
@@ -43,8 +43,8 @@ export default class InfoPopupDataLoader {
 
 
         // Button related
-        const btnUpdateInfomation = INFO_POP_UP.find(".btn-update-information");
-        const btnAddFriend = INFO_POP_UP.find(".btn-add-friend");
+        const btnUpdateInfomation = INFO_MODAL.find(".btn-update-information");
+        const btnAddFriend = INFO_MODAL.find(".btn-add-friend");
 
         hideAllBtns();
 
@@ -52,6 +52,7 @@ export default class InfoPopupDataLoader {
             $(btnUpdateInfomation).show();
         } else if (userType == this.USER_TYPE.STRANGER) {
             $(btnAddFriend).show();
+            console.log("show btnAddFriend");
         }
 
         // This popup i didn't generate and reuse the element so have to update the event listener

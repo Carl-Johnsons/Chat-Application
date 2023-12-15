@@ -36,8 +36,8 @@ class DataFacade {
             console.log("Set user");
         }
         DataLoader.loadUserData(DataLoader.elementName.ApplicationNavbar, userData);
-        DataLoader.loadUserData(DataLoader.elementName.InfoPopup, userData);
-        DataLoader.loadUserData(DataLoader.elementName.UpdateInfoPopup, userData);
+        DataLoader.loadUserData(DataLoader.elementName.InfoModal, userData);
+        DataLoader.loadUserData(DataLoader.elementName.UpdateInfoModal, userData);
         connectionInstance.notifyAction(connectionInstance.actionType.MapUserData, userData);
     }
     async searchUser(phoneNumber) {
@@ -45,21 +45,24 @@ class DataFacade {
         let currentUser = UserInstance.getUser();
         //The search result is a current user
         if (searchResult.userId === currentUser.userId) {
-            DataLoader.loadUserData(DataLoader.elementName.InfoPopup, searchResult);
+            console.log("current user");
+            DataLoader.loadUserData(DataLoader.elementName.InfoModal, searchResult);
             return;
         }
         //The search result is a friend of the user
         let friendList = UserInstance.getFriendList();
         for (let friend of friendList) {
             if (searchResult.userId === friend.userId) {
+                console.log("friend");
                 DataLoader.loadFriendData(searchResult);
                 return;
             }
         }
         //The search result is a stranger
+        console.log("Stranger");
         DataLoader.loadStrangerData(searchResult);
     }
-    async loadFriendDataToInfoPopup(friendId) {
+    async loadFriendDataToInfoModal(friendId) {
         if (!friendId) {
             throw new Error("friendId is not valid");
         }
