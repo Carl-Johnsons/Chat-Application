@@ -38,7 +38,8 @@
 }
 
 .contact-row {
-    margin: 0rem 3rem;
+    margin-left: clamp(1rem, 3rem,3rem);
+    margin-right: clamp(1rem, 3rem,3rem);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -83,6 +84,20 @@
         border-radius: 50%;
     }
 
+    .contact-row .user-name-container {
+        /* For truncating text */
+        position: relative;
+        width: 100%;
+    }
+
+        .contact-row .user-name-container .user-name {
+            /* For truncating text */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
 
 .group-list-container {
     display: none;

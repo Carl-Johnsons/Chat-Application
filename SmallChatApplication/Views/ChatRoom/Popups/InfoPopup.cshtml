@@ -5,88 +5,56 @@
 }
 
 <style>
-    .info-pop-up-container {
-        position: absolute;
-        top: 0px;
-        height: 100%;
-        width: 100%;
-        background-color: rgba(0,0,0,0.5);
+    #info-modal {
+        --modal-dialog-width: 384px;
+        --modal-dialog-height: 556.16px;
+        --modal-header-height: 52.14px;
+        --modal-footer-height: 70.08px;
+        --modal-body-height: calc(var(--modal-dialog-height) - var(--modal-header-height) - var(--modal-footer-height));
     }
 
-        .info-pop-up-container .row {
-            height: 100%;
-            width: 100%;
-            display: flex;
+        #info-modal .modal-dialog {
+            /* modal-dialog-center only center the dialog not the modal-content when in the mobile version */
             justify-content: center;
-            align-items: center;
         }
 
+            #info-modal .modal-dialog .modal-content {
+                width: var(--modal-dialog-width);
+                height: var(--modal-dialog-height);
+            }
 
-    .info-pop-up {
-        background-color: white;
-        border-radius: 0.5rem;
-        height: 80vh;
-        --top-pop-up-height: 7.5vh;
-        --bottom-pop-up-height: 40vh;
-        --middle-pop-up-height: calc(80vh - var(--top-pop-up-height) - var(--bottom-pop-up-height));
-    }
+        #info-modal .modal-header {
+            height: var(--modal-header-height);
+        }
 
-        .info-pop-up .top-pop-up {
-            height: var(--top-pop-up-height);
+        #info-modal .modal-body {
+            height: var(--modal-body-height);
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: solid 1px black;
+            padding: 0px !important;
         }
 
-            .info-pop-up .top-pop-up .pop-up-name {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: fit-content;
-                font-size: large;
-                font-weight: bold;
-            }
-
-                .info-pop-up .top-pop-up .pop-up-name p {
-                    padding: 0rem 1rem;
-                    margin-bottom: 0px !important;
-                }
-
-            .info-pop-up .top-pop-up .btn-close-pop-up {
-                width: 2rem;
-                height: 2rem;
-                margin: 0rem 1rem;
-                border-radius: 50%;
-                font-weight: bold;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-        .info-pop-up .middle-pop-up {
-            height: var(--middle-pop-up-height);
-        }
-
-            .info-pop-up .middle-pop-up .background-img-container {
+            #info-modal .modal-body .background-img-container {
                 width: 100%;
-                height: 60%;
+                height: 10rem;
             }
 
-                .info-pop-up .middle-pop-up .background-img-container img {
+                #info-modal .modal-body .background-img-container img {
                     object-fit: cover;
                     width: 100%;
                     height: 100%;
                 }
 
-            .info-pop-up .middle-pop-up .avatar-img-container {
+            #info-modal .modal-body .avatar-img-container {
                 position: relative;
                 height: 20%;
                 display: flex;
                 justify-content: center;
             }
 
-                .info-pop-up .middle-pop-up .avatar-img-container img {
+                #info-modal .modal-body .avatar-img-container img {
+                    object-fit: cover;
                     position: absolute;
                     width: 5rem;
                     height: 5rem;
@@ -95,144 +63,129 @@
                     border-radius: 50%;
                 }
 
-            .info-pop-up .middle-pop-up .user-name {
+            #info-modal .modal-body .user-name {
                 height: 20%;
+                margin: 0rem 2rem;
                 display: flex;
                 justify-content: center;
                 font-weight: bold;
             }
 
-                .info-pop-up .middle-pop-up .user-name p {
+                #info-modal .modal-body .user-name p {
                     font-size: large;
+                    text-align: center;
+                    width: 100%;
+                    overflow-wrap: break-word;
                 }
 
-
-        .info-pop-up .bottom-pop-up {
-            height: var(--bottom-pop-up-height);
-            margin: 0rem 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding-bottom: 1rem;
-        }
-
-            .info-pop-up .bottom-pop-up .personal-information-container {
+            #info-modal .modal-body .personal-information-container {
                 height: 60%;
+                margin: 0rem 2rem;
                 display: flex;
                 flex-direction: column;
             }
 
-                .info-pop-up .bottom-pop-up .personal-information-container .personal-information-row {
+                #info-modal .modal-body .personal-information-container .personal-information-row {
                     display: flex;
                     justify-content: space-between;
                     margin: 0.3rem 0rem;
                 }
 
-                    .info-pop-up .bottom-pop-up .personal-information-container .personal-information-row:not(:has(.personal-information-row-name)) {
+                    #info-modal .modal-body .personal-information-container .personal-information-row:not(:has(.personal-information-row-name)) {
                         font-weight: bold;
                         font-size: large;
                     }
 
-                .info-pop-up .bottom-pop-up .personal-information-container .personal-information-row-name {
+                #info-modal .modal-body .personal-information-container .personal-information-row-name {
                     color: #7C8FA6;
                 }
 
-    .bottom-pop-up .btn-update-information,
-    .bottom-pop-up .btn-add-friend {
-        width: 100%;
-        background-color: #EAEDF0;
-        font-weight: bold;
-    }
+        #info-modal .modal-footer {
+            height: var(--modal-footer-height);
+            border: none;
+        }
+
+            #info-modal .modal-footer .btn-update-information,
+            #info-modal .modal-footer .btn-add-friend {
+                width: 100%;
+                background-color: #EAEDF0;
+                font-weight: bold;
+            }
 </style>
 
-<div class="info-pop-up-container">
-    <div class="row">
-        <div class="col-sm-3">
-            <div class="info-pop-up">
-
-                <div class="top-pop-up">
-                    <div class="pop-up-name">
-                        <p>Thông tin tài khoản</p>
-                    </div>
-                    <button class="btn btn-close-pop-up">X</button>
+<div class="modal fade" id="info-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông tin cá nhân</h5>
+                <button type="button" class="btn-close close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="background-img-container">
+                    <img draggable="false" src="~/img/default_background_img.png" />
+                </div>
+                <div class="avatar-img-container">
+                    <img draggable="false" src="~/img/default_avatar_img.png" />
+                </div>
+                <div class="user-name">
+                    @* 50 characters to break the layout *@
+                    <p>Javamismknownmformitsmportabilitymandmstrongmcomms</p>
                 </div>
 
-                <div class="middle-pop-up">
-                    <div class="background-img-container">
-                        <img draggable="false" src="/img/default_background_img.png" />
+                <div class="personal-information-container">
+                    <div class="personal-information-row">
+                        Thông tin cá nhân
                     </div>
-                    <div class="avatar-img-container">
-                        <img draggable="false" src="/img/default_avatar_img.png" />
+                    <div class="personal-information-row">
+                        <div class="personal-information-row-name">
+                            Điện thoại
+                        </div>
+                        <div class="personal-information-row-detail">
+                            +84123456789
+                        </div>
                     </div>
-                    <div class="user-name">
-                        <p>Đức</p>
+
+                    <div class="personal-information-row">
+                        <div class="personal-information-row-name">
+                            Giới tính
+                        </div>
+                        <div class="personal-information-row-detail">
+                            Nam
+                        </div>
+                    </div>
+
+                    <div class="personal-information-row">
+                        <div class="personal-information-row-name">
+                            Ngày sinh
+                        </div>
+                        <div class="personal-information-row-detail">
+                            Ngày 01 tháng 01, 2000
+                        </div>
                     </div>
                 </div>
-
-                <div class="bottom-pop-up">
-                    <div class="personal-information-container">
-                        <div class="personal-information-row">
-                            <p>Thông tin cá nhân</p>
-                        </div>
-                        <div class="personal-information-row">
-                            <div class="personal-information-row-name">
-                                Điện thoại
-                            </div>
-                            <div class="personal-information-row-detail">
-                                +84123456789
-                            </div>
-                        </div>
-
-                        <div class="personal-information-row">
-                            <div class="personal-information-row-name">
-                                Giới tính
-                            </div>
-                            <div class="personal-information-row-detail">
-                                Nam
-                            </div>
-                        </div>
-
-                        <div class="personal-information-row">
-                            <div class="personal-information-row-name">
-                                Ngày sinh
-                            </div>
-                            <div class="personal-information-row-detail">
-                                Ngày 01 tháng 01, 2000
-                            </div>
-                        </div>
-
-                    </div>
-                    <button class="btn btn-update-information"> Cập nhật thông tin</button>
-                    <button class="btn btn-add-friend"> Kết bạn</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-update-information"> Cập nhật thông tin</button>
+                <button class="btn btn-add-friend d-none"> Kết bạn</button>
             </div>
         </div>
     </div>
 </div>
 
+
 <script>
     $(document).ready(function () {
-        const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
-        let closeBtn = $(".info-pop-up-container button.btn-close-pop-up");
+        const INFO_MODAL = $(".modal#info-modal");
+        let closeBtn = $(".modal#info-modal button.btn-close");
         closeBtn.click(function (e) {
-            INFO_POPUP_CONTAINER.hide();
+            $(INFO_MODAL).modal("hide");
         });
 
-
-        // let infoPopUp = document.querySelector("div.info-pop-up");
-        // INFO_POPUP_CONTAINER.click(function (e) {
-        //     //jquery.contains only work with native Dom element not jquery Element
-        //     //so i had to use querySelector from native Dom
-        //     if (!$.contains(infoPopUp, e.target)) {
-        //         INFO_POPUP_CONTAINER.hide();
-        //     }
-        // });
-
         // Load update-info-popup-container
-        const UPDATE_INFO_POPUP_CONTAINER = $(".update-info-popup-container");
+        const UPDATE_INFO_MODAL = $(".modal#update-info-modal");
         let updateBtn = $("button.btn-update-information");
         updateBtn.click(function (e) {
-            UPDATE_INFO_POPUP_CONTAINER.show();
+            $(UPDATE_INFO_MODAL).modal("show");
         });
     });
 </script>

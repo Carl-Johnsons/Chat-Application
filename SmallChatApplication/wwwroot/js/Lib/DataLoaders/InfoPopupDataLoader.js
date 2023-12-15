@@ -15,7 +15,7 @@ export default class InfoPopupDataLoader {
         if (!userType) {
             throw new Error("User type is not valid");
         }
-        const INFO_POP_UP = $(".info-pop-up-container");
+        const INFO_POP_UP = $(".modal#info-modal");
         const BACKGROUND_IMG = INFO_POP_UP.find(".background-img-container > img");
         const AVATAR_IMG = INFO_POP_UP.find(".avatar-img-container > img");
         const USER_NAME = INFO_POP_UP.find(".user-name > p");

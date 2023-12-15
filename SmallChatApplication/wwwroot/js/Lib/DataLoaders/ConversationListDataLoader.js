@@ -43,21 +43,19 @@ export default class ConversationListDataLoader {
 
             //Struture of a conversation
 
-            // <div class="conversations-list-container ">
-            //     <div data-user-id= "1" class="conversation active d-flex">
-            //         <div class="conversation-avatar">
-            //             <img src="~/img/user.png" />
-            //         </div>
-            //         <div class="conversation-description">
-            //             <div class="conversation-name">
-            //                 Group 2
-            //             </div>
-            //             <div class="conversation-last-message">
-            //                 You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
-            //             </div>
-            //         </div>
-            //     </div>
-            // </div>
+            //<div class="conversation active d-flex">
+            //    <div class="conversation-avatar">
+            //        <img draggable="false" src="~/img/user.png" />
+            //    </div>
+            //    <div class="conversation-description">
+            //        <div class="conversation-name text-truncate">
+            //            Group 2
+            //        </div>
+            //        <div class="conversation-last-message text-truncate">
+            //            You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll
+            //        </div>
+            //    </div>
+            //</div>
 
             let conversationDiv = document.createElement("div");
             conversationDiv.className = "conversation d-flex";
@@ -74,15 +72,15 @@ export default class ConversationListDataLoader {
 
             //Create description
             let conversationDescriptionDiv = document.createElement("div");
-            conversationDescriptionDiv.className = "conversation-description";
+            conversationDescriptionDiv.className = "conversation-description ";
 
             let conversationNameDiv = document.createElement("div");
-            conversationNameDiv.className = "conversation-name";
+            conversationNameDiv.className = "conversation-name text-truncate";
             conversationNameDiv.textContent = friend.name;
 
             //Create last message
             let converstationLastMessageDiv = document.createElement("div");
-            converstationLastMessageDiv.className = "conversation-last-message";
+            converstationLastMessageDiv.className = "conversation-last-message text-truncate";
             if (lastMessage) {
                 let sender = (lastMessage.message.senderId == currentUserId ? "You:" : "")
                 converstationLastMessageDiv.textContent = `${sender} ${lastMessage.message.content}`;

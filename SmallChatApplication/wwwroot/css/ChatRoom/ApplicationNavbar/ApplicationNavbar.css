@@ -22,7 +22,7 @@
         background-color: #006EDC !important;
     }
 
-.application-nav-bar a.nav-link#info-pop-up-container > img.avatar-img {
+.application-nav-bar a.nav-link[data-content='info-modal'] > img.avatar-img {
     border-radius: 50%;
     margin: 2rem 0rem;
 }

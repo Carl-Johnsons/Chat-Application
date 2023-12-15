@@ -7,10 +7,10 @@ export default class UpdateInfoPopupDataLoader {
     }
 
     static loadUserData(user) {
-        const UPDATE_INFO_POPUP_CONTAINER = $(".update-info-popup-container");
+        const UPDATE_INFO_MODAL = $(".modal#update-info-modal");
 
         //DoB
-        const selectDoBContainer = UPDATE_INFO_POPUP_CONTAINER.find("div.personal-information-row-detail.input-date");
+        const selectDoBContainer = UPDATE_INFO_MODAL.find("div.personal-information-row-detail.input-date");
         const dateSelect = selectDoBContainer.find("select[name=date]");
         const monthSelect = selectDoBContainer.find("select[name=month]");
         const yearSelect = selectDoBContainer.find("select[name=year]");
@@ -18,13 +18,13 @@ export default class UpdateInfoPopupDataLoader {
 
 
         //img 
-        const backgroundImg = UPDATE_INFO_POPUP_CONTAINER.find(".background-img-container img");
-        const avatarImg = UPDATE_INFO_POPUP_CONTAINER.find(".avatar-img-container img");
+        const backgroundImg = UPDATE_INFO_MODAL.find(".background-img-container img");
+        const avatarImg = UPDATE_INFO_MODAL.find(".avatar-img-container img");
 
         //name
-        const userNameInput = UPDATE_INFO_POPUP_CONTAINER.find("div.user-name > input");
+        const userNameInput = UPDATE_INFO_MODAL.find("div.user-name > input");
         //gender
-        const genderRadiobtns = UPDATE_INFO_POPUP_CONTAINER.find("div.personal-information-row-detail > input[name=rdoGender]");
+        const genderRadiobtns = UPDATE_INFO_MODAL.find("div.personal-information-row-detail > input[name=rdoGender]");
 
 
         // Generate select dynamically
@@ -137,7 +137,7 @@ export default class UpdateInfoPopupDataLoader {
 
 
         //Update profile action
-        const btnUpdatebtn = UPDATE_INFO_POPUP_CONTAINER.find(".btn-update-information");
+        const btnUpdatebtn = UPDATE_INFO_MODAL.find(".btn-update-information");
 
         $(btnUpdatebtn).click(async function () {
             if (!user) {
@@ -166,7 +166,7 @@ export default class UpdateInfoPopupDataLoader {
             // carry out the update operation
             await dataFacade.fetchUpdateUser(user);
             await dataFacade.loadUser(user);
-            $(UPDATE_INFO_POPUP_CONTAINER).hide();
+            $(UPDATE_INFO_MODAL).modal("hide");
 
         });
         //refactor later (Remove API serice only use dataFacade)

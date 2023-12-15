@@ -1,8 +1,8 @@
 ﻿$(document).ready(function () {
     const CONVERSATION_PAGE = $(".conversation-page");
     const CONTACT_PAGE = $(".contact-page");
-    const INFO_POPUP = $(".info-pop-up-container");
-    const UPDATE_INFO_POPUP = $(".update-info-popup-container");
+    const INFO_POPUP = $(".modal#info-modal");
+    const UPDATE_INFO_POPUP = $(".modal#update-info-modal");
 
     const LEFT_SECTION = $(".left");
     const LEFT_LIST_SECTION = LEFT_SECTION.find(".list-section");
@@ -40,11 +40,12 @@
 
         navLinks.each(function () {
             $(this).off("click").click(function () {
-                let clickId = $(this).prop("id");
-                switch (clickId) {
-                    case "info-pop-up-container":
+                let dataContent = $(this).attr("data-content");
+                console.log({ dataContent });
+                switch (dataContent) {
+                    case "info-modal":
                         hideAllPopUps();
-                        showPopUp($("." + clickId));
+                        showModal($("#" + dataContent));
                         break;
                     default:
                         if (type === eventType.PHONE) {
@@ -53,7 +54,7 @@
                         //normal event
                         hideAllPages();
                         //Show 2 div class name that equal to id
-                        showPage($("." + clickId));
+                        showPage($("." + dataContent));
                         disableAllNavLinks();
                         activateNavLinks($(this));
                         break;
@@ -64,7 +65,6 @@
 
 
     function reset2Section() {
-        console.log("RESET 2 section");
         if ($(LEFT_LIST_SECTION).hasClass("d-none")) {
             $(LEFT_SECTION).removeClass("left-mobile");
             $(LEFT_LIST_SECTION).removeClass("d-none");
@@ -95,11 +95,11 @@
     function showPage(object) {
         $(object).show();
     }
-    function hideAllPopUps() {
-        $(INFO_POPUP).hide();
-        $(UPDATE_INFO_POPUP).hide();
+    function showModal(object) {
+        $(object).modal("show");
     }
-    function showPopUp(popUpName) {
-        $(popUpName).show();
+    function hideAllPopUps() {
+        $(INFO_POPUP).modal("hide");
+        $(UPDATE_INFO_POPUP).hide();
     }
 });

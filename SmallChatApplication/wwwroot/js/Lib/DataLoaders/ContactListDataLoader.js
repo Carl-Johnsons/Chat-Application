@@ -20,22 +20,20 @@ export default class ContactListDataLoader {
             //Clear html of this container first
             $(FRIEND_CONTACT_LIST_CONTAINER).html('');
 
-            //   <div class="contact-list-container">
-            //     <div class="contact-row">
-            //         <div class="contact-info-container">
-            //             <div class="avatar-container">
-            //                 <img draggable="false" class="avatar-image" src="/img/user.png" />
-            //             </div>
-            //             <div class="user-name">
-            //                 <p>Lol</p>
-            //             </div>
-            //         </div>
-            //         <div class="btn-container">
-            //             <button class="btn btn-detail">...</button>
-            //             <button class="btn btn-delete-friend">X</button>
-            //         </div>
-            //     </div>
-            // </div>
+            //<div class="contact-row">
+            //    <div class="contact-info-container">
+            //        <div class="avatar-container">
+            //            <img draggable="false" class="avatar-image" src="/img/user.png" />
+            //        </div>
+            //        <div class="user-name-container">
+            //            <div class="user-name">Lol</div>
+            //        </div>
+            //    </div>
+            //    <div class="btn-container">
+            //        <button class="btn btn-detail">...</button>
+            //        <button class="btn btn-delete-friend">X</button>
+            //    </div>
+            //</div>
 
 
             for (let friendObject of friendObjectList) {
@@ -56,8 +54,8 @@ export default class ContactListDataLoader {
                 $(avatarContainer).append(avatarImg);
 
                 //username
-                let userName = generateElement("div", "user-name");
-                let name = generateElement("p", "");
+                let userName = generateElement("div", "user-name-container");
+                let name = generateElement("div", "user-name text-truncate");
                 $(name).text(friendObject.name);
                 $(userName).append(name);
 
@@ -71,7 +69,7 @@ export default class ContactListDataLoader {
                 //Send request to get friend detail
                 $(btnDetail).click(async function () {
                     await dataFacade.loadFriendDataToInfoPopup(friendObject.userId);
-                    const INFO_POP_UP = $(".info-pop-up-container");
+                    const INFO_POP_UP = $(".modal#info-modal");
                     $(INFO_POP_UP).show();
                 });
 
@@ -128,23 +126,21 @@ export default class ContactListDataLoader {
         console.log("Done loading friend request");
 
         function renderFriendRequest(friendRequestObject) {
-            // <div class="contact-list-container">
-            //     <div class="contact-row">
-            //         <div class="contact-info-container">
-            //             <div class="avatar-container">
-            //                 <img draggable="false" class="avatar-image" src="/img/user.png" />
-            //             </div>
-            //             <div class="user-name">
-            //                 <p>Lol</p>
-            //             </div>
-            //         </div>
-            //         <div class="btn-container">
-            //             <button class="btn btn-accept">Accept</button>
-            //             <button class="btn btn-detail">...</button>
-            //             <button class="btn btn-delete-friend">X</button>
-            //         </div>
-            //     </div>
-            // </div>
+            //<div class="contact-row">
+            //    <div class="contact-info-container">
+            //        <div class="avatar-container">
+            //            <img draggable="false" class="avatar-image" src="/img/user.png" />
+            //        </div>
+            //        <div class="user-name-container">
+            //            <div class="user-name">Lol</div>
+            //        </div>
+            //    </div>
+            //    <div class="btn-container">
+            //        <button class="btn btn-detail">Accept</button>
+            //        <button class="btn btn-detail">...</button>
+            //        <button class="btn btn-delete-friend">X</button>
+            //    </div>
+            //</div>
 
             let contactRow = generateElement("div", "contact-row");
             $(FRIEND_REQUEST_CONTACT_LIST_CONTAINER).append($(contactRow));
@@ -162,8 +158,8 @@ export default class ContactListDataLoader {
             $(avatarContainer).append(avatarImg);
 
             //username
-            let userName = generateElement("div", "user-name");
-            let name = generateElement("p", "");
+            let userName = generateElement("div", "user-name-container");
+            let name = generateElement("div", "user-name text-truncate");
             $(name).text(friendRequestObject.name);
             $(userName).append(name);
 
@@ -186,7 +182,7 @@ export default class ContactListDataLoader {
 
             $(btnDetail).click(async function () {
                 await dataFacade.loadFriendDataToInfoPopup(friendRequestObject.userId);
-                const INFO_POP_UP = $(".info-pop-up-container");
+                const INFO_POP_UP = $(".modal#info-modal");
                 $(INFO_POP_UP).show();
             });
 

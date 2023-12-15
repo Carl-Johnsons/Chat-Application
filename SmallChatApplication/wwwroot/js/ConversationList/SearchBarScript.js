@@ -2,7 +2,7 @@
 
 //Search-bar script
 $(document).ready(function () {
-    const INFO_POPUP_CONTAINER = $(".info-pop-up-container");
+    const INFO_POPUP_CONTAINER = $(".modal#info-modal");
     let container = $(".search-bar-container");
     let btnAddUser = container.find(".btn-add-friend");
     let btnCreateGroup = container.find(".btn-create-group");

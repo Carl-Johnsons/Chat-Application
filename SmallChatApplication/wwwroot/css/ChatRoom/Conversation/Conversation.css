@@ -15,17 +15,32 @@
 }
 
     .user-info-container .user-name-container {
-        margin: 0.5rem 1rem;
+
+        /*
+            The parent must be relative and the width must be 100%, otherwise it didn't show anything
+        */
+        position: relative;
+        width:100%;
     }
 
-        .user-info-container .user-name-container p {
+        .user-info-container .user-name-container .user-name {
+            margin: 0.3rem 1rem;
             font-size: 1.5rem;
             font-weight: 600;
+            /* 
+                For truncating text, the parent must be relate while the child is absolute
+                References: https://stackoverflow.com/questions/48623725/how-can-i-hide-overflown-text-as-ellipsis-using-dynamic-bootstrap-cols
+            */
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
         }
 
     .user-info-container .avatar-container .avatar-image {
-        width: 2.8rem;
-        height: 2.8rem;
+        width: 2.7rem;
+        height: 2.7rem;
         border-radius: 50%;
         margin: calc((var(--user-info-container-height) - 2.8rem)/2);
     }

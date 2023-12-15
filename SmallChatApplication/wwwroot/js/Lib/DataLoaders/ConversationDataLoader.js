@@ -243,7 +243,7 @@ export default class ConversationDataLoader {
         // The param could be a group or an individual user
         const USER_INFO_CONTAINER = this.#CHAT_BOX_CONTAINER.find(".user-info-container");
         const USER_INFO_AVATAR = USER_INFO_CONTAINER.find(".avatar-image");
-        const USER_INFO_NAME = USER_INFO_CONTAINER.find(".user-name-container > p");
+        const USER_INFO_NAME = USER_INFO_CONTAINER.find(".user-name-container .user-name");
         //fetch individual user data
         let otherUser;
         let userArray;
@@ -260,6 +260,7 @@ export default class ConversationDataLoader {
 
         //render only the first time. This is only useful if this is an individual conversation
         $(USER_INFO_AVATAR).attr("src", otherUser.avatarUrl);
+        $(USER_INFO_NAME).html();
         $(USER_INFO_NAME).html(otherUser.name);
 
     }
