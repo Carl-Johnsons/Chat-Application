@@ -258,7 +258,6 @@ namespace ChatAPI.Controllers
             }
         }
 
-
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] User user)
@@ -287,7 +286,6 @@ namespace ChatAPI.Controllers
             }
             return NoContent();
         }
-
 
         [HttpDelete("RemoveFriend/{userId}/{friendId}")]
         public async Task<IActionResult> RemoveFriend(int? userId, int? friendId)

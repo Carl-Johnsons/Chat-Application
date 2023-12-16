@@ -68,9 +68,9 @@ export default class ContactListDataLoader {
 
                 //Send request to get friend detail
                 $(btnDetail).click(async function () {
-                    await dataFacade.loadFriendDataToInfoPopup(friendObject.userId);
+                    await dataFacade.loadFriendDataToInfoModal(friendObject.userId);
                     const INFO_POP_UP = $(".modal#info-modal");
-                    $(INFO_POP_UP).show();
+                    $(INFO_POP_UP).modal("show");;
                 });
 
                 let btnDeleteFriend = generateElement("button", "btn btn-delete-friend");
@@ -181,9 +181,9 @@ export default class ContactListDataLoader {
             $(btnDetail).text("...");
 
             $(btnDetail).click(async function () {
-                await dataFacade.loadFriendDataToInfoPopup(friendRequestObject.userId);
+                await dataFacade.loadFriendDataToInfoModal(friendRequestObject.userId);
                 const INFO_POP_UP = $(".modal#info-modal");
-                $(INFO_POP_UP).show();
+                $(INFO_POP_UP).modal("show");;
             });
 
             let btnDeleteFriendRequest = generateElement("button", "btn btn-delete-friend");

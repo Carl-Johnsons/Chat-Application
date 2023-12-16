@@ -47,8 +47,6 @@ $(document).ready(function () {
                 // for some reason the senderId is a string
                 model.senderIdList = [UserInstance.getUser().userId];
                 model.receiverIdList = [dataFacade.getActiveConversationUserId()];
-
-                console.log({model});
                 connectionInstance.notifyAction(connectionInstance.actionType.NotifyUserTyping, model);
             }
             // Set a new timeout for 2000 milliseconds (2 seconds)
@@ -59,7 +57,6 @@ $(document).ready(function () {
                 // for some reason the senderId is a string
                 model.senderIdList = [UserInstance.getUser().userId];
                 model.receiverIdList = [dataFacade.getActiveConversationUserId()];
-                console.log({ model });
                 connectionInstance.notifyAction(connectionInstance.actionType.DisableNotifyUserTyping, model);
             }, 2000);
         });

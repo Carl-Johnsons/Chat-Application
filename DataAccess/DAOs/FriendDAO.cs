@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ public class FriendDAO
     //using singleton to access db by one instance variable
     private static FriendDAO instance = null;
     private static readonly object instanceLock = new object();
+
     private FriendDAO() { }
     public static FriendDAO Instance
     {
@@ -39,7 +41,8 @@ public class FriendDAO
     public List<Friend> GetFriendsByUserId(int userId)
     {
         using var context = new ChatApplicationContext();
-        return context.Friends
+        MessageRepository messageRepository = new MessageRepository();
+        var friendList = context.Friends
             .Where(f => f.UserId == userId || f.FriendId == userId)
             .Select(f => new Friend
             {
@@ -47,7 +50,13 @@ public class FriendDAO
                 UserId = f.UserId,
                 FriendNavigation = f.UserId == userId ? f.FriendNavigation : f.User
             })
+            .AsEnumerable() // Convert into client-side to handle sorting
+            .OrderByDescending(f =>
+            {
+                return messageRepository.GetLastIndividualMessage(f.UserId, f.FriendId)?.Message?.Time ?? DateTime.MinValue;
+            })
             .ToList();
+        return friendList;
     }
 
     public List<Friend> GetFriendsByFriendId(int friendId)

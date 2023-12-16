@@ -108,7 +108,14 @@ export default class ConversationListDataLoader {
         let currentUserId = UserInstance.getUser().userId;
         let sender = (lastMessage.message.senderId == currentUserId ? "You:" : "")
         $(LAST_MESSAGE_CONTAINER).text(`${sender} ${lastMessage.message.content}`);
+
+        // Make the div is the first child of the list
+        let parent = $(CONVERSATION).parent();
+        let children = $(parent).children();
+        //$(CONVERSATION).prependTo(parent);
+        $(CONVERSATION).insertBefore(children.first());
     }
+
     static #AddClickEvent() {
         console.log("add click event for friend list");
         const CONVERSATION_LIST_CONTAINER = $(".conversations-list-container");
