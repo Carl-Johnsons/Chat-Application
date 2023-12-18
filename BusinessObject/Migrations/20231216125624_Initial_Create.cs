@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BussinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class @in : Migration
+    public partial class Initial_Create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -222,7 +222,8 @@ namespace BussinessObject.Migrations
                 {
                     Message_ID = table.Column<int>(type: "int", nullable: false),
                     User_Receiver_ID = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true)
+                    Status = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true),
+                    Read = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

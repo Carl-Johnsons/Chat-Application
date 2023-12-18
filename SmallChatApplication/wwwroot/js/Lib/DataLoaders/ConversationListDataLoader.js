@@ -40,7 +40,6 @@ export default class ConversationListDataLoader {
         fetchAndRenderFriendList();
 
         function renderIndividualConversation(friend, lastMessage) {
-
             //Struture of a conversation
 
             //<div class="conversation active d-flex">
@@ -58,7 +57,7 @@ export default class ConversationListDataLoader {
             //</div>
 
             let conversationDiv = document.createElement("div");
-            conversationDiv.className = "conversation d-flex";
+            conversationDiv.className = "conversation d-flex new-message";
             //This attribute let the request know who the friend is
             $(conversationDiv).attr("data-user-id", friend.userId);
             CONVERSATION_LIST_CONTAINER.append(conversationDiv);
@@ -80,22 +79,32 @@ export default class ConversationListDataLoader {
             conversationNameDiv.textContent = friend.name;
 
             //Create last message
+            let conversationLastMessageContainerDiv = createLastMessageContainer(lastMessage);
+
+            conversationDescriptionDiv.append(conversationNameDiv);
+            conversationDescriptionDiv.append(conversationLastMessageContainerDiv);
+            conversationDiv.append(conversationAvatarDiv);
+            conversationDiv.append(conversationDescriptionDiv);
+        }
+        function createLastMessageContainer(lastMessage) {
+            let conversationLastMessageContainerDiv = document.createElement("div");
+            conversationLastMessageContainerDiv.className = "conversation-last-message-container position-relative";
+
+
             let converstationLastMessageDiv = document.createElement("div");
-            converstationLastMessageDiv.className = "conversation-last-message text-truncate";
+            converstationLastMessageDiv.className = "conversation-last-message text-truncate position-absolute top-0 start-0 end-0 bottom-0";
             if (lastMessage) {
                 let sender = (lastMessage.message.senderId == currentUserId ? "You:" : "")
                 converstationLastMessageDiv.textContent = `${sender} ${lastMessage.message.content}`;
             } else {
                 converstationLastMessageDiv.textContent = `Hãy bắt đầu cuộc trò chuyện mới với ${friend.name}`;
             }
-
-            conversationDescriptionDiv.append(conversationNameDiv);
-            conversationDescriptionDiv.append(converstationLastMessageDiv);
-
-            conversationDiv.append(conversationAvatarDiv);
-            conversationDiv.append(conversationDescriptionDiv);
+            conversationLastMessageContainerDiv.appendChild(converstationLastMessageDiv);
+            return conversationLastMessageContainerDiv;
         }
     }
+
+
 
     static updateLastMessage(friendId, lastMessage) {
         if (!lastMessage) {

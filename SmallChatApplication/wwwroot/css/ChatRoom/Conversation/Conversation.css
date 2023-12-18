@@ -1,6 +1,6 @@
 ﻿
 .chat-box-container {
-    --chat-box-container-height: 695.2px;
+    --chat-box-container-height: 100vh;
     --user-info-container-height: 52.14px;
     --input-message-container-height: 52.14px;
     --message-container-height: calc(var(--chat-box-container-height) - var(--input-message-container-height) - var(--user-info-container-height));
@@ -92,10 +92,10 @@
     .message-container .message-item-container .message {
         width: fit-content;
         max-width: 40rem;
-        padding: 0.3rem 0.5rem;
         margin: 0.2rem 0rem;
         border: 1px solid black;
         border-radius: 0.7rem;
+        word-wrap: break-word;
     }
 
     .message-container .message-item-container.sender .message {

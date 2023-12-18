@@ -10,6 +10,7 @@ public partial class IndividualMessage
     public int UserReceiverId { get; set; }
 
     public string? Status { get; set; }
+    public bool Read { get; set; }
 
     public virtual Message Message { get; set; } = null!;
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BussinessObject.Migrations
 {
     [DbContext(typeof(ChatApplicationContext))]
-    [Migration("20231030093115_in")]
-    partial class @in
+    [Migration("20231216125624_Initial_Create")]
+    partial class Initial_Create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -168,6 +168,9 @@ namespace BussinessObject.Migrations
                     b.Property<int>("MessageId")
                         .HasColumnType("int")
                         .HasColumnName("Message_ID");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Status")
                         .HasMaxLength(20)

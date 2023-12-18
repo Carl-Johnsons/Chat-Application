@@ -43,11 +43,14 @@
     --avatar-margin: 0.4rem;
     --conversation-width: 19.5rem;
     --comversation-description-width: calc(var(--conversation-width) - (var(--avatar-width) + 2 * var(--avatar-margin)));
+    position: relative;
     width: var(--conversation-width);
     height: 4rem;
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
 }
+
+
 
     .conversation:hover {
         background-color: #F3F5F6;
@@ -73,9 +76,30 @@
         font-size: 1.1rem;
     }
 
-    .conversation-description .conversation-last-message {
-        color: #788BA4;
+    .conversation-description .conversation-last-message-container {
+        width: 85%;
+        height: 20px;
     }
+
+        .conversation-description .conversation-last-message-container .conversation-last-message {
+            color: #788BA4;
+        }
+
+.conversation.new-message::after {
+    content: '';
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    background-color: red;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.conversation.new-message .conversation-description .conversation-last-message {
+    color: black;
+}
 
 @media only screen and (max-width:768px) {
     .conversation {

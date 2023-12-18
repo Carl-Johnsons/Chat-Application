@@ -42,7 +42,7 @@ public class FriendDAO
     {
         using var context = new ChatApplicationContext();
         MessageRepository messageRepository = new MessageRepository();
-        var friendList = context.Friends
+        return context.Friends
             .Where(f => f.UserId == userId || f.FriendId == userId)
             .Select(f => new Friend
             {
@@ -56,7 +56,6 @@ public class FriendDAO
                 return messageRepository.GetLastIndividualMessage(f.UserId, f.FriendId)?.Message?.Time ?? DateTime.MinValue;
             })
             .ToList();
-        return friendList;
     }
 
     public List<Friend> GetFriendsByFriendId(int friendId)

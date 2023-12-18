@@ -166,6 +166,9 @@ namespace BussinessObject.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Message_ID");
 
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Status")
                         .HasMaxLength(20)
                         .IsUnicode(false)
