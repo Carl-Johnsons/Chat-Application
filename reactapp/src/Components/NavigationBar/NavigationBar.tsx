@@ -1,6 +1,6 @@
 import { useState } from "react";
 import className from "classnames/bind";
-import style from "./NavBar.module.scss";
+import style from "./NavigationBar.module.scss";
 import images from "../../assets";
 import { Nav } from "react-bootstrap";
 
@@ -12,10 +12,18 @@ type NavItem = {
   image: string;
 };
 
-const NavBar = () => {
+interface Props {
+  handleShowProfileModal: () => void;
+}
+
+const NavigationBar = ({ handleShowProfileModal }: Props) => {
   const [activeLink, setActiveLink] = useState(1);
 
   const handleClick = (linkId: number) => {
+    if (linkId == 0) {
+      handleShowProfileModal();
+      return;
+    }
     setActiveLink(linkId);
   };
 
@@ -77,4 +85,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default NavigationBar;

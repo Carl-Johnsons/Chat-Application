@@ -1,0 +1,91 @@
+.info-modal {
+    --modal-dialog-width: 384px;
+    --modal-dialog-height: 556.16px;
+    --modal-header-height: 52.14px;
+    --modal-footer-height: 70.08px;
+    --modal-body-height: calc(var(--modal-dialog-height) - var(--modal-header-height) - var(--modal-footer-height));
+    .modal-dialog {
+        /* modal-dialog-center only center the dialog not the modal-content when in the mobile version */
+        justify-content: center;
+        .modal-content {
+            background-color: red;
+
+            width: var(--modal-dialog-width);
+            height: var(--modal-dialog-height);
+        }
+    }
+
+    .modal-header {
+        height: var(--modal-header-height);
+    }
+
+    .modal-body {
+        height: var(--modal-body-height);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 0px !important;
+        .background-img-container {
+            width: 100%;
+            height: 10rem;
+            img {
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+            }
+        }
+        .avatar-img-container {
+            position: relative;
+            height: 20%;
+            display: flex;
+            justify-content: center;
+            img {
+                position: absolute;
+                border: 2px solid white;
+                transform: translateY(-50%);
+            }
+        }
+        .user-name {
+            height: 20%;
+            margin: 0rem 2rem;
+            display: flex;
+            justify-content: center;
+            font-weight: bold;
+            p {
+                font-size: large;
+                text-align: center;
+                width: 100%;
+                overflow-wrap: break-word;
+            }
+        }
+        .personal-information-container {
+            height: 60%;
+            margin: 0rem 2rem;
+            display: flex;
+            flex-direction: column;
+            .personal-information-row {
+                display: flex;
+                justify-content: space-between;
+                margin: 0.3rem 0rem;
+            }
+            .personal-information-row:not(:has(.personal-information-row-name)) {
+                font-weight: bold;
+                font-size: large;
+            }
+            .personal-information-row-name {
+                color: #7c8fa6;
+            }
+        }
+    }
+
+    .modal-footer {
+        height: var(--modal-footer-height);
+        border: none;
+        .btn-update-information,
+        .btn-add-friend {
+            width: 100%;
+            background-color: #eaedf0;
+            font-weight: bold;
+        }
+    }
+}
