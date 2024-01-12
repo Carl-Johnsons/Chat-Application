@@ -1,0 +1,12 @@
+.user-name {
+    label {
+        font-size: 14px;
+    }
+}
+
+.personal-information-container {
+    .personal-information-row {
+        display: flex;
+        justify-content: space-between;
+    }
+}

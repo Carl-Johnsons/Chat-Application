@@ -13,15 +13,15 @@ type NavItem = {
 };
 
 interface Props {
-  handleShowProfileModal: () => void;
+  handleShowModal: () => void;
 }
 
-const NavigationBar = ({ handleShowProfileModal }: Props) => {
+const NavigationBar = ({ handleShowModal }: Props) => {
   const [activeLink, setActiveLink] = useState(1);
 
   const handleClick = (linkId: number) => {
     if (linkId == 0) {
-      handleShowProfileModal();
+      handleShowModal();
       return;
     }
     setActiveLink(linkId);

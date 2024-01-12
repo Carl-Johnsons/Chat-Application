@@ -1,25 +1,26 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 import NavigationBar from "./Components/NavigationBar";
-import ProfileModal from "./Components/ProfileModal";
+import ModalContainer from "./Components/ModalContainer";
 
 import { useState } from "react";
 function App() {
-  const [showProfileModal, setShowProfileModal] = useState(true);
+  const [showModal, setShowModal] = useState(true);
+  const handleShowModal = () => setShowModal(true);
+  const handCloseModal = () => setShowModal(false);
 
-  const handleShowProfileModal = () => setShowProfileModal(true);
-  const handleCloseProfileModal = () => setShowProfileModal(false);
   return (
     <>
       <div className="left d-flex">
         <div className="navbar-section">
-          <NavigationBar handleShowProfileModal={handleShowProfileModal} />
+          <NavigationBar handleShowModal={handleShowModal} />
         </div>
       </div>
       <div className="right d-flex"></div>
-      <ProfileModal
-        show={showProfileModal}
-        handleClose={handleCloseProfileModal}
+      <ModalContainer
+        modalType="Profile"
+        show={showModal}
+        handleClose={handCloseModal}
       />
     </>
   );

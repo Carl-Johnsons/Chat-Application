@@ -1,0 +1,45 @@
+$light-gray: #eef0f1;
+$gray: #7c8fa6;
+$gray-hover: #dfe2e7;
+
+.background-img-container {
+    height: 10rem;
+}
+.info-container {
+    padding: 14px 0;
+    .avatar-img-container {
+        img {
+            border: 2px solid white;
+            transform: translateY(-40%);
+        }
+    }
+    .user-name {
+        font-weight: 500;
+        font-size: 18px;
+        overflow-wrap: break-word;
+    }
+}
+.container-divider {
+    width: 100%;
+    height: 7px;
+    background-color: $light-gray;
+}
+
+.personal-information-container {
+    .personal-information-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.3rem 0rem;
+        &:not(:has(.row-name)) {
+            font-weight: 500;
+        }
+        .row-name {
+            color: $gray;
+        }
+    }
+    .note {
+        font-size: 12px;
+        font-weight: 500;
+        color: $gray;
+    }
+}
