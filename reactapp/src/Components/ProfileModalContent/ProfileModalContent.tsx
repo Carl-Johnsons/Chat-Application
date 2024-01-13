@@ -1,9 +1,14 @@
+import { Button } from "react-bootstrap";
 import images from "../../assets";
 import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
 const cx = classNames.bind(style);
 
-const ProfileModalContent = () => {
+interface Props {
+  handleClickUpdate: () => void;
+}
+
+const ProfileModalContent = ({ handleClickUpdate }: Props) => {
   const username: string = "Javamismknownmformitsmportabilitymandmstrongmcomms";
   const gender: string = "Nam";
   const dob: string = "Ngày 01 tháng 01, 2000";
@@ -57,6 +62,17 @@ const ProfileModalContent = () => {
         <div className={cx("note")}>
           Chỉ bạn bè có lưu số của bạn trong danh bạ máy xem được số này
         </div>
+      </div>
+
+      <div className={cx("footer", "mb-3")}>
+        <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
+        <Button
+          variant="default"
+          className={cx("modal-btn", "w-100", "fw-medium", "m-0")}
+          onClick={handleClickUpdate}
+        >
+          Cập nhật
+        </Button>
       </div>
     </>
   );

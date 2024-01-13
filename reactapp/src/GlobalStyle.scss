@@ -1,0 +1,66 @@
+$black: #000;
+
+$gray: #7c8fa6;
+$light-gray: #eef0f1;
+$gray-hover: #dfe2e7;
+$gray-active: #d6dbe1;
+
+$blue: #0068ff;
+$blue-hover: #004bb9;
+$blue-active: #00378a;
+
+$white: #fff;
+$modal-border-radius: 6px;
+
+.modal-btn,
+.modal-btn:hover,
+.modal-btn:active {
+    border-radius: $modal-border-radius;
+    background-color: transparent;
+    border: 0;
+    color: $black;
+
+    &:hover {
+        color: $black;
+        background-color: $gray-hover;
+    }
+    &:active {
+        color: $black;
+        background-color: $gray-active;
+    }
+}
+.modal-btn-secondary,
+.modal-btn-secondary:hover,
+.modal-btn-secondary:active {
+    border-radius: $modal-border-radius;
+    background-color: $blue;
+    border: 0;
+    color: $white;
+
+    &:hover {
+        color: $white;
+        background-color: $blue-hover;
+    }
+    &:active {
+        color: $white;
+        background-color: $blue-active;
+    }
+}
+.h-fit-content {
+    height: fit-content;
+}
+.container-divider {
+    width: 100%;
+    height: 7px;
+    background-color: $light-gray;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.container-divider-2px {
+    width: 100%;
+    height: 2px;
+    background-color: $light-gray;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

@@ -1,8 +1,14 @@
+import { Button } from "react-bootstrap";
+
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
 const cx = className.bind(style);
 
-const UpdateProfileModalContent = () => {
+interface Props {
+  handleClickCancel: () => void;
+}
+
+const UpdateProfileModalContent = ({ handleClickCancel }: Props) => {
   const currentYear = 2024;
 
   const dates: number[] = [];
@@ -114,6 +120,22 @@ const UpdateProfileModalContent = () => {
             </select>
           </div>
         </div>
+      </div>
+      <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
+      <div className={cx("footer", "mb-3", "d-flex", "justify-content-end")}>
+        <Button
+          variant="default"
+          className={cx("modal-btn", "fw-medium", "me-2")}
+          onClick={handleClickCancel}
+        >
+          Hủy
+        </Button>
+        <Button
+          variant="default"
+          className={cx("modal-btn-secondary", "fw-medium")}
+        >
+          Cập nhật
+        </Button>
       </div>
     </>
   );

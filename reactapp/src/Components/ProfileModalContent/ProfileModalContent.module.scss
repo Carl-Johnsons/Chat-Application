@@ -1,12 +1,11 @@
-$light-gray: #eef0f1;
-$gray: #7c8fa6;
-$gray-hover: #dfe2e7;
+@import "/src/GlobalStyle.scss";
+
 
 .background-img-container {
     height: 10rem;
 }
 .info-container {
-    padding: 14px 0;
+    padding-top: 14px;
     .avatar-img-container {
         img {
             border: 2px solid white;
@@ -18,11 +17,6 @@ $gray-hover: #dfe2e7;
         font-size: 18px;
         overflow-wrap: break-word;
     }
-}
-.container-divider {
-    width: 100%;
-    height: 7px;
-    background-color: $light-gray;
 }
 
 .personal-information-container {

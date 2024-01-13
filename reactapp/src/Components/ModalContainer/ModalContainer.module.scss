@@ -1,28 +1,27 @@
-$light-gray: #eef0f1;
-$gray: #7c8fa6;
-$gray-hover: #dfe2e7;
+@import "/src/GlobalStyle.scss";
+
+$modal-dialog-width: 384px;
+$modal-dialog-height: 556.16px;
+$modal-header-height: 52.14px;
+$margin-left-right-child-element: 1rem;
 
 .info-modal {
-    // Sizing
-    --modal-dialog-width: 384px;
-    --modal-dialog-height: 556.16px;
-    --modal-header-height: 52.14px;
-    --modal-footer-height: 60px;
-
-    // color
-
-    // margin
-    --margin-left-right-child-element: 1rem;
-    --modal-border-radius: 6px;
-
     .modal-dialog {
-        width: var(--modal-dialog-width);
-        height: var(--modal-dialog-height);
+        width: $modal-dialog-width;
+        height: $modal-dialog-height;
+
+        .modal-title {
+            > button {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
         .modal-content {
-            border-radius: var(--modal-border-radius);
+            border-radius: $modal-border-radius;
 
             .modal-header {
-                height: var(--modal-header-height);
+                height: $modal-header-height;
                 .modal-title {
                     font-size: 16px;
                 }
@@ -30,31 +29,20 @@ $gray-hover: #dfe2e7;
 
             .modal-body {
                 overflow: hidden;
+                transition: height 0.2s ease-in-out;
                 ul {
                     width: 200%;
                     li {
                         background-color: white;
                         > * {
-                            margin-left: var(--margin-left-right-child-element);
-                            margin-right: var(--margin-left-right-child-element);
+                            margin-left: $margin-left-right-child-element;
+                            margin-right: $margin-left-right-child-element;
                             box-sizing: border-box;
                         }
-                        transition: transform 0.3s ease-in-out;
+                        transition: transform 0.2s ease-in-out;
                     }
                     li.active:not(li:first-child) {
                         transform: translateX(-100%);
-                    }
-                }
-            }
-
-            .modal-footer {
-                height: var(--modal-footer-height);
-                margin: 0 var(--margin-left-right-child-element);
-                border-top: 2px solid $light-gray;
-                .modal-btn {
-                    border-radius: var(--modal-border-radius);
-                    &:hover {
-                        background-color: $gray-hover;
                     }
                 }
             }

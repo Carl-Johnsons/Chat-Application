@@ -2,10 +2,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 import NavigationBar from "./Components/NavigationBar";
 import ModalContainer from "./Components/ModalContainer";
-
 import { useState } from "react";
+
 function App() {
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const handleShowModal = () => setShowModal(true);
   const handCloseModal = () => setShowModal(false);
 
