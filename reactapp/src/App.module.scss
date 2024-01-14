@@ -1,0 +1,31 @@
+$navbar-width: 60px;
+$left-width: 380px;
+$chat-info-width: 343px;
+$siderbar-width: calc($left-width - $navbar-width);
+
+* {
+    user-select: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.left {
+    flex-basis: $left-width;
+    & > .navbar-section {
+        flex-basis: $navbar-width;
+    }
+    & > .sidebar-section {
+        background-color: aqua;
+        flex-basis: $siderbar-width;
+    }
+}
+
+.main-section {
+    background-color: blueviolet;
+}
+.chat-info {
+    background-color: chocolate;
+    flex-basis: $chat-info-width;
+}
