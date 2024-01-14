@@ -1,15 +1,27 @@
-import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCamera, faPen } from "@fortawesome/free-solid-svg-icons";
+
 import images from "../../assets";
 import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
+import ModalButton from "../ModalButton";
+import Avatar from "../Avatar";
+
 const cx = classNames.bind(style);
 
 interface Props {
-  handleClickUpdate: () => void;
+  onClickUpdate?: () => void;
+  onClickEditAvatar?: () => void;
+  onClickEditUserName?: () => void;
 }
 
-const ProfileModalContent = ({ handleClickUpdate }: Props) => {
-  const username: string = "Javamismknownmformitsmportabilitymandmstrongmcomms";
+const ProfileModalContent = ({
+  onClickUpdate = () => {},
+  onClickEditAvatar = () => {},
+  onClickEditUserName = () => {},
+}: Props) => {
+  const username: string =
+    "Javamismknownmformitsmportabilitymandmstrongmcomms123";
   const gender: string = "Nam";
   const dob: string = "Ngày 01 tháng 01, 2000";
   const phone: string = "+84123456789";
@@ -26,13 +38,45 @@ const ProfileModalContent = ({ handleClickUpdate }: Props) => {
         <div
           className={cx("w-25", "avatar-img-container", "position-relative")}
         >
-          <img
-            className={cx("avatar-icon", "position-absolute")}
-            draggable="false"
+          <Avatar
+            variant="avatar-img-lg"
+            className={cx("position-absolute", "rounded-circle")}
             src={images.defaultAvatarImg}
+            alt="avatar image"
           />
+          <ModalButton
+            className={cx(
+              "avatar-edit-btn",
+              "rounded-circle",
+              "p-0",
+              "position-absolute",
+              "d-inline-flex",
+              "justify-content-center",
+              "align-items-center"
+            )}
+            onClick={onClickEditAvatar}
+          >
+            <FontAwesomeIcon icon={faCamera} />
+          </ModalButton>
         </div>
-        <div className={cx("user-name", "w-75")}>{username}</div>
+        <div className={cx("user-name", "position-relative", "w-75")}>
+          <span className={cx("me-2")}> {username}</span>
+          <ModalButton
+            variant="modal-btn-primary-transparent"
+            className={cx(
+              "username-edit-btn",
+              "p-0",
+              "rounded-circle",
+              "position-absolute",
+              "d-inline-flex",
+              "justify-content-center",
+              "align-items-center"
+            )}
+            onClick={onClickEditUserName}
+          >
+            <FontAwesomeIcon icon={faPen} />
+          </ModalButton>
+        </div>
       </div>
 
       <div className={cx("container-divider", "ms-0", "me-0")}></div>
@@ -66,13 +110,14 @@ const ProfileModalContent = ({ handleClickUpdate }: Props) => {
 
       <div className={cx("footer", "mb-3")}>
         <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
-        <Button
-          variant="default"
-          className={cx("modal-btn", "w-100", "fw-medium", "m-0")}
-          onClick={handleClickUpdate}
+        <ModalButton
+          variant="modal-btn-primary-transparent"
+          onClick={onClickUpdate}
+          className={cx("w-100", "fw-medium")}
         >
+          <FontAwesomeIcon icon={faPen} className="me-2" />
           Cập nhật
-        </Button>
+        </ModalButton>
       </div>
     </>
   );

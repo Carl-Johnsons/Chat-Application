@@ -1,0 +1,12 @@
+@import "/src/GlobalStyle.scss";
+$size-variants: (
+    "": 50px,
+    "-lg": 80px
+);
+
+@each $variant, $size in $size-variants {
+    .avatar-img#{$variant} {
+        width: $size;
+        height: $size;
+    }
+}

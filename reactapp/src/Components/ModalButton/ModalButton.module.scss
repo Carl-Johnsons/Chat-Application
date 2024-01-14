@@ -1,0 +1,62 @@
+@use "sass:map";
+@import "/src/GlobalStyle.scss";
+
+@mixin button-style($bg-color, $text-color, $bg-color-hover, $bg-color-active) {
+    border-radius: $modal-border-radius;
+    background-color: $bg-color;
+    border: 0;
+    color: $text-color;
+
+    &:hover {
+        color: $text-color;
+        background-color: $bg-color-hover;
+    }
+    &:active {
+        color: $text-color;
+        background-color: $bg-color-active;
+    }
+}
+
+// Creating a button variants map
+$button-variants: (
+    primary: (
+        bg-color: $light-gray,
+        text-color: $black,
+        bg-hover: $gray-hover,
+        bg-active: $gray-active
+    ),
+    secondary: (
+        bg-color: $blue,
+        text-color: $white,
+        bg-hover: $blue-hover,
+        bg-active: $blue-active
+    ),
+    tertiary: (
+        bg-color: $light-blue,
+        text-color: $blue,
+        bg-hover: $light-blue-hover,
+        bg-active: $light-blue-active
+    )
+);
+@each $variant, $color in $button-variants {
+    .modal-btn-#{$variant},
+    .modal-btn-#{$variant}:hover,
+    .modal-btn-#{$variant}:active {
+        @include button-style(
+            map.get($color, bg-color),
+            map.get($color, text-color),
+            map.get($color, bg-hover),
+            map.get($color, bg-active)
+        );
+    }
+    .modal-btn-#{$variant}-transparent,
+    .modal-btn-#{$variant}-transparent:hover,
+    .modal-btn-#{$variant}-transparent:active {
+        @include button-style(
+            transparent,
+            map.get($color, text-color),
+            map.get($color, bg-hover),
+            map.get($color, bg-active)
+        );
+    }
+}

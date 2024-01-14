@@ -41,8 +41,11 @@ $margin-left-right-child-element: 1rem;
                         }
                         transition: transform 0.2s ease-in-out;
                     }
-                    li.active:not(li:first-child) {
-                        transform: translateX(-100%);
+                    li:not(li:first-child) {
+                        transform: translateX(100%);
+                        &.active {
+                            transform: translateX(0%);
+                        }
                     }
                 }
             }

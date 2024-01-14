@@ -1,14 +1,13 @@
-import { Button } from "react-bootstrap";
-
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
+import ModalButton from "../ModalButton";
 const cx = className.bind(style);
 
 interface Props {
-  handleClickCancel: () => void;
+  onClickCancel: () => void;
 }
 
-const UpdateProfileModalContent = ({ handleClickCancel }: Props) => {
+const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const currentYear = 2024;
 
   const dates: number[] = [];
@@ -123,19 +122,19 @@ const UpdateProfileModalContent = ({ handleClickCancel }: Props) => {
       </div>
       <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
       <div className={cx("footer", "mb-3", "d-flex", "justify-content-end")}>
-        <Button
-          variant="default"
+        <ModalButton
+          variant="modal-btn-primary"
           className={cx("modal-btn", "fw-medium", "me-2")}
-          onClick={handleClickCancel}
+          onClick={onClickCancel}
         >
           Hủy
-        </Button>
-        <Button
-          variant="default"
+        </ModalButton>
+        <ModalButton
+          variant="modal-btn-secondary"
           className={cx("modal-btn-secondary", "fw-medium")}
         >
           Cập nhật
-        </Button>
+        </ModalButton>
       </div>
     </>
   );
