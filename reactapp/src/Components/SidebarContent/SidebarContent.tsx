@@ -1,5 +1,11 @@
+import Conversation from "../Conversation";
+
 const SidebarContent = () => {
-  return <div>SidebarContent</div>;
+  return (
+    <>
+      <Conversation />
+    </>
+  );
 };
 
 export default SidebarContent;
