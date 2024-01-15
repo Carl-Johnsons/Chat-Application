@@ -18,14 +18,14 @@ type NavItem = {
 };
 
 interface Props {
-  handleShowModal: () => void;
+  onShow: () => void;
 }
 
-const NavigationBar = ({ handleShowModal }: Props) => {
+const NavigationBar = ({ onShow }: Props) => {
   const [activeLink, setActiveLink] = useState(1);
   const handleClick = (linkId: number) => {
     if (linkId === 0) {
-      handleShowModal();
+      onShow();
       return;
     }
     setActiveLink(linkId);

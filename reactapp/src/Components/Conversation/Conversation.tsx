@@ -1,17 +1,28 @@
-import images from "../../assets";
 import Avatar from "../Avatar";
 import style from "./Conversation.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(style);
 
-const Conversation = () => {
-  const userId: number = 1;
-  const image = images.defaultAvatarImg;
-  const conversationName = "Group 2";
-  const lastMessage = "You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll";
-  const isActive = true;
-  const isNewMessage = true;
+interface Props {
+  userId: number;
+  image: string;
+  conversationName: string;
+  lastMessage?: string;
+  isActive?: boolean;
+  isNewMessage?: boolean;
+  onClick?: (userId: number) => void;
+}
+
+const Conversation = ({
+  userId,
+  image,
+  conversationName,
+  lastMessage = "",
+  isActive = false,
+  isNewMessage = false,
+  onClick = () => {},
+}: Props) => {
   return (
     <div
       className={cx(
@@ -23,9 +34,17 @@ const Conversation = () => {
         isNewMessage ? "new-message" : ""
       )}
       role="button"
+      onClick={() => onClick(userId)}
       data-user-id={userId}
     >
-      <div className={cx("conversation-avatar", "d-flex","align-items-center", "me-2")}>
+      <div
+        className={cx(
+          "conversation-avatar",
+          "d-flex",
+          "align-items-center",
+          "me-2"
+        )}
+      >
         <Avatar
           src={image}
           className={cx("rounded-circle")}
@@ -33,8 +52,27 @@ const Conversation = () => {
         />
       </div>
       <div className={cx("conversation-description", "flex-grow-1")}>
-        <div className={cx("conversation-name", "text-truncate", "mt-2")}>
-          {conversationName}
+        <div
+          className={cx(
+            "conversation-name-container",
+            "mt-2",
+            "mb-1",
+            "position-relative"
+          )}
+        >
+          <div
+            className={cx(
+              "conversation-name",
+              "text-truncate",
+              "position-absolute",
+              "top-0",
+              "start-0",
+              "end-0",
+              "bottom-0"
+            )}
+          >
+            {conversationName}
+          </div>
         </div>
         <div
           className={cx(
@@ -57,6 +95,34 @@ const Conversation = () => {
             {lastMessage}
           </div>
         </div>
+      </div>
+      <div
+        className={cx(
+          "time",
+          "mt-1",
+          "me-1",
+          "position-absolute",
+          "end-0",
+          "top-0"
+        )}
+      >
+        Hôm qua
+      </div>
+      <div
+        className={cx(
+          "red-dot",
+          "rounded-circle",
+          "position-absolute",
+          "end-0",
+          "bottom-0",
+          "d-flex",
+          "justify-content-center",
+          "align-items-center",
+          "text-white",
+          isNewMessage ? "" : "d-none"
+        )}
+      >
+        1
       </div>
     </div>
   );

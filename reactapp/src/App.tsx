@@ -22,11 +22,11 @@ function App() {
           "d-flex",
           "flex-grow-1",
           "flex-md-grow-0",
-          "flex-shrink-0"
+          "flex-shrink-1"
         )}
       >
         <div className={cx("navbar-section", "flex-shrink-0")}>
-          <NavigationBar handleShowModal={handleShowModal} />
+          <NavigationBar onShow={handleShowModal} />
         </div>
         <div className={cx("sidebar-section", "flex-grow-1", "flex-shrink-1")}>
           <SidebarContent />
