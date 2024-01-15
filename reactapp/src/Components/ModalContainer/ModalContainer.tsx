@@ -8,6 +8,7 @@ import classNames from "classnames/bind";
 import ProfileModalContent from "../ProfileModalContent";
 import UpdateProfileModalContent from "../UpdateProfileModalContent";
 import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
+import AppButton from "../AppButton";
 const cx = classNames.bind(style);
 
 interface Props {
@@ -84,20 +85,18 @@ const ModalContainer = ({ show, handleClose }: Props) => {
           "modal-header",
           "d-flex",
           "align-items-center",
-          modalActive != 0 ? "ps-2" : ""
+          modalActive != 0 && "ps-2"
         )}
       >
         <Modal.Title className={cx("modal-title")}>
-          {modalActive != 0 ? (
-            <Button
-              variant="default"
-              className={cx("rounded-circle", "modal-btn", "p-0", "me-1")}
+          {modalActive != 0 && (
+            <AppButton
+              className={cx("rounded-circle", "p-0", "me-1")}
               onClick={() => handleClick(0)}
+              variant="app-btn-primary-transparent"
             >
               <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
-            </Button>
-          ) : (
-            ""
+            </AppButton>
           )}
 
           {titleMap[modalActive]}
@@ -127,7 +126,7 @@ const ModalContainer = ({ show, handleClose }: Props) => {
                 "w-50",
                 "h-fit-content",
                 "position-absolute",
-                modalActive == index ? "active" : ""
+                modalActive == index && "active"
               )}
             >
               {item.modalContent}

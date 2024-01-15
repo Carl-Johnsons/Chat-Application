@@ -1,20 +1,20 @@
 import { Button } from "react-bootstrap";
-import style from "./ModalButton.module.scss";
+import style from "./AppButton.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(style);
 type VariantType<T extends string> = `${T}` | `${T}-transparent`;
-type Primary = VariantType<"modal-btn-primary">;
-type Secondary = VariantType<"modal-btn-secondary">;
-type Tertiary = VariantType<"modal-btn-tertiary">;
+type Primary = VariantType<"app-btn-primary">;
+type Secondary = VariantType<"app-btn-secondary">;
+type Tertiary = VariantType<"app-btn-tertiary">;
 interface Props {
   variant?: Primary | Secondary | Tertiary;
   className?: string;
   onClick?: () => void;
   children?: React.ReactNode;
 }
-const ModalButton = ({
-  variant = "modal-btn-primary",
+const AppButton = ({
+  variant = "app-btn-primary",
   className = "",
   onClick = () => {},
   children = "",
@@ -30,4 +30,4 @@ const ModalButton = ({
   );
 };
 
-export default ModalButton;
+export default AppButton;

@@ -2,11 +2,12 @@ import style from "./Avatar.module.scss";
 import className from "classnames/bind";
 const cx = className.bind(style);
 
+type Small = "avatar-img-sm";
 type Default = "avatar-img";
 type Large = "avatar-img-lg";
 
 interface Props {
-  variant?: Default | Large;
+  variant?: Default | Large | Small;
   src: string;
   alt: string;
   className?: string;

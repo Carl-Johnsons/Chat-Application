@@ -30,8 +30,8 @@ const Conversation = ({
         "w-100",
         "position-relative",
         "d-flex",
-        isActive ? "active" : "",
-        isNewMessage ? "new-message" : ""
+        isActive && "active",
+        isNewMessage && "new-message"
       )}
       role="button"
       onClick={() => onClick(userId)}

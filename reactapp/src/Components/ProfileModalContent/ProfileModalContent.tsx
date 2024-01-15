@@ -4,7 +4,7 @@ import { faCamera, faPen } from "@fortawesome/free-solid-svg-icons";
 import images from "../../assets";
 import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
-import ModalButton from "../ModalButton";
+import AppButton from "../AppButton";
 import Avatar from "../Avatar";
 
 const cx = classNames.bind(style);
@@ -44,7 +44,7 @@ const ProfileModalContent = ({
             src={images.defaultAvatarImg}
             alt="avatar image"
           />
-          <ModalButton
+          <AppButton
             className={cx(
               "avatar-edit-btn",
               "rounded-circle",
@@ -57,12 +57,12 @@ const ProfileModalContent = ({
             onClick={onClickEditAvatar}
           >
             <FontAwesomeIcon icon={faCamera} />
-          </ModalButton>
+          </AppButton>
         </div>
         <div className={cx("user-name", "position-relative", "w-75")}>
           <span className={cx("me-2")}> {username}</span>
-          <ModalButton
-            variant="modal-btn-primary-transparent"
+          <AppButton
+            variant="app-btn-primary-transparent"
             className={cx(
               "username-edit-btn",
               "p-0",
@@ -75,7 +75,7 @@ const ProfileModalContent = ({
             onClick={onClickEditUserName}
           >
             <FontAwesomeIcon icon={faPen} />
-          </ModalButton>
+          </AppButton>
         </div>
       </div>
 
@@ -110,14 +110,14 @@ const ProfileModalContent = ({
 
       <div className={cx("footer", "mb-3")}>
         <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
-        <ModalButton
-          variant="modal-btn-primary-transparent"
+        <AppButton
+          variant="app-btn-primary-transparent"
           onClick={onClickUpdate}
           className={cx("w-100", "fw-medium")}
         >
           <FontAwesomeIcon icon={faPen} className="me-2" />
           Cập nhật
-        </ModalButton>
+        </AppButton>
       </div>
     </>
   );

@@ -1,6 +1,6 @@
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
-import ModalButton from "../ModalButton";
+import AppButton from "../AppButton";
 const cx = className.bind(style);
 
 interface Props {
@@ -122,19 +122,16 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
       </div>
       <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
       <div className={cx("footer", "mb-3", "d-flex", "justify-content-end")}>
-        <ModalButton
-          variant="modal-btn-primary"
-          className={cx("modal-btn", "fw-medium", "me-2")}
+        <AppButton
+          variant="app-btn-primary"
+          className={cx("fw-medium", "me-2")}
           onClick={onClickCancel}
         >
           Hủy
-        </ModalButton>
-        <ModalButton
-          variant="modal-btn-secondary"
-          className={cx("modal-btn-secondary", "fw-medium")}
-        >
+        </AppButton>
+        <AppButton variant="app-btn-secondary" className={cx("fw-medium")}>
           Cập nhật
-        </ModalButton>
+        </AppButton>
       </div>
     </>
   );

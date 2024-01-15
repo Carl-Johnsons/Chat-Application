@@ -1,3 +1,5 @@
+@import "/src/GlobalStyle.scss";
+
 $navbar-width: 60px;
 $left-width: 414px;
 $chat-info-width: 344px;
@@ -17,14 +19,15 @@ body::-webkit-scrollbar {
         flex-basis: $navbar-width;
     }
     & > .sidebar-section {
-        background-color: aqua;
         flex-basis: $siderbar-width;
+        border-right: 1px solid $border-color;
     }
 }
 
 .main-section {
     background-color: blueviolet;
 }
+
 .chat-info {
     background-color: chocolate;
     flex-basis: $chat-info-width;
