@@ -29,7 +29,7 @@ const SearchBar = () => {
           className={cx("btn-add-friend", "me-1")}
         >
           <Avatar
-            variant="avatar-img-sm"
+            variant="avatar-img-16px"
             src={images.addUserIcon}
             alt="add user icon"
           />
@@ -39,7 +39,7 @@ const SearchBar = () => {
           className={cx("btn-create-group")}
         >
           <Avatar
-            variant="avatar-img-sm"
+            variant="avatar-img-16px"
             src={images.addUserIcon}
             alt="add user icon"
           />

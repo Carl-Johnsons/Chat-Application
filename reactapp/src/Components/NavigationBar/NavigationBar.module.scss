@@ -1,8 +1,5 @@
 @import "/src/GlobalStyle.scss";
+
 .application-nav-bar {
     background-color: #0091ff;
-    .nav-tabs {
-        flex-direction: column;
-        border-bottom: none;
-    }
 }

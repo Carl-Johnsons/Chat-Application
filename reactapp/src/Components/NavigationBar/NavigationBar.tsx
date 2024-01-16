@@ -60,26 +60,30 @@ const NavigationBar = ({ onShow }: Props) => {
     },
   ];
   return (
-    <>
-      <div className={cx("application-nav-bar", "h-100")}>
-        <Nav className={cx("nav-tabs", "h-100")}>
-          {items.map((item, index) => (
-            <NavItem
-              key={item.dataContent}
-              index={index}
-              dataContent={item.dataContent}
-              handleClick={() => handleClick(index)}
-              href={item.href}
-              isActive={activeLink == index}
-              className={item.className}
-              navLinkClassName={item.navLinkClassName}
-            >
-              <Avatar src={item.image} alt={item.imageAlt} />
-            </NavItem>
-          ))}
-        </Nav>
-      </div>
-    </>
+    <Nav
+      className={cx(
+        "application-nav-bar",
+        "nav-tabs",
+        "d-flex",
+        "flex-column",
+        "h-100"
+      )}
+    >
+      {items.map((item, index) => (
+        <NavItem
+          key={index}
+          index={index}
+          dataContent={item.dataContent}
+          handleClick={() => handleClick(index)}
+          href={item.href}
+          isActive={activeLink == index}
+          className={item.className}
+          navLinkClassName={item.navLinkClassName}
+        >
+          <Avatar variant="avatar-img-50px" src={item.image} alt={item.imageAlt} />
+        </NavItem>
+      ))}
+    </Nav>
   );
 };
 

@@ -1,13 +1,13 @@
 import style from "./Avatar.module.scss";
 import className from "classnames/bind";
 const cx = className.bind(style);
+type AppImageVariants = "16" | "20" | "40" | "45" | "50" | "80";
+type VariantType<T extends string> = `avatar-img-${T}px`;
 
-type Small = "avatar-img-sm";
 type Default = "avatar-img";
-type Large = "avatar-img-lg";
 
 interface Props {
-  variant?: Default | Large | Small;
+  variant?: Default | VariantType<AppImageVariants>;
   src: string;
   alt: string;
   className?: string;

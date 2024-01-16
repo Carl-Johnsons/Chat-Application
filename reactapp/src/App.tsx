@@ -7,12 +7,17 @@ import classNames from "classnames/bind";
 import NavigationBar from "./Components/NavigationBar";
 import ModalContainer from "./Components/ModalContainer";
 import SidebarContent from "./Components/SidebarContent";
+import ChatViewContainer from "./Components/ChatViewContainer";
 
 const cx = classNames.bind(style);
 function App() {
   const [showModal, setShowModal] = useState(false);
+  const [showAside, setShowAside] = useState(true);
+
   const handleShowModal = () => setShowModal(true);
   const handCloseModal = () => setShowModal(false);
+
+  const handleToggleAside = () => setShowAside(!showAside);
 
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>
@@ -41,8 +46,13 @@ function App() {
           "flex-shrink-1"
         )}
       >
-        <div className={cx("main-section", "flex-grow-1")}>main section</div>
-        <div className={cx("chat-info", "d-none", "d-xl-block")}>
+        <div className={cx("main-section", "flex-grow-1", "flex-shrink-1")}>
+          <ChatViewContainer
+            showAside={showAside}
+            onToggleAside={handleToggleAside}
+          />
+        </div>
+        <div className={cx("chat-info", "d-none", showAside && "d-xl-block")}>
           <div>Aside</div>
         </div>
       </div>

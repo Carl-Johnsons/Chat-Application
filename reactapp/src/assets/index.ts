@@ -5,6 +5,8 @@ import defaultBackgroundImg from "./images/default_background_img.png";
 import logOutIcon from "./images/logout.png";
 import contactIcon from "./images/notebook-of-contacts.png";
 import userIcon from "./images/user.png";
+import sidebarIcon from "./images/sidebarIcon.png";
+import sidebarIconActive from "./images/sidebarIconActive.png";
 
 const images = {
   addUserIcon,
@@ -14,5 +16,7 @@ const images = {
   logOutIcon,
   contactIcon,
   userIcon,
+  sidebarIcon,
+  sidebarIconActive,
 };
 export default images;

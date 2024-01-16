@@ -39,7 +39,7 @@ const ProfileModalContent = ({
           className={cx("w-25", "avatar-img-container", "position-relative")}
         >
           <Avatar
-            variant="avatar-img-lg"
+            variant="avatar-img-80px"
             className={cx("position-absolute", "rounded-circle")}
             src={images.defaultAvatarImg}
             alt="avatar image"

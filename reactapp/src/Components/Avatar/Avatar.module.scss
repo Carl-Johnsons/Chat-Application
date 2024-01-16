@@ -1,8 +1,12 @@
 @import "/src/GlobalStyle.scss";
 $size-variants: (
-    "-sm": 16px,
-    "": 50px,
-    "-lg": 80px
+    "-16px": 16px,
+    "-20px": 20px,
+    "-40px": 40px,
+    "": 45px,
+    "-45px": 45px,
+    "-50px": 50px,
+    "-80px": 80px
 );
 
 @each $variant, $size in $size-variants {
