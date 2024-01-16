@@ -4,6 +4,7 @@ import style from "./ChatViewContainer.module.scss";
 import images from "../../assets";
 import classNames from "classnames/bind";
 import ChatViewHeader from "../ChatViewHeader";
+import ChatViewFooter from "../ChatViewFooter";
 
 const cx = classNames.bind(style);
 interface Props {
@@ -12,21 +13,22 @@ interface Props {
 }
 
 const ChatViewContainer = ({ showAside, onToggleAside }: Props) => {
+  const image = images.userIcon;
   const name =
     "This name is very loonoooooooooooooooonngg and it could break my layout :) 🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡";
 
   return (
-    <div className={cx("chat-box-container")}>
+    <div className={cx("chat-box-container", "h-100", "d-flex", "flex-column")}>
       <div className={cx("user-info-container", "d-flex")}>
         <ChatViewHeader
-          images={[images.userIcon]}
+          images={[image]}
           name={name}
           showAside={showAside}
           onToggleAside={onToggleAside}
         />
       </div>
 
-      <div className={cx("conversation-container")}>
+      <div className={cx("conversation-container", "flex-grow-1")}>
         <div className={cx("message-container")}>
           <div className={cx("message-item-container sender")}>
             <div className={cx("message-list")}>
@@ -67,9 +69,8 @@ const ChatViewContainer = ({ showAside, onToggleAside }: Props) => {
         </div>
       </div>
 
-      <div className={cx("input-message-container")}>
-        <input className={cx("input-message")} />
-        <button className={cx("btn-secondary btn-send-message")}>Gửi</button>
+      <div className={cx("input-message-container", "w-100", "d-flex")}>
+        <ChatViewFooter />
       </div>
     </div>
   );
