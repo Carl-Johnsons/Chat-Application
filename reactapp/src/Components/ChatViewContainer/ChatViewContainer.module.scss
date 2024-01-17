@@ -11,35 +11,6 @@
         height: 100%;
         overflow: auto;
         background-color: #eef0f1;
-        .message-item-container {
-            display: flex;
-            .message {
-                width: fit-content;
-                max-width: 40rem;
-                margin: 0.2rem 0rem;
-                padding: 0.7rem;
-                border: 1px solid black;
-                border-radius: 0.7rem;
-                word-wrap: break-word;
-                .user-name,
-                .message-time {
-                    font-size: 0.8rem;
-                    color: #476285;
-                }
-            }
-            &.receiver {
-                justify-content: flex-start;
-                .message {
-                    background-color: white;
-                }
-            }
-            &.sender {
-                justify-content: flex-end;
-                .message {
-                    background-color: #e5efff;
-                }
-            }
-        }
     }
 }
 

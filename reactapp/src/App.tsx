@@ -27,7 +27,8 @@ function App() {
           "d-flex",
           "flex-grow-1",
           "flex-md-grow-0",
-          "flex-shrink-1"
+          "flex-shrink-1",
+          "flex-sm-shrink-0"
         )}
       >
         <div className={cx("navbar-section", "flex-shrink-0")}>
