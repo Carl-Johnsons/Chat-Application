@@ -7,10 +7,10 @@ interface Props {
   href: string;
   dataContent: string;
   isActive?: boolean;
-  handleClick: () => void;
   children: React.ReactNode;
   className?: string;
   navLinkClassName?: string;
+  onClick: (index: number) => void;
 }
 
 const NavItem = ({
@@ -18,12 +18,11 @@ const NavItem = ({
   href,
   dataContent,
   isActive = false,
-  handleClick,
   children,
   className = "",
   navLinkClassName = "",
+  onClick,
 }: Props) => {
-
   return (
     <li key={index} className={cx("nav-item", className)}>
       <a
@@ -38,7 +37,7 @@ const NavItem = ({
         )}
         href={href}
         data-content={dataContent}
-        onClick={handleClick}
+        onClick={() => onClick(index)}
       >
         {children}
       </a>

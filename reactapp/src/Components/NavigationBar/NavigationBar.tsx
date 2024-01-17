@@ -1,4 +1,3 @@
-import { useState } from "react";
 import className from "classnames/bind";
 import style from "./NavigationBar.module.scss";
 import images from "../../assets";
@@ -18,14 +17,17 @@ type NavItem = {
 };
 
 interface Props {
-  onShow: () => void;
+  activeLink: number;
+  setActiveLink: React.Dispatch<React.SetStateAction<number>>;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const NavigationBar = ({ onShow }: Props) => {
-  const [activeLink, setActiveLink] = useState(1);
+const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
+  const handleShowModal = () => setShowModal(true);
+
   const handleClick = (linkId: number) => {
     if (linkId === 0) {
-      onShow();
+      handleShowModal();
       return;
     }
     setActiveLink(linkId);
@@ -63,6 +65,7 @@ const NavigationBar = ({ onShow }: Props) => {
     <Nav
       className={cx(
         "application-nav-bar",
+        "border-0",
         "nav-tabs",
         "d-flex",
         "flex-column",
@@ -74,13 +77,18 @@ const NavigationBar = ({ onShow }: Props) => {
           key={index}
           index={index}
           dataContent={item.dataContent}
-          handleClick={() => handleClick(index)}
           href={item.href}
           isActive={activeLink == index}
           className={item.className}
           navLinkClassName={item.navLinkClassName}
+          onClick={handleClick}
         >
-          <Avatar variant="avatar-img-50px" src={item.image} alt={item.imageAlt} />
+          <Avatar
+            variant={index == 0 ? "avatar-img-50px" : "avatar-img-40px"}
+            className={cx(index !== 0 && "p-2")}
+            src={item.image}
+            alt={item.imageAlt}
+          />
         </NavItem>
       ))}
     </Nav>

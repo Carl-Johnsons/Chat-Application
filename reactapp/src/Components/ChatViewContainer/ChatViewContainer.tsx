@@ -8,10 +8,11 @@ import Message from "../Message";
 const cx = classNames.bind(style);
 interface Props {
   showAside: boolean;
-  onToggleAside: () => void;
+  className?: string;
+  setShowAside: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ChatViewContainer = ({ showAside, onToggleAside }: Props) => {
+const ChatViewContainer = ({ showAside, className, setShowAside }: Props) => {
   const image = images.userIcon;
   const name =
     "This name is very loonoooooooooooooooonngg and it could break my layout :) 🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡";
@@ -147,6 +148,8 @@ const ChatViewContainer = ({ showAside, onToggleAside }: Props) => {
     let start = individualMessages[0].userReceiverId;
     let startIndex = 0;
     const messageContainers = [];
+    // For removing Reactjs key warning
+    let key = 0;
     for (let i = 1; i <= individualMessages.length; i++) {
       if (
         i !== individualMessages.length &&
@@ -161,7 +164,10 @@ const ChatViewContainer = ({ showAside, onToggleAside }: Props) => {
       }
       const isSender = currentUserId !== subArray[0].userReceiverId;
       const messageContainer = (
-        <div className={cx("message-item-container", isSender && "sender")}>
+        <div
+          key={key}
+          className={cx("message-item-container", isSender && "sender")}
+        >
           <div
             className={cx(
               "message-list",
@@ -173,6 +179,7 @@ const ChatViewContainer = ({ showAside, onToggleAside }: Props) => {
           >
             {subArray.map((im) => (
               <Message
+                key={im.messageId}
                 name={im.userReceiverId + ""}
                 content={im.message.content}
                 time={im.message.time}
@@ -182,19 +189,28 @@ const ChatViewContainer = ({ showAside, onToggleAside }: Props) => {
           </div>
         </div>
       );
+      key++;
       messageContainers.push(messageContainer);
     }
     return messageContainers;
   };
 
   return (
-    <div className={cx("chat-box-container", "h-100", "d-flex", "flex-column")}>
+    <div
+      className={cx(
+        "chat-box-container",
+        "h-100",
+        "d-flex",
+        "flex-column",
+        className
+      )}
+    >
       <div className={cx("user-info-container", "d-flex")}>
         <ChatViewHeader
           images={[image]}
           name={name}
           showAside={showAside}
-          onToggleAside={onToggleAside}
+          setShowAside={setShowAside}
         />
       </div>
 

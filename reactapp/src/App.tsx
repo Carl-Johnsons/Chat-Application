@@ -11,13 +11,9 @@ import ChatViewContainer from "./Components/ChatViewContainer";
 
 const cx = classNames.bind(style);
 function App() {
+  const [activeNavIndex, setActiveNavIndex] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showAside, setShowAside] = useState(true);
-
-  const handleShowModal = () => setShowModal(true);
-  const handCloseModal = () => setShowModal(false);
-
-  const handleToggleAside = () => setShowAside(!showAside);
 
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>
@@ -32,10 +28,14 @@ function App() {
         )}
       >
         <div className={cx("navbar-section", "flex-shrink-0")}>
-          <NavigationBar onShow={handleShowModal} />
+          <NavigationBar
+            activeLink={activeNavIndex}
+            setActiveLink={setActiveNavIndex}
+            setShowModal={setShowModal}
+          />
         </div>
         <div className={cx("sidebar-section", "flex-grow-1", "flex-shrink-1")}>
-          <SidebarContent />
+          <SidebarContent activeIndex={activeNavIndex} />
         </div>
       </div>
       <div
@@ -50,17 +50,24 @@ function App() {
         <div className={cx("main-section", "flex-grow-1", "flex-shrink-1")}>
           <ChatViewContainer
             showAside={showAside}
-            onToggleAside={handleToggleAside}
+            className={cx(activeNavIndex !== 1 && "d-none")}
+            setShowAside={setShowAside}
           />
         </div>
-        <div className={cx("chat-info", "d-none", showAside && "d-xl-block")}>
+        <div
+          className={cx(
+            "chat-info",
+            "d-none",
+            showAside && activeNavIndex === 1 && "d-xl-block"
+          )}
+        >
           <div>Aside</div>
         </div>
       </div>
       <ModalContainer
         modalType="Profile"
         show={showModal}
-        handleClose={handCloseModal}
+        setShowModal={setShowModal}
       />
     </div>
   );

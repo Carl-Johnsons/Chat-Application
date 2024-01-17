@@ -11,10 +11,12 @@ interface Props {
   images: string[];
   name: string;
   showAside: boolean;
-  onToggleAside: () => void;
+  setShowAside: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ChatViewHeader = ({ images, name, showAside, onToggleAside }: Props) => {
+const ChatViewHeader = ({ images, name, showAside, setShowAside }: Props) => {
+  const handleToggleAside = () => setShowAside(!showAside);
+
   return (
     <>
       <div className={cx("avatar-container")}>
@@ -52,7 +54,7 @@ const ChatViewHeader = ({ images, name, showAside, onToggleAside }: Props) => {
             "d-flex",
             "justify-content-center"
           )}
-          onClick={onToggleAside}
+          onClick={handleToggleAside}
         >
           {showAside ? (
             <Avatar

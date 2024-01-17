@@ -14,14 +14,16 @@ const cx = classNames.bind(style);
 interface Props {
   modalType: "Profile";
   show: boolean;
-  handleClose: () => void;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 interface ModalContent {
   title?: string;
   ref: React.MutableRefObject<null>;
   modalContent: React.ReactNode;
 }
-const ModalContainer = ({ show, handleClose }: Props) => {
+const ModalContainer = ({ show, setShowModal }: Props) => {
+  const handCloseModal = () => setShowModal(false);
+
   const [modalActive, setModalActive] = useState(0);
   const [modalBodyHeight, setModalBodyHeight] = useState(0);
 
@@ -73,7 +75,7 @@ const ModalContainer = ({ show, handleClose }: Props) => {
   return (
     <Modal
       show={show}
-      onHide={handleClose}
+      onHide={handCloseModal}
       className={cx("info-modal")}
       centered
       dialogClassName={cx("modal-dialog")}
@@ -110,7 +112,7 @@ const ModalContainer = ({ show, handleClose }: Props) => {
             "close"
           )}
           data-dismiss="modal"
-          onClick={handleClose}
+          onClick={handCloseModal}
         ></Button>
       </Modal.Header>
       <Modal.Body
