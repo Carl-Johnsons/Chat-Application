@@ -5,6 +5,7 @@ import Avatar from "../Avatar";
 import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
+import { useGlobalState } from "../../GlobalState";
 
 const cx = className.bind(style);
 
@@ -24,6 +25,7 @@ interface Props {
 }
 
 const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
+  const [user] = useGlobalState("user");
   const handleShowModal = () => setShowModal(true);
 
   const handleClick = (linkId: number) => {
@@ -38,7 +40,7 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
     {
       dataContent: "info-modal",
       href: "#",
-      image: images.userIcon,
+      image: user?.avatarUrl || images.userIcon,
       imageAlt: "User Icon",
       navLinkClassName: cx("nav-avatar"),
     },
@@ -86,7 +88,7 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
         >
           <Avatar
             variant="avatar-img-40px"
-            className={cx(index !== 0 && "p-2")}
+            className={cx("rounded-circle", index !== 0 && "p-2")}
             src={item.image}
             alt={item.imageAlt}
           />

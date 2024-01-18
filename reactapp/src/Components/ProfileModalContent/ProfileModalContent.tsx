@@ -6,6 +6,7 @@ import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "../AppButton";
 import Avatar from "../Avatar";
+import { useGlobalState } from "../../GlobalState";
 
 const cx = classNames.bind(style);
 
@@ -20,18 +21,20 @@ const ProfileModalContent = ({
   onClickEditAvatar = () => {},
   onClickEditUserName = () => {},
 }: Props) => {
-  const username: string =
-    "Javamismknownmformitsmportabilitymandmstrongmcomms123";
-  const gender: string = "Nam";
-  const dob: string = "Ngày 01 tháng 01, 2000";
-  const phone: string = "+84123456789";
+  const [user] = useGlobalState("user");
+  const username = user.name;
+  const gender = user.gender;
+  const dob = user.dob;
+  const phone = user.phoneNumber;
+  const avatar = user.avatarUrl;
+  const background = user.backgroundUrl;
   return (
     <>
       <div className={cx("background-img-container", "m-0")}>
         <img
           className={cx("w-100", "h-100", "object-fit-cover")}
           draggable="false"
-          src={images.defaultBackgroundImg}
+          src={background || images.defaultBackgroundImg}
         />
       </div>
       <div className={cx("info-container", "d-flex")}>
@@ -41,7 +44,7 @@ const ProfileModalContent = ({
           <Avatar
             variant="avatar-img-80px"
             className={cx("position-absolute", "rounded-circle")}
-            src={images.defaultAvatarImg}
+            src={avatar || images.defaultAvatarImg}
             alt="avatar image"
           />
           <AppButton

@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import style from "./App.module.scss";
 import classNames from "classnames/bind";
@@ -9,13 +9,24 @@ import ModalContainer from "./Components/ModalContainer";
 import SidebarContent from "./Components/SidebarContent";
 import ChatViewContainer from "./Components/ChatViewContainer";
 import ContactContainer from "./Components/ContactContainer/ContactContainer";
+import { useGlobalState } from "./GlobalState";
+import axios from "axios";
 
 const cx = classNames.bind(style);
 function App() {
-  const [activeNavIndex, setActiveNavIndex] = useState(2);
+  const [activeNavIndex, setActiveNavIndex] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showAside, setShowAside] = useState(true);
+  const [, setUser] = useGlobalState("user");
 
+  useEffect(() => {
+    async function fetchUserData() {
+      const response = await axios.get("https://localhost:7190/api/Users/2");
+      setUser(response.data);
+    }
+    fetchUserData();
+  }, [setUser]);
+  console.log("render");
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>
       <div
@@ -61,7 +72,7 @@ function App() {
             className={cx(activeNavIndex !== 1 && "d-none")}
             setShowAside={setShowAside}
           />
-          <ContactContainer  />
+          <ContactContainer />
         </div>
         <div
           className={cx(

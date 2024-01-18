@@ -1,6 +1,9 @@
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
 import AppButton from "../AppButton";
+import { useGlobalState } from "../../GlobalState";
+import { useState } from "react";
+import axios from "axios";
 const cx = className.bind(style);
 
 interface Props {
@@ -8,16 +11,47 @@ interface Props {
 }
 
 const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
+  const [user, setUser] = useGlobalState("user");
+  const [name, setName] = useState(user.name);
+  const [gender, setGender] = useState(user.gender);
+  const date = new Date(user.dob);
+
+  const [day, setDay] = useState(date.getDate());
+  const [month, setMonth] = useState(date.getMonth() + 1); // Get month (0-11, so +1)
+  const [year, setYear] = useState(date.getFullYear());
+
   const currentYear = 2024;
 
   const dates: number[] = [];
   const dateLimit: number = 30;
   const months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const years: number[] = [];
+  const handleClickUpdate = async () => {
+    const updatedUser = structuredClone(user);
+    //Call API below
+    updatedUser.name = name;
+    updatedUser.gender = gender;
+    const dateOfBirthValue = new Date(year, month - 1, day).toISOString();
+    updatedUser.dob = dateOfBirthValue;
+    console.log({ updatedUser });
+    const response = await axios({
+      method: "PUT",
+      url: "https://localhost:7190/api/Users/2",
+      headers: {},
+      data: {
+        ...updatedUser,
+      },
+    });
+    if (response) {
+      setUser(response.data);
+      onClickCancel();
+    }
+  };
+
   for (let i: number = 1; i <= dateLimit; i++) {
     dates.push(i);
   }
-  for (let i: number = currentYear - 121; i <= currentYear - 14; i++) {
+  for (let i: number = currentYear - 121; i <= currentYear; i++) {
     years.push(i);
   }
   return (
@@ -27,7 +61,8 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
         <input
           className={cx("form-control", "p-2", "w-100")}
           type="text"
-          defaultValue="Đức"
+          defaultValue={name}
+          onBlur={(e) => setName(e.target.value)}
           name="txtUsername"
         />
       </div>
@@ -50,6 +85,8 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
               value="Nam"
               name="rdoGender"
               id="radio-gender-male"
+              defaultChecked={gender === "Nam"}
+              onChange={(e) => setGender(e.target.value)}
             />
             <label
               className={cx("form-check-label")}
@@ -65,6 +102,8 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
               value="Nữ"
               name="rdoGender"
               id="radio-gender-female"
+              defaultChecked={gender === "Nữ"}
+              onChange={(e) => setGender(e.target.value)}
             />
             <label
               className={cx("form-check-label")}
@@ -90,7 +129,14 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
               "column-gap-2"
             )}
           >
-            <select className={cx("form-select")} name="date">
+            <select
+              className={cx("form-select")}
+              name="date"
+              defaultValue={day}
+              onChange={(e) => {
+                setDay(parseInt(e.target.value));
+              }}
+            >
               {dates.map((value) => {
                 return (
                   <option key={value} value={value}>
@@ -99,7 +145,14 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
                 );
               })}
             </select>
-            <select className={cx("form-select")} name="month">
+            <select
+              className={cx("form-select")}
+              name="month"
+              defaultValue={month}
+              onChange={(e) => {
+                setMonth(parseInt(e.target.value));
+              }}
+            >
               {months.map((value) => {
                 return (
                   <option key={value} value={value}>
@@ -108,7 +161,14 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
                 );
               })}
             </select>
-            <select className={cx("form-select")} name="year">
+            <select
+              className={cx("form-select")}
+              name="year"
+              defaultValue={year}
+              onChange={(e) => {
+                setYear(parseInt(e.target.value));
+              }}
+            >
               {years.map((value) => {
                 return (
                   <option key={value} value={value}>
@@ -129,7 +189,11 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
         >
           Hủy
         </AppButton>
-        <AppButton variant="app-btn-secondary" className={cx("fw-medium")}>
+        <AppButton
+          variant="app-btn-secondary"
+          className={cx("fw-medium")}
+          onClick={handleClickUpdate}
+        >
           Cập nhật
         </AppButton>
       </div>

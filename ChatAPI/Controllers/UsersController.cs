@@ -272,7 +272,7 @@ namespace ChatAPI.Controllers
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok(user);
         }
 
         // DELETE api/<UsersController>/5
