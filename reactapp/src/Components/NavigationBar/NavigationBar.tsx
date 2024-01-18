@@ -1,9 +1,10 @@
-import className from "classnames/bind";
-import style from "./NavigationBar.module.scss";
-import images from "../../assets";
 import { Nav } from "react-bootstrap";
 import NavItem from "../NavItem";
 import Avatar from "../Avatar";
+
+import style from "./NavigationBar.module.scss";
+import className from "classnames/bind";
+import images from "../../assets";
 
 const cx = className.bind(style);
 
@@ -39,7 +40,7 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
       href: "#",
       image: images.userIcon,
       imageAlt: "User Icon",
-      navLinkClassName: "pt-4 pb-4",
+      navLinkClassName: cx("nav-avatar"),
     },
     {
       dataContent: "conversation-page",
@@ -84,7 +85,7 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
           onClick={handleClick}
         >
           <Avatar
-            variant={index == 0 ? "avatar-img-50px" : "avatar-img-40px"}
+            variant="avatar-img-40px"
             className={cx(index !== 0 && "p-2")}
             src={item.image}
             alt={item.imageAlt}

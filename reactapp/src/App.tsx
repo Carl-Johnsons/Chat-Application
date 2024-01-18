@@ -8,10 +8,11 @@ import NavigationBar from "./Components/NavigationBar";
 import ModalContainer from "./Components/ModalContainer";
 import SidebarContent from "./Components/SidebarContent";
 import ChatViewContainer from "./Components/ChatViewContainer";
+import ContactContainer from "./Components/ContactContainer/ContactContainer";
 
 const cx = classNames.bind(style);
 function App() {
-  const [activeNavIndex, setActiveNavIndex] = useState(1);
+  const [activeNavIndex, setActiveNavIndex] = useState(2);
   const [showModal, setShowModal] = useState(false);
   const [showAside, setShowAside] = useState(true);
 
@@ -47,12 +48,20 @@ function App() {
           "flex-shrink-1"
         )}
       >
-        <div className={cx("main-section", "flex-grow-1", "flex-shrink-1")}>
+        <div
+          className={cx(
+            "main-section",
+            "flex-grow-1",
+            "flex-shrink-1",
+            "transition-all-0_2s-ease-in-out"
+          )}
+        >
           <ChatViewContainer
             showAside={showAside}
             className={cx(activeNavIndex !== 1 && "d-none")}
             setShowAside={setShowAside}
           />
+          <ContactContainer  />
         </div>
         <div
           className={cx(

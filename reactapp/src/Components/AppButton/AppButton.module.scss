@@ -1,8 +1,7 @@
 @use "sass:map";
-@import "/src/GlobalStyle.scss";
 
 @mixin button-style($bg-color, $text-color, $bg-color-hover, $bg-color-active) {
-    border-radius: $modal-border-radius;
+    border-radius: var(--modal-border-radius);
     background-color: $bg-color;
     border: 0;
     color: $text-color;
@@ -20,22 +19,22 @@
 // Creating a button variants map
 $button-variants: (
     primary: (
-        bg-color: $light-gray,
-        text-color: $black,
-        bg-hover: $gray-hover,
-        bg-active: $gray-active
+        bg-color: var(--light-gray),
+        text-color: var(--black),
+        bg-hover: var(--gray-hover),
+        bg-active: var(--gray-active)
     ),
     secondary: (
-        bg-color: $blue,
-        text-color: $white,
-        bg-hover: $blue-hover,
-        bg-active: $blue-active
+        bg-color: var(--blue),
+        text-color: var(--white),
+        bg-hover: var(--blue-hover),
+        bg-active: var(--blue-active)
     ),
     tertiary: (
-        bg-color: $light-blue,
-        text-color: $blue,
-        bg-hover: $light-blue-hover,
-        bg-active: $light-blue-active
+        bg-color: var(--light-blue),
+        text-color: var(--blue),
+        bg-hover: var(--light-blue-hover),
+        bg-active: var(--light-blue-active)
     )
 );
 @each $variant, $color in $button-variants {

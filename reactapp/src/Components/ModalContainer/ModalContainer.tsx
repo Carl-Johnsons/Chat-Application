@@ -116,7 +116,13 @@ const ModalContainer = ({ show, setShowModal }: Props) => {
         ></Button>
       </Modal.Header>
       <Modal.Body
-        className={cx("modal-body", "p-0", "d-flex", "flex-column")}
+        className={cx(
+          "modal-body",
+          "p-0",
+          "d-flex",
+          "flex-column",
+          "transition-all-0_2s-ease-in-out"
+        )}
         style={{ height: modalBodyHeight }}
       >
         <ul className={cx("list-unstyled", "d-flex", "position-relative")}>

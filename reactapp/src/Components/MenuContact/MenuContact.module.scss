@@ -1,16 +1,16 @@
-@import "/src/GlobalStyle.scss";
+
 
 .menu-contact-item {
     height: 4rem;
     transition: background-color 0.15s ease-in-out;
     padding-left: 20px;
-    background-color: $light-gray2;
+    background-color: var(--light-gray2);
 
     &:hover {
-        background-color: $light-blue-hover-2;
+        background-color: var(--light-blue-hover-2);
     }
     &.active {
-        background-color: $light-blue;
+        background-color: var(--light-blue);
     }
     .description {
         .item-name-container {

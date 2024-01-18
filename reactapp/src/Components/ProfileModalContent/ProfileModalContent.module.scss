@@ -1,5 +1,3 @@
-@import "/src/GlobalStyle.scss";
-
 .background-img-container {
     height: 10rem;
 }
@@ -45,12 +43,12 @@
             font-weight: 500;
         }
         .row-name {
-            color: $gray;
+            color: var(--gray);
         }
     }
     .note {
         font-size: 12px;
         font-weight: 500;
-        color: $gray;
+        color: var(--gray);
     }
 }

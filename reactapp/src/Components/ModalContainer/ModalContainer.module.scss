@@ -1,5 +1,3 @@
-@import "/src/GlobalStyle.scss";
-
 $modal-dialog-width: 384px;
 $modal-dialog-height: 556.16px;
 $modal-header-height: 52.14px;
@@ -18,7 +16,7 @@ $margin-left-right-child-element: 1rem;
         }
 
         .modal-content {
-            border-radius: $modal-border-radius;
+            border-radius: var(--modal-border-radius);
 
             .modal-header {
                 height: $modal-header-height;
@@ -29,7 +27,6 @@ $margin-left-right-child-element: 1rem;
 
             .modal-body {
                 overflow: hidden;
-                transition: height 0.2s ease-in-out;
                 ul {
                     width: 200%;
                     li {
