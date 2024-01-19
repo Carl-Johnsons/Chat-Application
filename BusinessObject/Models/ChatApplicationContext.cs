@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace BussinessObject.Models;
 
@@ -36,8 +37,12 @@ public partial class ChatApplicationContext : DbContext
     public virtual DbSet<UserBlock> UserBlocks { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=chatApplication;Trusted_Connection=true");
+    {
+        var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        var defaultConnectionString = MyConfig.GetConnectionString("Default");
+        Console.WriteLine(defaultConnectionString);
+        optionsBuilder.UseSqlServer(defaultConnectionString);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

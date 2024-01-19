@@ -26,7 +26,7 @@ builder.Services.AddCors(
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             }
-    );
+        );
     });
 
 //Turn off model validation service
