@@ -5,9 +5,9 @@ import className from "classnames/bind";
 
 import { useGlobalState } from "../../GlobalState";
 import { useState } from "react";
-import axios from "axios";
 
 import DateUtil from "../../Utils/DateUtil/DateUtil";
+import APIUtils from "../../Utils/Api/APIUtils";
 const cx = className.bind(style);
 
 interface Props {
@@ -41,17 +41,9 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
       "-"
     );
     updatedUser.dob = formatedDob;
-    console.log({ updatedUser });
-    const response = await axios({
-      method: "PUT",
-      url: "https://localhost:7190/api/Users/2",
-      headers: {},
-      data: {
-        ...updatedUser,
-      },
-    });
-    if (response) {
-      setUser(response.data);
+    const [data] = await APIUtils.updateUser(updatedUser);
+    if (data) {
+      setUser(data);
       onClickCancel();
     }
   };

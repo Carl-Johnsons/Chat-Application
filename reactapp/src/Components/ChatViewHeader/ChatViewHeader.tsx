@@ -4,23 +4,40 @@ import appImages from "../../assets";
 import style from "./ChatViewHeader.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "../AppButton";
+import { useGlobalState } from "../../GlobalState";
+import { useEffect, useState } from "react";
+import { User } from "../../Models";
+import images from "../../assets";
 
 const cx = classNames.bind(style);
 
 interface Props {
-  images: string[];
-  name: string;
   showAside: boolean;
   setShowAside: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ChatViewHeader = ({ images, name, showAside, setShowAside }: Props) => {
+const ChatViewHeader = ({ showAside, setShowAside }: Props) => {
+  const [userMap] = useGlobalState("userMap");
+  const [activeConversation] = useGlobalState("activeConversation");
+  const [receiver, setReceiver] = useState<User>();
+  useEffect(() => {
+    if (activeConversation !== 0) {
+      if (userMap.has(activeConversation)) {
+        setReceiver(userMap.get(activeConversation));
+      }
+    }
+  }, [activeConversation, userMap]);
+
   const handleToggleAside = () => setShowAside(!showAside);
 
   return (
     <>
       <div className={cx("avatar-container")}>
-        <Avatar src={images[0]} alt="avatar" />
+        <Avatar
+          src={receiver ? receiver.avatarUrl : images.userIcon}
+          className={cx("rounded-circle")}
+          alt="avatar"
+        />
       </div>
       {/* The parent must be relative and the width must be 100%, otherwise it
       didn't show anything */}
@@ -40,7 +57,7 @@ const ChatViewHeader = ({ images, name, showAside, setShowAside }: Props) => {
               "bottom-0"
             )}
           >
-            {name}
+            {receiver && receiver.name}
           </div>
         </div>
         <div className={cx("user-status")}>Vừa mới truy cập</div>

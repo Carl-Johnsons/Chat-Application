@@ -286,7 +286,7 @@ class DataFacade {
         await this.#createPromise(
             APIService.getLastIndividualMessageList(senderId, receiverId),
             data => lastMessage = data,
-            err => console.error(err)
+            err => { console.error(err); lastMessage = "" }
         );
 
         return lastMessage;
