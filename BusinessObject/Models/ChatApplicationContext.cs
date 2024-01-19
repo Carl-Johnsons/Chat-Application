@@ -40,7 +40,6 @@ public partial class ChatApplicationContext : DbContext
     {
         var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         var defaultConnectionString = MyConfig.GetConnectionString("Default");
-        Console.WriteLine(defaultConnectionString);
         optionsBuilder.UseSqlServer(defaultConnectionString);
     }
 

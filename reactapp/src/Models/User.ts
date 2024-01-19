@@ -1,4 +1,4 @@
-export type User = {
+export  interface User {
   userId: number;
   phoneNumber: string;
   password: string;
@@ -10,4 +10,4 @@ export type User = {
   introduction: string;
   email: string;
   active: boolean;
-};
+}

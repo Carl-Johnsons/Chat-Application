@@ -154,7 +154,8 @@ export default class UpdateInfoModalDataLoader {
             const dobDate = new Date(year, month - 1, day); // Subtract 1 from the month to match JavaScript's zero-based months.
             // Format the date as a string in "YYYY-MM-DD" format
             // toISOstring is wrong because it subtract day by 1 for some reason.
-            const formattedDOB = dobDate.toLocaleDateString('pt-br').split('/').reverse().join('-');;
+            const formattedDOB = dobDate.toLocaleDateString('pt-br').split('/').reverse().join('-');
+            console.log({ formattedDOB });
             user.dob = formattedDOB;
 
 

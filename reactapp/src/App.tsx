@@ -10,7 +10,7 @@ import SidebarContent from "./Components/SidebarContent";
 import ChatViewContainer from "./Components/ChatViewContainer";
 import ContactContainer from "./Components/ContactContainer/ContactContainer";
 import { useGlobalState } from "./GlobalState";
-import axios from "axios";
+import APIUtils from "./Utils/Api/APIUtils";
 
 const cx = classNames.bind(style);
 function App() {
@@ -21,8 +21,10 @@ function App() {
 
   useEffect(() => {
     async function fetchUserData() {
-      const response = await axios.get("https://localhost:7190/api/Users/2");
-      setUser(response.data);
+      const [data] = await APIUtils.getUser(2);
+      if (data) {
+        setUser(data);
+      }
     }
     fetchUserData();
   }, [setUser]);

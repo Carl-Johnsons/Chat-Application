@@ -1,9 +1,13 @@
+import AppButton from "../AppButton";
+
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
-import AppButton from "../AppButton";
+
 import { useGlobalState } from "../../GlobalState";
 import { useState } from "react";
 import axios from "axios";
+
+import DateUtil from "../../Utils/DateUtil/DateUtil";
 const cx = className.bind(style);
 
 interface Props {
@@ -23,16 +27,20 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const currentYear = 2024;
 
   const dates: number[] = [];
-  const dateLimit: number = 30;
   const months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const years: number[] = [];
+  const dateLimit: number = DateUtil.getMaxDayinMonth(month, year);
+
   const handleClickUpdate = async () => {
     const updatedUser = structuredClone(user);
     //Call API below
     updatedUser.name = name;
     updatedUser.gender = gender;
-    const dateOfBirthValue = new Date(year, month - 1, day).toISOString();
-    updatedUser.dob = dateOfBirthValue;
+    const formatedDob = DateUtil.formatDateWithSeparator(
+      new Date(year, month - 1, day),
+      "-"
+    );
+    updatedUser.dob = formatedDob;
     console.log({ updatedUser });
     const response = await axios({
       method: "PUT",

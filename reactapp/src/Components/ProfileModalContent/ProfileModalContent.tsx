@@ -7,6 +7,7 @@ import classNames from "classnames/bind";
 import AppButton from "../AppButton";
 import Avatar from "../Avatar";
 import { useGlobalState } from "../../GlobalState";
+import DateUtil from "../../Utils/DateUtil/DateUtil";
 
 const cx = classNames.bind(style);
 
@@ -24,7 +25,7 @@ const ProfileModalContent = ({
   const [user] = useGlobalState("user");
   const username = user.name;
   const gender = user.gender;
-  const dob = user.dob;
+  const dob = DateUtil.convertISODateToVietnameseFormat(user.dob);
   const phone = user.phoneNumber;
   const avatar = user.avatarUrl;
   const background = user.backgroundUrl;
