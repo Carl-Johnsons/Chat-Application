@@ -11,6 +11,7 @@ import ChatViewContainer from "./Components/ChatViewContainer";
 import ContactContainer from "./Components/ContactContainer/ContactContainer";
 import { useGlobalState } from "./GlobalState";
 import APIUtils from "./Utils/Api/APIUtils";
+import useSignalRConnection from "./hooks/useSignalRConnection";
 
 const cx = classNames.bind(style);
 function App() {
@@ -22,14 +23,13 @@ function App() {
   const [, setFriendList] = useGlobalState("friendList");
   const [, setFriendRequestList] = useGlobalState("friendRequestList");
 
+  useSignalRConnection(import.meta.env.VITE_SIGNALR_URL);
   //This shit still run twice, waiting for optimization
   useEffect(() => {
     async function fetchUserData() {
       if (userMap.size !== 0) {
         return;
       }
-      console.log("fetch data");
-      console.log(userMap);
       const userId = 1;
       const [userData] = await APIUtils.getUser(userId);
       if (userData) {
@@ -56,7 +56,7 @@ function App() {
       }
     }
     fetchUserData();
-  });
+  }, []);
 
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>

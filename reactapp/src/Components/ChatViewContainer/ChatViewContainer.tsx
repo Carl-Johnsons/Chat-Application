@@ -7,6 +7,7 @@ import style from "./ChatViewContainer.module.scss";
 import classNames from "classnames/bind";
 
 import Message from "../Message";
+import { useEffect, useRef } from "react";
 
 const cx = classNames.bind(style);
 interface Props {
@@ -18,6 +19,14 @@ interface Props {
 const ChatViewContainer = ({ showAside, className, setShowAside }: Props) => {
   const [user] = useGlobalState("user");
   const [individualMessages] = useGlobalState("individualMessageList");
+  const messageContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      const ele = messageContainerRef.current as HTMLElement;
+      ele.scrollTop = ele.scrollHeight;
+    }
+  }, [individualMessages]);
 
   const createMessageItemContainer = () => {
     if (!individualMessages || individualMessages.length === 0) {
@@ -44,7 +53,7 @@ const ChatViewContainer = ({ showAside, className, setShowAside }: Props) => {
       const messageContainer = (
         <div
           key={key}
-          className={cx("message-item-container", isSender && "sender")}
+          className={cx("message-item-container", "mb-3", isSender && "sender")}
         >
           <div
             className={cx(
@@ -94,7 +103,10 @@ const ChatViewContainer = ({ showAside, className, setShowAside }: Props) => {
           "overflow-y-hidden"
         )}
       >
-        <div className={cx("message-container", "overflow-y-scroll")}>
+        <div
+          ref={messageContainerRef}
+          className={cx("message-container", "overflow-y-scroll")}
+        >
           {createMessageItemContainer()}
         </div>
         <div className={cx("user-input-notification")}>

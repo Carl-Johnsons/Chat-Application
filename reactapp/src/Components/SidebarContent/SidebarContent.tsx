@@ -39,7 +39,6 @@ const SidebarContent = ({ activeIndex = 0 }: Props) => {
         receiverId
       );
       data && setIndividualMessages(data);
-      console.log(data);
     },
     [setActiveConversation, user, setIndividualMessages]
   );

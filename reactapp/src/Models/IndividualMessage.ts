@@ -1,7 +1,6 @@
-import  Message  from "./Message";
-import  User  from "./User";
+import { Message, User } from ".";
 
-export  interface IndividualMessage {
+export interface IndividualMessage {
   messageId: number;
   userReceiverId: number;
   status: string;

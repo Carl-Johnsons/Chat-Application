@@ -2,7 +2,7 @@ import { Friend, FriendRequest, IndividualMessage, User } from "../../Models";
 import DateUtil from "../DateUtil/DateUtil";
 
 export default class APIUtils {
-  private static BASE_ADDRESS: string = "https://localhost:7190";
+  private static BASE_ADDRESS: string = import.meta.env.VITE_API_URL;
   constructor() {}
 
   // USER API
