@@ -12,7 +12,6 @@ namespace ChatService.Hubs
     {
         //Use the dictionary to map the userId and userConnectionId
         private static readonly ConcurrentDictionary<string, User> UserConnectionMap = new ConcurrentDictionary<string, User>();
-        private static readonly string BASE_ADDRESS = "https://localhost:7190";
 
         public ChatHub()
         {
@@ -33,6 +32,7 @@ namespace ChatService.Hubs
 
         public override Task OnConnectedAsync()
         {
+            var id  = Context.User.Identity.Name;
             Console.WriteLine("Connected");
             return base.OnConnectedAsync();
         }

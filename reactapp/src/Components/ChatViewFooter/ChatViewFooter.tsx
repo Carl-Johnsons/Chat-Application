@@ -9,7 +9,7 @@ import APIUtils from "../../Utils/Api/APIUtils";
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
   const [inputValue, setInputValue] = useState("");
-  const [user] = useGlobalState("user");
+  const [userId] = useGlobalState("userId");
   const [activeConversation] = useGlobalState("activeConversation");
   const [individualMessages, setIndividualMessages] = useGlobalState(
     "individualMessageList"
@@ -17,7 +17,7 @@ const ChatViewFooter = () => {
 
   async function fetchSendMessage() {
     const [data] = await APIUtils.sendIndividualMessage(
-      user.userId,
+      userId,
       activeConversation,
       inputValue
     );

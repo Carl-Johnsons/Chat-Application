@@ -1,6 +1,6 @@
 import { User } from ".";
 
-export interface Message {
+export type Message = {
   messageId: number;
   senderId: number;
   content: string;
@@ -9,4 +9,4 @@ export interface Message {
   messageFormat: string;
   active: boolean;
   sender: User;
-}
+};

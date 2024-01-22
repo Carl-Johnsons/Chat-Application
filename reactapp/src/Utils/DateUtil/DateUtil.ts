@@ -49,7 +49,10 @@ export default class DateUtil {
       .reverse()
       .join(seperator);
   }
-  static convertISODateToVietnameseFormat(dateTime: string) {
+  static convertISODateToVietnameseFormat(dateTime?: string) {
+    if (!dateTime) {
+      return;
+    }
     const date = new Date(dateTime);
 
     const year = date.getFullYear();

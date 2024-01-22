@@ -1,8 +1,8 @@
 import { User } from ".";
 
-export interface Friend {
+export type Friend = {
   userId: number;
   friendId: number;
   friendNavigation: User;
   user: User;
-}
+};

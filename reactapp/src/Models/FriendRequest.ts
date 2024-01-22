@@ -1,6 +1,6 @@
 import { User } from ".";
 
-export interface FriendRequest {
+export type FriendRequest = {
   senderId: number;
   receiverId: number;
   content: string;
@@ -8,4 +8,4 @@ export interface FriendRequest {
   status: string;
   receiver: null;
   sender: User;
-}
+};

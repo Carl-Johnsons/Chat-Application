@@ -17,7 +17,8 @@ interface Props {
 }
 
 const ChatViewContainer = ({ showAside, className, setShowAside }: Props) => {
-  const [user] = useGlobalState("user");
+  const [userId] = useGlobalState("userId");
+
   const [individualMessages] = useGlobalState("individualMessageList");
   const messageContainerRef = useRef(null);
 
@@ -49,7 +50,7 @@ const ChatViewContainer = ({ showAside, className, setShowAside }: Props) => {
         start = individualMessages[i].userReceiverId;
         startIndex = i;
       }
-      const isSender = user.userId !== subArray[0].userReceiverId;
+      const isSender = userId !== subArray[0].userReceiverId;
       const messageContainer = (
         <div
           key={key}

@@ -3,7 +3,7 @@ import { Friend, FriendRequest, IndividualMessage, User } from "../Models";
 import { createGlobalState } from "react-hooks-global-state";
 
 const { useGlobalState, setGlobalState } = createGlobalState({
-  user: null as unknown as User,
+  userId: null as unknown as number,
   userMap: new Map<number, User>(),
   friendList: null as unknown as Friend[],
   friendRequestList: null as unknown as FriendRequest[],

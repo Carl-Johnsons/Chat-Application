@@ -21,32 +21,62 @@ interface Props {
 const cx = classNames.bind(style);
 
 const SidebarContent = ({ activeIndex = 0 }: Props) => {
-  const [activeMenuContact, setActiveMenuContact] = useState(0);
-  const [user] = useGlobalState("user");
-  const [friendList] = useGlobalState("friendList");
+  const [userId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
+  const [friendList, setFriendList] = useGlobalState("friendList");
   const [, setIndividualMessages] = useGlobalState("individualMessageList");
   const [activeConversation, setActiveConversation] =
     useGlobalState("activeConversation");
+  // Local state
+  const [activeMenuContact, setActiveMenuContact] = useState(0);
+  useEffect(() => {
+    const fetchFriendListData = async () => {
+      if (!userId) {
+        return;
+      }
+      const [friendListData] = await APIUtils.getFriendList(userId);
+      if (!friendListData) {
+        return;
+      }
+      setFriendList(friendListData);
+      for (const friend of friendListData) {
+        if (userMap.has(friend.friendNavigation.userId)) {
+          continue;
+        }
+        userMap.set(friend.friendNavigation.userId, friend.friendNavigation);
+      }
+      return () => {
+        for (const friend of friendListData) {
+          if (!userMap.has(friend.friendNavigation.userId)) {
+            continue;
+          }
+          userMap.delete(friend.friendNavigation.userId);
+        }
+      };
+    };
+    fetchFriendListData();
+  }, [setFriendList, userId, userMap]);
 
   const handleClickConversation = useCallback(
     async (receiverId: number) => {
       setActiveConversation(receiverId);
-      if (!user) {
+      if (!userId) {
         return;
       }
       const [data] = await APIUtils.getIndividualMessageList(
-        user.userId,
+        userId,
         receiverId
       );
       data && setIndividualMessages(data);
     },
-    [setActiveConversation, user, setIndividualMessages]
+    [setActiveConversation, setIndividualMessages, userId]
   );
 
   useEffect(() => {
     if (!friendList || friendList.length === 0 || activeConversation !== 0) {
       return;
     }
+    //Initial with the first friend in the list
     handleClickConversation(friendList[0].friendNavigation.userId);
   }, [friendList, handleClickConversation, activeConversation]);
 

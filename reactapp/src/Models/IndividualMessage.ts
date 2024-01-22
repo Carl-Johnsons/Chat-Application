@@ -1,9 +1,9 @@
 import { Message, User } from ".";
 
-export interface IndividualMessage {
+export type IndividualMessage = {
   messageId: number;
   userReceiverId: number;
   status: string;
   message: Message;
   userReceiver: User;
-}
+};

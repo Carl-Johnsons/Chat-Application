@@ -15,10 +15,13 @@ interface Props {
 }
 
 const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
-  const [user, setUser] = useGlobalState("user");
-  const [name, setName] = useState(user.name);
-  const [gender, setGender] = useState(user.gender);
-  const date = new Date(user.dob);
+  const [userId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
+  const user = userMap.get(userId);
+
+  const [name, setName] = useState(user?.name ?? "");
+  const [gender, setGender] = useState(user?.gender ?? "Nam");
+  const date = new Date(user?.dob ?? "1-1-2024");
 
   const [day, setDay] = useState(date.getDate());
   const [month, setMonth] = useState(date.getMonth() + 1); // Get month (0-11, so +1)
@@ -32,6 +35,9 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const dateLimit: number = DateUtil.getMaxDayinMonth(month, year);
 
   const handleClickUpdate = async () => {
+    if (!user) {
+      return;
+    }
     const updatedUser = structuredClone(user);
     //Call API below
     updatedUser.name = name;
@@ -43,7 +49,7 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
     updatedUser.dob = formatedDob;
     const [data] = await APIUtils.updateUser(updatedUser);
     if (data) {
-      setUser(data);
+      userMap.set(userId, data);
       onClickCancel();
     }
   };

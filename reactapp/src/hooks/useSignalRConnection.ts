@@ -1,27 +1,33 @@
-import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { useEffect } from "react";
-import { useGlobalState } from "../GlobalState";
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel,
+} from "@microsoft/signalr";
+import { useEffect, useRef } from "react";
 
+// Need some best practice or something, current the connection in the App keep re-rendering this hook
 const useSignalRConnection = (hubURL: string) => {
-  const [connection, setConnection] = useGlobalState("connection");
+  const connRef = useRef<HubConnection | null>(null);
+
   useEffect(() => {
-    async function startConnection() {
-      const conn = new HubConnectionBuilder()
-        .withUrl(hubURL)
-        .configureLogging(LogLevel.Information)
-        .build();
-      await conn.start().catch((err) => console.error(err));
-
-
-      setConnection(conn);
-    }
+    connRef.current = new HubConnectionBuilder()
+      .withUrl(hubURL)
+      .configureLogging(LogLevel.Information)
+      .build();
+    const startConnection = async () => {
+      connRef.current &&
+        (await connRef.current.start().catch((err) => console.error(err)));
+    };
+    const stopConnection = async () => {
+      connRef.current && (await connRef.current.stop());
+    };
     startConnection();
     return () => {
-      if (connection) {
-        connection.stop();
-      }
+      stopConnection();
     };
-  }, []);
+  }, [hubURL]);
+
+  return connRef.current;
 };
 
 export default useSignalRConnection;

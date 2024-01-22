@@ -22,13 +22,15 @@ const ProfileModalContent = ({
   onClickEditAvatar = () => {},
   onClickEditUserName = () => {},
 }: Props) => {
-  const [user] = useGlobalState("user");
-  const username = user.name;
-  const gender = user.gender;
-  const dob = DateUtil.convertISODateToVietnameseFormat(user.dob);
-  const phone = user.phoneNumber;
-  const avatar = user.avatarUrl;
-  const background = user.backgroundUrl;
+  const [userId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
+  const user = userMap.get(userId);
+  const username = user?.name;
+  const gender = user?.gender;
+  const dob = DateUtil.convertISODateToVietnameseFormat(user?.dob);
+  const phone = user?.phoneNumber;
+  const avatar = user?.avatarUrl;
+  const background = user?.backgroundUrl;
   return (
     <>
       <div className={cx("background-img-container", "m-0")}>

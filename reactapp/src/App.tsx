@@ -15,48 +15,30 @@ import useSignalRConnection from "./hooks/useSignalRConnection";
 
 const cx = classNames.bind(style);
 function App() {
+  const [userId, setUserId] = useGlobalState("userId");
+  const [, setFriendRequestList] = useGlobalState("friendRequestList");
+  const [, setConnection] = useGlobalState("connection");
+  const conn = useSignalRConnection(import.meta.env.VITE_SIGNALR_URL);
+  //Local state
   const [activeNavIndex, setActiveNavIndex] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showAside, setShowAside] = useState(true);
-  const [, setUser] = useGlobalState("user");
-  const [userMap] = useGlobalState("userMap");
-  const [, setFriendList] = useGlobalState("friendList");
-  const [, setFriendRequestList] = useGlobalState("friendRequestList");
-
-  useSignalRConnection(import.meta.env.VITE_SIGNALR_URL);
-  //This shit still run twice, waiting for optimization
   useEffect(() => {
-    async function fetchUserData() {
-      if (userMap.size !== 0) {
+    conn && setConnection(conn);
+  }, [conn, setConnection]);
+  useEffect(() => {
+    setUserId(1);
+    const fetchUserData = async () => {
+      if (!userId) {
         return;
-      }
-      const userId = 1;
-      const [userData] = await APIUtils.getUser(userId);
-      if (userData) {
-        setUser(userData);
-        if (!userMap.has(userData.userId)) {
-          userMap.set(userData.userId, userData);
-        }
-      }
-      const [friendListData] = await APIUtils.getFriendList(userId);
-      if (friendListData) {
-        setFriendList(friendListData);
-        for (const friend of friendListData) {
-          if (!userMap.has(friend.friendNavigation.userId)) {
-            userMap.set(
-              friend.friendNavigation.userId,
-              friend.friendNavigation
-            );
-          }
-        }
       }
       const [friendRequestList] = await APIUtils.getFriendRequestList(userId);
       if (friendRequestList) {
         setFriendRequestList(friendRequestList);
       }
-    }
+    };
     fetchUserData();
-  }, []);
+  }, [setFriendRequestList, setUserId, userId]);
 
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>
