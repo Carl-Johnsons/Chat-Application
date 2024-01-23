@@ -1,5 +1,5 @@
 import { Button, Modal } from "react-bootstrap";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 
@@ -9,19 +9,16 @@ import ProfileModalContent from "../ProfileModalContent";
 import UpdateProfileModalContent from "../UpdateProfileModalContent";
 import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
 import AppButton from "../AppButton";
+import { useGlobalState } from "../../GlobalState";
 const cx = classNames.bind(style);
 
-interface Props {
-  modalType: "Profile";
-  show: boolean;
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-}
 interface ModalContent {
   title?: string;
   ref: React.MutableRefObject<null>;
   modalContent: React.ReactNode;
 }
-const ModalContainer = ({ show, setShowModal }: Props) => {
+const ModalContainer = () => {
+  const [showModal, setShowModal] = useGlobalState("showModal");
   const handCloseModal = () => setShowModal(false);
 
   const [modalActive, setModalActive] = useState(0);
@@ -63,18 +60,20 @@ const ModalContainer = ({ show, setShowModal }: Props) => {
 
   useEffect(() => {
     modalContentsRef.current.forEach((item, index) => {
-      if (modalActive == index && item.ref.current) {
+      if (showModal && modalActive == index && item.ref.current) {
         setModalBodyHeight((item.ref.current as HTMLElement).offsetHeight);
       }
     });
-  }, [show, modalActive]);
+  }, [modalActive, showModal]);
 
   function handleClick(index: number) {
     setModalActive(index);
   }
+  console.log("Modal re-render");
+  
   return (
     <Modal
-      show={show}
+      show={showModal}
       onHide={handCloseModal}
       className={cx("info-modal")}
       centered
@@ -146,4 +145,4 @@ const ModalContainer = ({ show, setShowModal }: Props) => {
   );
 };
 
-export default ModalContainer;
+export default memo(ModalContainer);

@@ -5,6 +5,7 @@ import style from "./ContactContainer.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "../Avatar";
 import AppButton from "../AppButton";
+import { memo } from "react";
 
 const cx = classNames.bind(style);
 
@@ -91,4 +92,4 @@ const ContactContainer = ({ className }: Props) => {
   );
 };
 
-export default ContactContainer;
+export default memo(ContactContainer);

@@ -22,7 +22,7 @@ const cx = classNames.bind(style);
 
 const SidebarContent = ({ activeIndex = 0 }: Props) => {
   const [userId] = useGlobalState("userId");
-  const [userMap] = useGlobalState("userMap");
+  const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
   const [, setIndividualMessages] = useGlobalState("individualMessageList");
   const [activeConversation, setActiveConversation] =
@@ -39,23 +39,33 @@ const SidebarContent = ({ activeIndex = 0 }: Props) => {
         return;
       }
       setFriendList(friendListData);
+
+      const newMap = new Map(userMap);
+      let isChange = false;
       for (const friend of friendListData) {
-        if (userMap.has(friend.friendNavigation.userId)) {
+        if (newMap.has(friend.friendNavigation.userId)) {
           continue;
         }
-        userMap.set(friend.friendNavigation.userId, friend.friendNavigation);
+        newMap.set(friend.friendNavigation.userId, friend.friendNavigation);
+        isChange = true;
       }
+      isChange && setUserMap(newMap);
+
       return () => {
+        const newMap = new Map(userMap);
+        let isChange = false;
         for (const friend of friendListData) {
-          if (!userMap.has(friend.friendNavigation.userId)) {
+          if (!newMap.has(friend.friendNavigation.userId)) {
             continue;
           }
-          userMap.delete(friend.friendNavigation.userId);
+          newMap.delete(friend.friendNavigation.userId);
+          isChange = true;
         }
+        isChange && setUserMap(newMap);
       };
     };
     fetchFriendListData();
-  }, [setFriendList, userId, userMap]);
+  }, [setFriendList, setUserMap, userId, userMap]);
 
   const handleClickConversation = useCallback(
     async (receiverId: number) => {

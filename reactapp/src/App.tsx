@@ -1,16 +1,17 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect, useState } from "react";
 
 import style from "./App.module.scss";
 import classNames from "classnames/bind";
-
+//Components
 import NavigationBar from "./Components/NavigationBar";
 import ModalContainer from "./Components/ModalContainer";
 import SidebarContent from "./Components/SidebarContent";
 import ChatViewContainer from "./Components/ChatViewContainer";
 import ContactContainer from "./Components/ContactContainer/ContactContainer";
-import { useGlobalState } from "./GlobalState";
 import APIUtils from "./Utils/Api/APIUtils";
+// Hooks
+import { useEffect, useState } from "react";
+import { useGlobalState } from "./GlobalState";
 import useSignalRConnection from "./hooks/useSignalRConnection";
 
 const cx = classNames.bind(style);
@@ -18,11 +19,11 @@ function App() {
   const [userId, setUserId] = useGlobalState("userId");
   const [, setFriendRequestList] = useGlobalState("friendRequestList");
   const [, setConnection] = useGlobalState("connection");
+  const [showAside] = useGlobalState("showAside");
+  const [, setShowModal] = useGlobalState("showModal");
   const conn = useSignalRConnection(import.meta.env.VITE_SIGNALR_URL);
   //Local state
   const [activeNavIndex, setActiveNavIndex] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [showAside, setShowAside] = useState(true);
   useEffect(() => {
     conn && setConnection(conn);
   }, [conn, setConnection]);
@@ -80,11 +81,7 @@ function App() {
             "transition-all-0_2s-ease-in-out"
           )}
         >
-          <ChatViewContainer
-            showAside={showAside}
-            className={cx(activeNavIndex !== 1 && "d-none")}
-            setShowAside={setShowAside}
-          />
+          <ChatViewContainer className={cx(activeNavIndex !== 1 && "d-none")} />
           <ContactContainer />
         </div>
         <div
@@ -97,11 +94,7 @@ function App() {
           <div>Aside</div>
         </div>
       </div>
-      <ModalContainer
-        modalType="Profile"
-        show={showModal}
-        setShowModal={setShowModal}
-      />
+      <ModalContainer />
     </div>
   );
 }

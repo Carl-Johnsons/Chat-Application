@@ -5,30 +5,30 @@ import style from "./ChatViewHeader.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "../AppButton";
 import { useGlobalState } from "../../GlobalState";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { User } from "../../Models";
 import images from "../../assets";
 
 const cx = classNames.bind(style);
 
-interface Props {
-  showAside: boolean;
-  setShowAside: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const ChatViewHeader = ({ showAside, setShowAside }: Props) => {
+const ChatViewHeader = () => {
+  const [showAside, setShowAside] = useGlobalState("showAside");
   const [userMap] = useGlobalState("userMap");
   const [activeConversation] = useGlobalState("activeConversation");
+  //Local state
   const [receiver, setReceiver] = useState<User>();
   useEffect(() => {
-    if (activeConversation !== 0) {
-      if (userMap.has(activeConversation)) {
-        setReceiver(userMap.get(activeConversation));
-      }
+    if (activeConversation === 0) {
+      return;
+    }
+
+    if (userMap.has(activeConversation)) {
+      setReceiver(userMap.get(activeConversation));
     }
   }, [activeConversation, userMap]);
 
   const handleToggleAside = () => setShowAside(!showAside);
+  console.log("Header re-render");
 
   return (
     <>
@@ -92,4 +92,4 @@ const ChatViewHeader = ({ showAside, setShowAside }: Props) => {
   );
 };
 
-export default ChatViewHeader;
+export default memo(ChatViewHeader);

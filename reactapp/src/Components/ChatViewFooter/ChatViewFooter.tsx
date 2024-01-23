@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import AppButton from "../AppButton";
 
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
 import APIUtils from "../../Utils/Api/APIUtils";
+import useSignalREvents, {
+  sendIndividualMessage,
+} from "../../hooks/useSignalREvents";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
@@ -14,21 +17,29 @@ const ChatViewFooter = () => {
   const [individualMessages, setIndividualMessages] = useGlobalState(
     "individualMessageList"
   );
+  const [connection] = useGlobalState("connection");
+  const invokeAction = useSignalREvents({ connection: connection });
 
-  async function fetchSendMessage() {
+  const fetchSendMessage = async () => {
     const [data] = await APIUtils.sendIndividualMessage(
       userId,
       activeConversation,
       inputValue
     );
-    data && setIndividualMessages([...individualMessages, data]);
+    if (!data) {
+      return;
+    }
+    // Now the invoke action can't invoke action to the server, so it must something with the side effect. Might fix it today!
+    invokeAction(sendIndividualMessage(data));
+    setIndividualMessages([...individualMessages, data]);
     setInputValue("");
-  }
+  };
   const onKeyDown = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       fetchSendMessage();
     }
   };
+  console.log("Footer re-render with connection: " + connection);
 
   const handleClick = async () => {
     fetchSendMessage();
@@ -58,5 +69,4 @@ const ChatViewFooter = () => {
     </>
   );
 };
-
-export default ChatViewFooter;
+export default memo(ChatViewFooter);

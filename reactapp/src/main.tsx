@@ -5,9 +5,9 @@ import "./index.scss";
 import GlobalStyle from "./Components/GlobalStyle/GlobalStyle.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <GlobalStyle>
       <App />
     </GlobalStyle>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

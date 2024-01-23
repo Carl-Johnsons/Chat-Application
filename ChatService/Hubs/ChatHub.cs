@@ -11,29 +11,52 @@ namespace ChatService.Hubs
     public class ChatHub : Hub
     {
         //Use the dictionary to map the userId and userConnectionId
-        private static readonly ConcurrentDictionary<string, User> UserConnectionMap = new ConcurrentDictionary<string, User>();
+        private static readonly ConcurrentDictionary<string, int> UserConnectionMap = new ConcurrentDictionary<string, int>();
 
         public ChatHub()
         {
         }
-
+        // This method is old, prepare to remove it
         public async Task MapUserData(User user)
         {
-            UserConnectionMap[Context.ConnectionId] = user;
-            await Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {user.Name}");
+            //UserConnectionMap[Context.ConnectionId] = user;
+            //await Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {user.Name}");
 
-            Console.WriteLine("In MapUserData");
-            foreach (var key in UserConnectionMap.Keys)
-            {
-                Console.WriteLine($"{key}: {UserConnectionMap[key].Name}");
-            }
-            await Console.Out.WriteLineAsync("============================");
+            //Console.WriteLine("In MapUserData");
+            //foreach (var key in UserConnectionMap.Keys)
+            //{
+            //    Console.WriteLine($"{key}: {UserConnectionMap[key]}");
+            //}
+            //await Console.Out.WriteLineAsync("============================");
         }
 
         public override Task OnConnectedAsync()
         {
-            var id  = Context.User.Identity.Name;
-            Console.WriteLine("Connected");
+            // The url would be like "https://yourhubURL:port?userId=???"
+            var userId = Context.GetHttpContext()?.Request?.Query["userId"];
+            try
+            {
+                if (userId.Equals(null))
+                {
+                    throw new Exception("user id is null abort map userId to the user map");
+                }
+
+                UserConnectionMap[Context.ConnectionId] = int.Parse(userId);
+                Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {userId}");
+                Console.WriteLine(userId + " Connected");
+
+                Console.WriteLine("In MapUserData");
+                foreach (var key in UserConnectionMap.Keys)
+                {
+                    Console.WriteLine($"{key}: {UserConnectionMap[key]}");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.Out.WriteLineAsync("============================");
             return base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
@@ -47,7 +70,7 @@ namespace ChatService.Hubs
             {
                 Console.WriteLine($"Connection {Context.ConnectionId} disconnected, but it was not found in UserConnectionMap.");
             }
-
+            await Console.Out.WriteLineAsync("============================");
             await base.OnDisconnectedAsync(exception);
         }
         //Send
@@ -60,11 +83,11 @@ namespace ChatService.Hubs
         {
             try
             {
-                await Console.Out.WriteLineAsync("Sending message");
+                await Console.Out.WriteLineAsync("Sending message: " + individualMessage.Message.Content);
                 // Have to get list because the 1 person can join on 2 different tab on browser
                 // So the connectionId may differnect but still 1 userId
                 var receiverConnectionIdList = UserConnectionMap.
-                Where(pair => pair.Value.UserId == individualMessage.UserReceiverId)
+                Where(pair => pair.Value == individualMessage.UserReceiverId)
                 .Select(pair => pair.Key)
                 .ToList();
 
@@ -99,7 +122,7 @@ namespace ChatService.Hubs
             // Have to get list because the 1 person can join on 2 different tab on browser
             // So the connectionId may differnect but still 1 userId
             var receiverConnectionIdList = UserConnectionMap.
-                Where(pair => pair.Value.UserId == friendRequest.ReceiverId)
+                Where(pair => pair.Value == friendRequest.ReceiverId)
                 .Select(pair => pair.Key)
                 .ToList();
 
@@ -117,7 +140,7 @@ namespace ChatService.Hubs
         {
             // Notify a list of user because they might have open mulit tab in browsers
             var senderConnectionIdList = UserConnectionMap.
-                Where(pair => pair.Value.UserId == senderId)
+                Where(pair => pair.Value == senderId)
                 .Select(pair => pair.Key)
                 .ToList();
 
@@ -138,7 +161,7 @@ namespace ChatService.Hubs
             {
                 // Notify a list of user because they might have open mulit tab in browsers
                 var senderConnectionIdList = UserConnectionMap.
-                    Where(pair => pair.Value.UserId == ReceiverIdList[i])
+                    Where(pair => pair.Value == ReceiverIdList[i])
                     .Select(pair => pair.Key)
                     .ToList();
 
@@ -161,7 +184,7 @@ namespace ChatService.Hubs
             {
                 // Notify a list of user because they might have open mulit tab in browsers
                 var senderConnectionIdList = UserConnectionMap.
-                    Where(pair => pair.Value.UserId == ReceiverIdList[i])
+                    Where(pair => pair.Value == ReceiverIdList[i])
                     .Select(pair => pair.Key)
                     .ToList();
 

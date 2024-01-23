@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { HubConnection, HubConnectionState } from "@microsoft/signalr";
-import { FriendRequest, IndividualMessage, User } from "../Models";
+import { FriendRequest, IndividualMessage } from "../Models";
 
 interface SignalREvent {
   name: string;
@@ -16,15 +16,12 @@ interface useSignalREventsProps {
 }
 
 const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
-
   const [connectionState, setConnectionState] = useState<HubConnectionState>(
     connection?.state || HubConnectionState.Disconnected
   );
 
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
-  console.log({ connection });
-  console.log(connection?.state);
   useEffect(() => {
     if (!connection) {
       return;
@@ -43,6 +40,7 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
       return;
     }
     invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
+      console.log(`Invoke ${name}`);
       if (!connection || connectionState !== "Connected") {
         return;
       }
@@ -65,8 +63,6 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
   }, [connection, connectionState, events]);
   return invokeActionRef.current;
 };
-type mapUserData = (user: User) => void;
-type sendIndividualMessage = (im: IndividualMessage) => void;
 type sendFriendRequest = (fr: FriendRequest) => void;
 type sendAcceptFriendRequest = (senderId: number) => void;
 type notifyUserTyping = (
@@ -78,16 +74,10 @@ type disableNotifyUserTyping = (
   receiverIdList: Array<number>
 ) => void;
 
-export function mapUserData(user: User) {
-  return {
-    name: "MapUserData",
-    args: [user],
-  };
-}
-export function sendIndividualMessage(func: sendIndividualMessage) {
+export function sendIndividualMessage(im: IndividualMessage) {
   return {
     name: "SendIndividualMessage",
-    func,
+    args: [im],
   };
 }
 export function sendFriendRequest(func: sendFriendRequest) {

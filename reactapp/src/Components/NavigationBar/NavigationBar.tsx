@@ -9,7 +9,6 @@ import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
 import APIUtils from "../../Utils/Api/APIUtils";
-import useSignalREvents, { mapUserData } from "../../hooks/useSignalREvents";
 
 const cx = className.bind(style);
 
@@ -34,7 +33,6 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
   const [connection] = useGlobalState("connection");
   const user = userMap.get(userId);
   const handleShowModal = () => setShowModal(true);
-  const invokeAction = useSignalREvents({ connection: connection });
 
   useEffect(() => {
     if (!userId || userMap.has(userId)) {
@@ -48,11 +46,10 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
         const newUserMap = new Map([...userMap]);
         newUserMap.set(userId, userData);
         setUserMap(newUserMap);
-        invokeAction(mapUserData(userData));
       }
     };
     fetchUserData();
-  }, [invokeAction, setUserMap, userId, userMap, connection]);
+  }, [setUserMap, userId, userMap, connection]);
   const handleClick = (linkId: number) => {
     if (linkId === 0) {
       handleShowModal();

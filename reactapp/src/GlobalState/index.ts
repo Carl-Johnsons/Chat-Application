@@ -9,6 +9,8 @@ const { useGlobalState, setGlobalState } = createGlobalState({
   friendRequestList: null as unknown as FriendRequest[],
   individualMessageList: null as unknown as IndividualMessage[],
   activeConversation: 0 as unknown as number,
+  showAside: false as boolean,
+  showModal: false as boolean,
   connection: null as unknown as HubConnection,
 });
 
