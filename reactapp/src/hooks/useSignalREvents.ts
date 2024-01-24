@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { HubConnection, HubConnectionState } from "@microsoft/signalr";
 import { FriendRequest, IndividualMessage } from "../Models";
+import { useGlobalState } from "../GlobalState";
 
 interface SignalREvent {
   name: string;
@@ -16,29 +17,25 @@ interface useSignalREventsProps {
 }
 
 const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
-  const [connectionState, setConnectionState] = useState<HubConnectionState>(
-    connection?.state || HubConnectionState.Disconnected
-  );
+  const [connectionState, setConnectionState] =
+    useGlobalState("connectionState");
 
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
-  useEffect(() => {
-    if (!connection) {
-      return;
-    }
-    const handleConnectionStateChange = () => {
-      setConnectionState(connection.state);
-      console.log("reconneted success");
-    };
-    connection.onreconnected(handleConnectionStateChange);
-    connection.onreconnecting(handleConnectionStateChange);
-    return () => {};
-  }, [connection]);
+  const handleConnectionStateChange = () => {
+    setConnectionState(connection?.state || HubConnectionState.Disconnected);
+    console.log("change state success!");
+  };
+  connection?.on("Connected", () => {
+    handleConnectionStateChange();
+    console.log("signalR Connected");
+  });
 
   useEffect(() => {
     if (!connection) {
       return;
     }
+
     invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
       console.log(`Invoke ${name}`);
       if (!connection || connectionState !== "Connected") {
@@ -49,6 +46,7 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
         console.error(`Error invoking ${name}: ${err}`);
       });
     };
+
     if (!events) {
       return;
     }
@@ -61,6 +59,7 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
       });
     };
   }, [connection, connectionState, events]);
+
   return invokeActionRef.current;
 };
 type sendFriendRequest = (fr: FriendRequest) => void;

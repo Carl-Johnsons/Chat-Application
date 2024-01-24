@@ -25,7 +25,6 @@ const ChatViewContainer = ({ className }: Props) => {
     }
   }, [individualMessages]);
 
-  console.log("Container re-render");
 
   return (
     <div

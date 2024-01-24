@@ -14,13 +14,12 @@ interface MenuContact {
   name: string;
   isActive?: boolean;
 }
-interface Props {
-  activeIndex?: number;
-}
 
 const cx = classNames.bind(style);
 
-const SidebarContent = ({ activeIndex = 0 }: Props) => {
+const SidebarContent = () => {
+  const [activeNav] = useGlobalState("activeNav");
+
   const [userId] = useGlobalState("userId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
@@ -104,7 +103,7 @@ const SidebarContent = ({ activeIndex = 0 }: Props) => {
       <div className={cx("search-bar-container")}>
         <SearchBar />
       </div>
-      <div className={cx("conversation-list", activeIndex !== 1 && "d-none")}>
+      <div className={cx("conversation-list", activeNav !== 1 && "d-none")}>
         {friendList &&
           friendList.map((friend) => {
             const friendNavigation = friend.friendNavigation;
@@ -147,7 +146,7 @@ const SidebarContent = ({ activeIndex = 0 }: Props) => {
           isNewMessage={true}
         /> */}
       </div>
-      <div className={cx(activeIndex !== 2 && "d-none")}>
+      <div className={cx(activeNav !== 2 && "d-none")}>
         {menuContacts.map((menuContact, index) => (
           <MenuContact
             key={index}

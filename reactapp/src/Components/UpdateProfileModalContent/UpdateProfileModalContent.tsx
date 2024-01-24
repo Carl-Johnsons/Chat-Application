@@ -16,7 +16,7 @@ interface Props {
 
 const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const [userId] = useGlobalState("userId");
-  const [userMap] = useGlobalState("userMap");
+  const [userMap, setUserMap] = useGlobalState("userMap");
   const user = userMap.get(userId);
 
   const [name, setName] = useState(user?.name ?? "");
@@ -49,7 +49,9 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
     updatedUser.dob = formatedDob;
     const [data] = await APIUtils.updateUser(updatedUser);
     if (data) {
-      userMap.set(userId, data);
+      const newMap = new Map(userMap);
+      newMap.set(userId, data);
+      setUserMap(newMap);
       onClickCancel();
     }
   };

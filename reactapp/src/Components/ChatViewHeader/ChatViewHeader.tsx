@@ -28,7 +28,6 @@ const ChatViewHeader = () => {
   }, [activeConversation, userMap]);
 
   const handleToggleAside = () => setShowAside(!showAside);
-  console.log("Header re-render");
 
   return (
     <>

@@ -66,7 +66,6 @@ const ChatViewBody = () => {
 
     return messageContainers;
   }, [individualMessages, userId]);
-  console.log("Re-render chat view body for no reason :)");
 
   return <>{createMessageItemContainer()}</>;
 };

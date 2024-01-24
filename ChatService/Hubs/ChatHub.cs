@@ -30,7 +30,7 @@ namespace ChatService.Hubs
             //await Console.Out.WriteLineAsync("============================");
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             // The url would be like "https://yourhubURL:port?userId=???"
             var userId = Context.GetHttpContext()?.Request?.Query["userId"];
@@ -57,7 +57,8 @@ namespace ChatService.Hubs
                 Console.WriteLine(ex.Message);
             }
             Console.Out.WriteLineAsync("============================");
-            return base.OnConnectedAsync();
+            await Clients.All.SendAsync("Connected");
+            await base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
@@ -71,6 +72,7 @@ namespace ChatService.Hubs
                 Console.WriteLine($"Connection {Context.ConnectionId} disconnected, but it was not found in UserConnectionMap.");
             }
             await Console.Out.WriteLineAsync("============================");
+            await Clients.All.SendAsync("Disconnected");
             await base.OnDisconnectedAsync(exception);
         }
         //Send

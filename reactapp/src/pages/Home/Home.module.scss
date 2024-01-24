@@ -1,0 +1,31 @@
+$navbar-width: 60px;
+$left-width: 414px;
+$chat-info-width: 344px;
+$siderbar-width: calc($left-width - $navbar-width);
+
+* {
+    user-select: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.left {
+    flex-basis: $left-width;
+    & > .navbar-section {
+        flex-basis: $navbar-width;
+    }
+    & > .sidebar-section {
+        flex-basis: $siderbar-width;
+        border-right: 1px solid var(--border-color);
+    }
+}
+
+.main-section {
+}
+
+.chat-info {
+    background-color: chocolate;
+    flex-basis: $chat-info-width;
+}

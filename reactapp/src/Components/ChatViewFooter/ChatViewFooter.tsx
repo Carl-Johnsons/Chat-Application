@@ -29,9 +29,8 @@ const ChatViewFooter = () => {
     if (!data) {
       return;
     }
-    // Now the invoke action can't invoke action to the server, so it must something with the side effect. Might fix it today!
-    invokeAction(sendIndividualMessage(data));
     setIndividualMessages([...individualMessages, data]);
+    invokeAction(sendIndividualMessage(data));
     setInputValue("");
   };
   const onKeyDown = async (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -39,7 +38,6 @@ const ChatViewFooter = () => {
       fetchSendMessage();
     }
   };
-  console.log("Footer re-render with connection: " + connection);
 
   const handleClick = async () => {
     fetchSendMessage();

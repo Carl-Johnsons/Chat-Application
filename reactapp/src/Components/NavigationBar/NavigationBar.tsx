@@ -21,13 +21,10 @@ type NavItem = {
   navLinkClassName?: string;
 };
 
-interface Props {
-  activeLink: number;
-  setActiveLink: React.Dispatch<React.SetStateAction<number>>;
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-}
+const NavigationBar = () => {
+  const [activeNav, setActiveNav] = useGlobalState("activeNav");
+  const [, setShowModal] = useGlobalState("showModal");
 
-const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
   const [userId] = useGlobalState("userId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [connection] = useGlobalState("connection");
@@ -55,7 +52,7 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
       handleShowModal();
       return;
     }
-    setActiveLink(linkId);
+    setActiveNav(linkId);
   };
 
   const items: NavItem[] = [
@@ -104,7 +101,7 @@ const NavigationBar = ({ activeLink, setActiveLink, setShowModal }: Props) => {
           index={index}
           dataContent={item.dataContent}
           href={item.href}
-          isActive={activeLink == index}
+          isActive={activeNav == index}
           className={item.className}
           navLinkClassName={item.navLinkClassName}
           onClick={handleClick}

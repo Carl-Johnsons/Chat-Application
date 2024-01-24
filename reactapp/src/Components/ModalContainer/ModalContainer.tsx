@@ -19,18 +19,11 @@ interface ModalContent {
 }
 const ModalContainer = () => {
   const [showModal, setShowModal] = useGlobalState("showModal");
-  const handCloseModal = () => setShowModal(false);
-
   const [modalActive, setModalActive] = useState(0);
   const [modalBodyHeight, setModalBodyHeight] = useState(0);
 
-  const titleMap: string[] = [
-    "Thông tin cá nhân",
-    "Cập nhật thông tin cá nhân",
-    "Cập nhật ảnh đại diện",
-  ];
-
-  const modalContents: ModalContent[] = [
+  const handCloseModal = () => setShowModal(false);
+  const modalContentsRef = useRef<ModalContent[]>([
     {
       title: "Thông tin cá nhân",
       ref: useRef(null),
@@ -54,9 +47,7 @@ const ModalContainer = () => {
       ref: useRef(null),
       modalContent: <UpdateAvatarModalContent />,
     },
-  ];
-  // Ensure modalContents won't re-rendering
-  const modalContentsRef = useRef(modalContents);
+  ]);
 
   useEffect(() => {
     modalContentsRef.current.forEach((item, index) => {
@@ -69,8 +60,7 @@ const ModalContainer = () => {
   function handleClick(index: number) {
     setModalActive(index);
   }
-  console.log("Modal re-render");
-  
+
   return (
     <Modal
       show={showModal}
@@ -100,7 +90,7 @@ const ModalContainer = () => {
             </AppButton>
           )}
 
-          {titleMap[modalActive]}
+          {modalContentsRef.current[modalActive].title}
         </Modal.Title>
         <Button
           className={cx(
@@ -125,7 +115,7 @@ const ModalContainer = () => {
         style={{ height: modalBodyHeight }}
       >
         <ul className={cx("list-unstyled", "d-flex", "position-relative")}>
-          {modalContents.map((item, index) => (
+          {modalContentsRef.current.map((item, index) => (
             <li
               key={index}
               ref={item.ref}
