@@ -45,7 +45,7 @@ const ChatViewFooter = () => {
   return (
     <>
       <input
-        defaultValue={inputValue}
+        value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={onKeyDown}
         className={cx("input-message", "flex-grow-1", "border-0")}

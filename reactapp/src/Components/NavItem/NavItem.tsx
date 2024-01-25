@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import style from "./NavItem.module.scss";
 import classNames from "classnames/bind";
 
@@ -25,7 +26,7 @@ const NavItem = ({
 }: Props) => {
   return (
     <li key={index} className={cx("nav-item", className)}>
-      <a
+      <Link
         className={cx(
           "nav-link",
           "d-flex",
@@ -35,12 +36,12 @@ const NavItem = ({
           isActive ? "active" : "",
           navLinkClassName
         )}
-        href={href}
+        to={href}
         data-content={dataContent}
         onClick={() => onClick(index)}
       >
         {children}
-      </a>
+      </Link>
     </li>
   );
 };

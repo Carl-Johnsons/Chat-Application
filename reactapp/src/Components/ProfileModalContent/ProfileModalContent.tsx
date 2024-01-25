@@ -40,7 +40,7 @@ const ProfileModalContent = ({
           src={background || images.defaultBackgroundImg}
         />
       </div>
-      <div className={cx("info-container", "d-flex")}>
+      <div className={cx("info-container", "d-flex", "pb-4")}>
         <div
           className={cx("w-25", "avatar-img-container", "position-relative")}
         >

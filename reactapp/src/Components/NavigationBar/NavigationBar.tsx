@@ -78,7 +78,7 @@ const NavigationBar = () => {
     },
     {
       dataContent: "log-out",
-      href: "/Log/Logout",
+      href: "/logout",
       image: images.logOutIcon,
       imageAlt: "Log out icon",
     },
