@@ -29,12 +29,3 @@ export default {
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
-
-
-# SET UP THE REACT PROJECT
-## Create a file .env and put it at the root of the react project
-Then put these in your .env file
-```.env
-VITE_API_URL="Your URL"
-VITE_SIGNALR_URL="Hub URL"
-```

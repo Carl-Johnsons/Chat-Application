@@ -2,7 +2,7 @@
 
 This project is for education purpose and takes inpiration from Zalo
 
-## Set up the chatAPI
+## 1. Set up the chatAPI
 
 - Create the appsettings.json and put it at the root of the chatAPI project
 
@@ -26,4 +26,15 @@ This project is for education purpose and takes inpiration from Zalo
     "Audience": "Your audience url"
   }
 }
+```
+
+## 2. Set up the react app
+
+- Create a file .env and put it at the root of the react project
+
+- Then put these in your .env file
+
+```.env
+VITE_API_URL="Your URL"
+VITE_SIGNALR_URL="Hub URL"
 ```
