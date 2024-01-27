@@ -12,7 +12,7 @@ builder.Services.AddCors(
             {
                 // The URI must be the exact like this, no trailing "/"
                 // Example: wrong origin: https://localhost:7093/
-                policy.WithOrigins("http://localhost:5173")
+                policy.WithOrigins("http://localhost:8000")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();

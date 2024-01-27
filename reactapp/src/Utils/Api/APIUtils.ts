@@ -2,8 +2,7 @@ import { Friend, FriendRequest, IndividualMessage, User } from "../../Models";
 import DateUtil from "../DateUtil/DateUtil";
 
 export default class APIUtils {
-  private static BASE_ADDRESS: string = import.meta.env.VITE_APP_TITLE;
-  constructor() {}
+  private static BASE_ADDRESS: string = import.meta.env.VITE_BASE_API_URL;
 
   // USER API
 

@@ -7,7 +7,7 @@ This project is for education purpose and takes inpiration from Zalo
 - Create the appsettings.json and put it at the root of the chatAPI project
 
 - Inside the json paste this format:
-
+### NOTE: the issuer must have no trailing "/" Example: wrong url: https://localhost:7093/
 ```json
 {
   "Logging": {

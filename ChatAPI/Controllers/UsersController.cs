@@ -137,24 +137,6 @@ namespace ChatAPI.Controllers
             return CreatedAtAction("Get", new { id = user.UserId }, user);
         }
 
-        [HttpPost("Login/{phoneNumber}/{password}")]
-        public async Task<IActionResult> Login(string? phoneNumber, string? password)
-        {
-            User? user = null;
-            try
-            {
-                user = _userRepository.Login(phoneNumber, password);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
-        }
         [HttpPost("SendFriendRequest")]
         public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequest friendRequest)
         {

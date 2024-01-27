@@ -1,17 +1,37 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+IConfigurationSection jwtSection = config.GetSection("Jwt");
+var secretKey = jwtSection["Key"];
+var issuer = jwtSection["Issuer"];
+var audience = jwtSection["Audience"];
 
 var builder = WebApplication.CreateBuilder(args);
-
+var service = builder.Services;
 // Add services to the container.
 
-builder.Services.AddControllers();
+service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+    });
+service.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+service.AddEndpointsApiExplorer();
+service.AddSwaggerGen();
 //Add CORS to allow request API on different port
-builder.Services.AddCors(
+service.AddCors(
     options =>
     {
         options.AddDefaultPolicy(
@@ -22,7 +42,7 @@ builder.Services.AddCors(
                 policy.WithOrigins("https://localhost:7093")
                 .AllowAnyMethod()
                 .AllowAnyHeader();
-                policy.WithOrigins("http://localhost:5173")
+                policy.WithOrigins(issuer)
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             }
@@ -30,7 +50,7 @@ builder.Services.AddCors(
     });
 
 //Turn off model validation service
-builder.Services.Configure<ApiBehaviorOptions>(options =>
+service.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
@@ -49,10 +69,11 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
-
 
 app.Run();
 
