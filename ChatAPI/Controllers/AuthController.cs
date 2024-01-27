@@ -40,7 +40,10 @@ namespace ChatAPI.Controllers
             {
                 return NotFound();
             }
-            var token = Generate(user);
+            var token = new TokenModel
+            {
+                Token = Generate(user)
+            };
             return Ok(token);
         }
 
@@ -56,6 +59,7 @@ namespace ChatAPI.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[] {
+                new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.MobilePhone,user.PhoneNumber),
                 new Claim(ClaimTypes.GivenName,user.Name),
@@ -81,5 +85,11 @@ namespace ChatAPI.Controllers
         [Required]
         [JsonPropertyName("password")]
         public string? Password { get; set; }
+    }
+    public class TokenModel
+    {
+        [Required]
+        [JsonPropertyName("token")]
+        public string? Token { get; set; }
     }
 }

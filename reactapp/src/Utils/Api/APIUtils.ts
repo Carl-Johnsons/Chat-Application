@@ -1,8 +1,46 @@
-import { Friend, FriendRequest, IndividualMessage, User } from "../../Models";
+import {
+  Friend,
+  FriendRequest,
+  IndividualMessage,
+  JwtToken,
+  User,
+} from "../../Models";
 import DateUtil from "../DateUtil/DateUtil";
+import RequestInitBuilder from "../RequestInitBuilder/RequestInitBuilder";
 
 export default class APIUtils {
   private static BASE_ADDRESS: string = import.meta.env.VITE_BASE_API_URL;
+  constructor() {}
+
+  // Auth API
+  static async login(
+    phoneNumber: string,
+    password: string
+  ): Promise<[JwtToken | null, unknown]> {
+    if (!phoneNumber || !password) {
+      throw new Error("phone number or password is not valid");
+    }
+    try {
+      const url = APIUtils.BASE_ADDRESS + "/api/Auth/Login";
+
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("POST")
+        .withContentJson()
+        .withBody(JSON.stringify({ phoneNumber, password }))
+        .build();
+
+      const response = await fetch(url, fetchConfig);
+      if (!response.ok) {
+        throw new Error("Fetch error: " + response.statusText);
+      }
+      const data: JwtToken = await response.json();
+      localStorage.setItem("token", data.token);
+      return [data, null];
+    } catch (err) {
+      console.error(err);
+      return [null, err];
+    }
+  }
 
   // USER API
 
@@ -17,12 +55,11 @@ export default class APIUtils {
     }
     try {
       const url = APIUtils.BASE_ADDRESS + "/api/Users/" + userId;
-      const fetchConfig = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("GET")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
 
       const response = await fetch(url, fetchConfig);
       if (!response.ok) {
@@ -45,12 +82,12 @@ export default class APIUtils {
     }
     try {
       const url = APIUtils.BASE_ADDRESS + "/api/Users/Search/" + phoneNumber;
-      const fetchConfig = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("GET")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
+
       const response = await fetch(url, fetchConfig);
       if (!response.ok) {
         throw new Error("Fetch error: " + response.statusText);
@@ -78,12 +115,11 @@ export default class APIUtils {
     }
     try {
       const url = APIUtils.BASE_ADDRESS + "/api/Users/GetFriend/" + userId;
-      const fetchConfig = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("GET")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
 
       const response = await fetch(url, fetchConfig);
       if (!response.ok) {
@@ -121,12 +157,11 @@ export default class APIUtils {
         APIUtils.BASE_ADDRESS +
         "/api/Users/GetFriendRequestsByReceiverId/" +
         userId;
-      const fetchConfig = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("GET")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
 
       const response = await fetch(url, fetchConfig);
       if (!response.ok) {
@@ -166,13 +201,12 @@ export default class APIUtils {
       };
 
       const url = APIUtils.BASE_ADDRESS + "/api/Users/SendFriendRequest";
-      const fetchConfig = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(friendRequest),
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("POST")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withBody(JSON.stringify(friendRequest))
+        .build();
 
       const response = await fetch(url, fetchConfig);
       const data = await response.json();
@@ -207,13 +241,11 @@ export default class APIUtils {
         senderId +
         "/" +
         receiverId;
-      const fetchConfig = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("POST")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
       const response = await fetch(url, fetchConfig);
       const status = response.status;
       return [status, null];
@@ -234,13 +266,12 @@ export default class APIUtils {
     }
     try {
       const url = APIUtils.BASE_ADDRESS + "/api/Users/" + user.userId;
-      const fetchConfig = {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("PUT")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withBody(JSON.stringify(user))
+        .build();
 
       const response = await fetch(url, fetchConfig);
       const data = await response.json();
@@ -267,12 +298,11 @@ export default class APIUtils {
         userId +
         "/" +
         friendId;
-      const fetchConfig = {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("DELETE")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
 
       const response = await fetch(url, fetchConfig);
       const status = response.status;
@@ -307,13 +337,11 @@ export default class APIUtils {
         senderId +
         "/" +
         receiverId;
-      const fetchConfig = {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("DELETE")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
       const response = await fetch(url, fetchConfig);
       const status = response.status;
       return [status, null];
@@ -345,12 +373,11 @@ export default class APIUtils {
         senderId +
         "/" +
         receiverId;
-      const fetchConfig = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("GET")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
 
       const response = await fetch(url, fetchConfig);
       if (!response.ok) {
@@ -386,12 +413,11 @@ export default class APIUtils {
         senderId +
         "/" +
         receiverId;
-      const fetchConfig = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("GET")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
 
       const response = await fetch(url, fetchConfig);
       if (!response.ok) {
@@ -437,13 +463,13 @@ export default class APIUtils {
         },
       };
       const url = APIUtils.BASE_ADDRESS + "/api/Messages/SendIndividualMessage";
-      const fetchConfig = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(messageObject),
-      };
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("POST")
+        .withContentJson()
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withBody(JSON.stringify(messageObject))
+        .build();
+
       const response = await fetch(url, fetchConfig);
       const data = await response.json();
       return [data, null];
@@ -473,11 +499,13 @@ export default class APIUtils {
       const formData = new FormData();
       formData.append("ImageFile", file);
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {},
-        body: formData,
-      });
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("POST")
+        .withBody(formData)
+        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .build();
+
+      const response = await fetch(url, fetchConfig);
 
       const data = await response.text();
       return [data, null];

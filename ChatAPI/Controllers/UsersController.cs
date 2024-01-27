@@ -28,7 +28,7 @@ namespace ChatAPI.Controllers
         }
 
 
-        private User GetCurrentUser()
+        private User? GetCurrentUser()
         {
             var indentity = HttpContext.User.Identity as ClaimsIdentity;
             if (indentity == null)
@@ -38,6 +38,7 @@ namespace ChatAPI.Controllers
             var userClaims = indentity.Claims;
             return new User
             {
+                UserId = userClaims.FirstOrDefault(o => o.Type = ClaimTypes.NameIdentifier)?.Value,
                 Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
                 PhoneNumber = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.MobilePhone)?.Value,
                 Name = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.GivenName)?.Value,

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Form, InputGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,10 +7,18 @@ import AppButton from "../AppButton";
 
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
+import APIUtils from "../../Utils/Api/APIUtils";
 
 const cx = classNames.bind(style);
 
 const LoginForm = () => {
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleClick = async () => {
+    const [data] = await APIUtils.login(phoneNumber, password);
+    console.log(data?.token);
+  };
   return (
     <Form className={cx("p-3", "p-lg-5")}>
       <div className={cx("h2", "mt-3")}>Sign In to Zalo</div>
@@ -23,6 +32,8 @@ const LoginForm = () => {
         <Form.Control
           className={cx("shadow-none")}
           placeholder="Phone number"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
         />
       </InputGroup>
       <InputGroup className={cx("mb-4")}>
@@ -32,6 +43,8 @@ const LoginForm = () => {
         <Form.Control
           className={cx("shadow-none")}
           placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </InputGroup>
 
@@ -54,7 +67,11 @@ const LoginForm = () => {
           </Link>
         </Form.Group>
       </div>
-      <AppButton variant="app-btn-secondary" className={cx("w-100", "mb-3")}>
+      <AppButton
+        variant="app-btn-secondary"
+        className={cx("w-100", "mb-3")}
+        onClick={handleClick}
+      >
         Login
       </AppButton>
     </Form>
