@@ -37,4 +37,5 @@ This project is for education purpose and takes inpiration from Zalo
 ```.env
 VITE_API_URL="Your URL"
 VITE_SIGNALR_URL="Hub URL"
+VITE_PORT="Your react app port"
 ```
