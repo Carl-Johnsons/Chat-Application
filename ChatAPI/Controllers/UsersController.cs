@@ -1,10 +1,10 @@
 ﻿using DataAccess.Repositories;
 using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,6 +12,7 @@ namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         IUserRepository _userRepository;
@@ -25,6 +26,25 @@ namespace ChatAPI.Controllers
             _friendRepository = new FriendRepository();
             _friendRequestRepository = new FriendRequestRepository();
         }
+
+
+        private User GetCurrentUser()
+        {
+            var indentity = HttpContext.User.Identity as ClaimsIdentity;
+            if (indentity == null)
+            {
+                return null;
+            }
+            var userClaims = indentity.Claims;
+            return new User
+            {
+                Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
+                PhoneNumber = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.MobilePhone)?.Value,
+                Name = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.GivenName)?.Value,
+
+            };
+        }
+
 
         // GET: api/<UsersController>
         [HttpGet]

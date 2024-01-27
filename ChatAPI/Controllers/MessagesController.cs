@@ -1,11 +1,13 @@
 ﻿using DataAccess.Repositories;
 using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MessagesController : ControllerBase
     {
         MessageRepository messageRepository;

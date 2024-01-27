@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
@@ -9,6 +10,7 @@ namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ToolsController : ControllerBase
     {
         // GET: api/<ToolsController>

@@ -35,7 +35,7 @@ This project is for education purpose and takes inpiration from Zalo
 - Then put these in your .env file
 
 ```.env
-VITE_API_URL="Your URL"
+VITE_BASE_API_URL="Your URL"
 VITE_SIGNALR_URL="Hub URL"
 VITE_PORT="Your react app port"
 ```
