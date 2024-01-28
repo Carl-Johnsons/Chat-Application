@@ -10,6 +10,7 @@ import RequestInitBuilder from "../RequestInitBuilder/RequestInitBuilder";
 
 export default class APIUtils {
   private static BASE_ADDRESS: string = import.meta.env.VITE_BASE_API_URL;
+  private static ACCESS_TOKEN = "accessToken";
   constructor() {}
 
   // Auth API
@@ -34,7 +35,7 @@ export default class APIUtils {
         throw new Error("Fetch error: " + response.statusText);
       }
       const data: JwtToken = await response.json();
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("accessToken", data.token);
       return [data, null];
     } catch (err) {
       console.error(err);
@@ -58,7 +59,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("GET")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);
@@ -73,7 +76,29 @@ export default class APIUtils {
       return [null, err];
     }
   }
+  static async getUserProfile(): Promise<[User | null, unknown]> {
+    try {
+      const url = APIUtils.BASE_ADDRESS + "/api/Users/GetUserProfile";
+      const fetchConfig = new RequestInitBuilder()
+        .withMethod("GET")
+        .withContentJson()
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
+        .build();
 
+      const response = await fetch(url, fetchConfig);
+      if (!response.ok) {
+        throw new Error("Fetch error: " + response.statusText);
+      }
+      const data = await response.json();
+
+      return [data, null];
+    } catch (err) {
+      console.error(err);
+      return [null, err];
+    }
+  }
   static async searchUser(
     phoneNumber: string
   ): Promise<[User | null, unknown]> {
@@ -85,7 +110,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("GET")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);
@@ -118,7 +145,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("GET")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);
@@ -160,7 +189,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("GET")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);
@@ -204,7 +235,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("POST")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .withBody(JSON.stringify(friendRequest))
         .build();
 
@@ -244,7 +277,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("POST")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
       const response = await fetch(url, fetchConfig);
       const status = response.status;
@@ -269,7 +304,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("PUT")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .withBody(JSON.stringify(user))
         .build();
 
@@ -301,7 +338,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("DELETE")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);
@@ -340,7 +379,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("DELETE")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
       const response = await fetch(url, fetchConfig);
       const status = response.status;
@@ -376,7 +417,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("GET")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);
@@ -416,7 +459,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("GET")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);
@@ -466,7 +511,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("POST")
         .withContentJson()
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .withBody(JSON.stringify(messageObject))
         .build();
 
@@ -502,7 +549,9 @@ export default class APIUtils {
       const fetchConfig = new RequestInitBuilder()
         .withMethod("POST")
         .withBody(formData)
-        .withAuthorization(`Bearer ${localStorage.getItem("token")}`)
+        .withAuthorization(
+          `Bearer ${localStorage.getItem(APIUtils.ACCESS_TOKEN)}`
+        )
         .build();
 
       const response = await fetch(url, fetchConfig);

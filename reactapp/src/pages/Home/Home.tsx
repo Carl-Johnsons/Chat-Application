@@ -27,11 +27,13 @@ const Home = () => {
     conn && setConnection(conn);
   }, [conn, setConnection]);
   useEffect(() => {
-    setUserId(1);
     const fetchUserData = async () => {
-      if (!userId) {
+      const [user] = await APIUtils.getUserProfile();
+      if (!user) {
         return;
       }
+      setUserId(user.userId);
+
       const [friendRequestList] = await APIUtils.getFriendRequestList(userId);
       if (friendRequestList) {
         setFriendRequestList(friendRequestList);

@@ -18,16 +18,14 @@ namespace ChatAPI.Controllers
         IUserRepository _userRepository;
         IFriendRepository _friendRepository;
         IFriendRequestRepository _friendRequestRepository;
-
         private readonly string BASE_ADDRESS = "https://localhost:7190";
+        private User CurrentUser => GetCurrentUser();
         public UsersController()
         {
             _userRepository = new UserRepository();
             _friendRepository = new FriendRepository();
             _friendRequestRepository = new FriendRequestRepository();
         }
-
-
         private User? GetCurrentUser()
         {
             var indentity = HttpContext.User.Identity as ClaimsIdentity;
@@ -38,14 +36,12 @@ namespace ChatAPI.Controllers
             var userClaims = indentity.Claims;
             return new User
             {
-                UserId = userClaims.FirstOrDefault(o => o.Type = ClaimTypes.NameIdentifier)?.Value,
+                UserId = int.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value),
                 Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
                 PhoneNumber = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.MobilePhone)?.Value,
                 Name = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.GivenName)?.Value,
-
             };
         }
-
 
         // GET: api/<UsersController>
         [HttpGet]
@@ -65,6 +61,16 @@ namespace ChatAPI.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var user = _userRepository.GetUserByID(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+        [HttpGet("GetUserProfile")]
+        public async Task<IActionResult> GetUserProfile()
+        {
+            var user = _userRepository.GetUserByID(CurrentUser.UserId);
             if (user == null)
             {
                 return NotFound();
