@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, InputGroup } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faMobilePhone } from "@fortawesome/free-solid-svg-icons";
 import AppButton from "../AppButton";
@@ -12,12 +12,17 @@ import APIUtils from "../../Utils/Api/APIUtils";
 const cx = classNames.bind(style);
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
   const handleClick = async () => {
     const [data] = await APIUtils.login(phoneNumber, password);
+    if (!data) {
+      return;
+    }
     console.log(data?.token);
+    navigate("/");
   };
   return (
     <Form className={cx("p-3", "p-lg-5")}>

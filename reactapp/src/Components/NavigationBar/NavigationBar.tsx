@@ -47,13 +47,6 @@ const NavigationBar = () => {
     };
     fetchUserData();
   }, [setUserMap, userId, userMap, connection]);
-  const handleClick = (linkId: number) => {
-    if (linkId === 0) {
-      handleShowModal();
-      return;
-    }
-    setActiveNav(linkId);
-  };
 
   const items: NavItem[] = [
     {
@@ -83,7 +76,16 @@ const NavigationBar = () => {
       imageAlt: "Log out icon",
     },
   ];
-
+  const handleClick = (linkId: number) => {
+    if (linkId === 0) {
+      handleShowModal();
+      return;
+    }
+    if (linkId === items.length - 1) {
+      return;
+    }
+    setActiveNav(linkId);
+  };
   return (
     <Nav
       className={cx(

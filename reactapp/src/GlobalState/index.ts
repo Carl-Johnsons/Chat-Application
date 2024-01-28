@@ -2,7 +2,7 @@ import { HubConnection, HubConnectionState } from "@microsoft/signalr";
 import { Friend, FriendRequest, IndividualMessage, User } from "../Models";
 import { createGlobalState } from "react-hooks-global-state";
 
-const { useGlobalState, setGlobalState } = createGlobalState({
+const initialState = {
   userId: null as unknown as number,
   userMap: new Map<number, User>(),
   friendList: null as unknown as Friend[],
@@ -14,6 +14,13 @@ const { useGlobalState, setGlobalState } = createGlobalState({
   showModal: false as boolean,
   connection: null as unknown as HubConnection,
   connectionState: HubConnectionState.Disconnected as HubConnectionState,
-});
+};
 
-export { useGlobalState, setGlobalState };
+const { useGlobalState, setGlobalState } = createGlobalState(initialState);
+
+const resetGlobalState = () => {
+  Object.entries(initialState).forEach(([key, value]) => {
+    setGlobalState(key as keyof typeof initialState, value);
+  });
+};
+export { useGlobalState, setGlobalState, resetGlobalState };

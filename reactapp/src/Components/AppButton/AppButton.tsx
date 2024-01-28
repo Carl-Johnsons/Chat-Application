@@ -10,14 +10,14 @@ type Tertiary = VariantType<"app-btn-tertiary">;
 interface Props {
   variant?: Primary | Secondary | Tertiary;
   className?: string;
-  onClick?: () => void;
   children?: React.ReactNode;
+  onClick?: () => void;
 }
 const AppButton = ({
   variant = "app-btn-primary",
   className = "",
-  onClick = () => {},
   children = "",
+  onClick = () => {},
 }: Props) => {
   return (
     <Button

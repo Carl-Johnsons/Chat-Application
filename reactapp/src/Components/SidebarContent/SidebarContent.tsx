@@ -37,6 +37,8 @@ const SidebarContent = () => {
       if (!friendListData) {
         return;
       }
+      console.log("Fetch friend list");
+      
       setFriendList(friendListData);
 
       const newMap = new Map(userMap);
@@ -87,6 +89,7 @@ const SidebarContent = () => {
     }
     //Initial with the first friend in the list
     handleClickConversation(friendList[0].friendNavigation.userId);
+    console.log("click first friend");
   }, [friendList, handleClickConversation, activeConversation]);
 
   function handleClickMenuContact(index: number) {

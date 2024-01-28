@@ -3,7 +3,7 @@ import routes from "./routes/routes";
 
 function App() {
   return (
-    <Router>
+    <Router >
       <Routes>
         {routes.map((route, index) => {
           const path = route.path;

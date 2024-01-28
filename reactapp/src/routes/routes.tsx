@@ -1,8 +1,9 @@
-import { Navigate, RouteProps } from "react-router-dom";
+import { RouteProps } from "react-router-dom";
 
 import { HomePage } from "../pages/Home";
 import { NotFoundPage } from "../pages/NotFound";
 import { LoginPage } from "../pages/Login";
+import { LogoutPage } from "../pages/Logout";
 
 const routes: Array<RouteProps> = [
   {
@@ -17,7 +18,7 @@ const routes: Array<RouteProps> = [
   },
   {
     path: "/logout",
-    element: <Navigate to={"/login"} replace={true} />,
+    element: <LogoutPage />,
     errorElement: <NotFoundPage />,
   },
   {
