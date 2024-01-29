@@ -7,7 +7,6 @@ const Logout = () => {
     // Perform the state reset after the component has been rendered
     resetGlobalState();
   }, []);
-  localStorage.removeItem("accessToken");
   return <Navigate to={"/login"} replace={true} />;
 };
 

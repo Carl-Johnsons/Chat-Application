@@ -4,10 +4,8 @@ import AppButton from "../AppButton";
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
-import APIUtils from "../../Utils/Api/APIUtils";
-import useSignalREvents, {
-  sendIndividualMessage,
-} from "../../hooks/useSignalREvents";
+import { sendIndividualMessage as sendMessage } from "../../Utils/APIUtils";
+import { sendIndividualMessage, useSignalREvents } from "../../hooks";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
@@ -21,11 +19,7 @@ const ChatViewFooter = () => {
   const invokeAction = useSignalREvents({ connection: connection });
 
   const fetchSendMessage = async () => {
-    const [data] = await APIUtils.sendIndividualMessage(
-      userId,
-      activeConversation,
-      inputValue
-    );
+    const [data] = await sendMessage(userId, activeConversation, inputValue);
     if (!data) {
       return;
     }

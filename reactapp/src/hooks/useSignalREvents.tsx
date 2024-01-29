@@ -103,4 +103,4 @@ export function disableNotifyUserTyping(func: disableNotifyUserTyping) {
     func,
   };
 }
-export default useSignalREvents;
+export { useSignalREvents };

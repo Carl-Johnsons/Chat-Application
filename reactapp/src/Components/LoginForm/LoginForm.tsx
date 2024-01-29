@@ -7,23 +7,23 @@ import AppButton from "../AppButton";
 
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
-import APIUtils from "../../Utils/Api/APIUtils";
 import { useGlobalState } from "../../GlobalState";
+import { login } from "../../Utils/APIUtils";
 
 const cx = classNames.bind(style);
 
 const LoginForm = () => {
-  const [, setIsLoggedIn] = useGlobalState("isLoggedIn");
+  const [, setAuthenticated] = useGlobalState("authenticated");
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
   const handleClick = async () => {
-    const [data] = await APIUtils.login(phoneNumber, password);
+    const [data] = await login(phoneNumber, password);
     if (!data) {
       return;
     }
-    setIsLoggedIn(true);
+    setAuthenticated(true);
     navigate("/");
   };
   return (

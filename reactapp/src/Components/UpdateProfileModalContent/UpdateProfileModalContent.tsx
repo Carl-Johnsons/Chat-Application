@@ -6,8 +6,8 @@ import className from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
 import { useState } from "react";
 
-import DateUtil from "../../Utils/DateUtil/DateUtil";
-import APIUtils from "../../Utils/Api/APIUtils";
+import { updateUser } from "../../Utils/APIUtils";
+import { formatDateWithSeparator, getMaxDayinMonth } from "../../Utils/DateUtils";
 const cx = className.bind(style);
 
 interface Props {
@@ -32,7 +32,7 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const dates: number[] = [];
   const months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const years: number[] = [];
-  const dateLimit: number = DateUtil.getMaxDayinMonth(month, year);
+  const dateLimit: number = getMaxDayinMonth(month, year);
 
   const handleClickUpdate = async () => {
     if (!user) {
@@ -42,12 +42,12 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
     //Call API below
     updatedUser.name = name;
     updatedUser.gender = gender;
-    const formatedDob = DateUtil.formatDateWithSeparator(
+    const formatedDob = formatDateWithSeparator(
       new Date(year, month - 1, day),
       "-"
     );
     updatedUser.dob = formatedDob;
-    const [data] = await APIUtils.updateUser(updatedUser);
+    const [data] = await updateUser(updatedUser);
     if (data) {
       const newMap = new Map(userMap);
       newMap.set(userId, data);

@@ -8,7 +8,8 @@ import routes from "./routes/routes";
 import { useGlobalState } from "./GlobalState";
 
 function App() {
-  const [isLoggedIn] = useGlobalState("isLoggedIn");
+  const [authenticated] = useGlobalState("authenticated");
+
   return (
     <Router>
       <Routes>
@@ -16,8 +17,10 @@ function App() {
           const path = route.path;
           const element = route.element;
           const errorElement = route.errorElement;
+          console.log({ authenticated });
+
           // If not login and the route need authen to access then kick back to the login page
-          if (route.auth && !isLoggedIn) {
+          if (route.auth && !authenticated) {
             return (
               <Route
                 key={index}

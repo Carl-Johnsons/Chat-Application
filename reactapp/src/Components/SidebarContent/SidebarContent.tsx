@@ -7,7 +7,7 @@ import images from "../../assets";
 import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
-import APIUtils from "../../Utils/Api/APIUtils";
+import { getFriendList, getIndividualMessageList } from "../../Utils/APIUtils";
 
 interface MenuContact {
   image: string;
@@ -33,12 +33,10 @@ const SidebarContent = () => {
       if (!userId) {
         return;
       }
-      const [friendListData] = await APIUtils.getFriendList(userId);
+      const [friendListData] = await getFriendList(userId);
       if (!friendListData) {
         return;
       }
-      console.log("Fetch friend list");
-      
       setFriendList(friendListData);
 
       const newMap = new Map(userMap);
@@ -74,7 +72,7 @@ const SidebarContent = () => {
       if (!userId) {
         return;
       }
-      const [data] = await APIUtils.getIndividualMessageList(
+      const [data] = await getIndividualMessageList(
         userId,
         receiverId
       );

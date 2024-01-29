@@ -10,12 +10,11 @@ $siderbar-width: calc($left-width - $navbar-width);
 body::-webkit-scrollbar {
     display: none;
 }
+.navbar-section {
+    flex-basis: $navbar-width;
+}
 
 .left {
-    flex-basis: $left-width;
-    & > .navbar-section {
-        flex-basis: $navbar-width;
-    }
     & > .sidebar-section {
         flex-basis: $siderbar-width;
         border-right: 1px solid var(--border-color);

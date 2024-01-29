@@ -10,8 +10,7 @@ import { useGlobalState } from "../GlobalState";
 // Need some best practice or something, current the connection in the App keep re-rendering this hook
 const useSignalRConnection = (hubURL: string) => {
   const [userId] = useGlobalState("userId");
-  const [, setConnectionState] =
-    useGlobalState("connectionState");
+  const [, setConnectionState] = useGlobalState("connectionState");
 
   const connRef = useRef<HubConnection | null>(null);
 
@@ -57,4 +56,4 @@ const useSignalRConnection = (hubURL: string) => {
   return connRef.current;
 };
 
-export default useSignalRConnection;
+export { useSignalRConnection };

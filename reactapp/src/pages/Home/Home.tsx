@@ -1,9 +1,7 @@
 // Hooks
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useGlobalState } from "../../GlobalState";
-import useSignalRConnection from "../../hooks";
 //Components
-import APIUtils from "../../Utils/Api/APIUtils";
 import NavigationBar from "../../Components/NavigationBar";
 import SidebarContent from "../../Components/SidebarContent";
 import ChatViewContainer from "../../Components/ChatViewContainer";
@@ -12,6 +10,8 @@ import ModalContainer from "../../Components/ModalContainer";
 
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";
+import { useSignalRConnection } from "../../hooks";
+import { getFriendRequestList, getUserProfile } from "../../Utils/APIUtils";
 
 const cx = classNames.bind(style);
 
@@ -21,20 +21,24 @@ const Home = () => {
   const [, setConnection] = useGlobalState("connection");
   const [showAside] = useGlobalState("showAside");
   const [activeNav] = useGlobalState("activeNav");
-  const conn = useSignalRConnection(import.meta.env.VITE_SIGNALR_URL);
   //Local state
+  const conn = useSignalRConnection(import.meta.env.VITE_SIGNALR_URL);
+  //Ref
+  const sideContentRef = useRef(null);
+  const rightRef = useRef(null);
+
   useEffect(() => {
     conn && setConnection(conn);
   }, [conn, setConnection]);
   useEffect(() => {
     const fetchUserData = async () => {
-      const [user] = await APIUtils.getUserProfile();
+      const [user] = await getUserProfile();
       if (!user) {
         return;
       }
       setUserId(user.userId);
 
-      const [friendRequestList] = await APIUtils.getFriendRequestList(userId);
+      const [friendRequestList] = await getFriendRequestList(userId);
       if (friendRequestList) {
         setFriendRequestList(friendRequestList);
       }
@@ -42,8 +46,13 @@ const Home = () => {
     fetchUserData();
   }, [setFriendRequestList, setUserId, userId]);
 
+  useEffect(() => {});
+
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>
+      <div className={cx("navbar-section", "flex-shrink-0")}>
+        <NavigationBar />
+      </div>
       <div
         className={cx(
           "left",
@@ -54,9 +63,6 @@ const Home = () => {
           "flex-sm-shrink-0"
         )}
       >
-        <div className={cx("navbar-section", "flex-shrink-0")}>
-          <NavigationBar />
-        </div>
         <div className={cx("sidebar-section", "flex-grow-1", "flex-shrink-1")}>
           <SidebarContent />
         </div>

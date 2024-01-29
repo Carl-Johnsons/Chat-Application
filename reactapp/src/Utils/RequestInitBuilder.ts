@@ -17,6 +17,10 @@ export default class RequestInitBuilder implements RequestInit {
     };
     return this;
   }
+  withJwtAuthorization(token: string | null) {
+    return this.withAuthorization(`Bearer ${token}`);
+  }
+
   withAuthorization(token: string | null) {
     this.requestInit.headers = {
       ...this.requestInit.headers,

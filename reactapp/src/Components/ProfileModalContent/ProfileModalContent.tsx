@@ -7,7 +7,7 @@ import classNames from "classnames/bind";
 import AppButton from "../AppButton";
 import Avatar from "../Avatar";
 import { useGlobalState } from "../../GlobalState";
-import DateUtil from "../../Utils/DateUtil/DateUtil";
+import { convertISODateToVietnameseFormat } from "../../Utils/DateUtils";
 
 const cx = classNames.bind(style);
 
@@ -27,7 +27,7 @@ const ProfileModalContent = ({
   const user = userMap.get(userId);
   const username = user?.name;
   const gender = user?.gender;
-  const dob = DateUtil.convertISODateToVietnameseFormat(user?.dob);
+  const dob = convertISODateToVietnameseFormat(user?.dob);
   const phone = user?.phoneNumber;
   const avatar = user?.avatarUrl;
   const background = user?.backgroundUrl;

@@ -8,7 +8,7 @@ import Avatar from "../Avatar";
 import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
-import APIUtils from "../../Utils/Api/APIUtils";
+import { getUser } from "../../Utils/APIUtils";
 
 const cx = className.bind(style);
 
@@ -36,7 +36,7 @@ const NavigationBar = () => {
       return;
     }
     const fetchUserData = async () => {
-      const [userData] = await APIUtils.getUser(userId);
+      const [userData] = await getUser(userId);
       if (userData) {
         //  Create a shallow copy to mutate the map object,
         // Using set method is not going to mutate the map so the component will not re-render
