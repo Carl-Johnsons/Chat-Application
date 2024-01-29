@@ -7,13 +7,12 @@ import AppButton from "../AppButton";
 
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../GlobalState";
 import { login } from "../../Utils/Api/AuthApi";
+import { setLocalStorageItem } from "../../Utils/LocalStorageUtils";
 
 const cx = classNames.bind(style);
 
 const LoginForm = () => {
-  const [, setAuthenticated] = useGlobalState("authenticated");
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +22,7 @@ const LoginForm = () => {
     if (!data) {
       return;
     }
-    setAuthenticated(true);
+    setLocalStorageItem("isAuthenticated", true);
     navigate("/");
   };
   return (

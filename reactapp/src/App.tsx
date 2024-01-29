@@ -5,11 +5,10 @@ import {
   Navigate,
 } from "react-router-dom";
 import routes from "./routes/routes";
-import { useGlobalState } from "./GlobalState";
+import { getLocalStorageItem } from "./Utils/LocalStorageUtils";
 
 function App() {
-  const [authenticated] = useGlobalState("authenticated");
-
+  const isAuth = getLocalStorageItem("isAuthenticated");
   return (
     <Router>
       <Routes>
@@ -17,10 +16,10 @@ function App() {
           const path = route.path;
           const element = route.element;
           const errorElement = route.errorElement;
-          console.log({ authenticated });
+          console.log({ isAuth });
 
           // If not login and the route need authen to access then kick back to the login page
-          if (route.auth && !authenticated) {
+          if (route.auth && !isAuth) {
             return (
               <Route
                 key={index}

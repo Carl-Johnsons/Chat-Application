@@ -17,7 +17,7 @@ export const login = async (
     requireAuth: false,
   });
   if (jwtToken) {
-    setLocalStorageItem("acessToken", jwtToken);
+    setLocalStorageItem("accessToken", jwtToken);
   }
   return [jwtToken, error];
 };

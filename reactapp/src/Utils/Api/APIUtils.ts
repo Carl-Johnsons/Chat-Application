@@ -22,7 +22,7 @@ export const handleAPIRequest = async <T>({
       .withContentJson()
       .withBody(data ? JSON.stringify(data) : undefined)
       .withJwtAuthorization(
-        requireAuth ? getLocalStorageItem("acessToken")?.token : null
+        requireAuth ? getLocalStorageItem("accessToken")?.token : null
       )
       .build();
 
@@ -50,7 +50,7 @@ export const handleStatusRequest = async ({
       .withContentJson()
       .withBody(data ? JSON.stringify(data) : undefined)
       .withJwtAuthorization(
-        requireAuth ? getLocalStorageItem("acessToken")?.token : null
+        requireAuth ? getLocalStorageItem("accessToken")?.token : null
       )
       .build();
 

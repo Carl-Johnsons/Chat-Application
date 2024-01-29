@@ -1,15 +1,17 @@
 import { JwtToken } from "../Models";
 
-const ACCESS_TOKEN = "acessToken";
+const ACCESS_TOKEN = "accessToken";
+const IS_AUTHENTICATED = "isAuthenticated";
 
-type LocalStorageKey = typeof ACCESS_TOKEN;
+type LocalStorageKey = typeof ACCESS_TOKEN | typeof IS_AUTHENTICATED;
 type LocalStorageValue = {
   [ACCESS_TOKEN]: JwtToken;
+  [IS_AUTHENTICATED]: boolean;
 };
 
 export const setLocalStorageItem = (
   key: LocalStorageKey,
-  value: LocalStorageValue[LocalStorageKey]
+  value: LocalStorageValue[typeof key]
 ) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -18,9 +20,9 @@ export const setLocalStorageItem = (
   }
 };
 
-export const getLocalStorageItem = (
-  key: LocalStorageKey
-): LocalStorageValue[LocalStorageKey] | null => {
+export const getLocalStorageItem = <T extends LocalStorageKey>(
+  key: T
+): LocalStorageValue[T] | null => {
   try {
     const storedValue = localStorage.getItem(key);
     return storedValue ? JSON.parse(storedValue) : null;
