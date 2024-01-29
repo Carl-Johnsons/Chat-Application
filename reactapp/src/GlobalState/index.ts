@@ -5,6 +5,7 @@ import { createGlobalState } from "react-hooks-global-state";
 const initialState = {
   userId: null as unknown as number,
   userMap: new Map<number, User>(),
+  isLoggedIn: false,
   friendList: null as unknown as Friend[],
   friendRequestList: null as unknown as FriendRequest[],
   individualMessageList: null as unknown as IndividualMessage[],

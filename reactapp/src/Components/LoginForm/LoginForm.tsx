@@ -8,10 +8,12 @@ import AppButton from "../AppButton";
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
 import APIUtils from "../../Utils/Api/APIUtils";
+import { useGlobalState } from "../../GlobalState";
 
 const cx = classNames.bind(style);
 
 const LoginForm = () => {
+  const [, setIsLoggedIn] = useGlobalState("isLoggedIn");
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +23,7 @@ const LoginForm = () => {
     if (!data) {
       return;
     }
-    console.log(data?.token);
+    setIsLoggedIn(true);
     navigate("/");
   };
   return (

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,14 +20,14 @@ namespace ChatAPI.Controllers
         IFriendRepository _friendRepository;
         IFriendRequestRepository _friendRequestRepository;
         private readonly string BASE_ADDRESS = "https://localhost:7190";
-        private User CurrentUser => GetCurrentUser();
+        private UserClaim CurrentUserClaim => GetCurrentUserClaim();
         public UsersController()
         {
             _userRepository = new UserRepository();
             _friendRepository = new FriendRepository();
             _friendRequestRepository = new FriendRequestRepository();
         }
-        private User? GetCurrentUser()
+        private UserClaim? GetCurrentUserClaim()
         {
             var indentity = HttpContext.User.Identity as ClaimsIdentity;
             if (indentity == null)
@@ -34,7 +35,7 @@ namespace ChatAPI.Controllers
                 return null;
             }
             var userClaims = indentity.Claims;
-            return new User
+            return new UserClaim
             {
                 UserId = int.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value),
                 Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
@@ -70,7 +71,7 @@ namespace ChatAPI.Controllers
         [HttpGet("GetUserProfile")]
         public async Task<IActionResult> GetUserProfile()
         {
-            var user = _userRepository.GetUserByID(CurrentUser.UserId);
+            var user = _userRepository.GetUserByID(CurrentUserClaim.UserId);
             if (user == null)
             {
                 return NotFound();
@@ -334,4 +335,17 @@ namespace ChatAPI.Controllers
             }
         }
     }
+
+    public class UserClaim
+    {
+        [Required]
+        public int UserId;
+        [Required]
+        public string? Email;
+        [Required]
+        public string? PhoneNumber;
+        [Required]
+        public string? Name;
+    }
+
 }

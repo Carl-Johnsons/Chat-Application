@@ -5,11 +5,16 @@ import { NotFoundPage } from "../pages/NotFound";
 import { LoginPage } from "../pages/Login";
 import { LogoutPage } from "../pages/Logout";
 
-const routes: Array<RouteProps> = [
+type Authentication = {
+  auth?: boolean;
+};
+
+const routes: Array<RouteProps & Authentication> = [
   {
     path: "/",
     element: <HomePage />,
     errorElement: <NotFoundPage />,
+    auth: true,
   },
   {
     path: "/login",
