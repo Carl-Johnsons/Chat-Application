@@ -6,8 +6,8 @@ import className from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
 import { useState } from "react";
 
-import { updateUser } from "../../Utils/APIUtils";
 import { formatDateWithSeparator, getMaxDayinMonth } from "../../Utils/DateUtils";
+import { updateUser } from "../../Utils/Api/UserApi";
 const cx = className.bind(style);
 
 interface Props {

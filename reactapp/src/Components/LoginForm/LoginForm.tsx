@@ -8,7 +8,7 @@ import AppButton from "../AppButton";
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
-import { login } from "../../Utils/APIUtils";
+import { login } from "../../Utils/Api/AuthApi";
 
 const cx = classNames.bind(style);
 

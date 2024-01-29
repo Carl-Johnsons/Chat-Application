@@ -5,5 +5,5 @@ export type IndividualMessage = {
   userReceiverId: number;
   status: string;
   message: Message;
-  userReceiver: User;
+  userReceiver: User | null;
 };

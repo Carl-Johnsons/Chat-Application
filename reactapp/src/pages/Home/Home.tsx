@@ -11,7 +11,7 @@ import ModalContainer from "../../Components/ModalContainer";
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";
 import { useSignalRConnection } from "../../hooks";
-import { getFriendRequestList, getUserProfile } from "../../Utils/APIUtils";
+import { getFriendRequestList, getUserProfile } from "../../Utils/Api/UserApi";
 
 const cx = classNames.bind(style);
 

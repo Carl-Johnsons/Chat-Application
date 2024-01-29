@@ -8,5 +8,5 @@ export type Message = {
   messageType: string;
   messageFormat: string;
   active: boolean;
-  sender: User;
+  sender: User | null;
 };

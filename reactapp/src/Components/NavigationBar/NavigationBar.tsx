@@ -8,7 +8,7 @@ import Avatar from "../Avatar";
 import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
-import { getUser } from "../../Utils/APIUtils";
+import { getUser } from "../../Utils/Api/UserApi";
 
 const cx = className.bind(style);
 

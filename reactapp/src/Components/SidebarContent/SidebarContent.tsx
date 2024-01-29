@@ -7,7 +7,8 @@ import images from "../../assets";
 import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
-import { getFriendList, getIndividualMessageList } from "../../Utils/APIUtils";
+import { getFriendList } from "../../Utils/Api/UserApi";
+import { getIndividualMessageList } from "../../Utils/Api/MessageApi";
 
 interface MenuContact {
   image: string;

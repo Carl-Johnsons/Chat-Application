@@ -1,4 +1,4 @@
-type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
+import { RequestMethod } from "../Models";
 
 export default class RequestInitBuilder implements RequestInit {
   private requestInit: RequestInit;
@@ -17,7 +17,11 @@ export default class RequestInitBuilder implements RequestInit {
     };
     return this;
   }
-  withJwtAuthorization(token: string | null) {
+  withJwtAuthorization(token?: string | null) {
+    if (!token) {
+      return this;
+    }
+
     return this.withAuthorization(`Bearer ${token}`);
   }
 
@@ -28,7 +32,10 @@ export default class RequestInitBuilder implements RequestInit {
     };
     return this;
   }
-  withBody(data: BodyInit) {
+  withBody(data?: BodyInit) {
+    if (!data) {
+      return this;
+    }
     this.requestInit.body = data;
     return this;
   }
