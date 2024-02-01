@@ -1,12 +1,61 @@
+import { useState } from "react";
 import images from "../../assets";
 import AppButton from "../AppButton";
 import Avatar from "../Avatar";
 import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
+import { useGlobalState } from "../../GlobalState";
 
 const cx = classNames.bind(style);
 
+interface SearchButtonProps {
+  className?: string;
+  children: React.ReactNode;
+}
+
 const SearchBar = () => {
+  const [, setIsSearchBarFocus] = useGlobalState("isSearchBarFocus");
+  const [buttonClass, setButtonClass] = useState(cx("btn-add-friend", "me-1"));
+  const [closeBtnClass, setCloseBtnClass] = useState(
+    cx("btn-add-friend", "me-1", "d-none")
+  );
+  const searchButtons: SearchButtonProps[] = [
+    {
+      className: buttonClass,
+      children: (
+        <Avatar
+          variant="avatar-img-16px"
+          src={images.addUserIcon}
+          alt="add user icon"
+        />
+      ),
+    },
+    {
+      className: buttonClass,
+      children: (
+        <Avatar
+          variant="avatar-img-16px"
+          src={images.addUserIcon}
+          alt="add group icon"
+        />
+      ),
+    },
+    {
+      className: closeBtnClass,
+      children: <>Đóng</>,
+    },
+  ];
+
+  const handleFocus = () => {
+    setButtonClass(cx("btn-add-friend", "me-1", "d-none"));
+    setCloseBtnClass(cx("btn-add-friend", "me-1"));
+    setIsSearchBarFocus(true);
+  };
+  const handleClick = () => {
+    setButtonClass(cx("btn-add-friend", "me-1"));
+    setCloseBtnClass(cx("btn-add-friend", "me-1", "d-none"));
+    setIsSearchBarFocus(false);
+  };
   return (
     <div
       className={cx(
@@ -19,31 +68,24 @@ const SearchBar = () => {
       )}
     >
       <input
+        onFocus={handleFocus}
         type="text"
         className={cx("search-bar-input", "form-control", "me-1")}
         placeholder="Tìm kiếm"
       />
       <div className={cx("search-bar-btn-container", "d-flex")}>
-        <AppButton
-          variant="app-btn-primary-transparent"
-          className={cx("btn-add-friend", "me-1")}
-        >
-          <Avatar
-            variant="avatar-img-16px"
-            src={images.addUserIcon}
-            alt="add user icon"
-          />
-        </AppButton>
-        <AppButton
-          variant="app-btn-primary-transparent"
-          className={cx("btn-create-group")}
-        >
-          <Avatar
-            variant="avatar-img-16px"
-            src={images.addUserIcon}
-            alt="add user icon"
-          />
-        </AppButton>
+        {searchButtons.map((item, index) => {
+          return (
+            <AppButton
+              key={index}
+              onClick={index == 2 ? handleClick : undefined}
+              variant="app-btn-primary-transparent"
+              className={item.className ?? ""}
+            >
+              {item.children}
+            </AppButton>
+          );
+        })}
       </div>
     </div>
   );

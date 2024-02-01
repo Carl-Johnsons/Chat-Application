@@ -14,6 +14,7 @@ const initialState = {
   showModal: false,
   isLeftShow: true,
   isRightShow: true,
+  isSearchBarFocus: false,
   connection: null as unknown as HubConnection,
   connectionState: HubConnectionState.Disconnected as HubConnectionState,
 };

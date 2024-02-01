@@ -27,6 +27,7 @@ const Home = () => {
   const navRef: LegacyRef<HTMLDivElement> = useRef(null);
   const leftRef: LegacyRef<HTMLDivElement> = useRef(null);
   const rightRef: LegacyRef<HTMLDivElement> = useRef(null);
+
   const handleClick = useCallback((leftShow: boolean) => {
     if (!leftRef.current || !rightRef.current || !navRef.current) {
       return;
@@ -48,6 +49,7 @@ const Home = () => {
   useEffect(() => {
     conn && setConnection(conn);
   }, [conn, setConnection]);
+  
   useEffect(() => {
     const fetchUserData = async () => {
       const [user] = await getUserProfile();
@@ -105,7 +107,7 @@ const Home = () => {
           )}
         >
           <ChatViewContainer className={cx(activeNav !== 1 && "d-none")} />
-          <ContactContainer />
+          <ContactContainer  className={cx(activeNav !== 2 && "d-none")}/>
         </div>
         <div
           className={cx(

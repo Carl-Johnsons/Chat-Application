@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import SearchBar from "../SearchBar";
 import MenuContact from "../MenuContact";
-import Conversation from "../Conversation";
 
+import SideBarItem from "../SideBarItem";
 import images from "../../assets";
 import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
@@ -19,6 +19,7 @@ interface MenuContact {
 const cx = classNames.bind(style);
 
 const SidebarContent = () => {
+  const [isSearchBarFocus] = useGlobalState("isSearchBarFocus");
   const [activeNav] = useGlobalState("activeNav");
 
   const [userId] = useGlobalState("userId");
@@ -73,10 +74,7 @@ const SidebarContent = () => {
       if (!userId) {
         return;
       }
-      const [data] = await getIndividualMessageList(
-        userId,
-        receiverId
-      );
+      const [data] = await getIndividualMessageList(userId, receiverId);
       data && setIndividualMessages(data);
     },
     [setActiveConversation, setIndividualMessages, userId]
@@ -88,7 +86,6 @@ const SidebarContent = () => {
     }
     //Initial with the first friend in the list
     handleClickConversation(friendList[0].friendNavigation.userId);
-    console.log("click first friend");
   }, [friendList, handleClickConversation, activeConversation]);
 
   function handleClickMenuContact(index: number) {
@@ -105,18 +102,24 @@ const SidebarContent = () => {
       <div className={cx("search-bar-container")}>
         <SearchBar />
       </div>
-      <div className={cx("conversation-list", activeNav !== 1 && "d-none")}>
+      <div
+        className={cx(
+          "conversation-list",
+          (activeNav !== 1 || isSearchBarFocus) && "d-none"
+        )}
+      >
         {friendList &&
           friendList.map((friend) => {
             const friendNavigation = friend.friendNavigation;
             const { userId, avatarUrl, name } = friendNavigation;
             return (
-              <Conversation
+              <SideBarItem
                 key={userId}
+                type="conversation"
                 userId={userId}
                 image={avatarUrl}
                 conversationName={name}
-                lastMessage="You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll"
+                lastMessage="Hello world lllllldasfasgjhasjgkhsagjsllllllllllll"
                 onClick={handleClickConversation}
                 isActive={activeConversation === userId}
               />
@@ -148,7 +151,7 @@ const SidebarContent = () => {
           isNewMessage={true}
         /> */}
       </div>
-      <div className={cx(activeNav !== 2 && "d-none")}>
+      <div className={cx((activeNav !== 2 || isSearchBarFocus) && "d-none")}>
         {menuContacts.map((menuContact, index) => (
           <MenuContact
             key={index}
@@ -159,6 +162,22 @@ const SidebarContent = () => {
             onClick={handleClickMenuContact}
           />
         ))}
+      </div>
+      <div
+        className={cx(
+          "bg-secondary",
+          "w-100",
+          "h-100",
+          !isSearchBarFocus && "d-none"
+        )}
+      >
+        <SideBarItem
+          type="searchItem"
+          userId={1}
+          conversationName="Test"
+          image={images.defaultBackgroundImg}
+          phoneNumber="0123456789"
+        />
       </div>
     </>
   );
