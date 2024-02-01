@@ -1,7 +1,6 @@
 $navbar-width: 60px;
-$left-width: 414px;
+$left-width: 354px;
 $chat-info-width: 344px;
-$siderbar-width: calc($left-width - $navbar-width);
 
 * {
     user-select: none;
@@ -15,13 +14,8 @@ body::-webkit-scrollbar {
 }
 
 .left {
-    & > .sidebar-section {
-        flex-basis: $siderbar-width;
-        border-right: 1px solid var(--border-color);
-    }
-}
-
-.main-section {
+    flex-basis: $left-width;
+    border-right: 1px solid var(--border-color);
 }
 
 .chat-info {
