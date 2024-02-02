@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import images from "../../assets";
 import AppButton from "../AppButton";
 import Avatar from "../Avatar";
 import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
+import { searchUser } from "../../Utils/Api/UserApi";
 
 const cx = classNames.bind(style);
 
@@ -15,10 +16,32 @@ interface SearchButtonProps {
 
 const SearchBar = () => {
   const [, setIsSearchBarFocus] = useGlobalState("isSearchBarFocus");
+  const [, setSearchResult] = useGlobalState("searchResult");
+  // For caching user
+  const [userMap] = useGlobalState("userMap");
+
+  const [inputValue, setInputValue] = useState("");
   const [buttonClass, setButtonClass] = useState(cx("btn-add-friend", "me-1"));
   const [closeBtnClass, setCloseBtnClass] = useState(
     cx("btn-add-friend", "me-1", "d-none")
   );
+
+  useEffect(() => {
+    if (inputValue.length != 10) {
+      setSearchResult(null);
+      return;
+    }
+    const fetchUser = async () => {
+      const [user] = await searchUser(inputValue);
+      if (!user) {
+        return;
+      }
+      setSearchResult(user);
+      userMap.set(user.userId, user);
+    };
+    fetchUser();
+  }, [inputValue, setSearchResult, userMap]);
+
   const searchButtons: SearchButtonProps[] = [
     {
       className: buttonClass,
@@ -69,6 +92,7 @@ const SearchBar = () => {
     >
       <input
         onFocus={handleFocus}
+        onChange={(e) => setInputValue(e.target.value)}
         type="text"
         className={cx("search-bar-input", "form-control", "me-1")}
         placeholder="Tìm kiếm"

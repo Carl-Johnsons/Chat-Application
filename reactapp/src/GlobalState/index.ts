@@ -15,6 +15,7 @@ const initialState = {
   isLeftShow: true,
   isRightShow: true,
   isSearchBarFocus: false,
+  searchResult: null as unknown as User | null,
   connection: null as unknown as HubConnection,
   connectionState: HubConnectionState.Disconnected as HubConnectionState,
 };

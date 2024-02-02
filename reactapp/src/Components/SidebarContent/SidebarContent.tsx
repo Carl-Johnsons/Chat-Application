@@ -21,13 +21,13 @@ const cx = classNames.bind(style);
 const SidebarContent = () => {
   const [isSearchBarFocus] = useGlobalState("isSearchBarFocus");
   const [activeNav] = useGlobalState("activeNav");
-
   const [userId] = useGlobalState("userId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
   const [, setIndividualMessages] = useGlobalState("individualMessageList");
   const [activeConversation, setActiveConversation] =
     useGlobalState("activeConversation");
+  const [searchResult] = useGlobalState("searchResult");
   // Local state
   const [activeMenuContact, setActiveMenuContact] = useState(0);
   useEffect(() => {
@@ -171,13 +171,15 @@ const SidebarContent = () => {
           !isSearchBarFocus && "d-none"
         )}
       >
-        <SideBarItem
-          type="searchItem"
-          userId={1}
-          conversationName="Test"
-          image={images.defaultBackgroundImg}
-          phoneNumber="0123456789"
-        />
+        {searchResult && (
+          <SideBarItem
+            type="searchItem"
+            userId={searchResult.userId}
+            conversationName={searchResult.name}
+            image={searchResult.avatarUrl}
+            phoneNumber={searchResult.phoneNumber}
+          />
+        )}
       </div>
     </>
   );
