@@ -24,19 +24,19 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.Friend", b =>
                 {
-                    b.Property<int>("FriendId")
-                        .HasColumnType("int")
-                        .HasColumnName("Friend_ID");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("User_ID");
 
-                    b.HasKey("FriendId", "UserId");
+                    b.Property<int>("FriendId")
+                        .HasColumnType("int")
+                        .HasColumnName("Friend_ID");
 
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId", "FriendId");
 
-                    b.ToTable("Friend", (string)null);
+                    b.HasIndex("FriendId");
+
+                    b.ToTable("Friend");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.FriendRequest", b =>
@@ -57,14 +57,14 @@ namespace BussinessObject.Migrations
 
                     b.Property<string>("Status")
                         .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Status");
 
                     b.HasKey("SenderId", "ReceiverId");
 
                     b.HasIndex("ReceiverId");
 
-                    b.ToTable("FriendRequest", (string)null);
+                    b.ToTable("FriendRequest");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.Group", b =>
@@ -100,14 +100,13 @@ namespace BussinessObject.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("Group_Name");
 
-                    b.HasKey("GroupId")
-                        .HasName("PK__Group__31981269A04A40CE");
+                    b.HasKey("GroupId");
 
                     b.HasIndex("GroupDeputyId");
 
                     b.HasIndex("GroupLeaderId");
 
-                    b.ToTable("Group", (string)null);
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.GroupBlock", b =>
@@ -124,7 +123,7 @@ namespace BussinessObject.Migrations
 
                     b.HasIndex("BlockedUserId");
 
-                    b.ToTable("GroupBlock", (string)null);
+                    b.ToTable("GroupBlock");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.GroupMessage", b =>
@@ -141,7 +140,7 @@ namespace BussinessObject.Migrations
 
                     b.HasIndex("GroupReceiverId");
 
-                    b.ToTable("GroupMessage", (string)null);
+                    b.ToTable("GroupMessage");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.ImageMessage", b =>
@@ -157,7 +156,7 @@ namespace BussinessObject.Migrations
 
                     b.HasKey("MessageId");
 
-                    b.ToTable("ImageMessage", (string)null);
+                    b.ToTable("ImageMessage");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.IndividualMessage", b =>
@@ -171,8 +170,8 @@ namespace BussinessObject.Migrations
 
                     b.Property<string>("Status")
                         .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Status");
 
                     b.Property<int>("UserReceiverId")
                         .HasColumnType("int")
@@ -182,7 +181,7 @@ namespace BussinessObject.Migrations
 
                     b.HasIndex("UserReceiverId");
 
-                    b.ToTable("IndividualMessage", (string)null);
+                    b.ToTable("IndividualMessage");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.Message", b =>
@@ -197,7 +196,8 @@ namespace BussinessObject.Migrations
                     b.Property<bool?>("Active")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasDefaultValueSql("((1))");
+                        .HasDefaultValue(true)
+                        .HasColumnName("Active");
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -205,15 +205,13 @@ namespace BussinessObject.Migrations
                     b.Property<string>("MessageFormat")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("Message_Format");
 
                     b.Property<string>("MessageType")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("Message_Type");
 
                     b.Property<int>("SenderId")
@@ -221,14 +219,14 @@ namespace BussinessObject.Migrations
                         .HasColumnName("Sender_ID");
 
                     b.Property<DateTime>("Time")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Time");
 
-                    b.HasKey("MessageId")
-                        .HasName("PK__Message__F5A446E2317079D4");
+                    b.HasKey("MessageId");
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Message", (string)null);
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.User", b =>
@@ -243,7 +241,7 @@ namespace BussinessObject.Migrations
                     b.Property<bool?>("Active")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasDefaultValueSql("((1))");
+                        .HasDefaultValue(true);
 
                     b.Property<string>("AvatarUrl")
                         .IsRequired()
@@ -256,13 +254,13 @@ namespace BussinessObject.Migrations
                         .HasColumnName("BackgroundURL");
 
                     b.Property<DateTime>("Dob")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("DOB");
 
                     b.Property<string>("Email")
                         .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Email");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -281,20 +279,21 @@ namespace BussinessObject.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(32)");
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnName("Password");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)")
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("Phone_Number");
 
-                    b.HasKey("UserId")
-                        .HasName("PK__User__206D9190695FA223");
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("User", (string)null);
+                    b.HasKey("UserId");
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.UserBlock", b =>
@@ -311,7 +310,7 @@ namespace BussinessObject.Migrations
 
                     b.HasIndex("BlockedUserId");
 
-                    b.ToTable("UserBlock", (string)null);
+                    b.ToTable("UserBlock");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.Friend", b =>

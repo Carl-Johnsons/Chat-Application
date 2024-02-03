@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Http.Headers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,7 +14,7 @@ namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize] // using built in ASP.NET filter
     public class UsersController : ControllerBase
     {
         IUserRepository _userRepository;
@@ -168,6 +169,10 @@ namespace ChatAPI.Controllers
         [HttpPost("SendFriendRequest")]
         public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequest friendRequest)
         {
+            if (friendRequest == null)
+            {
+                return NotFound("Friend request is not valid");
+            }
             friendRequest.Status = "Status";
             friendRequest.Date = DateTime.Now;
             try
@@ -175,7 +180,7 @@ namespace ChatAPI.Controllers
                 int affectedRow = _friendRequestRepository.AddFriendRequest(friendRequest);
                 if (affectedRow == 0)
                 {
-                    return NotFound();
+                    return NotFound("Can't send friend request");
                 }
             }
             catch (Exception ex)
@@ -188,19 +193,26 @@ namespace ChatAPI.Controllers
         [HttpPost("AddFriend/{senderId}/{receiverId}")]
         public async Task<IActionResult> AddFriend(int? senderId, int? receiverId)
         {
-
+            if (senderId == null || receiverId == null)
+            {
+                return BadRequest("SenderId and ReceiverId cannot be null.");
+            }
+            var accessToken = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ")[1];
             // Check if friendRequest is existed
             try
             {
                 using (var client = new HttpClient())
                 {
+                    // Include the authorization token in the headers
+                    await Console.Out.WriteLineAsync("The current access token is " + accessToken);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     var getFriendRequestsUrl = $"{BASE_ADDRESS}/api/Users/GetFriendRequestsByReceiverId/{receiverId}";
                     var response = await client.GetAsync(getFriendRequestsUrl);
 
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest("Friend request list of this user is empty! Aborting operation add friend");
+                        return BadRequest("Friend request list of this user is empty! Aborting operation add friend: " + response.StatusCode);
                     }
 
                     var responseContent = response.Content.ReadAsStringAsync().Result;
@@ -249,6 +261,7 @@ namespace ChatAPI.Controllers
             {
                 using (var client = new HttpClient())
                 {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     var removeFriendRequestUrl = $"{BASE_ADDRESS}/api/Users/RemoveFriendRequest/{senderId}/{receiverId}";
                     var response = await client.DeleteAsync(removeFriendRequestUrl);
 

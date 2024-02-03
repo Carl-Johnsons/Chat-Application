@@ -17,20 +17,21 @@ namespace BussinessObject.Migrations
                 {
                     User_ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Phone_Number = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    Password = table.Column<string>(type: "varchar(32)", unicode: false, maxLength: 32, nullable: false),
+                    Phone_Number = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DOB = table.Column<DateTime>(type: "date", nullable: false),
+                    DOB = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     AvatarURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BackgroundURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Introduction = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Email = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
-                    Active = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "((1))")
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__User__206D9190695FA223", x => x.User_ID);
+                    table.PrimaryKey("PK_User", x => x.User_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -42,7 +43,7 @@ namespace BussinessObject.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Friend", x => new { x.Friend_ID, x.User_ID });
+                    table.PrimaryKey("PK_Friend", x => new { x.User_ID, x.Friend_ID });
                     table.ForeignKey(
                         name: "FK__Friend__Friend_I__276EDEB3",
                         column: x => x.Friend_ID,
@@ -63,7 +64,7 @@ namespace BussinessObject.Migrations
                     Receiver_ID = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Status = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true)
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -94,7 +95,7 @@ namespace BussinessObject.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Group__31981269A04A40CE", x => x.Group_ID);
+                    table.PrimaryKey("PK_Group", x => x.Group_ID);
                     table.ForeignKey(
                         name: "FK_Group_User_Group_Deputy_ID",
                         column: x => x.Group_Deputy_ID,
@@ -116,14 +117,14 @@ namespace BussinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Sender_ID = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Time = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Message_Type = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
-                    Message_Format = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "((1))")
+                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Message_Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Message_Format = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Message__F5A446E2317079D4", x => x.Message_ID);
+                    table.PrimaryKey("PK_Message", x => x.Message_ID);
                     table.ForeignKey(
                         name: "FK__Message__Sender___37A5467C",
                         column: x => x.Sender_ID,
@@ -222,7 +223,7 @@ namespace BussinessObject.Migrations
                 {
                     Message_ID = table.Column<int>(type: "int", nullable: false),
                     User_Receiver_ID = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Read = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -243,9 +244,9 @@ namespace BussinessObject.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friend_User_ID",
+                name: "IX_Friend_Friend_ID",
                 table: "Friend",
-                column: "User_ID");
+                column: "Friend_ID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FriendRequest_Receiver_ID",

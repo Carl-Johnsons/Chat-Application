@@ -47,12 +47,6 @@ public partial class ChatApplicationContext : DbContext
     {
         modelBuilder.Entity<Friend>(entity =>
         {
-            entity
-                .ToTable("Friend");
-            entity.HasKey(e => new { e.FriendId, e.UserId });
-            entity.Property(e => e.FriendId).HasColumnName("Friend_ID");
-            entity.Property(e => e.UserId).HasColumnName("User_ID");
-
             entity.HasOne(d => d.FriendNavigation).WithMany()
                 .HasForeignKey(d => d.FriendId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -66,16 +60,6 @@ public partial class ChatApplicationContext : DbContext
 
         modelBuilder.Entity<FriendRequest>(entity =>
         {
-            entity
-                .ToTable("FriendRequest");
-            entity.HasKey(e => new { e.SenderId, e.ReceiverId });
-            entity.Property(e => e.Date).HasColumnType("datetime");
-            entity.Property(e => e.ReceiverId).HasColumnName("Receiver_ID");
-            entity.Property(e => e.SenderId).HasColumnName("Sender_ID");
-            entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-
             entity.HasOne(d => d.Receiver).WithMany()
                 .HasForeignKey(d => d.ReceiverId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -86,31 +70,8 @@ public partial class ChatApplicationContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__FriendReq__Sende__29572725");
         });
-
-        modelBuilder.Entity<Group>(entity =>
-        {
-            entity.HasKey(e => e.GroupId).HasName("PK__Group__31981269A04A40CE");
-
-            entity.ToTable("Group");
-
-            entity.Property(e => e.GroupId).HasColumnName("Group_ID");
-            entity.Property(e => e.GroupAvatarUrl).HasColumnName("Group_Avatar_URL");
-            entity.Property(e => e.GroupDeputyId).HasColumnName("Group_Deputy_ID");
-            entity.Property(e => e.GroupInviteUrl).HasColumnName("Group_Invite_URL");
-            entity.Property(e => e.GroupLeaderId).HasColumnName("Group_Leader_ID");
-            entity.Property(e => e.GroupName)
-                .HasMaxLength(50)
-                .HasColumnName("Group_Name");
-        });
-
         modelBuilder.Entity<GroupBlock>(entity =>
         {
-            entity
-                .ToTable("GroupBlock");
-            entity.HasKey(e => new { e.GroupId, e.BlockedUserId });
-            entity.Property(e => e.BlockedUserId).HasColumnName("Blocked_User_ID");
-            entity.Property(e => e.GroupId).HasColumnName("Group_ID");
-
             entity.HasOne(d => d.BlockedUser).WithMany()
                 .HasForeignKey(d => d.BlockedUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -121,16 +82,8 @@ public partial class ChatApplicationContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__GroupBloc__Group__32E0915F");
         });
-
         modelBuilder.Entity<GroupMessage>(entity =>
         {
-            entity
-                .ToTable("GroupMessage");
-            entity.HasKey(e => new { e.MessageId, e.GroupReceiverId });
-
-            entity.Property(e => e.GroupReceiverId).HasColumnName("Group_Receiver_ID");
-            entity.Property(e => e.MessageId).HasColumnName("Message_ID");
-
             entity.HasOne(d => d.GroupReceiver).WithMany()
                 .HasForeignKey(d => d.GroupReceiverId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -141,34 +94,15 @@ public partial class ChatApplicationContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupMess__Messa__3C69FB99");
         });
-
         modelBuilder.Entity<ImageMessage>(entity =>
         {
-            entity
-                .ToTable("ImageMessage");
-            entity.HasKey(e => e.MessageId);
-
-            entity.Property(e => e.ImageUrl).HasColumnName("Image_URL");
-            entity.Property(e => e.MessageId).HasColumnName("Message_ID");
-
             entity.HasOne(d => d.Message).WithMany()
                 .HasForeignKey(d => d.MessageId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ImageMess__Messa__3F466844");
         });
-
         modelBuilder.Entity<IndividualMessage>(entity =>
         {
-            entity
-                .ToTable("IndividualMessage");
-
-            entity.HasKey(e => e.MessageId);
-            entity.Property(e => e.MessageId).HasColumnName("Message_ID");
-            entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.UserReceiverId).HasColumnName("User_Receiver_ID");
-
             entity.HasOne(d => d.Message).WithMany()
                 .HasForeignKey(d => d.MessageId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -182,23 +116,7 @@ public partial class ChatApplicationContext : DbContext
 
         modelBuilder.Entity<Message>(entity =>
         {
-            entity.HasKey(e => e.MessageId).HasName("PK__Message__F5A446E2317079D4");
-
-            entity.ToTable("Message");
-
-            entity.Property(e => e.MessageId).HasColumnName("Message_ID");
-            entity.Property(e => e.Active).HasDefaultValueSql("((1))");
-            entity.Property(e => e.MessageFormat)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("Message_Format");
-            entity.Property(e => e.MessageType)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("Message_Type");
-            entity.Property(e => e.SenderId).HasColumnName("Sender_ID");
-            entity.Property(e => e.Time).HasColumnType("datetime");
-
+            entity.Property(e => e.Active).HasDefaultValue(true);
             entity.HasOne(d => d.Sender).WithMany()
                 .HasForeignKey(d => d.SenderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -207,42 +125,10 @@ public partial class ChatApplicationContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__206D9190695FA223");
-
-            entity.ToTable("User");
-
-            entity.Property(e => e.UserId).HasColumnName("User_ID");
-            entity.Property(e => e.Active).HasDefaultValueSql("((1))");
-            entity.Property(e => e.AvatarUrl).HasColumnName("AvatarURL");
-            entity.Property(e => e.BackgroundUrl).HasColumnName("BackgroundURL");
-            entity.Property(e => e.Dob)
-                .HasColumnType("date")
-                .HasColumnName("DOB");
-            entity.Property(e => e.Email)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Gender)
-                .HasMaxLength(10);
-            entity.Property(e => e.Introduction).HasMaxLength(200);
-            entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.Password)
-                .HasMaxLength(32)
-                .IsUnicode(false);
-            entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Phone_Number");
+            entity.Property(e => e.Active).HasDefaultValue(true);
         });
-
         modelBuilder.Entity<UserBlock>(entity =>
         {
-            entity
-                .ToTable("UserBlock");
-
-            entity.HasKey(e => new { e.UserId, e.BlockedUserId });
-            entity.Property(e => e.BlockedUserId).HasColumnName("Blocked_User_ID");
-            entity.Property(e => e.UserId).HasColumnName("User_ID");
-
             entity.HasOne(d => d.BlockedUser).WithMany()
                 .HasForeignKey(d => d.BlockedUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

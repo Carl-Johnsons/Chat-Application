@@ -25,7 +25,7 @@ namespace ChatAPI.Controllers
 
         // POST api/login
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginModel userLoginModel)
+        public async Task<ActionResult<TokenModel>> Login([FromBody] UserLoginModel userLoginModel)
         {
             User? user;
             try
@@ -40,20 +40,48 @@ namespace ChatAPI.Controllers
             {
                 return NotFound();
             }
+
+            string? accessToken = GenerateAccessToken(user);
+            if (accessToken == null)
+            {
+                return BadRequest("Secret key or issuer or audience is undefined");
+            }
             var token = new TokenModel
             {
-                Token = Generate(user)
+                Token = accessToken
             };
             return Ok(token);
         }
-
-        private string Generate(User user)
+        // POST api/login
+        [HttpPost("Register")]
+        public async Task<ActionResult<TokenModel>> Register([FromBody] User user)
+        {
+            if (_userRepository.GetUserByPhoneNumber(user.PhoneNumber) != null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "phone number is already exist" });
+            }
+            try
+            {
+                _userRepository.InsertUser(user);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return StatusCode(StatusCodes.Status201Created);
+        }
+        private static string? GenerateAccessToken(User user)
         {
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             IConfigurationSection jwtSection = config.GetSection("Jwt");
             var secretKey = jwtSection["Key"];
             var issuer = jwtSection["Issuer"];
             var audience = jwtSection["Audience"];
+
+            if (secretKey == null || issuer == null || audience == null)
+            {
+                return null;
+            }
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
