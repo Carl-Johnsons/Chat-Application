@@ -13,8 +13,8 @@ var audience = jwtSection["Audience"];
 
 var builder = WebApplication.CreateBuilder(args);
 var service = builder.Services;
-// Add services to the container.
 
+// Add services to the container.
 service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     options.TokenValidationParameters = new TokenValidationParameters
@@ -23,10 +23,12 @@ service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey ?? "")),
+        ClockSkew = TimeSpan.Zero, // Make the jwt token expire time more accurate
         ValidIssuer = issuer,
         ValidAudience = audience,
     });
+
 service.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 service.AddEndpointsApiExplorer();

@@ -38,9 +38,9 @@ namespace DataAccess.DAOs
             return users;
         }
 
-        public User GetUserByID(int userId)
+        public User? GetUserByID(int userId)
         {
-            User user = null;
+            User? user;
             try
             {
                 using var context = new ChatApplicationContext();
@@ -58,7 +58,7 @@ namespace DataAccess.DAOs
             {
                 throw new Exception("Phone number is null");
             }
-            User user;
+            User? user;
             try
             {
                 using var context = new ChatApplicationContext();
@@ -70,6 +70,26 @@ namespace DataAccess.DAOs
             }
             return user;
         }
+        public User? GetUserByRefreshToken(string? refreshToken)
+        {
+            if (refreshToken == null)
+            {
+                throw new Exception("refresh token is null");
+            }
+            User? user;
+            try
+            {
+                using var context = new ChatApplicationContext();
+                user = context.Users.SingleOrDefault(u => u.RefreshToken == refreshToken);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return user;
+        }
+
+
 
         public User? Login(string? phoneNumber, string? password)
         {
@@ -95,7 +115,7 @@ namespace DataAccess.DAOs
         public int AddUser(User user)
         {
 
-            User _user = GetUserByID(user.UserId);
+            User? _user = GetUserByID(user.UserId);
             if (_user == null)
             {
                 using var context = new ChatApplicationContext();
@@ -118,7 +138,7 @@ namespace DataAccess.DAOs
                 return 0;
             }
             using var context = new ChatApplicationContext();
-            var user = GetUserByID(userUpdate.UserId);
+            User? user = GetUserByID(userUpdate.UserId);
             if (user == null)
             {
                 return 0;
@@ -132,18 +152,14 @@ namespace DataAccess.DAOs
 
         public int RemoveUser(int userId)
         {
-
-            User user = GetUserByID(userId);
-            if (user != null)
-            {
-                using var context = new ChatApplicationContext();
-                context.Users.Remove(user);
-                return context.SaveChanges();
-            }
-            else
+            User? user = GetUserByID(userId);
+            if (user == null)
             {
                 return 0;
             }
+            using var context = new ChatApplicationContext();
+            context.Users.Remove(user);
+            return context.SaveChanges();
         }
 
     }

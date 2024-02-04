@@ -12,7 +12,8 @@ namespace DataAccess.Repositories
         public List<User> GetUserList();
         public User? GetUserByID(int userId);
         public User? Login(string? phoneNumber, string? password);
-        public User GetUserByPhoneNumber(string? phoneNumber);
+        public User? GetUserByPhoneNumber(string? phoneNumber);
+        public User? GetUserByRefreshToken(string? refreshToken);
         public int InsertUser(User user);
         public int UpdateUser(User userUpdate);
         public int DeleteUser(int userId);

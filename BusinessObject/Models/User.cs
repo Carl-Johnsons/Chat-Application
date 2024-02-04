@@ -40,5 +40,7 @@ public partial class User
     [MaxLength(100)]
     public string? Email { get; set; }
     public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenCreated { get; set; }
+    public DateTime? RefreshTokenExpired { get; set; }
     public bool? Active { get; set; }
 }
