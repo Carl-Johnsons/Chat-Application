@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, InputGroup } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faMobilePhone } from "@fortawesome/free-solid-svg-icons";
 import AppButton from "../AppButton";
@@ -17,13 +17,16 @@ const LoginForm = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
   const handleClick = async () => {
     const [data] = await login(phoneNumber, password);
     if (!data) {
       return;
     }
     setLocalStorageItem("isAuthenticated", true);
-    navigate("/");
+    navigate(from, { replace: true });
   };
   return (
     <Form className={cx("p-3", "p-lg-5")}>

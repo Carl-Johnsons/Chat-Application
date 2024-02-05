@@ -1,44 +1,23 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import routes from "./routes/routes";
-import { getLocalStorageItem } from "./Utils/LocalStorageUtils";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HomePage } from "./pages/Home";
+import { NotFoundPage } from "./pages/NotFound";
+import { LogoutPage } from "./pages/Logout";
+import { LoginPage } from "./pages/Login";
+import RequireAuth from "./Components/RequireAuth";
 
 function App() {
-  const isAuth = getLocalStorageItem("isAuthenticated");
   return (
     <Router>
       <Routes>
-        {routes.map((route, index) => {
-          const path = route.path;
-          const element = route.element;
-          const errorElement = route.errorElement;
-          console.log({ isAuth });
-
-          // If not login and the route need authen to access then kick back to the login page
-          if (route.auth && !isAuth) {
-            return (
-              <Route
-                key={index}
-                path={path}
-                element={<Navigate to="/login" />}
-                errorElement={errorElement}
-              ></Route>
-            );
-          }
-
-          return (
-            <Route
-              key={index}
-              path={path}
-              element={element}
-              errorElement={errorElement}
-            ></Route>
-          );
-        })}
+        {/* Public route */}
+        <Route path="/login" element={<LoginPage />}></Route>
+        <Route path="/logout" element={<LogoutPage />}></Route>
+        {/* Protected Route */}
+        <Route element={<RequireAuth />}>
+          <Route path="/" element={<HomePage />}></Route>
+        </Route>
+        {/* Match any */}
+        <Route path="*" element={<NotFoundPage />}></Route>
       </Routes>
     </Router>
   );
