@@ -9,5 +9,6 @@ export type User = {
   backgroundUrl: string;
   introduction: string;
   email: string;
+  refreshToken: string;
   active: boolean;
 };

@@ -1,13 +1,11 @@
 ﻿using BussinessObject.Models;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -53,8 +51,8 @@ namespace ChatAPI.Controllers
                 return NotFound();
             }
 
-            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddMinutes(15));
-            var refreshToken = GenerateRefreshToken(DateTime.Now.AddDays(7));
+            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddSeconds(20));
+            var refreshToken = GenerateRefreshToken(DateTime.Now.AddMinutes(1));
 
             user.RefreshToken = refreshToken.Token;
             user.RefreshTokenCreated = refreshToken.TokenCreatedAt;

@@ -17,6 +17,7 @@ const cx = classNames.bind(style);
 
 const Home = () => {
   const [userId, setUserId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
   const [, setFriendRequestList] = useGlobalState("friendRequestList");
   const [, setConnection] = useGlobalState("connection");
   const [showAside] = useGlobalState("showAside");
@@ -49,7 +50,7 @@ const Home = () => {
   useEffect(() => {
     conn && setConnection(conn);
   }, [conn, setConnection]);
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
       const [user] = await getUserProfile();
@@ -57,14 +58,14 @@ const Home = () => {
         return;
       }
       setUserId(user.userId);
-
+      userMap.set(user.userId, user);
       const [friendRequestList] = await getFriendRequestList(userId);
       if (friendRequestList) {
         setFriendRequestList(friendRequestList);
       }
     };
     fetchUserData();
-  }, [setFriendRequestList, setUserId, userId]);
+  }, [setFriendRequestList, setUserId, userId, userMap]);
 
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>
@@ -107,7 +108,7 @@ const Home = () => {
           )}
         >
           <ChatViewContainer className={cx(activeNav !== 1 && "d-none")} />
-          <ContactContainer  className={cx(activeNav !== 2 && "d-none")}/>
+          <ContactContainer className={cx(activeNav !== 2 && "d-none")} />
         </div>
         <div
           className={cx(

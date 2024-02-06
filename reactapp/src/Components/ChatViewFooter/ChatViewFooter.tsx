@@ -17,7 +17,6 @@ const ChatViewFooter = () => {
   );
   const [connection] = useGlobalState("connection");
   const invokeAction = useSignalREvents({ connection: connection });
-
   const fetchSendMessage = async () => {
     const [data] = await sendMessage(userId, activeConversation, inputValue);
     if (!data) {

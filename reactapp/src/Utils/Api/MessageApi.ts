@@ -1,7 +1,6 @@
 import { IndividualMessage } from "../../Models";
 import { getCurrentDateTimeInISO8601 } from "../DateUtils";
-import { BASE_ADDRESS, handleAPIRequest } from "./APIUtils";
-
+import axiosInstance from "./axios";
 
 // ============================== GET Section ==============================
 /**
@@ -13,16 +12,14 @@ export const getIndividualMessageList = async (
   senderId: number,
   receiverId: number
 ): Promise<[IndividualMessage[] | null, unknown]> => {
-  const url =
-    BASE_ADDRESS +
-    "/api/Messages/GetIndividualMessage/" +
-    senderId +
-    "/" +
-    receiverId;
-  const [individualMessages, error] = await handleAPIRequest<
-    IndividualMessage[]
-  >({ url, method: "GET" });
-  return [individualMessages, error];
+  try {
+    const url =
+      "/api/Messages/GetIndividualMessage/" + senderId + "/" + receiverId;
+    const response = await axiosInstance.get(url);
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 /**
  *
@@ -34,17 +31,14 @@ export const getLastIndividualMessageList = async (
   senderId: number,
   receiverId: number
 ): Promise<[IndividualMessage | null, unknown]> => {
-  const url =
-    BASE_ADDRESS +
-    "/api/Messages/GetLastIndividualMessage/" +
-    senderId +
-    "/" +
-    receiverId;
-  const [individualMessage, error] = await handleAPIRequest<IndividualMessage>({
-    url,
-    method: "GET",
-  });
-  return [individualMessage, error];
+  try {
+    const url =
+      "/api/Messages/GetLastIndividualMessage/" + senderId + "/" + receiverId;
+    const response = await axiosInstance.get(url);
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 // ============================== POST Section ==============================
 /**
@@ -77,11 +71,12 @@ export const sendIndividualMessage = async (
       active: true,
     },
   };
-  const url = BASE_ADDRESS + "/api/Messages/SendIndividualMessage";
-  const [individualMessage, error] = await handleAPIRequest<IndividualMessage>({
-    url,
-    method: "POST",
-    data: messageObject,
-  });
-  return [individualMessage, error];
+
+  try {
+    const url = "/api/Messages/SendIndividualMessage";
+    const respone = await axiosInstance.post(url, messageObject);
+    return [respone.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };

@@ -1,9 +1,5 @@
 import { Friend, FriendRequest, User } from "../../Models";
-import {
-  BASE_ADDRESS,
-  handleAPIRequest,
-  handleStatusRequest,
-} from "./APIUtils";
+import axiosInstance from "./axios";
 
 // ============================== GET Section ==============================
 /**
@@ -13,22 +9,37 @@ import {
 export const getUser = async (
   userId: number
 ): Promise<[User | null, unknown]> => {
-  const url = BASE_ADDRESS + "/api/Users/" + userId;
-  const [user, error] = await handleAPIRequest<User>({ url, method: "GET" });
-  return [user, error];
+  try {
+    const url = "/api/Users/" + userId;
+    const response = await axiosInstance.get(url);
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 
 export const getUserProfile = async (): Promise<[User | null, unknown]> => {
-  const url = BASE_ADDRESS + "/api/Users/GetUserProfile";
-  const [user, error] = await handleAPIRequest<User>({ url, method: "GET" });
-  return [user, error];
+  try {
+    const url = "/api/Users/GetUserProfile";
+    const response = await axiosInstance.get(url);
+    console.log(axiosInstance.interceptors);
+    
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
+
 export const searchUser = async (
   phoneNumber: string
 ): Promise<[User | null, unknown]> => {
-  const url = BASE_ADDRESS + "/api/Users/Search/" + phoneNumber;
-  const [user, error] = await handleAPIRequest<User>({ url, method: "GET" });
-  return [user, error];
+  try {
+    const url = "/api/Users/Search/" + phoneNumber;
+    const response = await axiosInstance.get(url);
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 /**
  * if you want only friend array, you can use this line
@@ -39,12 +50,15 @@ export const searchUser = async (
 export const getFriendList = async (
   userId: number
 ): Promise<[Friend[] | null, unknown]> => {
-  const url = BASE_ADDRESS + "/api/Users/GetFriend/" + userId;
-  const [friends, error] = await handleAPIRequest<Friend[]>({
-    url,
-    method: "GET",
-  });
-  return [friends, error];
+  try {
+    const url = "/api/Users/GetFriend/" + userId;
+    const response = await axiosInstance.get(url);
+    console.log(response);
+    
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
   // Only get friendNavigation then convert it to array
   //resolve(data.map(item => item.friendNavigation));
 
@@ -61,13 +75,13 @@ export const getFriendList = async (
 export const getFriendRequestList = async (
   userId: number
 ): Promise<[FriendRequest[] | null, unknown]> => {
-  const url =
-    BASE_ADDRESS + "/api/Users/GetFriendRequestsByReceiverId/" + userId;
-  const [friendRequests, error] = await handleAPIRequest<FriendRequest[]>({
-    url,
-    method: "GET",
-  });
-  return [friendRequests, error];
+  try {
+    const url = "/api/Users/GetFriendRequestsByReceiverId/" + userId;
+    const response = await axiosInstance.get(url);
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 // ============================== POST Section ==============================
 /**
@@ -80,19 +94,18 @@ export const sendFriendRequest = async (
   user: User,
   receiverId: number
 ): Promise<[FriendRequest | null, unknown]> => {
-  const data = {
-    senderId: user.userId,
-    receiverId: receiverId,
-    content: "Xin chào! tôi là " + user.name,
-  };
-
-  const url = BASE_ADDRESS + "/api/Users/SendFriendRequest";
-  const [friendRequest, error] = await handleAPIRequest<FriendRequest>({
-    url,
-    method: "POST",
-    data,
-  });
-  return [friendRequest, error];
+  try {
+    const data = {
+      senderId: user.userId,
+      receiverId: receiverId,
+      content: "Xin chào! tôi là " + user.name,
+    };
+    const url = "/api/Users/SendFriendRequest";
+    const response = await axiosInstance.post(url, data);
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 /**
  * Add a friend using fetch API
@@ -108,10 +121,13 @@ export const addFriend = async (
 ): Promise<[number | null, unknown]> => {
   // Sender is the one who send the request not the current user
   // The current user is the one who accept the friend request
-  const url =
-    BASE_ADDRESS + "/api/Users/AddFriend/" + senderId + "/" + receiverId;
-  const [status, error] = await handleStatusRequest({ url, method: "POST" });
-  return [status, error];
+  try {
+    const url = "/api/Users/AddFriend/" + senderId + "/" + receiverId;
+    const response = await axiosInstance.post(url);
+    return [response.status, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 // ============================== PUT Section ==============================
 /**
@@ -121,23 +137,26 @@ export const addFriend = async (
 export const updateUser = async (
   user: User
 ): Promise<[User | null, unknown]> => {
-  const url = BASE_ADDRESS + "/api/Users/" + user.userId;
-  const [data, error] = await handleAPIRequest<User>({
-    url,
-    method: "PUT",
-    data: user,
-  });
-  return [data, error];
+  try {
+    const url = "/api/Users/" + user.userId;
+    const response = await axiosInstance.put(url, user);
+    return [response.data, null];
+  } catch (error) {
+    return [null, error];
+  }
 };
 // ============================== DELETE Section ==============================
 export const deleteFriend = async (
   userId: number,
   friendId: number
 ): Promise<[number | null, unknown]> => {
-  const url =
-    BASE_ADDRESS + "/api/Users/RemoveFriend/" + userId + "/" + friendId;
-  const [status, error] = await handleStatusRequest({ url, method: "DELETE" });
-  return [status, error];
+  try {
+    const url = "/api/Users/RemoveFriend/" + userId + "/" + friendId;
+    const response = await axiosInstance.delete(url);
+    return [response.status, null];
+  } catch (error) {
+    return [null, error];
+  }
   //refactor later
   //Notify other user
   //_CONNECTION.invoke("DeleteFriend", friendObject.userId).catch(function (err) {
@@ -152,12 +171,11 @@ export const deleteFriendRequest = async (
   senderId: number,
   receiverId: number
 ): Promise<[number | null, unknown]> => {
-  const url =
-    BASE_ADDRESS +
-    "/api/Users/RemoveFriendRequest/" +
-    senderId +
-    "/" +
-    receiverId;
-  const [status, error] = await handleStatusRequest({ url, method: "DELETE" });
-  return [status, error];
+  try {
+    const url = "/api/Users/RemoveFriendRequest/" + senderId + "/" + receiverId;
+    const response = await axiosInstance.delete(url);
+    return [response.status, null];
+  } catch (error) {
+    return [null, error];
+  }
 };

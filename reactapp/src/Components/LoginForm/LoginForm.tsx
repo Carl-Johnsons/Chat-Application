@@ -7,8 +7,8 @@ import AppButton from "../AppButton";
 
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
-import { login } from "../../Utils/Api/AuthApi";
 import { setLocalStorageItem } from "../../Utils/LocalStorageUtils";
+import { login } from "../../Utils/Api/AuthApi";
 
 const cx = classNames.bind(style);
 
@@ -28,6 +28,7 @@ const LoginForm = () => {
     setLocalStorageItem("isAuthenticated", true);
     navigate(from, { replace: true });
   };
+
   return (
     <Form className={cx("p-3", "p-lg-5")}>
       <div className={cx("h2", "mt-3")}>Sign In to Zalo</div>

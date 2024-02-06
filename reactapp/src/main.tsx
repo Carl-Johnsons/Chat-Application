@@ -10,10 +10,10 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <React.StrictMode>
+    // <React.StrictMode>
       <GlobalStyle>
         <App />
       </GlobalStyle>
-    </React.StrictMode>
+    // </React.StrictMode>
   );
 }
