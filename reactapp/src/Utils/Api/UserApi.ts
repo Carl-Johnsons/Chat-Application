@@ -22,7 +22,6 @@ export const getUserProfile = async (): Promise<[User | null, unknown]> => {
   try {
     const url = "/api/Users/GetUserProfile";
     const response = await axiosInstance.get(url);
-    console.log(axiosInstance.interceptors);
     
     return [response.data, null];
   } catch (error) {
@@ -53,7 +52,6 @@ export const getFriendList = async (
   try {
     const url = "/api/Users/GetFriend/" + userId;
     const response = await axiosInstance.get(url);
-    console.log(response);
     
     return [response.data, null];
   } catch (error) {

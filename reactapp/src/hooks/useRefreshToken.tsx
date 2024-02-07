@@ -17,12 +17,11 @@ const useRefreshToken = () => {
     const [newAccessToken, error] = await refreshToken({
       refreshToken: currentUser.refreshToken,
     });
-    console.log(newAccessToken);
 
     if (error || !newAccessToken) {
       removeLocalStorageItem("accessToken");
       setLocalStorageItem("isAuthenticated", false);
-      return;
+      return null;
     }
     setLocalStorageItem("accessToken", newAccessToken);
     setLocalStorageItem("isAuthenticated", true);
