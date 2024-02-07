@@ -29,6 +29,20 @@ const Home = () => {
   const leftRef: LegacyRef<HTMLDivElement> = useRef(null);
   const rightRef: LegacyRef<HTMLDivElement> = useRef(null);
 
+  window.addEventListener("resize", () => {
+    if (!leftRef.current || !rightRef.current || !navRef.current) {
+      return;
+    }
+    //Restore to default layout if the screen is larger than 768px
+    if (window.matchMedia("(min-width: 768px)").matches) {
+      leftRef.current.classList.remove("d-none");
+      rightRef.current.classList.remove("d-flex");
+      rightRef.current.classList.add("d-none");
+      rightRef.current.classList.add("d-md-flex");
+      return;
+    }
+  });
+  // Add interactivity for small screen
   const handleClick = useCallback((leftShow: boolean) => {
     if (!leftRef.current || !rightRef.current || !navRef.current) {
       return;

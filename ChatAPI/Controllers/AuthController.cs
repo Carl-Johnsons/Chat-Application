@@ -1,4 +1,5 @@
-﻿using BussinessObject.Models;
+﻿using Azure.Core;
+using BussinessObject.Models;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -22,6 +23,8 @@ namespace ChatAPI.Controllers
         private string SecretKey;
         private string Issuer;
         private string Audience;
+        private const int AccessTokenExpireMinutes = 15;
+        private const int RefreshTokenExpireDays = 7;
 
         public AuthController()
         {
@@ -51,8 +54,8 @@ namespace ChatAPI.Controllers
                 return NotFound();
             }
 
-            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddSeconds(20));
-            var refreshToken = GenerateRefreshToken(DateTime.Now.AddMinutes(1));
+            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddMinutes(AccessTokenExpireMinutes));
+            var refreshToken = GenerateRefreshToken(DateTime.Now.AddDays(RefreshTokenExpireDays));
 
             user.RefreshToken = refreshToken.Token;
             user.RefreshTokenCreated = refreshToken.TokenCreatedAt;
@@ -102,7 +105,7 @@ namespace ChatAPI.Controllers
             {
                 return StatusCode(StatusCodes.Status403Forbidden, "Refresh token is not valid");
             }
-            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddSeconds(20));
+            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddMinutes(AccessTokenExpireMinutes));
             if (accessToken == null)
             {
                 return BadRequest("Secret key or issuer or audience is undefined");
@@ -157,7 +160,6 @@ namespace ChatAPI.Controllers
         private User? ValidateRefreshToken(RefreshTokenModel refreshToken)
         {
             User? user = _userRepository.GetUserByRefreshToken(refreshToken.Token);
-            Console.WriteLine(user);
             if (user == null ||
                 (user.RefreshTokenExpired != null
                 && user.RefreshTokenExpired < DateTime.Now))

@@ -89,7 +89,6 @@ const SideBarItem = (variant: Variants) => {
           className={cx(
             "conversation-name-container",
             "mt-2",
-            "mb-1",
             "position-relative"
           )}
         >
