@@ -3,8 +3,8 @@ import AppButton from "../AppButton";
 
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../GlobalState";
-import { sendIndividualMessage as sendMessage } from "../../Utils/Api/MessageApi";
+import { useGlobalState } from "../../globalState";
+import { sendIndividualMessage as sendMessage } from "../../services/message";
 import { sendIndividualMessage, useSignalREvents } from "../../hooks";
 
 const cx = classNames.bind(style);

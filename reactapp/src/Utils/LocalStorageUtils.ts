@@ -1,4 +1,4 @@
-import { JwtToken } from "../Models";
+import { JwtToken } from "../models";
 
 const ACCESS_TOKEN = "accessToken";
 const IS_AUTHENTICATED = "isAuthenticated";

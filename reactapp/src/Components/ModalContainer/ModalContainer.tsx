@@ -10,7 +10,8 @@ import UpdateProfileModalContent from "../UpdateProfileModalContent";
 import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
 import AppButton from "../AppButton";
 import { useModal } from "../../hooks";
-import { useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../globalState";
+
 const cx = classNames.bind(style);
 
 interface ModalContent {

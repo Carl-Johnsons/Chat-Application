@@ -19,7 +19,7 @@ type SearchItemVariant = {
   type: "searchItem";
   userId: number;
   image: string;
-  conversationName: string;
+  searchName: string;
   phoneNumber: string;
   isActive?: boolean;
   onClick?: (userId: number) => void;
@@ -31,6 +31,7 @@ const SideBarItem = (variant: Variants) => {
   let userId: number = 0;
   let image: string = images.defaultAvatarImg;
   let conversationName: string = "";
+  let searchName: string = "";
   let phoneNumber: string = "";
   let isActive: boolean | undefined;
   let lastMessage: string | undefined;
@@ -48,8 +49,7 @@ const SideBarItem = (variant: Variants) => {
       onClick,
     } = variant);
   } else if (variant.type === "searchItem") {
-    ({ userId, image, conversationName, phoneNumber, isActive, onClick } =
-      variant);
+    ({ userId, image, searchName, phoneNumber, isActive, onClick } = variant);
   }
   return (
     <div
@@ -103,7 +103,7 @@ const SideBarItem = (variant: Variants) => {
               "bottom-0"
             )}
           >
-            {conversationName}
+            {variant.type === "conversation" ? conversationName : searchName}
           </div>
         </div>
         <div

@@ -1,5 +1,5 @@
-import { useGlobalState } from "../GlobalState";
-import { refreshToken } from "../Utils/Api/AuthApi";
+import { useGlobalState } from "../globalState";
+import { refreshToken } from "../services/auth/refreshToken.service";
 import {
   removeLocalStorageItem,
   setLocalStorageItem,

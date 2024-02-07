@@ -1,4 +1,4 @@
-import { useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../globalState";
 import { useEffect } from "react";
 
 import { Nav } from "react-bootstrap";
@@ -8,8 +8,8 @@ import Avatar from "../Avatar";
 import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
-import { getUser } from "../../Utils/Api/UserApi";
 import { useModal } from "../../hooks";
+import { getUser } from "../../services/user";
 
 const cx = className.bind(style);
 
@@ -81,7 +81,7 @@ const NavigationBar = () => {
   const handleClick = (linkId: number) => {
     if (linkId === 0) {
       setModalUserId(userId);
-      handleShowModal();
+      handleShowModal(userId);
       return;
     }
     if (linkId === items.length - 1) {

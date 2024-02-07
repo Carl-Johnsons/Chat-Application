@@ -1,0 +1,10 @@
+export { addFriend } from "./addFriend.service";
+export { deleteFriend } from "./deleteFriend.service";
+export { deleteFriendRequest } from "./deleteFriendRequest.service";
+export { getFriendList } from "./getFriendList.service";
+export { getFriendRequestList } from "./getFriendRequestList.service";
+export { getUser } from "./getUser.service";
+export { getUserProfile } from "./getUserProfile.service";
+export { searchUser } from "./searchUser.service";
+export { sendFriendRequest } from "./sendFriendRequest.service";
+export { updateUser } from "./updateUser.service";

@@ -5,7 +5,7 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 import { useEffect, useRef } from "react";
-import { useGlobalState } from "../GlobalState";
+import { useGlobalState } from "../globalState";
 
 // Need some best practice or something, current the connection in the App keep re-rendering this hook
 const useSignalRConnection = (hubURL: string) => {

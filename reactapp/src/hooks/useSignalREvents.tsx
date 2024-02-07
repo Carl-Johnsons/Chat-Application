@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { HubConnection, HubConnectionState } from "@microsoft/signalr";
-import { FriendRequest, IndividualMessage } from "../Models";
-import { useGlobalState } from "../GlobalState";
+import { FriendRequest, IndividualMessage } from "../models";
+import { useGlobalState } from "../globalState";
 
 interface SignalREvent {
   name: string;

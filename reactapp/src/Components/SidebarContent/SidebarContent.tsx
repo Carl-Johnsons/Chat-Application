@@ -1,29 +1,24 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import SearchBar from "../SearchBar";
 import MenuContact from "../MenuContact";
 
 import SideBarItem from "../SideBarItem";
-import images from "../../assets";
 import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../GlobalState";
-import { getFriendList } from "../../Utils/Api/UserApi";
-import { getIndividualMessageList } from "../../Utils/Api/MessageApi";
+import { useGlobalState } from "../../globalState";
 import { useModal } from "../../hooks";
-
-interface MenuContact {
-  image: string;
-  name: string;
-  isActive?: boolean;
-}
+import { User } from "../../models";
+import { menuContacts } from "../../data/constants";
+import { getIndividualMessageList } from "../../services/message";
+import { getFriendList } from "../../services/user";
 
 const cx = classNames.bind(style);
 
 const SidebarContent = () => {
   //Global state
+  const [userId] = useGlobalState("userId");
   const [isSearchBarFocus] = useGlobalState("isSearchBarFocus");
   const [activeNav] = useGlobalState("activeNav");
-  const [userId] = useGlobalState("userId");
   const [, setModaUserId] = useGlobalState("modalUserId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
@@ -31,10 +26,30 @@ const SidebarContent = () => {
   const [activeConversation, setActiveConversation] =
     useGlobalState("activeConversation");
   const [searchResult] = useGlobalState("searchResult");
-  // Local state
-  const [activeMenuContact, setActiveMenuContact] = useState(0);
+  const [activeContactType, setActiveContactType] =
+    useGlobalState("activeContactType");
   // Hook
   const { handleShowModal } = useModal();
+
+  const handleClickConversation = useCallback(
+    async (receiverId: number) => {
+      setActiveConversation(receiverId);
+      if (!userId) {
+        return;
+      }
+      const [data] = await getIndividualMessageList(userId, receiverId);
+      data && setIndividualMessages(data);
+    },
+    [setActiveConversation, setIndividualMessages, userId]
+  );
+  const handleClickSearchResult = (searchResult: User | null) => {
+    if (!searchResult) {
+      return;
+    }
+    setModaUserId(searchResult.userId);
+    handleShowModal(searchResult.userId);
+  };
+
   useEffect(() => {
     const fetchFriendListData = async () => {
       if (!userId) {
@@ -73,18 +88,6 @@ const SidebarContent = () => {
     fetchFriendListData();
   }, [setFriendList, setUserMap, userId, userMap]);
 
-  const handleClickConversation = useCallback(
-    async (receiverId: number) => {
-      setActiveConversation(receiverId);
-      if (!userId) {
-        return;
-      }
-      const [data] = await getIndividualMessageList(userId, receiverId);
-      data && setIndividualMessages(data);
-    },
-    [setActiveConversation, setIndividualMessages, userId]
-  );
-
   useEffect(() => {
     if (!friendList || friendList.length === 0 || activeConversation !== 0) {
       return;
@@ -94,13 +97,8 @@ const SidebarContent = () => {
   }, [friendList, handleClickConversation, activeConversation]);
 
   function handleClickMenuContact(index: number) {
-    setActiveMenuContact(index);
+    setActiveContactType(index);
   }
-  const menuContacts: MenuContact[] = [
-    { image: images.userSolid, name: "Danh sách bạn bè" },
-    { image: images.userGroupSolid, name: "Danh sách nhóm" },
-    { image: images.envelopeOpenRegular, name: "Lời mời kết bạn" },
-  ];
 
   return (
     <>
@@ -163,7 +161,7 @@ const SidebarContent = () => {
             index={index}
             image={menuContact.image}
             name={menuContact.name}
-            isActive={activeMenuContact === index}
+            isActive={activeContactType === index}
             onClick={handleClickMenuContact}
           />
         ))}
@@ -180,13 +178,10 @@ const SidebarContent = () => {
           <SideBarItem
             type="searchItem"
             userId={searchResult.userId}
-            conversationName={searchResult.name}
+            searchName={searchResult.name}
             image={searchResult.avatarUrl}
             phoneNumber={searchResult.phoneNumber}
-            onClick={() => {
-              setModaUserId(searchResult.userId);
-              handleShowModal(searchResult.userId);
-            }}
+            onClick={() => handleClickSearchResult(searchResult)}
           />
         )}
       </div>

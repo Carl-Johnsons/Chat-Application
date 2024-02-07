@@ -3,11 +3,11 @@ import AppButton from "../AppButton";
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
 
-import { useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../globalState";
 import { useState } from "react";
 
 import { formatDateWithSeparator, getMaxDayinMonth } from "../../Utils/DateUtils";
-import { updateUser } from "../../Utils/Api/UserApi";
+import { updateUser } from "../../services/user";
 const cx = className.bind(style);
 
 interface Props {

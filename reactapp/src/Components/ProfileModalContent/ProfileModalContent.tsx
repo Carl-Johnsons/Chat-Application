@@ -6,7 +6,7 @@ import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "../AppButton";
 import Avatar from "../Avatar";
-import { useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../globalState";
 import { convertISODateToVietnameseFormat } from "../../Utils/DateUtils";
 
 const cx = classNames.bind(style);
@@ -59,7 +59,6 @@ const ProfileModalContent = (variant: Variants) => {
 
   const isPersonal = type === "Personal";
   const isFriend = type === "Friend";
-  const isStranger = type === "Stranger";
 
   if (isPersonal) {
     ({ onClickUpdate, onClickEditAvatar, onClickEditUserName } = variant);
@@ -186,7 +185,7 @@ const ProfileModalContent = (variant: Variants) => {
 
       <div className={cx("footer", "mb-3")}>
         <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
-        
+
         {isPersonal && (
           <AppButton
             variant="app-btn-primary-transparent"

@@ -1,4 +1,4 @@
-import { useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../globalState";
 
 import ChatViewHeader from "../ChatViewHeader";
 import ChatViewFooter from "../ChatViewFooter";

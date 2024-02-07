@@ -8,7 +8,7 @@ import AppButton from "../AppButton";
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
 import { setLocalStorageItem } from "../../Utils/LocalStorageUtils";
-import { login } from "../../Utils/Api/AuthApi";
+import { login } from "../../services/auth/login.service";
 
 const cx = classNames.bind(style);
 

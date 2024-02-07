@@ -4,9 +4,9 @@ import appImages from "../../assets";
 import style from "./ChatViewHeader.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "../AppButton";
-import { useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../globalState";
 import { memo, useEffect, useState } from "react";
-import { User } from "../../Models";
+import { User } from "../../models";
 import images from "../../assets";
 
 const cx = classNames.bind(style);

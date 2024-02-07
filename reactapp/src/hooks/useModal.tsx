@@ -1,5 +1,5 @@
-import { useGlobalState } from "../GlobalState";
-import { ModalType } from "../Models";
+import { useGlobalState } from "../globalState";
+import { ModalType } from "../models";
 
 const useModal = () => {
   const [userId] = useGlobalState("userId");
@@ -8,7 +8,7 @@ const useModal = () => {
   const [showModal, setShowModal] = useGlobalState("showModal");
   const [, setActiveModal] = useGlobalState("activeModal");
 
-  const handleShowModal = (modalUserId?: number) => {
+  const handleShowModal = (modalUserId: number) => {
     let type: ModalType;
     if (userId === modalUserId) {
       type = "Personal";
@@ -23,9 +23,9 @@ const useModal = () => {
     setActiveModal(0);
     setShowModal(false);
   };
-  const handleToggleModal = () => {
+  const handleToggleModal = (modalUserId: number) => {
     const state = !showModal;
-    state ? handleShowModal() : handleHideModal();
+    state ? handleShowModal(modalUserId) : handleHideModal();
     setShowModal(state);
   };
 

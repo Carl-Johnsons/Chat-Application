@@ -1,6 +1,6 @@
 // Hooks
 import { LegacyRef, useCallback, useEffect, useRef } from "react";
-import { useGlobalState } from "../../GlobalState";
+import { useGlobalState } from "../../globalState";
 //Components
 import NavigationBar from "../../Components/NavigationBar";
 import SidebarContent from "../../Components/SidebarContent";
@@ -11,7 +11,7 @@ import ModalContainer from "../../Components/ModalContainer";
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";
 import { useSignalRConnection } from "../../hooks";
-import { getFriendRequestList, getUserProfile } from "../../Utils/Api/UserApi";
+import { getFriendRequestList, getUserProfile } from "../../services/user";
 
 const cx = classNames.bind(style);
 

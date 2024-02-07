@@ -4,8 +4,8 @@ import AppButton from "../AppButton";
 import Avatar from "../Avatar";
 import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../GlobalState";
-import { searchUser } from "../../Utils/Api/UserApi";
+import { useGlobalState } from "../../globalState";
+import { searchUser } from "../../services/user";
 
 const cx = classNames.bind(style);
 

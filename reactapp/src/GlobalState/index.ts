@@ -5,14 +5,15 @@ import {
   IndividualMessage,
   ModalType,
   User,
-} from "../Models";
+} from "../models";
 import { createGlobalState } from "react-hooks-global-state";
 
 const initialState = {
   // Number
-  activeConversation: 0 as number,
-  activeNav: 1 as number,
-  activeModal: 0 as number,
+  activeConversation: 0,
+  activeContactType: 0,
+  activeNav: 1,
+  activeModal: 0,
   modalUserId: null as unknown as number,
   userId: null as unknown as number,
   // User
