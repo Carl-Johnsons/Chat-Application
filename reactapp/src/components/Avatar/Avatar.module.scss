@@ -1,0 +1,17 @@
+$size-variants: (
+    "-16px": 16px,
+    "-20px": 20px,
+    "-30px": 30px,
+    "-40px": 40px,
+    "": 45px,
+    "-45px": 45px,
+    "-50px": 50px,
+    "-80px": 80px
+);
+
+@each $variant, $size in $size-variants {
+    .avatar-img#{$variant} {
+        width: $size;
+        height: $size;
+    }
+}

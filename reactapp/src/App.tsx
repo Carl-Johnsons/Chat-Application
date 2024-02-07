@@ -3,7 +3,7 @@ import { HomePage } from "./pages/Home";
 import { NotFoundPage } from "./pages/NotFound";
 import { LogoutPage } from "./pages/Logout";
 import { LoginPage } from "./pages/Login";
-import RequireAuth from "./Components/RequireAuth";
+import RequireAuth from "./components/RequireAuth";
 import useAxiosInterceptor from "./hooks/useAxiosInterceptor";
 
 function App() {

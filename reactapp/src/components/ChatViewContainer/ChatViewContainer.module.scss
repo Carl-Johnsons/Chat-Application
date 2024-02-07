@@ -1,0 +1,25 @@
+.user-info-container {
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 18px;
+}
+
+.conversation-container {
+    position: relative;
+    .message-container {
+        height: 100%;
+        overflow: auto;
+        background-color: #eef0f1;
+    }
+}
+
+.user-input-notification {
+    position: absolute;
+    bottom: 0px;
+    padding-left: 1rem;
+    background: #e5efffbf;
+    width: 100%;
+}
+.input-message-container {
+    padding: 16px;
+    border: 1px solid black;
+}

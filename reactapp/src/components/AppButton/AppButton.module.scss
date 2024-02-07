@@ -1,0 +1,61 @@
+@use "sass:map";
+
+@mixin button-style($bg-color, $text-color, $bg-color-hover, $bg-color-active) {
+    border-radius: var(--modal-border-radius);
+    background-color: $bg-color;
+    border: 0;
+    color: $text-color;
+
+    &:hover {
+        color: $text-color;
+        background-color: $bg-color-hover;
+    }
+    &:active {
+        color: $text-color;
+        background-color: $bg-color-active;
+    }
+}
+
+// Creating a button variants map
+$button-variants: (
+    primary: (
+        bg-color: var(--light-gray),
+        text-color: var(--black),
+        bg-hover: var(--gray-hover),
+        bg-active: var(--gray-active)
+    ),
+    secondary: (
+        bg-color: var(--blue),
+        text-color: var(--white),
+        bg-hover: var(--blue-hover),
+        bg-active: var(--blue-active)
+    ),
+    tertiary: (
+        bg-color: var(--light-blue),
+        text-color: var(--blue),
+        bg-hover: var(--light-blue-hover),
+        bg-active: var(--light-blue-active)
+    )
+);
+@each $variant, $color in $button-variants {
+    .app-btn-#{$variant},
+    .app-btn-#{$variant}:hover,
+    .app-btn-#{$variant}:active {
+        @include button-style(
+            map.get($color, bg-color),
+            map.get($color, text-color),
+            map.get($color, bg-hover),
+            map.get($color, bg-active)
+        );
+    }
+    .app-btn-#{$variant}-transparent,
+    .app-btn-#{$variant}-transparent:hover,
+    .app-btn-#{$variant}-transparent:active {
+        @include button-style(
+            transparent,
+            map.get($color, text-color),
+            map.get($color, bg-hover),
+            map.get($color, bg-active)
+        );
+    }
+}

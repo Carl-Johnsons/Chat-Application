@@ -1,0 +1,59 @@
+.background-img-container {
+    height: 10rem;
+}
+.info-container {
+    padding-top: 14px;
+    .info-detail > .avatar-img-container {
+        img {
+            border: 2px solid white;
+            transform: translateY(-40%);
+        }
+        .avatar-edit-btn {
+            right: 0;
+            transform: translate(-40%, 55%);
+            width: 30px;
+            height: 30px;
+            > svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+    .info-button-container > .info-button {
+        padding-left: 3.2rem;
+        padding-right: 3.2rem;
+    }
+
+    .user-name {
+        font-weight: 500;
+        font-size: 18px;
+        overflow-wrap: break-word;
+        .username-edit-btn {
+            width: 24px;
+            height: 24px;
+            > svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+    }
+}
+
+.personal-information-container {
+    .personal-information-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.3rem 0rem;
+        &:not(:has(.row-name)) {
+            font-weight: 500;
+        }
+        .row-name {
+            color: var(--gray);
+        }
+    }
+    .note {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--gray);
+    }
+}

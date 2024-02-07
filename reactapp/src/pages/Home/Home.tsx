@@ -1,12 +1,12 @@
 // Hooks
 import { LegacyRef, useCallback, useEffect, useRef } from "react";
 import { useGlobalState } from "../../globalState";
-//Components
-import NavigationBar from "../../Components/NavigationBar";
-import SidebarContent from "../../Components/SidebarContent";
-import ChatViewContainer from "../../Components/ChatViewContainer";
-import ContactContainer from "../../Components/ContactContainer/ContactContainer";
-import ModalContainer from "../../Components/ModalContainer";
+//components
+import NavigationBar from "../../components/NavigationBar";
+import SidebarContent from "../../components/SidebarContent";
+import ChatViewContainer from "../../components/ChatViewContainer";
+import ContactContainer from "../../components/ContactContainer/ContactContainer";
+import ModalContainer from "../../components/ModalContainer";
 
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";

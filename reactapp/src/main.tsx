@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import App from "./App.tsx";
 import "./index.scss";
-import GlobalStyle from "./Components/GlobalStyle/GlobalStyle.tsx";
+import GlobalStyle from "./components/GlobalStyle/GlobalStyle.tsx";
 import React from "react";
 
 const rootElement = document.getElementById("root");
