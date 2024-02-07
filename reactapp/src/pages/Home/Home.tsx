@@ -28,6 +28,7 @@ const Home = () => {
   const navRef: LegacyRef<HTMLDivElement> = useRef(null);
   const leftRef: LegacyRef<HTMLDivElement> = useRef(null);
   const rightRef: LegacyRef<HTMLDivElement> = useRef(null);
+  //Modal
 
   window.addEventListener("resize", () => {
     if (!leftRef.current || !rightRef.current || !navRef.current) {

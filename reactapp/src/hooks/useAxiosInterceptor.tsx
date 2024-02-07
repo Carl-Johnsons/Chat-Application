@@ -30,6 +30,8 @@ const useAxiosInterceptor = (navigate: NavigateFunction) => {
       (response) => response,
       async (error: AxiosError) => {
         const prevRequest = error?.config as CustomAxiosRequestConfig;
+        console.log("intercept");
+
         if (error?.response?.status == 401 && !prevRequest?._retry && refresh) {
           prevRequest._retry = true;
           const newAccessToken = await refresh();

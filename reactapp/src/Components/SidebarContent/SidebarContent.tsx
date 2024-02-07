@@ -9,6 +9,7 @@ import classNames from "classnames/bind";
 import { useGlobalState } from "../../GlobalState";
 import { getFriendList } from "../../Utils/Api/UserApi";
 import { getIndividualMessageList } from "../../Utils/Api/MessageApi";
+import { useModal } from "../../hooks";
 
 interface MenuContact {
   image: string;
@@ -19,9 +20,11 @@ interface MenuContact {
 const cx = classNames.bind(style);
 
 const SidebarContent = () => {
+  //Global state
   const [isSearchBarFocus] = useGlobalState("isSearchBarFocus");
   const [activeNav] = useGlobalState("activeNav");
   const [userId] = useGlobalState("userId");
+  const [, setModaUserId] = useGlobalState("modalUserId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
   const [, setIndividualMessages] = useGlobalState("individualMessageList");
@@ -30,6 +33,8 @@ const SidebarContent = () => {
   const [searchResult] = useGlobalState("searchResult");
   // Local state
   const [activeMenuContact, setActiveMenuContact] = useState(0);
+  // Hook
+  const { handleShowModal } = useModal();
   useEffect(() => {
     const fetchFriendListData = async () => {
       if (!userId) {
@@ -178,6 +183,10 @@ const SidebarContent = () => {
             conversationName={searchResult.name}
             image={searchResult.avatarUrl}
             phoneNumber={searchResult.phoneNumber}
+            onClick={() => {
+              setModaUserId(searchResult.userId);
+              handleShowModal(searchResult.userId);
+            }}
           />
         )}
       </div>

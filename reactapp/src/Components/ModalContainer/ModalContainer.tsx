@@ -9,6 +9,7 @@ import ProfileModalContent from "../ProfileModalContent";
 import UpdateProfileModalContent from "../UpdateProfileModalContent";
 import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
 import AppButton from "../AppButton";
+import { useModal } from "../../hooks";
 import { useGlobalState } from "../../GlobalState";
 const cx = classNames.bind(style);
 
@@ -17,54 +18,73 @@ interface ModalContent {
   ref: React.MutableRefObject<null>;
   modalContent: React.ReactNode;
 }
+
 const ModalContainer = () => {
-  const [showModal, setShowModal] = useGlobalState("showModal");
-  const [modalActive, setModalActive] = useState(0);
+  const [modalType] = useGlobalState("modalType");
+  const [showModal] = useGlobalState("showModal");
+  const { handleHideModal } = useModal();
+  const [activeModal, setActiveModal] = useGlobalState("activeModal");
+
   const [modalBodyHeight, setModalBodyHeight] = useState(0);
 
-  const handCloseModal = () => setShowModal(false);
-  const modalContentsRef = useRef<ModalContent[]>([
-    {
-      title: "Thông tin cá nhân",
-      ref: useRef(null),
-      modalContent: (
-        <ProfileModalContent
-          onClickUpdate={() => handleClick(1)}
-          onClickEditUserName={() => handleClick(1)}
-          onClickEditAvatar={() => handleClick(2)}
-        />
-      ),
-    },
-    {
-      title: "Cập nhật thông tin cá nhân",
-      ref: useRef(null),
-      modalContent: (
-        <UpdateProfileModalContent onClickCancel={() => handleClick(0)} />
-      ),
-    },
-    {
-      title: "Cập nhật thông tin cá nhân",
-      ref: useRef(null),
-      modalContent: <UpdateAvatarModalContent />,
-    },
-  ]);
+  const modalContentsRef = useRef<ModalContent[]>();
+  const profileRef = useRef(null);
+  const updateProfileRef = useRef(null);
+  const updateAvatarRef = useRef(null);
+  if (modalType === "Personal") {
+    modalContentsRef.current = [
+      {
+        title: "Thông tin cá nhân",
+        ref: profileRef,
+        modalContent: (
+          <ProfileModalContent
+            type="Personal"
+            onClickUpdate={() => handleClick(1)}
+            onClickEditUserName={() => handleClick(1)}
+            onClickEditAvatar={() => handleClick(2)}
+          />
+        ),
+      },
+      {
+        title: "Cập nhật thông tin cá nhân",
+        ref: updateProfileRef,
+        modalContent: (
+          <UpdateProfileModalContent onClickCancel={() => handleClick(0)} />
+        ),
+      },
+      {
+        title: "Cập nhật thông tin cá nhân",
+        ref: updateAvatarRef,
+        modalContent: <UpdateAvatarModalContent />,
+      },
+    ];
+  } else {
+    modalContentsRef.current = [
+      {
+        title: "Thông tin tài khoản",
+        ref: profileRef,
+        modalContent: <ProfileModalContent type={modalType} />,
+      },
+    ];
+  }
 
   useEffect(() => {
-    modalContentsRef.current.forEach((item, index) => {
-      if (showModal && modalActive == index && item.ref.current) {
-        setModalBodyHeight((item.ref.current as HTMLElement).offsetHeight);
-      }
-    });
-  }, [modalActive, showModal]);
+    modalContentsRef.current &&
+      modalContentsRef.current.forEach((item, index) => {
+        if (showModal && activeModal == index && item.ref.current) {
+          setModalBodyHeight((item.ref.current as HTMLElement).offsetHeight);
+        }
+      });
+  }, [activeModal, showModal]);
 
   function handleClick(index: number) {
-    setModalActive(index);
+    setActiveModal(index);
   }
 
   return (
     <Modal
       show={showModal}
-      onHide={handCloseModal}
+      onHide={handleHideModal}
       className={cx("info-modal")}
       centered
       dialogClassName={cx("modal-dialog")}
@@ -76,11 +96,11 @@ const ModalContainer = () => {
           "modal-header",
           "d-flex",
           "align-items-center",
-          modalActive != 0 && "ps-2"
+          activeModal != 0 && "ps-2"
         )}
       >
         <Modal.Title className={cx("modal-title")}>
-          {modalActive != 0 && (
+          {activeModal != 0 && (
             <AppButton
               className={cx("rounded-circle", "p-0", "me-1")}
               onClick={() => handleClick(0)}
@@ -90,7 +110,7 @@ const ModalContainer = () => {
             </AppButton>
           )}
 
-          {modalContentsRef.current[modalActive].title}
+          {modalContentsRef.current[activeModal].title}
         </Modal.Title>
         <Button
           className={cx(
@@ -101,7 +121,7 @@ const ModalContainer = () => {
             "close"
           )}
           data-dismiss="modal"
-          onClick={handCloseModal}
+          onClick={handleHideModal}
         ></Button>
       </Modal.Header>
       <Modal.Body
@@ -123,7 +143,7 @@ const ModalContainer = () => {
                 "w-50",
                 "h-fit-content",
                 "position-absolute",
-                modalActive == index && "active"
+                activeModal == index && "active"
               )}
             >
               {item.modalContent}

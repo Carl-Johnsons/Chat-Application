@@ -3,7 +3,7 @@
 }
 .info-container {
     padding-top: 14px;
-    .avatar-img-container {
+    .info-detail > .avatar-img-container {
         img {
             border: 2px solid white;
             transform: translateY(-40%);
@@ -19,6 +19,11 @@
             }
         }
     }
+    .info-button-container > .info-button {
+        padding-left: 3.2rem;
+        padding-right: 3.2rem;
+    }
+
     .user-name {
         font-weight: 500;
         font-size: 18px;

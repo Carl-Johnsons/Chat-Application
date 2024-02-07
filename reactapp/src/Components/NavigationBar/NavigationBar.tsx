@@ -9,6 +9,7 @@ import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
 import { getUser } from "../../Utils/Api/UserApi";
+import { useModal } from "../../hooks";
 
 const cx = className.bind(style);
 
@@ -22,14 +23,15 @@ type NavItem = {
 };
 
 const NavigationBar = () => {
+  const [, setModalUserId] = useGlobalState("modalUserId");
+
+  const { handleShowModal } = useModal();
   const [activeNav, setActiveNav] = useGlobalState("activeNav");
-  const [, setShowModal] = useGlobalState("showModal");
 
   const [userId] = useGlobalState("userId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [connection] = useGlobalState("connection");
   const user = userMap.get(userId);
-  const handleShowModal = () => setShowModal(true);
 
   useEffect(() => {
     if (!userId || userMap.has(userId)) {
@@ -78,6 +80,7 @@ const NavigationBar = () => {
   ];
   const handleClick = (linkId: number) => {
     if (linkId === 0) {
+      setModalUserId(userId);
       handleShowModal();
       return;
     }
