@@ -12,6 +12,7 @@ import {
   deleteFriend,
   deleteFriendRequest,
 } from "../../services/user";
+import { Friend } from "../../models";
 
 const cx = classNames.bind(style);
 
@@ -21,9 +22,11 @@ interface Props {
 
 const ContactContainer = ({ className }: Props) => {
   const [userId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
   const [activeContactType] = useGlobalState("activeContactType");
   const [friendList, setFriendList] = useGlobalState("friendList");
-  const [friendRequestList] = useGlobalState("friendRequestList");
+  const [friendRequestList, setFriendRequestList] =
+    useGlobalState("friendRequestList");
   const [, setModalUserId] = useGlobalState("modalUserId");
   // hooks
   const { handleShowModal } = useModal();
@@ -35,6 +38,23 @@ const ContactContainer = ({ className }: Props) => {
     const [status, error] = await addFriend(friendId, userId);
     if (status && status >= 200 && status <= 299) {
       console.log("acp friend successfully");
+      const friendUser = userMap.get(friendId);
+      if (!friendUser) {
+        console.error(`This user with ID:${friendId} is null in the user map`);
+        return;
+      }
+
+      const friend: Friend = {
+        userId: userId,
+        friendId: friendId,
+        friendNavigation: friendUser,
+      };
+
+      setFriendList([...friendList, friend]);
+      // friendId here is the who send the friend request
+      setFriendRequestList(
+        friendRequestList.filter((fr) => fr.senderId !== friendId)
+      );
     } else {
       console.log("acp friend failed");
       console.error(error);
@@ -45,6 +65,7 @@ const ContactContainer = ({ className }: Props) => {
     const [status, error] = await deleteFriend(userId, friendId);
     if (status && status >= 200 && status <= 299) {
       console.log("del friend successfully");
+      setFriendList(friendList.filter((f) => f.friendId !== friendId));
     } else {
       console.log("del friend failed");
       console.error(error);
@@ -54,6 +75,9 @@ const ContactContainer = ({ className }: Props) => {
     const [status, error] = await deleteFriendRequest(friendRequestId, userId);
     if (status && status >= 200 && status <= 299) {
       console.log("del friend request successfully");
+      setFriendRequestList(
+        friendRequestList.filter((fr) => fr.senderId !== friendRequestId)
+      );
     } else {
       console.log("del friend request failed");
       console.error(error);

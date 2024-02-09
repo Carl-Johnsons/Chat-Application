@@ -4,5 +4,5 @@ export type Friend = {
   userId: number;
   friendId: number;
   friendNavigation: User;
-  user: User;
+  user?: User;
 };
