@@ -74,8 +74,11 @@ const Home = () => {
       }
       setUserId(user.userId);
       userMap.set(user.userId, user);
-      const [friendRequestList] = await getFriendRequestList(userId);
+      const [friendRequestList] = await getFriendRequestList(user.userId);
       if (friendRequestList) {
+        for (const friendRequest of friendRequestList) {
+          userMap.set(friendRequest.sender.userId, friendRequest.sender);
+        }
         setFriendRequestList(friendRequestList);
       }
     };

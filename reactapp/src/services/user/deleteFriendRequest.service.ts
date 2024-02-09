@@ -1,5 +1,11 @@
 import axiosInstance from "../../Utils/Api/axios";
-
+/**
+ * - Sender is the who send the friend request
+ * - Recevier is the who accept the friend request (current user)
+ * @param senderId
+ * @param receiverId
+ * @returns
+ */
 export const deleteFriendRequest = async (
   senderId: number,
   receiverId: number

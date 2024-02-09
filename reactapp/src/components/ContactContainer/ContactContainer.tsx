@@ -6,6 +6,12 @@ import { memo } from "react";
 import { useGlobalState } from "../../globalState";
 import { MenuContactIndex, menuContacts } from "../../data/constants";
 import ContactRow from "../ContactRow";
+import { useModal } from "../../hooks";
+import {
+  addFriend,
+  deleteFriend,
+  deleteFriendRequest,
+} from "../../services/user";
 
 const cx = classNames.bind(style);
 
@@ -14,9 +20,45 @@ interface Props {
 }
 
 const ContactContainer = ({ className }: Props) => {
+  const [userId] = useGlobalState("userId");
   const [activeContactType] = useGlobalState("activeContactType");
-  const [friendList] = useGlobalState("friendList");
+  const [friendList, setFriendList] = useGlobalState("friendList");
   const [friendRequestList] = useGlobalState("friendRequestList");
+  const [, setModalUserId] = useGlobalState("modalUserId");
+  // hooks
+  const { handleShowModal } = useModal();
+  const handleClickBtnDetail = (userId: number) => {
+    setModalUserId(userId);
+    handleShowModal(userId);
+  };
+  const handleClickAcpFriend = async (friendId: number) => {
+    const [status, error] = await addFriend(friendId, userId);
+    if (status && status >= 200 && status <= 299) {
+      console.log("acp friend successfully");
+    } else {
+      console.log("acp friend failed");
+      console.error(error);
+    }
+  };
+
+  const handleClickDelFriend = async (friendId: number) => {
+    const [status, error] = await deleteFriend(userId, friendId);
+    if (status && status >= 200 && status <= 299) {
+      console.log("del friend successfully");
+    } else {
+      console.log("del friend failed");
+      console.error(error);
+    }
+  };
+  const handleClickDelFriendRequest = async (friendRequestId: number) => {
+    const [status, error] = await deleteFriendRequest(friendRequestId, userId);
+    if (status && status >= 200 && status <= 299) {
+      console.log("del friend request successfully");
+    } else {
+      console.log("del friend request failed");
+      console.error(error);
+    }
+  };
   return (
     <>
       <div
@@ -36,20 +78,35 @@ const ContactContainer = ({ className }: Props) => {
         {friendList &&
           activeContactType === MenuContactIndex.FRIEND_LIST &&
           friendList.map((friend) => {
+            const friendObject = friend.friendNavigation;
             return (
               <ContactRow
-                image={friend.friendNavigation.avatarUrl}
-                name={friend.friendNavigation.name}
+                key={friendObject.userId}
+                userId={friendObject.userId}
+                onClickBtnDetail={() =>
+                  handleClickBtnDetail(friendObject.userId)
+                }
+                onClickBtnDelFriend={() =>
+                  handleClickDelFriend(friendObject.userId)
+                }
               />
             );
           })}
         {friendRequestList &&
           activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
           friendRequestList.map((friendRequest) => {
+            const sender = friendRequest.sender;
             return (
               <ContactRow
-                image={friendRequest.sender.avatarUrl}
-                name={friendRequest.sender.name}
+                key={sender.userId}
+                userId={sender.userId}
+                onClickBtnAcceptFriendRequest={() =>
+                  handleClickAcpFriend(sender.userId)
+                }
+                onClickBtnDetail={() => handleClickBtnDetail(sender.userId)}
+                onClickBtnDelFriendRequest={() =>
+                  handleClickDelFriendRequest(sender.userId)
+                }
               />
             );
           })}

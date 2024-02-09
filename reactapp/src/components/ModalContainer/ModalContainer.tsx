@@ -11,6 +11,7 @@ import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
 import AppButton from "../AppButton";
 import { useModal } from "../../hooks";
 import { useGlobalState } from "../../globalState";
+import { sendFriendRequest } from "../../services/user";
 
 const cx = classNames.bind(style);
 
@@ -21,17 +22,32 @@ interface ModalContent {
 }
 
 const ModalContainer = () => {
+  // global state
+  const [userId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
+  const [modalUserId] = useGlobalState("modalUserId");
   const [modalType] = useGlobalState("modalType");
   const [showModal] = useGlobalState("showModal");
-  const { handleHideModal } = useModal();
   const [activeModal, setActiveModal] = useGlobalState("activeModal");
-
+  // hook
+  const { handleHideModal } = useModal();
+  // local state
   const [modalBodyHeight, setModalBodyHeight] = useState(0);
-
+  // reference
   const modalContentsRef = useRef<ModalContent[]>();
   const profileRef = useRef(null);
   const updateProfileRef = useRef(null);
   const updateAvatarRef = useRef(null);
+
+  const handleClickSendFriendRequest = async () => {
+    const currentUser = userMap.get(userId);
+    if (!currentUser) {
+      console.log("current user is null");
+      return;
+    }
+    await sendFriendRequest(currentUser, modalUserId);
+  };
+
   if (modalType === "Personal") {
     modalContentsRef.current = [
       {
@@ -59,12 +75,25 @@ const ModalContainer = () => {
         modalContent: <UpdateAvatarModalContent />,
       },
     ];
+  } else if (modalType === "Friend") {
+    modalContentsRef.current = [
+      {
+        title: "Thông tin tài khoản",
+        ref: profileRef,
+        modalContent: <ProfileModalContent type="Friend" />,
+      },
+    ];
   } else {
     modalContentsRef.current = [
       {
         title: "Thông tin tài khoản",
         ref: profileRef,
-        modalContent: <ProfileModalContent type={modalType} />,
+        modalContent: (
+          <ProfileModalContent
+            type="Stranger"
+            onClickSendFriendRequest={handleClickSendFriendRequest}
+          />
+        ),
       },
     ];
   }
