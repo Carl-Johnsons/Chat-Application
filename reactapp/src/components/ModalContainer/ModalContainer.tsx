@@ -9,7 +9,11 @@ import ProfileModalContent from "../ProfileModalContent";
 import UpdateProfileModalContent from "../UpdateProfileModalContent";
 import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
 import AppButton from "../AppButton";
-import { useModal } from "../../hooks";
+import {
+  signalRSendFriendRequest,
+  useModal,
+  useSignalREvents,
+} from "../../hooks";
 import { useGlobalState } from "../../globalState";
 import { sendFriendRequest } from "../../services/user";
 
@@ -29,8 +33,10 @@ const ModalContainer = () => {
   const [modalType] = useGlobalState("modalType");
   const [showModal] = useGlobalState("showModal");
   const [activeModal, setActiveModal] = useGlobalState("activeModal");
+  const [connection] = useGlobalState("connection");
   // hook
   const { handleHideModal } = useModal();
+  const invokeAction = useSignalREvents({ connection: connection });
   // local state
   const [modalBodyHeight, setModalBodyHeight] = useState(0);
   // reference
@@ -45,7 +51,15 @@ const ModalContainer = () => {
       console.log("current user is null");
       return;
     }
-    await sendFriendRequest(currentUser, modalUserId);
+    const [fr, error] = await sendFriendRequest(currentUser, modalUserId);
+    console.log(fr);
+    if (!fr) {
+      console.error(error);
+      return;
+    }
+    //The friendRequest didn't store the sender user
+    fr.sender = currentUser;
+    invokeAction(signalRSendFriendRequest(fr));
   };
 
   if (modalType === "Personal") {

@@ -118,11 +118,11 @@ const ContactContainer = ({ className }: Props) => {
           })}
         {friendRequestList &&
           activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
-          friendRequestList.map((friendRequest) => {
+          friendRequestList.map((friendRequest, index) => {
             const sender = friendRequest.sender;
             return (
               <ContactRow
-                key={sender.userId}
+                key={index}
                 userId={sender.userId}
                 onClickBtnAcceptFriendRequest={() =>
                   handleClickAcpFriend(sender.userId)

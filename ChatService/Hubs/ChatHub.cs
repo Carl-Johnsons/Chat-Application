@@ -104,12 +104,11 @@ namespace ChatService.Hubs
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 };
-
+                string json = JsonConvert.SerializeObject(individualMessage, settings);
                 foreach (var receiverConnectionId in receiverConnectionIdList)
                 {
                     await Console.Out.WriteLineAsync(receiverConnectionId);
                     // Serialize your object to JSON with camel case attribute names
-                    string json = JsonConvert.SerializeObject(individualMessage, settings);
                     await Clients.Client(receiverConnectionId).SendAsync("ReceiveIndividualMessage", json);
                     //await Clients.All.SendAsync("ReceiveIndividualMessage", json);
                 }
@@ -133,9 +132,14 @@ namespace ChatService.Hubs
             {
                 return;
             }
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            string json = JsonConvert.SerializeObject(friendRequest, settings);
             foreach (var receiverConnectionId in receiverConnectionIdList)
             {
-                await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest");
+                await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest", json);
             }
         }
         public async Task SendAcceptFriendRequest(int senderId)

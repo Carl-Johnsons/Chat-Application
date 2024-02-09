@@ -10,7 +10,7 @@ import { useModal, useScreenSectionNavigator } from "../../hooks";
 import { User } from "../../models";
 import { menuContacts } from "../../data/constants";
 import { getIndividualMessageList } from "../../services/message";
-import { getFriendList } from "../../services/user";
+import { getFriendList, getFriendRequestList } from "../../services/user";
 
 const cx = classNames.bind(style);
 
@@ -22,6 +22,7 @@ const SidebarContent = () => {
   const [, setModaUserId] = useGlobalState("modalUserId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
+  const [, setFriendRequestList] = useGlobalState("friendRequestList");
   const [, setIndividualMessages] = useGlobalState("individualMessageList");
   const [activeConversation, setActiveConversation] =
     useGlobalState("activeConversation");
@@ -95,6 +96,24 @@ const SidebarContent = () => {
     fetchFriendListData();
   }, [setFriendList, setUserMap, userId, userMap]);
 
+  useEffect(() => {
+    const fetchFriendRequestList = async () => {
+      if (!userId) {
+        return;
+      }
+      const [frList] = await getFriendRequestList(userId);
+      if (!frList) {
+        setFriendRequestList([]);
+        return;
+      }
+      for (const friendRequest of frList) {
+        userMap.set(friendRequest.sender.userId, friendRequest.sender);
+      }
+      setFriendRequestList(frList);
+    };
+    fetchFriendRequestList();
+  }, [setFriendRequestList, userId, userMap]);
+  
   useEffect(() => {
     if (!friendList || friendList.length === 0 || activeConversation !== 0) {
       return;

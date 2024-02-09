@@ -11,14 +11,13 @@ import ModalContainer from "../../components/ModalContainer";
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";
 import { useScreenSectionNavigator, useSignalRConnection } from "../../hooks";
-import { getFriendRequestList, getUserProfile } from "../../services/user";
+import { getUserProfile } from "../../services/user";
 
 const cx = classNames.bind(style);
 
 const Home = () => {
-  const [userId, setUserId] = useGlobalState("userId");
+  const [, setUserId] = useGlobalState("userId");
   const [userMap] = useGlobalState("userMap");
-  const [, setFriendRequestList] = useGlobalState("friendRequestList");
   const [, setConnection] = useGlobalState("connection");
   const [showAside] = useGlobalState("showAside");
   const [activeNav] = useGlobalState("activeNav");
@@ -38,16 +37,9 @@ const Home = () => {
       }
       setUserId(user.userId);
       userMap.set(user.userId, user);
-      const [friendRequestList] = await getFriendRequestList(user.userId);
-      if (friendRequestList) {
-        for (const friendRequest of friendRequestList) {
-          userMap.set(friendRequest.sender.userId, friendRequest.sender);
-        }
-        setFriendRequestList(friendRequestList);
-      }
     };
     fetchUserData();
-  }, [setFriendRequestList, setUserId, userId, userMap]);
+  }, [setUserId, userMap]);
 
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>

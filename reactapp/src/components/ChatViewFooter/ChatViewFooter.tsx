@@ -4,8 +4,8 @@ import AppButton from "../AppButton";
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
-import { sendIndividualMessage as sendMessage } from "../../services/message";
-import { sendIndividualMessage, useSignalREvents } from "../../hooks";
+import { sendIndividualMessage } from "../../services/message";
+import { signalRSendIndividualMessage, useSignalREvents } from "../../hooks";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
@@ -18,12 +18,16 @@ const ChatViewFooter = () => {
   const [connection] = useGlobalState("connection");
   const invokeAction = useSignalREvents({ connection: connection });
   const fetchSendMessage = async () => {
-    const [data] = await sendMessage(userId, activeConversation, inputValue);
+    const [data] = await sendIndividualMessage(
+      userId,
+      activeConversation,
+      inputValue
+    );
     if (!data) {
       return;
     }
     setIndividualMessages([...individualMessages, data]);
-    invokeAction(sendIndividualMessage(data));
+    invokeAction(signalRSendIndividualMessage(data));
     setInputValue("");
   };
   const onKeyDown = async (e: React.KeyboardEvent<HTMLDivElement>) => {
