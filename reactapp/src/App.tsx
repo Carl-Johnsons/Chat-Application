@@ -4,7 +4,7 @@ import { NotFoundPage } from "./pages/NotFound";
 import { LogoutPage } from "./pages/Logout";
 import { LoginPage } from "./pages/Login";
 import RequireAuth from "./components/RequireAuth";
-import useAxiosInterceptor from "./hooks/useAxiosInterceptor";
+import { useAxiosInterceptor } from "./hooks";
 
 function App() {
   const navigate = useNavigate();

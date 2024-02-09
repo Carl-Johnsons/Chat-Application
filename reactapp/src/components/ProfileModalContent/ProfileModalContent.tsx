@@ -7,7 +7,7 @@ import classNames from "classnames/bind";
 import AppButton from "../AppButton";
 import Avatar from "../Avatar";
 import { useGlobalState } from "../../globalState";
-import { convertISODateToVietnameseFormat } from "../../Utils/DateUtils";
+import { convertISODateToVietnameseFormat } from "../../utils/DateUtils";
 
 const cx = classNames.bind(style);
 

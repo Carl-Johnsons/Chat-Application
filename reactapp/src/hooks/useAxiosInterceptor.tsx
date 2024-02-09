@@ -1,15 +1,16 @@
 import { AxiosError, AxiosRequestConfig } from "axios";
-import axiosInstance from "../Utils/Api/axios";
-import { getLocalStorageItem } from "../Utils/LocalStorageUtils";
 import { useLayoutEffect } from "react";
 import { useRefreshToken } from ".";
 import { NavigateFunction } from "react-router-dom";
+import axiosInstance from "../utils/Api/axios";
+import { getLocalStorageItem } from "../utils/LocalStorageUtils";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
 
 const useAxiosInterceptor = (navigate: NavigateFunction) => {
+  //refresh is not working if the current user is not indentified
   const refresh = useRefreshToken();
 
   useLayoutEffect(() => {
@@ -32,14 +33,25 @@ const useAxiosInterceptor = (navigate: NavigateFunction) => {
         const prevRequest = error?.config as CustomAxiosRequestConfig;
         console.log("intercept");
 
-        if (error?.response?.status == 401 && !prevRequest?._retry && refresh) {
+        if (error?.response?.status == 401 && !prevRequest?._retry) {
+          if (!refresh) {
+            console.log("Unauthorized");
+            navigate("/login");
+            return;
+          }
+
+          console.log("refreshing token");
+          console.log({ refresh });
+
           prevRequest._retry = true;
           const newAccessToken = await refresh();
           // Case: Token expired or invalid navigate user back to login page
           if (!newAccessToken) {
+            console.log("refresh token expire");
             navigate("/login");
             return;
           }
+          console.log("refresh token valid");
           if (prevRequest.headers) {
             prevRequest.headers.Authorization = `Bearer ${newAccessToken.token}`;
           }
@@ -53,7 +65,7 @@ const useAxiosInterceptor = (navigate: NavigateFunction) => {
       axiosInstance.interceptors.request.eject(requestInterceptor);
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, [refresh]);
+  }, [navigate, refresh]);
   return axiosInstance;
 };
-export default useAxiosInterceptor;
+export { useAxiosInterceptor };

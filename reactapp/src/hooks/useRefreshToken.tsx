@@ -3,7 +3,7 @@ import { refreshToken } from "../services/auth/refreshToken.service";
 import {
   removeLocalStorageItem,
   setLocalStorageItem,
-} from "../Utils/LocalStorageUtils";
+} from "../utils/LocalStorageUtils";
 
 const useRefreshToken = () => {
   const [userId] = useGlobalState("userId");

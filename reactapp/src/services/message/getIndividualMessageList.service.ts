@@ -1,5 +1,5 @@
 import { IndividualMessage } from "../../models";
-import axiosInstance from "../../Utils/Api/axios";
+import axiosInstance from "../../utils/Api/axios";
 
 /**
  * @param {number} senderId

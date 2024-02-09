@@ -1,5 +1,5 @@
-import axiosInstance from "../../Utils/Api/axios";
-import { getCurrentDateTimeInISO8601 } from "../../Utils/DateUtils";
+import axiosInstance from "../../utils/Api/axios";
+import { getCurrentDateTimeInISO8601 } from "../../utils/DateUtils";
 import { IndividualMessage } from "../../models";
 
 /**

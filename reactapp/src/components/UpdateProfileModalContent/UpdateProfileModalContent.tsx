@@ -6,7 +6,7 @@ import className from "classnames/bind";
 import { useGlobalState } from "../../globalState";
 import { useState } from "react";
 
-import { formatDateWithSeparator, getMaxDayinMonth } from "../../Utils/DateUtils";
+import { formatDateWithSeparator, getMaxDayinMonth } from "../../utils/DateUtils";
 import { updateUser } from "../../services/user";
 const cx = className.bind(style);
 

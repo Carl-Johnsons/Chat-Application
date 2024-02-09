@@ -8,7 +8,7 @@ import Avatar from "../Avatar";
 import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
-import { useModal } from "../../hooks";
+import { useModal, useScreenSectionNavigator } from "../../hooks";
 import { getUser } from "../../services/user";
 
 const cx = className.bind(style);
@@ -27,7 +27,7 @@ const NavigationBar = () => {
 
   const { handleShowModal } = useModal();
   const [activeNav, setActiveNav] = useGlobalState("activeNav");
-
+  const { handleClickScreenSection } = useScreenSectionNavigator();
   const [userId] = useGlobalState("userId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [connection] = useGlobalState("connection");
@@ -79,6 +79,7 @@ const NavigationBar = () => {
     },
   ];
   const handleClick = (linkId: number) => {
+    handleClickScreenSection(true);
     if (linkId === 0) {
       setModalUserId(userId);
       handleShowModal(userId);

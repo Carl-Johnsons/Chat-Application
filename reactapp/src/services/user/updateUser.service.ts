@@ -1,5 +1,5 @@
 import { User } from "../../models";
-import axiosInstance from "../../Utils/Api/axios";
+import axiosInstance from "../../utils/Api/axios";
 
 /**
  * @param {User} user

@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { getLocalStorageItem } from "../../Utils/LocalStorageUtils";
+import { getLocalStorageItem } from "../../utils/LocalStorageUtils";
 
 const RequireAuth = () => {
   const auth = getLocalStorageItem("isAuthenticated") ?? false;

@@ -1,4 +1,4 @@
-import axiosInstance from "../../Utils/Api/axios";
+import axiosInstance from "../../utils/Api/axios";
 
 /**
  * Upload an img using fetch API

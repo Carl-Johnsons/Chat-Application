@@ -1,6 +1,6 @@
 import { JwtToken } from "../../models";
-import axiosInstance from "../../Utils/Api/axios";
-import { setLocalStorageItem } from "../../Utils/LocalStorageUtils";
+import axiosInstance from "../../utils/Api/axios";
+import { setLocalStorageItem } from "../../utils/LocalStorageUtils";
 
 export const login = async (
   phoneNumber: string,

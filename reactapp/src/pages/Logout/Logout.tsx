@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { resetGlobalState } from "../../globalState";
-import { removeLocalStorageItem } from "../../Utils/LocalStorageUtils";
+import { removeLocalStorageItem } from "../../utils/LocalStorageUtils";
 
 const Logout = () => {
   useEffect(() => {

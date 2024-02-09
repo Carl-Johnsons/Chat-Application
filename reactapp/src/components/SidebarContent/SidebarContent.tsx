@@ -6,7 +6,7 @@ import SideBarItem from "../SideBarItem";
 import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
-import { useModal } from "../../hooks";
+import { useModal, useScreenSectionNavigator } from "../../hooks";
 import { User } from "../../models";
 import { menuContacts } from "../../data/constants";
 import { getIndividualMessageList } from "../../services/message";
@@ -30,9 +30,11 @@ const SidebarContent = () => {
     useGlobalState("activeContactType");
   // Hook
   const { handleShowModal } = useModal();
+  const { handleClickScreenSection } = useScreenSectionNavigator();
 
   const handleClickConversation = useCallback(
     async (receiverId: number) => {
+      handleClickScreenSection(false);
       setActiveConversation(receiverId);
       if (!userId) {
         return;
@@ -40,7 +42,12 @@ const SidebarContent = () => {
       const [data] = await getIndividualMessageList(userId, receiverId);
       data && setIndividualMessages(data);
     },
-    [setActiveConversation, setIndividualMessages, userId]
+    [
+      handleClickScreenSection,
+      setActiveConversation,
+      setIndividualMessages,
+      userId,
+    ]
   );
   const handleClickSearchResult = (searchResult: User | null) => {
     if (!searchResult) {
@@ -97,6 +104,7 @@ const SidebarContent = () => {
   }, [friendList, handleClickConversation, activeConversation]);
 
   function handleClickMenuContact(index: number) {
+    handleClickScreenSection(false);
     setActiveContactType(index);
   }
 

@@ -1,5 +1,5 @@
 import { RefreshToken, JwtToken } from "../../models";
-import axiosInstance from "../../Utils/Api/axios";
+import axiosInstance from "../../utils/Api/axios";
 
 export const refreshToken = async (
   token: RefreshToken

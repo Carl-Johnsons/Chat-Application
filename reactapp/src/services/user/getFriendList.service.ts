@@ -1,5 +1,5 @@
 import { Friend } from "../../models";
-import axiosInstance from "../../Utils/Api/axios";
+import axiosInstance from "../../utils/Api/axios";
 
 /**
  * if you want only friend array, you can use this line

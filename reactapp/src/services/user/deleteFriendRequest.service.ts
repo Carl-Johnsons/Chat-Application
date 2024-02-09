@@ -1,4 +1,4 @@
-import axiosInstance from "../../Utils/Api/axios";
+import axiosInstance from "../../utils/Api/axios";
 /**
  * - Sender is the who send the friend request
  * - Recevier is the who accept the friend request (current user)

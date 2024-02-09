@@ -1,4 +1,4 @@
-import axiosInstance from "../../Utils/Api/axios";
+import axiosInstance from "../../utils/Api/axios";
 import { User } from "../../models";
 
 /**
