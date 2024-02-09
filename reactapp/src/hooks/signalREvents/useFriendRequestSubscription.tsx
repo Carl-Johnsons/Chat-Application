@@ -2,6 +2,7 @@ import { HubConnection } from "@microsoft/signalr";
 import { useEffect } from "react";
 import { FriendRequest } from "../../models";
 import { useGlobalState } from "../../globalState";
+import { SignalREvent } from "../../data/constants";
 
 const useFriendRequestSubscription = (connection?: HubConnection) => {
   const [friendRequestList, setFriendRequestList] =
@@ -11,7 +12,7 @@ const useFriendRequestSubscription = (connection?: HubConnection) => {
     if (!connection) {
       return;
     }
-    connection.on("ReceiveFriendRequest", (json: string) => {
+    connection.on(SignalREvent.RECEIVE_FRIEND_REQUEST, (json: string) => {
       const fr: FriendRequest = JSON.parse(json);
       if (!fr) {
         console.error("Friend request is null");
@@ -22,7 +23,7 @@ const useFriendRequestSubscription = (connection?: HubConnection) => {
     });
 
     return () => {
-      connection.off("ReceiveFriendRequest");
+      connection.off(SignalREvent.RECEIVE_FRIEND_REQUEST);
     };
   }, [connection, friendRequestList, setFriendRequestList, userMap]);
 };

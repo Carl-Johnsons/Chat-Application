@@ -16,6 +16,7 @@ const initialState = {
   activeModal: 0,
   modalUserId: null as unknown as number,
   userId: null as unknown as number,
+  userTypingId: null as unknown as number | null,
   // User
   searchResult: null as unknown as User | null,
   userMap: new Map<number, User>(),

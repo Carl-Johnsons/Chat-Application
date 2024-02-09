@@ -16,6 +16,10 @@ interface Props {
 
 const ChatViewContainer = ({ className }: Props) => {
   const [individualMessages] = useGlobalState("individualMessageList");
+  const [userMap] = useGlobalState("userMap");
+  const [userTypingId] = useGlobalState("userTypingId");
+  const userTyping = userMap.get(userTypingId);
+
   const messageContainerRef = useRef(null);
 
   useEffect(() => {
@@ -24,7 +28,6 @@ const ChatViewContainer = ({ className }: Props) => {
       ele.scrollTop = ele.scrollHeight;
     }
   }, [individualMessages]);
-
 
   return (
     <div
@@ -53,9 +56,11 @@ const ChatViewContainer = ({ className }: Props) => {
         >
           <ChatViewBody />
         </div>
-        <div className={cx("user-input-notification")}>
-          User A is typing ...
-        </div>
+        {userTyping && (
+          <div className={cx("user-input-notification")}>
+            User {userTyping.name} is typing ...
+          </div>
+        )}
       </div>
 
       <div className={cx("input-message-container", "w-100", "d-flex")}>

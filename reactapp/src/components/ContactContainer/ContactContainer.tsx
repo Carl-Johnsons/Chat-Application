@@ -6,7 +6,11 @@ import { memo } from "react";
 import { useGlobalState } from "../../globalState";
 import { MenuContactIndex, menuContacts } from "../../data/constants";
 import ContactRow from "../ContactRow";
-import { useModal } from "../../hooks";
+import {
+  signalRSendAcceptFriendRequest,
+  useModal,
+  useSignalREvents,
+} from "../../hooks";
 import {
   addFriend,
   deleteFriend,
@@ -28,33 +32,51 @@ const ContactContainer = ({ className }: Props) => {
   const [friendRequestList, setFriendRequestList] =
     useGlobalState("friendRequestList");
   const [, setModalUserId] = useGlobalState("modalUserId");
+  const [connection] = useGlobalState("connection");
+
   // hooks
   const { handleShowModal } = useModal();
+  const invokeAction = useSignalREvents({ connection: connection });
+
   const handleClickBtnDetail = (userId: number) => {
     setModalUserId(userId);
     handleShowModal(userId);
   };
   const handleClickAcpFriend = async (friendId: number) => {
-    const [status, error] = await addFriend(friendId, userId);
+    const senderId = friendId;
+    const receiverId = userId;
+
+    const [status, error] = await addFriend(senderId, receiverId);
     if (status && status >= 200 && status <= 299) {
       console.log("acp friend successfully");
-      const friendUser = userMap.get(friendId);
-      if (!friendUser) {
-        console.error(`This user with ID:${friendId} is null in the user map`);
+      const sender = userMap.get(senderId);
+      const receiver = userMap.get(receiverId);
+      if (!sender) {
+        console.error(`This user with ID:${senderId} is null in the user map`);
         return;
       }
-
-      const friend: Friend = {
-        userId: userId,
-        friendId: friendId,
-        friendNavigation: friendUser,
+      if (!receiver) {
+        console.error(`This user with ID:${receiverId} is null in the user map`);
+        return;
+      }
+      let friend: Friend = {
+        userId: senderId,
+        friendId: receiverId,
+        friendNavigation: sender,
       };
 
       setFriendList([...friendList, friend]);
-      // friendId here is the who send the friend request
+      
       setFriendRequestList(
-        friendRequestList.filter((fr) => fr.senderId !== friendId)
+        friendRequestList.filter((fr) => fr.senderId !== senderId)
       );
+      // Invert the property to send to other user
+      friend = {
+        userId: receiverId,
+        friendId: senderId,
+        friendNavigation: receiver,
+      };
+      invokeAction(signalRSendAcceptFriendRequest(friend));
     } else {
       console.log("acp friend failed");
       console.error(error);

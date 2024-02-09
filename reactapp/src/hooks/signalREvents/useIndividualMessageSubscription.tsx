@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useGlobalState } from "../../globalState";
 import { HubConnection } from "@microsoft/signalr";
 import { IndividualMessage } from "../../models";
+import { SignalREvent } from "../../data/constants";
 
 const useIndividualMessageSubscription = (connection?: HubConnection) => {
   const [activeConversation] = useGlobalState("activeConversation");
@@ -13,7 +14,7 @@ const useIndividualMessageSubscription = (connection?: HubConnection) => {
     if (!connection) {
       return;
     }
-    connection.on("ReceiveIndividualMessage", (json: string) => {
+    connection.on(SignalREvent.RECEIVE_INDIVIDUAL_MESSAGE, (json: string) => {
       const im: IndividualMessage = JSON.parse(json);
       if (activeConversation !== im.message.senderId) {
         console.log("Not the current active conversation");
@@ -23,7 +24,7 @@ const useIndividualMessageSubscription = (connection?: HubConnection) => {
       console.log({ im });
     });
     return () => {
-      connection.off("ReceiveIndividualMessage");
+      connection.off(SignalREvent.RECEIVE_INDIVIDUAL_MESSAGE);
     };
   }, [
     activeConversation,

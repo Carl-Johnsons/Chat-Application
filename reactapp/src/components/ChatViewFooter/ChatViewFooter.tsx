@@ -1,11 +1,17 @@
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import AppButton from "../AppButton";
 
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
 import { sendIndividualMessage } from "../../services/message";
-import { signalRSendIndividualMessage, useSignalREvents } from "../../hooks";
+import {
+  signalRDisableNotifyUserTyping,
+  signalRNotifyUserTyping,
+  signalRSendIndividualMessage,
+  useSignalREvents,
+} from "../../hooks";
+import { SenderReceiverArray } from "../../models";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
@@ -16,7 +22,11 @@ const ChatViewFooter = () => {
     "individualMessageList"
   );
   const [connection] = useGlobalState("connection");
+  // hook
   const invokeAction = useSignalREvents({ connection: connection });
+
+  const inputTimeout = useRef<NodeJS.Timeout | null>(null);
+
   const fetchSendMessage = async () => {
     const [data] = await sendIndividualMessage(
       userId,
@@ -30,6 +40,31 @@ const ChatViewFooter = () => {
     invokeAction(signalRSendIndividualMessage(data));
     setInputValue("");
   };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    const model: SenderReceiverArray = {
+      senderIdList: [userId],
+      receiverIdList: [activeConversation],
+    };
+    if (!inputTimeout.current) {
+      invokeAction(signalRNotifyUserTyping(model));
+      console.log("first change");
+    } else {
+      clearTimeout(inputTimeout.current);
+      inputTimeout.current = null;
+    }
+    inputTimeout.current = setTimeout(() => {
+      if (!inputTimeout.current) {
+        return;
+      }
+      console.log("clear time out");
+      console.log(model);
+      invokeAction(signalRDisableNotifyUserTyping(model));
+      clearTimeout(inputTimeout.current);
+      inputTimeout.current = null;
+    }, 1000);
+  };
+
   const onKeyDown = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       fetchSendMessage();
@@ -43,7 +78,7 @@ const ChatViewFooter = () => {
     <>
       <input
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={(e) => handleInputChange(e)}
         onKeyDown={onKeyDown}
         className={cx("input-message", "flex-grow-1", "border-0")}
       />

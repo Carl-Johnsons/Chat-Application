@@ -1,9 +1,19 @@
-import { useEffect, useRef } from "react";
 import { HubConnection } from "@microsoft/signalr";
-import { FriendRequest, IndividualMessage } from "../../models";
+import { useEffect, useRef } from "react";
+
+import {
+  Friend,
+  FriendRequest,
+  IndividualMessage,
+  SenderReceiverArray,
+} from "../../models";
 import { useGlobalState } from "../../globalState";
 import useIndividualMessageSubscription from "./useIndividualMessageSubscription";
 import useFriendRequestSubscription from "./useFriendRequestSubscription";
+import useConnectedSubscription from "./useConnectedSubscription";
+import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
+import useDisableNotifyUserTypingSubscription from "./useDisableNotifyUserTypingSubscription";
+import useAcceptedFriendRequestSubscription from "./useAcceptedFriendRequestSubscription";
 
 interface SignalREvent {
   name: string;
@@ -14,37 +24,22 @@ interface InvokeSignalREvent {
   args: object[];
 }
 interface useSignalREventsProps {
-  connection?: HubConnection ;
+  connection?: HubConnection;
   events?: SignalREvent[];
 }
 
 const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
   // global state
-  const [connectionState, setConnectionState] =
-    useGlobalState("connectionState");
+  const [connectionState] = useGlobalState("connectionState");
   // hook
+  useConnectedSubscription(connection);
   useIndividualMessageSubscription(connection);
   useFriendRequestSubscription(connection);
+  useNotifyUserTypingSubscription(connection);
+  useDisableNotifyUserTypingSubscription(connection);
+  useAcceptedFriendRequestSubscription(connection);
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
-
-  useEffect(() => {
-    if (!connection) {
-      return;
-    }
-    const handleConnectionStateChange = () => {
-      if (!connection) {
-        return;
-      }
-      setConnectionState(connection?.state);
-    };
-    connection.on("Connected", () => {
-      handleConnectionStateChange();
-    });
-    return () => {
-      connection.off("Connected");
-    };
-  }, [connection, setConnectionState]);
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
     console.log(`Invoke ${name}`);
@@ -73,15 +68,6 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
 
   return invokeActionRef.current;
 };
-type sendAcceptFriendRequest = (senderId: number) => void;
-type notifyUserTyping = (
-  senderIdList: Array<number>,
-  receiverIdList: Array<number>
-) => void;
-type disableNotifyUserTyping = (
-  senderIdList: Array<number>,
-  receiverIdList: Array<number>
-) => void;
 
 export function signalRSendIndividualMessage(im: IndividualMessage) {
   return {
@@ -95,22 +81,26 @@ export function signalRSendFriendRequest(fr: FriendRequest) {
     args: [fr],
   };
 }
-export function signalRSendAcceptFriendRequest(func: sendAcceptFriendRequest) {
+export function signalRSendAcceptFriendRequest(f: Friend) {
   return {
     name: "SendAcceptFriendRequest",
-    func,
+    args: [f],
   };
 }
-export function signalRNotifyUserTyping(func: notifyUserTyping) {
+export function signalRNotifyUserTyping(
+  senderReceiverArray: SenderReceiverArray
+) {
   return {
     name: "NotifyUserTyping",
-    func,
+    args: [senderReceiverArray],
   };
 }
-export function signalRDisableNotifyUserTyping(func: disableNotifyUserTyping) {
+export function signalRDisableNotifyUserTyping(
+  senderReceiverArray: SenderReceiverArray
+) {
   return {
     name: "DisableNotifyUserTyping",
-    func,
+    args: [senderReceiverArray],
   };
 }
 export { useSignalREvents };

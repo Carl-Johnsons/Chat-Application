@@ -16,20 +16,6 @@ namespace ChatService.Hubs
         public ChatHub()
         {
         }
-        // This method is old, prepare to remove it
-        public async Task MapUserData(User user)
-        {
-            //UserConnectionMap[Context.ConnectionId] = user;
-            //await Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {user.Name}");
-
-            //Console.WriteLine("In MapUserData");
-            //foreach (var key in UserConnectionMap.Keys)
-            //{
-            //    Console.WriteLine($"{key}: {UserConnectionMap[key]}");
-            //}
-            //await Console.Out.WriteLineAsync("============================");
-        }
-
         public override async Task OnConnectedAsync()
         {
             // The url would be like "https://yourhubURL:port?userId=???"
@@ -74,12 +60,6 @@ namespace ChatService.Hubs
             await Console.Out.WriteLineAsync("============================");
             await Clients.All.SendAsync("Disconnected");
             await base.OnDisconnectedAsync(exception);
-        }
-        //Send
-        public async Task SendMessageToGroup(User user, string message)
-        {
-            //await Console.Out.WriteLineAsync("I'm in SendMessageToGroup");
-            //await Clients.Group(user.Room).SendAsync("ReceiveMessage", user.Name, message);
         }
         public async Task SendIndividualMessage(IndividualMessage individualMessage)
         {
@@ -132,6 +112,7 @@ namespace ChatService.Hubs
             {
                 return;
             }
+            // Have to make all attribute lowercase before sending data
             var settings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -142,11 +123,13 @@ namespace ChatService.Hubs
                 await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest", json);
             }
         }
-        public async Task SendAcceptFriendRequest(int senderId)
+        public async Task SendAcceptFriendRequest(Friend friend)
         {
             // Notify a list of user because they might have open mulit tab in browsers
+            // UserId now is the senderId who accept the friend request,
+            // so in other to notify other user use friendId instead
             var senderConnectionIdList = UserConnectionMap.
-                Where(pair => pair.Value == senderId)
+                Where(pair => pair.Value == friend.FriendId)
                 .Select(pair => pair.Key)
                 .ToList();
 
@@ -157,7 +140,7 @@ namespace ChatService.Hubs
             }
             foreach (var senderConnectionId in senderConnectionIdList)
             {
-                await Clients.Client(senderConnectionId).SendAsync("ReceiveAcceptFriendRequest");
+                await Clients.Client(senderConnectionId).SendAsync("ReceiveAcceptFriendRequest", friend);
             }
         }
         public async Task NotifyUserTyping(SenderReceiverArrayModel model)
@@ -166,46 +149,44 @@ namespace ChatService.Hubs
             for (int i = 0; i < ReceiverIdList.Count; i++)
             {
                 // Notify a list of user because they might have open mulit tab in browsers
-                var senderConnectionIdList = UserConnectionMap.
+                var receiverConnectionIdList = UserConnectionMap.
                     Where(pair => pair.Value == ReceiverIdList[i])
                     .Select(pair => pair.Key)
                     .ToList();
-
                 // If the receiver didn't online, simply do nothing
-                if (senderConnectionIdList.Count <= 0)
+                if (receiverConnectionIdList.Count <= 0)
                 {
                     return;
                 }
-                foreach (var senderConnectionId in senderConnectionIdList)
+                foreach (var receiverConnectionId in receiverConnectionIdList)
                 {
-                    await Clients.Client(senderConnectionId).SendAsync("ReceiveNotifyUserTyping", model);
+                    await Clients.Client(receiverConnectionId).SendAsync("ReceiveNotifyUserTyping", model);
                 }
             }
         }
-
         public async Task DisableNotifyUserTyping(SenderReceiverArrayModel model)
         {
             List<int> ReceiverIdList = model.ReceiverIdList;
             for (int i = 0; i < ReceiverIdList.Count; i++)
             {
                 // Notify a list of user because they might have open mulit tab in browsers
-                var senderConnectionIdList = UserConnectionMap.
+                var receiverConnectionIdList = UserConnectionMap.
                     Where(pair => pair.Value == ReceiverIdList[i])
                     .Select(pair => pair.Key)
                     .ToList();
 
                 // If the receiver didn't online, simply do nothing
-                if (senderConnectionIdList.Count <= 0)
+
+                if (receiverConnectionIdList.Count <= 0)
                 {
                     return;
                 }
-                foreach (var senderConnectionId in senderConnectionIdList)
+                foreach (var receiverConnectionId in receiverConnectionIdList)
                 {
-                    await Clients.Client(senderConnectionId).SendAsync("ReceiveDisableNotifyUserTyping");
+                    await Clients.Client(receiverConnectionId).SendAsync("ReceiveDisableNotifyUserTyping", model);
                 }
             }
         }
-
         public async Task JoinRoom(string Name, string Room)
         {
             //Users userConnection = new Users()
