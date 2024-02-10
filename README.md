@@ -24,6 +24,10 @@ This project is for education purpose and takes inpiration from Zalo
     "Key": "Your secrect key",
     "Issuer": "Your issuer url",
     "Audience": "Your audience url"
+  },
+  "Imgur": {
+    "ClientID": "Your Imgur Client ID",
+    "ClientSecret": "Your Imgur Clien secret"
   }
 }
 ```

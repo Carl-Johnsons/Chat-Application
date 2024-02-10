@@ -31,7 +31,7 @@ namespace ChatAPI.Controllers
         {
             _userRepository = new UserRepository();
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            IConfigurationSection jwtSection = config.GetSection("Jwt");
+            var jwtSection = config.GetSection("Jwt");
             SecretKey = jwtSection[SECRET_KEY] ?? "";
             Issuer = jwtSection["Issuer"] ?? "";
             Audience = jwtSection["Audience"] ?? "";
