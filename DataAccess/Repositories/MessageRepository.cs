@@ -1,5 +1,6 @@
 ﻿using BussinessObject.Models;
 using DataAccess.DAOs;
+using DataAccess.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,18 @@ namespace DataAccess.Repositories
 {
     public class MessageRepository : IMessageRepository
     {
-        public IEnumerable<Message> GetMessageList() => MessageDAO.Instance.Get();
-        public IEnumerable<IndividualMessage> GetIndividualMessageList() => IndividualMessageDAO.Instance.Get();
-        public Message GetMessage(int messageId) => MessageDAO.Instance.Get(messageId);
-        public IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId) => IndividualMessageDAO.Instance.Get(senderId, receiverId);
-        public IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId) => IndividualMessageDAO.Instance.GetLastMessage(senderId, receiverId);
-        public int AddMessage(Message message) => MessageDAO.Instance.Add(message);
-        public int AddIndividualMessage(IndividualMessage individualMessage) => IndividualMessageDAO.Instance.Add(individualMessage);
-        public int UpdateMessage(Message messageUpdate) => MessageDAO.Instance.Update(messageUpdate);
-        public int DeleteMessage(int messageId) => MessageDAO.Instance.Delete(messageId);
-        public int DeleteIndividualMessage(int messageId) => IndividualMessageDAO.Instance.Delete(messageId);
+        private readonly MessageDAO MessageInstance = MessageDAO.Instance;
+        private readonly IndividualMessageDAO IndividualMessageInstance = IndividualMessageDAO.Instance;
+        public IEnumerable<Message> GetMessageList() => MessageInstance.Get();
+        public IEnumerable<IndividualMessage> GetIndividualMessageList() => IndividualMessageInstance.Get();
+        public Message GetMessage(int messageId) => MessageInstance.Get(messageId);
+        public IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId) => IndividualMessageInstance.Get(senderId, receiverId);
+        public IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId) => IndividualMessageInstance.GetLastMessage(senderId, receiverId);
+        public int AddMessage(Message message) => MessageInstance.Add(message);
+        public int AddIndividualMessage(IndividualMessage individualMessage) => IndividualMessageInstance.Add(individualMessage);
+        public int UpdateMessage(Message messageUpdate) => MessageInstance.Update(messageUpdate);
+        public int DeleteMessage(int messageId) => MessageInstance.Delete(messageId);
+        public int DeleteIndividualMessage(int messageId) => IndividualMessageInstance.Delete(messageId);
 
     }
 }

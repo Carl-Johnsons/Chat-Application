@@ -56,7 +56,9 @@ const ContactContainer = ({ className }: Props) => {
         return;
       }
       if (!receiver) {
-        console.error(`This user with ID:${receiverId} is null in the user map`);
+        console.error(
+          `This user with ID:${receiverId} is null in the user map`
+        );
         return;
       }
       let friend: Friend = {
@@ -66,7 +68,7 @@ const ContactContainer = ({ className }: Props) => {
       };
 
       setFriendList([...friendList, friend]);
-      
+
       setFriendRequestList(
         friendRequestList.filter((fr) => fr.senderId !== senderId)
       );
@@ -87,7 +89,8 @@ const ContactContainer = ({ className }: Props) => {
     const [status, error] = await deleteFriend(userId, friendId);
     if (status && status >= 200 && status <= 299) {
       console.log("del friend successfully");
-      setFriendList(friendList.filter((f) => f.friendId !== friendId));
+      console.log({friendList});
+      setFriendList(friendList.filter((f) => f.friendNavigation.userId !== friendId));
     } else {
       console.log("del friend failed");
       console.error(error);

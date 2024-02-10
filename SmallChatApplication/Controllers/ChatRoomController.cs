@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using BussinessObject.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebChatApplication.Filter;
 using DataAccess.Repositories;
+using DataAccess.Repositories.Interfaces;
 
 namespace SmallChatApplication.Controllers
 {
@@ -18,7 +17,7 @@ namespace SmallChatApplication.Controllers
         public ActionResult Index()
         {
             var cookieValue = HttpContext.Request.Cookies["user"];
-            var user = _userRepository.GetUserByPhoneNumber(cookieValue);
+            var user = _userRepository.GetByPhoneNumber(cookieValue);
             ViewBag.ID = user.UserId;
             return View();
         }

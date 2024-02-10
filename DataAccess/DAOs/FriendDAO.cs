@@ -1,20 +1,14 @@
 ﻿using BussinessObject.Models;
 using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace DataAccess.DAOs;
 
 public class FriendDAO
 {
     //using singleton to access db by one instance variable
-    private static FriendDAO instance = null;
-    private static readonly object instanceLock = new object();
+    private static FriendDAO? instance = null;
+    private static readonly object instanceLock = new();
 
     private FriendDAO() { }
     public static FriendDAO Instance
@@ -23,26 +17,25 @@ public class FriendDAO
         {
             lock (instanceLock)
             {
-                if (instance == null)
-                {
-                    instance = new FriendDAO();
-                }
+                instance ??= new FriendDAO();
                 return instance;
             }
         }
     }
-    public int AddFriend(Friend friend)
+    private readonly ChatApplicationContext _context = new();
+    public int Add(Friend friend)
     {
-        using var context = new ChatApplicationContext();
-        context.Friends.Add(friend);
-        return context.SaveChanges();
+        if (GetFriendsByUserIdOrFriendId(friend.UserId, friend.UserId) != null)
+        {
+            throw new Exception("They are already friend! Aborting add friend operation");
+        }
+        _context.Friends.Add(friend);
+        return _context.SaveChanges();
     }
-
-    public List<Friend> GetFriendsByUserId(int userId)
+    public List<Friend> GetByUserId(int userId)
     {
-        using var context = new ChatApplicationContext();
-        MessageRepository messageRepository = new MessageRepository();
-        return context.Friends
+        MessageRepository messageRepository = new();
+        return _context.Friends
             .Where(f => f.UserId == userId || f.FriendId == userId)
             .Select(f => new Friend
             {
@@ -57,29 +50,26 @@ public class FriendDAO
             })
             .ToList();
     }
-
-    public List<Friend> GetFriendsByFriendId(int friendId)
+    public List<Friend> GetByFriendId(int friendId)
     {
-        using var context = new ChatApplicationContext();
-        return context.Friends
+        return _context.Friends
             .Where(f => f.UserId == friendId || f.FriendId == friendId)
             .Include(f => f.User)
             .ToList();
     }
-
-    public int RemoveFriend(int userId, int friendId)
+    public Friend? GetFriendsByUserIdOrFriendId(int userId, int friendId)
     {
-        using var context = new ChatApplicationContext();
-        Friend friendToRemove = context.Friends.FirstOrDefault(
+        return _context.Friends.FirstOrDefault(
             f =>
             (f.UserId == userId && f.FriendId == friendId)
             || (f.UserId == friendId && f.FriendId == userId)
             );
-        if (friendToRemove != null)
-        {
-            context.Friends.Remove(friendToRemove);
-            return context.SaveChanges();
-        }
-        return 0;
+    }
+    public int Delete(int userId, int friendId)
+    {
+        Friend? friendToRemove = GetFriendsByUserIdOrFriendId(userId, friendId) ?? throw new Exception("Friend not found! Aborting delete operation");
+
+        _context.Friends.Remove(friendToRemove);
+        return _context.SaveChanges();
     }
 }

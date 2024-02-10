@@ -1,100 +1,47 @@
 ﻿using BussinessObject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAOs
 {
     public class ImageMessageDAO
     {
-        private static ImageMessageDAO instance = null;
-        private static readonly object instanceLock = new object();
+        private static ImageMessageDAO? instance = null;
+        private static readonly object instanceLock = new();
         public static ImageMessageDAO Instance
         {
             get
             {
                 lock (instanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new ImageMessageDAO();
-                    }
+                    instance ??= new ImageMessageDAO();
                     return instance;
                 }
 
             }
         }
-        public IEnumerable<ImageMessage> GetImagesMessageList()
+        private readonly ChatApplicationContext _context = new();
+        public List<ImageMessage> Get()
         {
-            using var context = new ChatApplicationContext();
-            var imageMessages = context.ImageMessages.ToList();
-            return imageMessages;
+            return _context.ImageMessages.ToList();
         }
-        public ImageMessage GetImageMessageByID(int MessageId)
+        public ImageMessage? Get(int? messageId)
         {
-            ImageMessage imageMessage = null;
-            try
+            if (messageId == null)
             {
-                using var context = new ChatApplicationContext();
-                imageMessage = context.ImageMessages.SingleOrDefault(img => img.MessageId == MessageId);
+                throw new Exception("message id is null");
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return imageMessage;
+            return _context.ImageMessages.SingleOrDefault(img => img.MessageId == messageId);
 
         }
-        public void AddImageMessage(ImageMessage imageMessage)
+        public int Add(ImageMessage imageMessage)
         {
-
-            try
-            {
-                ImageMessage _imageMessage = GetImageMessageByID(imageMessage.MessageId);
-                if (_imageMessage == null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.ImageMessages.Add(imageMessage);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The image message is already exist.");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+            _context.ImageMessages.Add(imageMessage);
+            return _context.SaveChanges();
         }
-        
-        public void DeleteImageMessage(int messageId)
+        public int Delete(int messageId)
         {
-
-            try
-            {
-                ImageMessage _imageMessage = GetImageMessageByID(messageId);
-                if (_imageMessage != null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.ImageMessages.Remove(_imageMessage);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The image message does not already exist.");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+            var message = Get(messageId) ?? throw new Exception("Image message not found! Aborting delete operation");
+            _context.ImageMessages.Remove(message);
+            return _context.SaveChanges();
         }
     }
 }

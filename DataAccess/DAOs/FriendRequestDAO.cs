@@ -1,19 +1,15 @@
 ﻿using BussinessObject.Models;
 using DataAccess.Repositories;
+using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAOs
 {
     internal class FriendRequestDAO
     {
         //using singleton to access db by one instance variable
-        private static FriendRequestDAO instance = null;
-        private static readonly object instanceLock = new object();
+        private static FriendRequestDAO? instance = null;
+        private static readonly object instanceLock = new();
         private FriendRequestDAO() { }
         public static FriendRequestDAO Instance
         {
@@ -21,74 +17,65 @@ namespace DataAccess.DAOs
             {
                 lock (instanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new FriendRequestDAO();
-                    }
+                    instance ??= new FriendRequestDAO();
                     return instance;
                 }
             }
         }
 
-
-        public int AddFriendRequest(FriendRequest friendRequest)
+        private readonly ChatApplicationContext _context = new();
+        private readonly IFriendRepository _friendRepository = new FriendRepository();
+        public int Add(FriendRequest friendRequest)
         {
-            using var dbContext = new ChatApplicationContext();
-            IFriendRepository friendRepository = new FriendRepository();
             //Check 2-side
-            var friendList = friendRepository.GetFriendsByUserId(friendRequest.SenderId);
-            var friend = friendList.SingleOrDefault(x => x.FriendId == friendRequest.ReceiverId
-            || x.UserId == friendRequest.ReceiverId
-            );
+            var friendList = _friendRepository.GetByUserId(friendRequest.SenderId);
+            var friend = friendList
+                .SingleOrDefault(x => x.FriendId == friendRequest.ReceiverId
+                                || x.UserId == friendRequest.ReceiverId);
             if (friend != null)
             {
                 throw new Exception("They are already friend! Aborting friend request");
             }
 
-            dbContext.FriendRequests.Add(friendRequest);
-            return dbContext.SaveChanges();
+            _context.FriendRequests.Add(friendRequest);
+            return _context.SaveChanges();
         }
-
-        public List<FriendRequest> GetFriendRequestsByReceiverId(int receiverId)
+        public List<FriendRequest> GetByReceiverId(int? receiverId)
         {
-            using var dbContext = new ChatApplicationContext();
-            return dbContext.FriendRequests
+            _ = receiverId ?? throw new Exception("Receiver Id is null");
+            return _context.FriendRequests
                 .Include(fr => fr.Sender)
                 .Where(fr => fr.ReceiverId == receiverId)
                 .ToList();
         }
-
-        public List<FriendRequest> GetFriendRequestsBySenderId(int senderId)
+        public List<FriendRequest> GetBySenderId(int? senderId)
         {
-            using var dbContext = new ChatApplicationContext();
-            return dbContext.FriendRequests
+            _ = senderId ?? throw new Exception("Sender Id is null");
+            return _context.FriendRequests
                 .Include(fr => fr.Receiver)
                 .Where(fr => fr.SenderId == senderId)
                 .ToList();
         }
-
-        public int UpdateFriendRequestStatus(int senderId, int receiverId, string status)
+        public FriendRequest? GetBySenderIdAndReceiverId(int? senderId, int? receiverId)
         {
-            using var dbContext = new ChatApplicationContext();
-            FriendRequest friendRequestToUpdate = dbContext.FriendRequests.FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
-            if (friendRequestToUpdate != null)
-            {
-                friendRequestToUpdate.Status = status;
-                return dbContext.SaveChanges();
-            }
-            return 0;
+            _ = senderId ?? throw new Exception("Sender Id is null");
+            _ = receiverId ?? throw new Exception("Receiver Id is null");
+            return _context.FriendRequests
+                    .FirstOrDefault(fr => fr.SenderId == senderId
+                                    && fr.ReceiverId == receiverId);
         }
-
-        public int RemoveFriendRequest(int senderId, int receiverId)
+        public int UpdateStatus(int? senderId, int? receiverId, string? status)
         {
-            using var dbContext = new ChatApplicationContext();
-            FriendRequest friendRequestToDelete = dbContext.FriendRequests.FirstOrDefault(fr => fr.SenderId == senderId && fr.ReceiverId == receiverId);
-            if (friendRequestToDelete != null)
-            {
-                dbContext.FriendRequests.Remove(friendRequestToDelete);
-                return dbContext.SaveChanges();
-            }
-            return 0;
+            var fr = GetBySenderIdAndReceiverId(senderId, receiverId) ?? throw new Exception("Friend request not found! Abort updating status operation!");
+            fr.Status = status;
+            _context.FriendRequests.Update(fr);
+            return _context.SaveChanges();
+        }
+        public int Delete(int senderId, int receiverId)
+        {
+            var fr = GetBySenderIdAndReceiverId(senderId, receiverId) ?? throw new Exception("Friend request not found! Abort deleting operation!");
+            _context.FriendRequests.Remove(fr);
+            return _context.SaveChanges();
         }
     }
 }

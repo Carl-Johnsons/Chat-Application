@@ -1,51 +1,58 @@
 ﻿using BussinessObject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAOs
 {
     internal class GroupDAO
     {
-        private readonly ChatApplicationContext dbContext; // Replace 'ChatApplicationContext'
 
-        public GroupDAO(ChatApplicationContext dbContext) // Replace 'ChatApplicationContext'
-        {
-            this.dbContext = dbContext;
-        }
+        private static GroupDAO? instance = null;
+        private static readonly object instanceLock = new();
 
-        public void CreateGroup(Group group)
+        private GroupDAO() { }
+        public static GroupDAO Instance
         {
-            dbContext.Groups.Add(group);
-            dbContext.SaveChanges();
-        }
-
-        public Group GetGroupById(int groupId)
-        {
-            return dbContext.Groups.FirstOrDefault(g => g.GroupId == groupId);
-        }
-
-        public List<Group> GetAllGroups()
-        {
-            return dbContext.Groups.ToList();
-        }
-
-        public void UpdateGroup(Group group)
-        {
-            dbContext.Groups.Update(group);
-            dbContext.SaveChanges();
-        }
-
-        public void DeleteGroup(int groupId)
-        {
-            Group groupToDelete = dbContext.Groups.FirstOrDefault(g => g.GroupId == groupId);
-            if (groupToDelete != null)
+            get
             {
-                dbContext.Groups.Remove(groupToDelete);
-                dbContext.SaveChanges();
+                lock (instanceLock)
+                {
+                    instance ??= new GroupDAO();
+                    return instance;
+                }
             }
+        }
+
+        private readonly ChatApplicationContext _context = new();
+
+        public int Add(Group group)
+        {
+            if (group == null)
+            {
+                throw new Exception("Group can't be null");
+            }
+            _context.Groups.Add(group);
+            return _context.SaveChanges();
+        }
+        public List<Group> Get()
+        {
+            return _context.Groups.ToList();
+        }
+        public Group? GetById(int groupId)
+        {
+            return _context.Groups.FirstOrDefault(g => g.GroupId == groupId);
+        }
+        public int Update(Group updatedGroup)
+        {
+            var oldGroup = GetById(updatedGroup.GroupId)
+                    ?? throw new Exception("Group not found! Aborting update operation");
+            _context.Entry(oldGroup).CurrentValues.SetValues(updatedGroup);
+            return _context.SaveChanges();
+        }
+        public int Delete(int groupId)
+        {
+            var group = GetById(groupId)
+                    ?? throw new Exception("Group not found! Aborting update operation");
+            _context.Groups.Remove(group);
+            return _context.SaveChanges();
         }
     }
 }

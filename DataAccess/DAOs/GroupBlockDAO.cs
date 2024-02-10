@@ -1,125 +1,63 @@
 ﻿using BussinessObject.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAOs
 {
     public class GroupBlockDAO
     {
-        private static GroupBlockDAO instance = null;
-        private static readonly object instanceLock = new object();
+        private static GroupBlockDAO? instance = null;
+        private static readonly object instanceLock = new();
         public static GroupBlockDAO Instance
         {
             get
             {
                 lock (instanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new GroupBlockDAO();
-                    }
+                    instance ??= new GroupBlockDAO();
                     return instance;
                 }
 
             }
         }
-        public List<GroupBlock> GetAll()
+        private readonly ChatApplicationContext _context = new();
+        public List<GroupBlock> Get()
         {
-                using var context = new ChatApplicationContext();
-                var groupBlocks = context.GroupBlocks.Include(gb => gb.Group).Include(gb => gb.BlockedUserId).ToList();
-                return groupBlocks;
+            return _context.GroupBlocks.Include(gb => gb.Group).Include(gb => gb.BlockedUserId).ToList();
         }
-        public GroupBlock GetGroupBlockByID(int GroupId) 
+        public List<GroupBlock> GetByGroupID(int? groupId)
         {
-            GroupBlock groupBlock = null;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                groupBlock = context.GroupBlocks.SingleOrDefault(gb => gb.GroupId == GroupId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return groupBlock;
-        
+            _ = groupId ?? throw new Exception("Group id is null");
+            return Get().Where(gb => gb.GroupId == groupId).ToList();
         }
-        public void AddBlock(GroupBlock groupBlock)
+        public List<GroupBlock> GetByUserId(int? userId)
         {
-
-            try
-            {
-                GroupBlock _groupBlock = GetGroupBlockByID(groupBlock.GroupId);
-                if( _groupBlock == null )
-                {
-                    using var context = new ChatApplicationContext();
-                    context.GroupBlocks.Add(groupBlock);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The group block is already exist.");
-                }
-                
-            }catch (Exception ex)
-            {
-               throw new Exception (ex.Message);
-            }
-            
+            _ = userId ?? throw new Exception("User id is null");
+            return Get().Where(gb => gb.BlockedUserId == userId).ToList();
         }
-        public void UpdateBlock(GroupBlock groupBlock)
+        public GroupBlock? GetByGroupIdAndUserId(int? groupId, int? userId)
         {
-
-            try
-            {
-                GroupBlock _groupBlock = GetGroupBlockByID(groupBlock.GroupId);
-                if (_groupBlock != null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.GroupBlocks.Update(groupBlock);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The group block does not already exist.");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            _ = groupId ?? throw new Exception("Group id is null");
+            _ = userId ?? throw new Exception("User id is null");
+            return Get().SingleOrDefault(gb => gb.GroupId == groupId && gb.BlockedUserId == userId);
 
         }
-        public void DeleteBlock(int groupId)
+        public int Add(GroupBlock? groupBlock)
         {
-
-            try
+            _ = groupBlock
+                    ?? throw new Exception("group to block is null ! Aborting add operation");
+            if (GetByGroupIdAndUserId(groupBlock.GroupId, groupBlock.BlockedUserId) != null)
             {
-                GroupBlock _groupBlock = GetGroupBlockByID(groupId);
-                if (_groupBlock != null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.GroupBlocks.Remove(_groupBlock);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The group block does not already exist.");
-                }
-
+                throw new Exception("This user has already been blocked by this group ! Aborting add operation");
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+            _context.GroupBlocks.Add(groupBlock);
+            return _context.SaveChanges();
         }
-
+        public int Delete(int groupId, int blockUserId)
+        {
+            var groupBlock = GetByGroupIdAndUserId(groupId, blockUserId)
+                        ?? throw new Exception("Group block not found! aborting update operation");
+            _context.GroupBlocks.Remove(groupBlock);
+            return _context.SaveChanges();
+        }
     }
 }

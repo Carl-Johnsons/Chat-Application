@@ -1,20 +1,12 @@
 ﻿using BussinessObject.Models;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAOs
 {
     internal class UserDAO
     {
         //using singleton to access db by one instance variable
-        private static UserDAO instance = null;
-        private static readonly object instanceLock = new object();
+        private static UserDAO? instance = null;
+        private static readonly object instanceLock = new();
         private UserDAO() { }
         public static UserDAO Instance
         {
@@ -22,144 +14,65 @@ namespace DataAccess.DAOs
             {
                 lock (instanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new UserDAO();
-                    }
+                    instance ??= new UserDAO();
                     return instance;
                 }
             }
         }
 
-        public List<User> GetUserList()
+        private readonly ChatApplicationContext _context = new();
+
+        public List<User> Get()
         {
-            using var context = new ChatApplicationContext();
-            var users = context.Users.ToList();
-            return users;
+            return _context.Users.ToList();
         }
 
-        public User? GetUserByID(int userId)
+        public User? Get(int? userId)
         {
-            User? user;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                user = context.Users.SingleOrDefault(u => u.UserId == userId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return user;
+            _ = userId ?? throw new Exception("user id is null");
+            return _context.Users.SingleOrDefault(u => u.UserId == userId);
         }
-        public User? GetUserByPhoneNumber(string? phoneNumber)
+        public User? GetByPhoneNumber(string? phoneNumber)
         {
-            if (phoneNumber == null)
-            {
-                throw new Exception("Phone number is null");
-            }
-            User? user;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                user = context.Users.SingleOrDefault(u => u.PhoneNumber == phoneNumber);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return user;
+            _ = phoneNumber ?? throw new Exception("Phone number is null");
+            return _context.Users.SingleOrDefault(u => u.PhoneNumber == phoneNumber);
         }
-        public User? GetUserByRefreshToken(string? refreshToken)
+        public User? GetByRefreshToken(string? refreshToken)
         {
-            if (refreshToken == null)
-            {
-                throw new Exception("refresh token is null");
-            }
-            User? user;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                user = context.Users.SingleOrDefault(u => u.RefreshToken == refreshToken);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return user;
+            _ = refreshToken ?? throw new Exception("refresh token is null");
+            return _context.Users.SingleOrDefault(u => u.RefreshToken == refreshToken);
         }
-
-
-
-        public User? Login(string? phoneNumber, string? password)
+        public User? GetByPhoneNumberAndPassword(string? phoneNumber, string? password)
         {
             if (phoneNumber == null || password == null)
             {
                 return null;
             }
-            User? user = null;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                user = context.Users.SingleOrDefault(u => u.PhoneNumber == phoneNumber && u.Password == password);
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception(ex.Message);
-            }
-            return user;
+            return _context.Users
+                            .SingleOrDefault(u => u.PhoneNumber == phoneNumber
+                                            && u.Password == password);
+        }
+        public int Add(User? user)
+        {
+            _ = user ?? throw new Exception("User is null! Aborting add operation");
+            _context.Users.Add(user);
+            return _context.SaveChanges();
+        }
+        public int Update(User? userUpdate)
+        {
+            _ = userUpdate ?? throw new Exception("User is null! Aborting update operation");
+            var oldUser = Get(userUpdate.UserId) ?? throw new Exception("User is null! Aborting update operation");
+            //References: https://stackoverflow.com/questions/46657813/how-to-update-record-using-entity-framework-core
+            _context.Entry(oldUser).CurrentValues.SetValues(userUpdate);
+            return _context.SaveChanges();
         }
 
-
-        public int AddUser(User user)
+        public int Delete(int userId)
         {
-
-            User? _user = GetUserByID(user.UserId);
-            if (_user == null)
-            {
-                using var context = new ChatApplicationContext();
-                context.Users.Add(user);
-                context.SaveChanges();
-
-                return context.SaveChanges();
-            }
-            else
-            {
-                return 0;
-            }
-
-        }
-
-        public int UpdateUser(User userUpdate)
-        {
-            if (userUpdate == null)
-            {
-                return 0;
-            }
-            using var context = new ChatApplicationContext();
-            User? user = GetUserByID(userUpdate.UserId);
-            if (user == null)
-            {
-                return 0;
-            }
-            user.UserId = userUpdate.UserId;
-
-            context.Users.Update(userUpdate);
-
-            return context.SaveChanges();
-        }
-
-        public int RemoveUser(int userId)
-        {
-            User? user = GetUserByID(userId);
-            if (user == null)
-            {
-                return 0;
-            }
-            using var context = new ChatApplicationContext();
-            context.Users.Remove(user);
-            return context.SaveChanges();
+            var user = Get(userId)
+                        ?? throw new Exception("User is null! Aborting delete operation");
+            _context.Users.Remove(user);
+            return _context.SaveChanges();
         }
 
     }

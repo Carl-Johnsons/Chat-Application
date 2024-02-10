@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Repositories
+namespace DataAccess.Repositories.Interfaces
 {
     public interface IMessageRepository
     {
         IEnumerable<Message> GetMessageList();
         IEnumerable<IndividualMessage> GetIndividualMessageList();
-        IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId,int receiverId);
+        IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId);
         IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId);
 
         Message GetMessage(int messageId);

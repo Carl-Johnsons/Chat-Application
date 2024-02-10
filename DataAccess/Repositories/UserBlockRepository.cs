@@ -1,5 +1,6 @@
 ﻿using BussinessObject.Models;
 using DataAccess.DAOs;
+using DataAccess.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,12 @@ namespace DataAccess.Repositories
 {
     public class UserBlockRepository : IUserBlockRepository
     {
-        public IEnumerable<UserBlock> GetBlockedUserList() => UserBlockDAO.Instance.GetBlockedUserList();
-        public UserBlock GetBlockedUserByID(int blockUserId) => UserBlockDAO.Instance.GetBlockedUserByID(blockUserId);
-        public int AddUserBlock(UserBlock userBlock) => UserBlockDAO.Instance.AddUserBlock(userBlock);
-        public int UpdateUserBlock(UserBlock updateUserBlock) => UserBlockDAO.Instance.UpdateUserBlock(updateUserBlock);
-        public int RemoveUserBlocked(int blockedUserID) => UserBlockDAO.Instance.RemoveUserBlocked(blockedUserID);
+        private readonly UserBlockDAO Instance = UserBlockDAO.Instance;
+        public List<UserBlock> Get() => Instance.Get();
+        public List<UserBlock> GetByBlockedUserId(int blockUserId) => Instance.GetByBlockedUserId(blockUserId);
+        public UserBlock? GetByUserIdAndBlockedUserId(int? userId, int? blockedUserId) 
+                => Instance.GetByUserIdAndBlockedUserId(userId, blockedUserId);
+        public int Add(UserBlock userBlock) => Instance.Add(userBlock);
+        public int Delete(int userId, int blockedUserID) => Instance.Delete(userId, blockedUserID);
     }
 }

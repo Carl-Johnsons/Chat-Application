@@ -1,21 +1,13 @@
 ﻿using BussinessObject.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataAccess.DAOs
 {
     public class UserBlockDAO : ChatApplicationContext
     {
         //using singleton to access db by one instance variable
-        private static UserBlockDAO instance = null;
-        private static readonly object instanceLock = new object();
+        private static UserBlockDAO? instance = null;
+        private static readonly object instanceLock = new();
         private UserBlockDAO() { }
         public static UserBlockDAO Instance
         {
@@ -23,87 +15,63 @@ namespace DataAccess.DAOs
             {
                 lock (instanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new UserBlockDAO();
-                    }
+                    instance ??= new UserBlockDAO();
                     return instance;
                 }
             }
         }
-
-        public IEnumerable<UserBlock> GetBlockedUserList()
+        private readonly ChatApplicationContext _context = new();
+        public List<UserBlock> Get()
         {
-            using var context = new ChatApplicationContext();
-            var usersBlocked = context.UserBlocks.Include( ub => ub.BlockedUser).Include( ub => ub.User ).ToList();
-            return usersBlocked;
+
+            return _context.UserBlocks
+                            .Include(ub => ub.BlockedUser)
+                            .Include(ub => ub.User)
+                            .ToList(); ;
         }
-
-        public UserBlock GetBlockedUserByID(int blockedUserId)
+        public List<UserBlock> GetByUserId(int? userId)
         {
-            UserBlock userBlock = null;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                userBlock = context.UserBlocks.SingleOrDefault(u => u.BlockedUserId == blockedUserId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return userBlock;
+            _ = userId ?? throw new Exception("user id is null");
+            return _context.UserBlocks
+                            .Include(ub => ub.BlockedUser)
+                            .Include(ub => ub.User)
+                            .Where(u => u.UserId == userId)
+                            .ToList();
         }
-
-        public int AddUserBlock(UserBlock userBlock)
+        public List<UserBlock> GetByBlockedUserId(int? blockedUserId)
         {
-
-            if (userBlock == null)
-            {
-                using var context = new ChatApplicationContext();
-
-                context.UserBlocks.Add(userBlock);
-                return context.SaveChanges();
-
-            }
-            else
-            {
-                return 0;
-            }
-            
+            _ = blockedUserId ?? throw new Exception("block user id is null");
+            return _context.UserBlocks
+                            .Include(ub => ub.BlockedUser)
+                            .Include(ub => ub.User)
+                            .Where(u => u.BlockedUserId == blockedUserId)
+                            .ToList();
         }
-
-        public int UpdateUserBlock(UserBlock updateUserBlock)
+        public UserBlock? GetByUserIdAndBlockedUserId(int? userId, int? blockedUserId)
         {
-            if (updateUserBlock == null)
-            {
-                return 0;
-            }
-            using var context = new ChatApplicationContext();
-            var userBlock = GetBlockedUserByID(updateUserBlock.UserId);
-            if (userBlock == null)
-            {
-                throw new Exception("User not exist");
-            }
-            userBlock.BlockedUserId = updateUserBlock.BlockedUserId;
-            
-            context.UserBlocks.Update(userBlock);
-            
-            return context.SaveChanges();
+            _ = userId ?? throw new Exception("user id is null");
+            _ = blockedUserId ?? throw new Exception("block user id is null");
+            return _context.UserBlocks
+                            .Include(ub => ub.BlockedUser)
+                            .Include(ub => ub.User)
+                            .SingleOrDefault(u => u.UserId == userId 
+                                            && u.BlockedUserId == blockedUserId);
         }
-
-        public int RemoveUserBlocked(int blockedUserID)
+        public int Add(UserBlock userBlock)
         {
-            UserBlock userblocked = GetBlockedUserByID(blockedUserID);
-            if (userblocked != null)
+            if (GetByUserIdAndBlockedUserId(userBlock.UserId, userBlock.BlockedUserId) != null)
             {
-                using var context = new ChatApplicationContext();
-                context.UserBlocks.Remove(userblocked);
-                return context.SaveChanges();
+                throw new Exception("This user has already been block by that user! Aborting add operation");
             }
-            else
-            {
-                return 0;
-            }
+            _context.UserBlocks.Add(userBlock);
+            return _context.SaveChanges();
+        }
+        public int Delete(int userId, int blockedUserID)
+        {
+            var userblocked = GetByUserIdAndBlockedUserId(userId, blockedUserID)
+                        ?? throw new Exception("User block not found! Aborting delete operation");
+            _context.UserBlocks.Remove(userblocked);
+            return _context.SaveChanges();
         }
     }
 }

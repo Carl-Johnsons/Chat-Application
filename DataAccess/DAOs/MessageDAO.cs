@@ -1,18 +1,12 @@
 ﻿using BussinessObject.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAOs
 {
     public class MessageDAO
     {
         //using singleton to access db by one instance variable
-        private static MessageDAO instance = null;
-        private static readonly object instanceLock = new object();
+        private static MessageDAO? instance = null;
+        private static readonly object instanceLock = new();
         private MessageDAO() { }
         public static MessageDAO Instance
         {
@@ -20,93 +14,40 @@ namespace DataAccess.DAOs
             {
                 lock (instanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new MessageDAO();
-                    }
+                    instance ??= new MessageDAO();
                     return instance;
                 }
             }
         }
-
-        public IEnumerable<Message> Get()
+        private readonly ChatApplicationContext _context = new();
+        public List<Message> Get()
         {
-            using var context = new ChatApplicationContext();
-            var messages = context.Messages.ToList();
-            return messages;
+            return _context.Messages.ToList(); ;
         }
-
-
-        public Message Get(int messageId)
+        public Message? Get(int? messageId)
         {
-            Message message = null;
-            try
-            {
-                using var context = new ChatApplicationContext();
-                message = context.Messages.SingleOrDefault(m => m.MessageId == messageId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return message;
+            _ = messageId ?? throw new Exception("Message id is null");
+            return _context.Messages.SingleOrDefault(m => m.MessageId == messageId); ;
         }
-
         public int Add(Message message)
         {
-            if (message == null)
-            {
-                return 0;
-            }
-            Console.WriteLine("Message Id is :" + message.MessageId);
-
-            using var context = new ChatApplicationContext();
-            context.Messages.Add(message);
-            return context.SaveChanges();
+            _ = message ?? throw new Exception("Message is null! Abort adding message operation");
+            _context.Messages.Add(message);
+            return _context.SaveChanges();
         }
-
-
-
-        public int Update(Message messageUpdate)
+        public int Update(Message updateMessage)
         {
-            if (messageUpdate == null)
-            {
-                return 0;
-            }
-            using var context = new ChatApplicationContext();
-            var message = Get(messageUpdate.MessageId);
-            if (message == null)
-            {
-                return 0;
-            }
-            message.MessageId = messageUpdate.MessageId;
-
-            context.Messages.Update(messageUpdate);
-
-            return context.SaveChanges();
+            _ = updateMessage ?? throw new Exception("Update message is null! Abort updating message operation");
+            var oldMessage= Get(updateMessage.MessageId) ?? throw new Exception("Message not found! Abort updating message operation");
+            _context.Entry(oldMessage).CurrentValues.SetValues(updateMessage);
+            return _context.SaveChanges();
         }
-
-        public int Delete(int messageId)
+        public int Delete(int? messageId)
         {
-            try
-            {
-                Message mess = Get(messageId);
-                if (mess != null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.Messages.Remove(mess);
-                    return context.SaveChanges();
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            _ = messageId ?? throw new Exception("Update message is null! Abort updating message operation");
+            var message = Get(messageId) ?? throw new Exception("Message not found! Abort updating message operation");
+            _context.Messages.Remove(message);
+            return _context.SaveChanges();
         }
-
     }
 }

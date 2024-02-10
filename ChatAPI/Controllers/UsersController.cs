@@ -7,6 +7,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
+using DataAccess.Repositories.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -49,7 +50,7 @@ namespace ChatAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<User> userList = (List<User>)_userRepository.GetUserList();
+            List<User> userList = (List<User>)_userRepository.Get();
 
             if (userList.IsNullOrEmpty())
             {
@@ -62,7 +63,7 @@ namespace ChatAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var user = _userRepository.GetUserByID(id);
+            var user = _userRepository.Get(id);
             if (user == null)
             {
                 return NotFound();
@@ -72,7 +73,7 @@ namespace ChatAPI.Controllers
         [HttpGet("GetUserProfile")]
         public async Task<IActionResult> GetUserProfile()
         {
-            var user = _userRepository.GetUserByID(CurrentUserClaim.UserId);
+            var user = _userRepository.Get(CurrentUserClaim.UserId);
             if (user == null)
             {
                 return NotFound();
@@ -82,7 +83,7 @@ namespace ChatAPI.Controllers
         [HttpGet("GetFriend/{userId}")]
         public async Task<IActionResult> GetFriend(int userId)
         {
-            var friends = _friendRepository.GetFriendsByUserId(userId);
+            var friends = _friendRepository.GetByUserId(userId);
             if (friends == null)
             {
                 return NotFound();
@@ -99,7 +100,7 @@ namespace ChatAPI.Controllers
             }
             try
             {
-                var user = _userRepository.GetUserByPhoneNumber(phoneNumber);
+                var user = _userRepository.GetByPhoneNumber(phoneNumber);
                 if (user == null)
                 {
                     return NotFound();
@@ -122,7 +123,7 @@ namespace ChatAPI.Controllers
 
             try
             {
-                var friendRequestsList = _friendRequestRepository.GetFriendRequestsByReceiverId((int)receiverId);
+                var friendRequestsList = _friendRequestRepository.GetByReceiverId((int)receiverId);
                 if (friendRequestsList.IsNullOrEmpty())
                 {
                     return NotFound();
@@ -145,7 +146,7 @@ namespace ChatAPI.Controllers
 
             try
             {
-                var friendRequestsList = _friendRequestRepository.GetFriendRequestsBySenderId((int)senderId);
+                var friendRequestsList = _friendRequestRepository.GetBySenderId((int)senderId);
                 if (friendRequestsList.IsNullOrEmpty())
                 {
                     return NotFound();
@@ -162,7 +163,7 @@ namespace ChatAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] User user)
         {
-            _userRepository.InsertUser(user);
+            _userRepository.Add(user);
             return CreatedAtAction("Get", new { id = user.UserId }, user);
         }
 
@@ -177,7 +178,7 @@ namespace ChatAPI.Controllers
             friendRequest.Date = DateTime.Now;
             try
             {
-                int affectedRow = _friendRequestRepository.AddFriendRequest(friendRequest);
+                int affectedRow = _friendRequestRepository.Add(friendRequest);
                 if (affectedRow == 0)
                 {
                     return NotFound("Can't send friend request");
@@ -250,7 +251,7 @@ namespace ChatAPI.Controllers
                 FriendId = (int)receiverId
             };
 
-            int affectedRow = _friendRepository.AddFriend(friend);
+            int affectedRow = _friendRepository.Add(friend);
             if (affectedRow == 0)
             {
                 return NotFound();
@@ -289,7 +290,7 @@ namespace ChatAPI.Controllers
             {
                 return BadRequest("Id mismatch when updating user");
             }
-            int affectedRow = _userRepository.UpdateUser(user);
+            int affectedRow = _userRepository.Update(user);
             if (affectedRow == 0)
             {
                 return NotFound();
@@ -302,7 +303,7 @@ namespace ChatAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            int affectRow = _userRepository.DeleteUser(id);
+            int affectRow = _userRepository.Delete(id);
             if (affectRow == 0)
             {
                 return NotFound();
@@ -318,7 +319,7 @@ namespace ChatAPI.Controllers
                 return NotFound();
             }
 
-            int affectedRow = _friendRepository.RemoveFriend((int)userId, (int)friendId);
+            int affectedRow = _friendRepository.Delete((int)userId, (int)friendId);
             if (affectedRow == 0)
             {
                 return NotFound();
@@ -335,7 +336,7 @@ namespace ChatAPI.Controllers
             }
             try
             {
-                int affectedRow = _friendRequestRepository.RemoveFriendRequest((int)senderId, (int)receiverId);
+                int affectedRow = _friendRequestRepository.Delete((int)senderId, (int)receiverId);
                 if (affectedRow == 0)
                 {
                     return NotFound();

@@ -10,104 +10,63 @@ namespace DataAccess.DAOs
 {
     public class IndividualMessageDAO
     {
-        private static IndividualMessageDAO instance = null;
-        private static readonly object instanceLock = new object();
+        private static IndividualMessageDAO? instance = null;
+        private static readonly object instanceLock = new();
         public static IndividualMessageDAO Instance
         {
             get
             {
                 lock (instanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new IndividualMessageDAO();
-                    }
+                    instance ??= new IndividualMessageDAO();
                     return instance;
                 }
 
             }
         }
-        public IEnumerable<IndividualMessage> Get()
+        private readonly ChatApplicationContext _context = new();
+
+        public List<IndividualMessage> Get()
         {
-            using var context = new ChatApplicationContext();
-            var individualMessages = context.IndividualMessages.Include(im => im.Message).ToList();
-            return individualMessages;
+            return _context.IndividualMessages.Include(im => im.Message).ToList();
         }
-        public IEnumerable<IndividualMessage> Get(int senderId, int receiverId)
+        public List<IndividualMessage> Get(int senderId, int receiverId)
         {
-            using var context = new ChatApplicationContext();
-            var individualMessages = context.IndividualMessages
+            var individualMessages = _context.IndividualMessages
                 .Include(im => im.Message)
                 .Where(im =>
-                (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
-                || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
+                    (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
+                    || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
                 .ToList();
             return individualMessages;
         }
-
         public IndividualMessage? GetLastMessage(int senderId, int receiverId)
         {
-            using var context = new ChatApplicationContext();
-            var individualMessages = context.IndividualMessages
-                .Include(im => im.Message)
-                .Where(im =>
-                (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
-                || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
-                .ToList();
-            if (individualMessages.Count == 0)
+            var individualMessages = Get(senderId, receiverId);
+            if (individualMessages == null || individualMessages.Count == 0)
             {
                 return null;
             }
-
             return individualMessages[individualMessages.Count - 1];
         }
-
         public int Add(IndividualMessage individualMessage)
         {
-            try
+            if (individualMessage == null)
             {
-                if (individualMessage == null)
-                {
-                    return 0;
-                }
-
-                using var context = new ChatApplicationContext();
-                context.IndividualMessages.Add(individualMessage);
-                return context.SaveChanges();
+                throw new Exception("individual message is null");
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.InnerException.Message);
-            }
+            _context.IndividualMessages.Add(individualMessage);
+            return _context.SaveChanges();
         }
-
         public int Update(IndividualMessage individualMessage)
         {
-
-            try
-            {
-                Message _message = MessageDAO.Instance.Get(individualMessage.MessageId);
-                if (_message != null)
-                {
-                    using var context = new ChatApplicationContext();
-                    context.IndividualMessages.Update(individualMessage);
-                    return context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The individual message does not already exist.");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+            var oldMessage = MessageDAO.Instance.Get(individualMessage.MessageId) ?? throw new Exception("Individual message is null! Aborting update operation");
+            _context.Entry(oldMessage).CurrentValues.SetValues(individualMessage);
+            return _context.SaveChanges();
         }
-
         public int Delete(int messageId)
         {
+            _ = MessageDAO.Instance.Get(messageId) ?? throw new Exception("Individual message is null! Aborting delete operation");
             return MessageDAO.Instance.Delete(messageId);
         }
     }

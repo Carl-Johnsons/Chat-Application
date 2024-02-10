@@ -1,5 +1,6 @@
 ﻿using BussinessObject.Models;
 using DataAccess.DAOs;
+using DataAccess.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +11,15 @@ namespace DataAccess.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public User? GetUserByID(int userId) => UserDAO.Instance.GetUserByID(userId);
-        public List<User> GetUserList() => UserDAO.Instance.GetUserList();
-        public User? GetUserByPhoneNumber(string? phoneNumber) => UserDAO.Instance.GetUserByPhoneNumber(phoneNumber);
-        public User? GetUserByRefreshToken(string? refreshToken) => UserDAO.Instance.GetUserByRefreshToken(refreshToken);
-        public User? Login(string? phoneNumber, string? password) => UserDAO.Instance.Login(phoneNumber, password);
-        public int InsertUser(User user) => UserDAO.Instance.AddUser(user);
-        public int DeleteUser(int userId) => UserDAO.Instance.RemoveUser(userId);
-        public int UpdateUser(User userUpdate) => UserDAO.Instance.UpdateUser(userUpdate);
+        private readonly UserDAO Instance = UserDAO.Instance;
+        public List<User> Get() => Instance.Get();
+        public User? Get(int userId) => Instance.Get(userId);
+        public User? GetByPhoneNumber(string? phoneNumber) => Instance.GetByPhoneNumber(phoneNumber);
+        public User? GetByRefreshToken(string? refreshToken) => Instance.GetByRefreshToken(refreshToken);
+        public User? GetByPhoneNumberAndPassword(string? phoneNumber, string? password) => Instance.GetByPhoneNumberAndPassword(phoneNumber, password);
+        public int Add(User user) => Instance.Add(user);
+        public int Update(User userUpdate) => Instance.Update(userUpdate);
+        public int Delete(int userId) => Instance.Delete(userId);
 
     }
 }

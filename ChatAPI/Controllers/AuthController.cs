@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using BussinessObject.Models;
 using DataAccess.Repositories;
+using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
@@ -43,7 +44,7 @@ namespace ChatAPI.Controllers
             User? user;
             try
             {
-                user = _userRepository.Login(userLoginModel.PhoneNumber, userLoginModel.Password);
+                user = _userRepository.GetByPhoneNumberAndPassword(userLoginModel.PhoneNumber, userLoginModel.Password);
             }
             catch (Exception ex)
             {
@@ -61,7 +62,7 @@ namespace ChatAPI.Controllers
             user.RefreshTokenCreated = refreshToken.TokenCreatedAt;
             user.RefreshTokenExpired = refreshToken.TokenExpiredAt;
 
-            _userRepository.UpdateUser(user);
+            _userRepository.Update(user);
 
             if (accessToken == null)
             {
@@ -77,13 +78,13 @@ namespace ChatAPI.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<TokenModel>> Register([FromBody] User user)
         {
-            if (_userRepository.GetUserByPhoneNumber(user.PhoneNumber) != null)
+            if (_userRepository.GetByPhoneNumber(user.PhoneNumber) != null)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "phone number is already exist" });
             }
             try
             {
-                _userRepository.InsertUser(user);
+                _userRepository.Add(user);
             }
             catch (Exception ex)
             {
@@ -159,7 +160,7 @@ namespace ChatAPI.Controllers
         }
         private User? ValidateRefreshToken(RefreshTokenModel refreshToken)
         {
-            User? user = _userRepository.GetUserByRefreshToken(refreshToken.Token);
+            User? user = _userRepository.GetByRefreshToken(refreshToken.Token);
             if (user == null ||
                 (user.RefreshTokenExpired != null
                 && user.RefreshTokenExpired < DateTime.Now))
