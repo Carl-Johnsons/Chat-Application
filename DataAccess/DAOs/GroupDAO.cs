@@ -55,7 +55,6 @@ namespace DataAccess.DAOs
         {
             _ = group ?? throw new Exception("Group can't be null");
         }
-
         private Group EnsureGroupExisted([NotNull] int? groupId)
         {
             _ = groupId

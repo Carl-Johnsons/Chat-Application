@@ -12,8 +12,6 @@ namespace DataAccess.DAOs
         }
         private static GroupUserDAO? instance = null;
         private static readonly object instanceLock = new();
-
-
         public static GroupUserDAO Instance
         {
             get
@@ -76,6 +74,14 @@ namespace DataAccess.DAOs
             EnsureUserExisted(groupUser.UserId);
             EnsureRoleValid(groupUser.Role);
             _context.GroupUser.Add(groupUser);
+            return _context.SaveChanges();
+        }
+        public int UpdateRole(GroupUser groupUser)
+        {
+            GroupUser oldGroupUser = EnsureGroupUserExisted(groupUser.GroupId, groupUser.UserId);
+            EnsureRoleValid(groupUser.Role);
+            oldGroupUser.Role = groupUser.Role;
+            _context.GroupUser.Update(oldGroupUser);
             return _context.SaveChanges();
         }
         public int Delete(int? groupId, int? userId)

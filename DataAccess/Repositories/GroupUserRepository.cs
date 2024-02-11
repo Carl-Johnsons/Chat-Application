@@ -8,7 +8,7 @@ namespace DataAccess.Repositories
     {
         private readonly GroupUserDAO Instance = GroupUserDAO.Instance;
         public int Add(GroupUser groupUser) => Instance.Add(groupUser);
-
+        public int UpdateRole(GroupUser groupUser) => Instance.UpdateRole(groupUser);
         public int Delete(int? groupId, int? userId) => Instance.Delete(groupId, userId);
 
         public List<GroupUser> Get() => Instance.Get();

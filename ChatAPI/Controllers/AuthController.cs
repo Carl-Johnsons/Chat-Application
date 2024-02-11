@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using BussinessObject.Models;
+﻿using BussinessObject.Models;
 using DataAccess.Repositories;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +38,7 @@ namespace ChatAPI.Controllers
 
         // POST api/login
         [HttpPost("Login")]
-        public async Task<ActionResult<TokenModel>> Login([FromBody] UserLoginModel userLoginModel)
+        public ActionResult<TokenModel> Login([FromBody] UserLoginModel userLoginModel)
         {
             User? user;
             try
@@ -76,7 +75,7 @@ namespace ChatAPI.Controllers
         }
         // POST api/login
         [HttpPost("Register")]
-        public async Task<ActionResult<TokenModel>> Register([FromBody] User user)
+        public ActionResult<TokenModel> Register([FromBody] User user)
         {
             if (_userRepository.GetByPhoneNumber(user.PhoneNumber) != null)
             {
@@ -94,7 +93,7 @@ namespace ChatAPI.Controllers
         }
 
         [HttpPost("RefreshToken")]
-        public async Task<ActionResult<TokenModel>> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
+        public ActionResult<TokenModel> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
         {
             if (refreshTokenModel == null)
             {

@@ -1,13 +1,14 @@
 ﻿using DataAccess.Repositories;
 using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using DataAccess.Repositories.Interfaces;
+using AutoMapper;
+using BussinessObject.DTO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,12 +23,23 @@ namespace ChatAPI.Controllers
         private readonly IFriendRepository _friendRepository;
         private readonly IFriendRequestRepository _friendRequestRepository;
         private readonly string BASE_ADDRESS = "https://localhost:7190";
-        private UserClaim CurrentUserClaim => GetCurrentUserClaim();
+        private UserClaim? CurrentUserClaim => GetCurrentUserClaim();
+
+        private readonly MapperConfiguration mapperConfig;
+        private readonly Mapper mapper;
         public UsersController()
         {
             _userRepository = new UserRepository();
             _friendRepository = new FriendRepository();
             _friendRequestRepository = new FriendRequestRepository();
+
+            mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<User, PublicUserDTO>();
+                cfg.CreateMap<Friend, PublicFriendDTO>();
+                cfg.CreateMap<FriendRequest, PublicFriendRequestDTO>();
+            });
+            mapper = new Mapper(mapperConfig);
         }
         private UserClaim? GetCurrentUserClaim()
         {
@@ -48,31 +60,28 @@ namespace ChatAPI.Controllers
 
         // GET: api/<UsersController>
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            List<User> userList = _userRepository.Get();
-
-            if (userList.IsNullOrEmpty())
-            {
-                return NotFound();
-            }
-            return Ok(userList);
+            var userList = _userRepository.Get();
+            var publicUserList = mapper.Map<List<User>, List<PublicUserDTO>>(userList);
+            return Ok(publicUserList);
         }
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public IActionResult Get(int id)
         {
             var user = _userRepository.Get(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
+            var publicUser = mapper.Map<PublicUserDTO>(user);
+            return Ok(publicUser);
         }
         [HttpGet("GetUserProfile")]
-        public async Task<IActionResult> GetUserProfile()
+        public IActionResult GetUserProfile()
         {
+            if (CurrentUserClaim == null)
+            {
+                return Unauthorized("User didn't log in");
+            }
             var user = _userRepository.Get(CurrentUserClaim.UserId);
             if (user == null)
             {
@@ -81,99 +90,46 @@ namespace ChatAPI.Controllers
             return Ok(user);
         }
         [HttpGet("GetFriend/{userId}")]
-        public async Task<IActionResult> GetFriend(int userId)
+        public IActionResult GetFriend(int userId)
         {
-            var friends = _friendRepository.GetByUserId(userId);
-            if (friends == null)
-            {
-                return NotFound();
-
-            }
-            return Ok(friends);
+            var fList = _friendRepository.GetByUserId(userId);
+            var publicFList = mapper.Map<List<Friend>, List<PublicFriendDTO>>(fList);
+            return Ok(publicFList);
         }
         [HttpGet("Search/{phoneNumber}")]
-        public async Task<IActionResult> Search(string phoneNumber)
+        public IActionResult Search(string phoneNumber)
         {
-            if (phoneNumber == null)
-            {
-                return NotFound();
-            }
-            try
-            {
-                var user = _userRepository.GetByPhoneNumber(phoneNumber);
-                if (user == null)
-                {
-                    return NotFound();
-                }
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Aborting search for user by phone number:\n" + ex.Message);
-            }
-
+            var user = _userRepository.GetByPhoneNumber(phoneNumber);
+            var publicUser = mapper.Map<PublicUserDTO>(user);
+            return Ok(publicUser);
         }
         [HttpGet("GetFriendRequestsByReceiverId/{receiverId}")]
-        public async Task<IActionResult> GetFriendRequestsByReceiverId(int? receiverId)
+        public IActionResult GetFriendRequestsByReceiverId(int receiverId)
         {
-            if (receiverId == null)
-            {
-                return NotFound();
-            }
-
-            try
-            {
-                var friendRequestsList = _friendRequestRepository.GetByReceiverId((int)receiverId);
-                if (friendRequestsList.IsNullOrEmpty())
-                {
-                    return NotFound();
-                }
-                return Ok(friendRequestsList);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var frList = _friendRequestRepository.GetByReceiverId(receiverId);
+            var publicFrList = mapper.Map<List<FriendRequest>, List<PublicFriendRequestDTO>>(frList);
+            return Ok(publicFrList);
         }
 
         [HttpGet("GetFriendRequestsBySenderId/{senderId}")]
-        public async Task<IActionResult> GetFriendRequestsBySenderId(int? senderId)
+        public IActionResult GetFriendRequestsBySenderId(int senderId)
         {
-            if (senderId == null)
-            {
-                return NotFound();
-            }
-
-            try
-            {
-                var friendRequestsList = _friendRequestRepository.GetBySenderId((int)senderId);
-                if (friendRequestsList.IsNullOrEmpty())
-                {
-                    return NotFound();
-                }
-                return Ok(friendRequestsList);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var frList = _friendRequestRepository.GetBySenderId(senderId);
+            var publicFrList = mapper.Map<List<FriendRequest>, List<PublicFriendRequestDTO>>(frList);
+            return Ok(publicFrList);
         }
 
         // POST api/<UsersController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] User user)
+        public IActionResult Add([FromBody] User user)
         {
             _userRepository.Add(user);
             return CreatedAtAction("Get", new { id = user.UserId }, user);
         }
 
         [HttpPost("SendFriendRequest")]
-        public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequest friendRequest)
+        public IActionResult SendFriendRequest([FromBody] FriendRequest friendRequest)
         {
-            if (friendRequest == null)
-            {
-                return NotFound("Friend request is not valid");
-            }
             friendRequest.Status = "Status";
             friendRequest.Date = DateTime.Now;
             try
@@ -188,8 +144,8 @@ namespace ChatAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
-            return CreatedAtAction("GetFriendRequestsByReceiverId", new { friendRequest.ReceiverId }, friendRequest);
+            var publicFr = mapper.Map<PublicFriendRequestDTO>(friendRequest);
+            return CreatedAtAction("GetFriendRequestsByReceiverId", new { publicFr.ReceiverId }, publicFr);
         }
         [HttpPost("AddFriend/{senderId}/{receiverId}")]
         public async Task<IActionResult> AddFriend(int? senderId, int? receiverId)
@@ -198,14 +154,13 @@ namespace ChatAPI.Controllers
             {
                 return BadRequest("SenderId and ReceiverId cannot be null.");
             }
-            var accessToken = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ")[1];
+            var accessToken = HttpContext?.Request?.Headers?["Authorization"].FirstOrDefault().Split(" ")[1];
             // Check if friendRequest is existed
             try
             {
                 using (var client = new HttpClient())
                 {
                     // Include the authorization token in the headers
-                    await Console.Out.WriteLineAsync("The current access token is " + accessToken);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     var getFriendRequestsUrl = $"{BASE_ADDRESS}/api/Users/GetFriendRequestsByReceiverId/{receiverId}";
                     var response = await client.GetAsync(getFriendRequestsUrl);
@@ -284,69 +239,37 @@ namespace ChatAPI.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] User user)
+        public IActionResult Put(int id, [FromBody] User user)
         {
             if (id != user.UserId)
             {
                 return BadRequest("Id mismatch when updating user");
             }
-            int affectedRow = _userRepository.Update(user);
-            if (affectedRow == 0)
-            {
-                return NotFound();
-            }
-
-            return Ok(user);
+            _userRepository.Update(user);
+            var publicUser = mapper.Map<PublicUserDTO>(user);
+            return Ok(publicUser);
         }
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            int affectRow = _userRepository.Delete(id);
-            if (affectRow == 0)
-            {
-                return NotFound();
-            }
+            _userRepository.Delete(id);
             return NoContent();
         }
 
         [HttpDelete("RemoveFriend/{userId}/{friendId}")]
-        public async Task<IActionResult> RemoveFriend(int? userId, int? friendId)
+        public IActionResult RemoveFriend(int userId, int friendId)
         {
-            if (userId == null || friendId == null)
-            {
-                return NotFound();
-            }
-
-            int affectedRow = _friendRepository.Delete((int)userId, (int)friendId);
-            if (affectedRow == 0)
-            {
-                return NotFound();
-            }
+            _friendRepository.Delete(userId, friendId);
             return NoContent();
         }
 
         [HttpDelete("RemoveFriendRequest/{senderId}/{receiverId}")]
-        public async Task<IActionResult> RemoveFriendRequest(int? senderId, int? receiverId)
+        public IActionResult RemoveFriendRequest(int senderId, int receiverId)
         {
-            if (senderId == null || receiverId == null)
-            {
-                return NotFound();
-            }
-            try
-            {
-                int affectedRow = _friendRequestRepository.Delete((int)senderId, (int)receiverId);
-                if (affectedRow == 0)
-                {
-                    return NotFound();
-                }
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _friendRequestRepository.Delete(senderId, receiverId);
+            return NoContent();
         }
     }
 
@@ -361,5 +284,4 @@ namespace ChatAPI.Controllers
         [Required]
         public string? Name;
     }
-
 }
