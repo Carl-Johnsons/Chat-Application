@@ -14,13 +14,9 @@ public partial class Group
     [Column("Group_Name")]
     [MaxLength(50)]
     public string GroupName { get; set; } = null!;
-    [Column("Group_Leader_ID")]
-    public int GroupLeaderId { get; set; }
 
     [Column("Group_Avatar_URL")]
     public string GroupAvatarUrl { get; set; } = null!;
     [Column("Group_Invite_URL")]
     public string GroupInviteUrl { get; set; } = null!;
-
-    public virtual User GroupLeader { get; set; } = null!;
 }

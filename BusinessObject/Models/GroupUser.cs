@@ -11,7 +11,8 @@ public partial class GroupUser
     public int GroupId { get; set; }
     [Column("User_ID")]
     public int UserId { get; set; }
-
+    [Column("Role")]
+    public string? Role { get; set; }
     //Navigate prop
     public virtual Group? Group { get; set; }
     public virtual User? User { get; set; }

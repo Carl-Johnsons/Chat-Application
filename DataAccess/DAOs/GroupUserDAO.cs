@@ -1,4 +1,5 @@
-﻿using BussinessObject.Models;
+﻿using BussinessObject.Constants;
+using BussinessObject.Models;
 using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,9 +7,12 @@ namespace DataAccess.DAOs
 {
     public class GroupUserDAO
     {
+        private GroupUserDAO()
+        {
+        }
         private static GroupUserDAO? instance = null;
         private static readonly object instanceLock = new();
-        private GroupUserDAO() { }
+
 
         public static GroupUserDAO Instance
         {
@@ -36,7 +40,8 @@ namespace DataAccess.DAOs
                     {
                         GroupId = gu.GroupId,
                         UserId = gu.UserId,
-                        User = gu.User,
+                        Role = gu.Role,
+                        User = gu.User
                     })
                     .ToList();
         }
@@ -50,7 +55,8 @@ namespace DataAccess.DAOs
                     {
                         GroupId = gu.GroupId,
                         UserId = gu.UserId,
-                        Group = gu.Group,
+                        Role = gu.Role,
+                        Group = gu.Group
                     })
                     .ToList();
         }
@@ -68,6 +74,7 @@ namespace DataAccess.DAOs
             EnsureGroupUserNotExist(groupUser.GroupId, groupUser.UserId);
             EnsureGroupExisted(groupUser.GroupId);
             EnsureUserExisted(groupUser.UserId);
+            EnsureRoleValid(groupUser.Role);
             _context.GroupUser.Add(groupUser);
             return _context.SaveChanges();
         }
@@ -105,6 +112,26 @@ namespace DataAccess.DAOs
             UserRepository _userRepo = new();
             _ = _userRepo.Get(userId)
                             ?? throw new Exception("This user is not exist!");
+        }
+        private void EnsureRoleValid(string? role)
+        {
+            if (role == null)
+            {
+                throw new Exception("This role \"" + role + "\" is not valid");
+            }
+            if (role.Equals(GroupUserRole.LEADER))
+            {
+                return;
+            }
+            if (role.Equals(GroupUserRole.DEPUTY))
+            {
+                return;
+            }
+            if (role.Equals(GroupUserRole.MEMBER))
+            {
+                return;
+            }
+            throw new Exception("This role \"" + role + "\" is not valid");
         }
         private GroupUser EnsureGroupUserExisted(int? groupId, int? userId)
         {

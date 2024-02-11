@@ -1,8 +1,13 @@
-﻿using BussinessObject.Models;
+﻿using AutoMapper;
+using BussinessObject.Constants;
+using BussinessObject.DTO;
+using BussinessObject.Models;
 using DataAccess.Repositories;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace ChatAPI.Controllers
 {
@@ -14,10 +19,19 @@ namespace ChatAPI.Controllers
         private readonly IGroupRepository _groupRepository;
         private readonly IGroupUserRepository _groupUserRepository;
 
+        private readonly MapperConfiguration mapperConfig;
+        private readonly Mapper mapper;
         public GroupController()
         {
             _groupRepository = new GroupRepository();
             _groupUserRepository = new GroupUserRepository();
+
+            mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<User, PublicUserDTO>();
+                cfg.CreateMap<GroupUser, GroupPublicUserDTO>();
+            });
+            mapper = new Mapper(mapperConfig);
         }
         [HttpGet]
         public IActionResult Get()
@@ -38,7 +52,8 @@ namespace ChatAPI.Controllers
             try
             {
                 var groupUserList = _groupUserRepository.GetByGroupId(groupId);
-                return Ok(groupUserList);
+                var groupPublicUserDTO = mapper.Map<List<GroupUser>, List<GroupPublicUserDTO>>(groupUserList);
+                return Ok(groupPublicUserDTO);
             }
             catch (Exception ex)
             {
@@ -47,7 +62,7 @@ namespace ChatAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateGroup([FromBody] Group group)
+        public IActionResult CreateGroup([FromBody] GroupWithLeaderId group)
         {
             try
             {
@@ -58,9 +73,10 @@ namespace ChatAPI.Controllers
                 _groupUserRepository.Add(new GroupUser()
                 {
                     GroupId = group.GroupId,
-                    UserId = group.GroupLeaderId
+                    UserId = group.GroupLeaderId,
+                    Role = GroupUserRole.LEADER
                 });
-                return StatusCode(StatusCodes.Status201Created);
+                return CreatedAtAction(nameof(Get), new { id = group.GroupId }, group);
             }
             catch (Exception ex)
             {
@@ -107,5 +123,11 @@ namespace ChatAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+    }
+    public class GroupWithLeaderId : Group
+    {
+        [Required]
+        [JsonProperty("groupLeaderId")]
+        public int GroupLeaderId { get; set; }
     }
 }
