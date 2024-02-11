@@ -69,10 +69,10 @@ VITE_BASE_API_URL="Your URL"
 VITE_SIGNALR_URL="[Hub URL]/chatHub"
 VITE_PORT="Your react app port"
 ```
-## 4. :
+## 4. Run StartAllService.bat at the root of the repo to start ChatService and ChatAPI
 
-## 5. Run StartAllService.bat at the root of the repo to start ChatService and ChatAPI
-## 6. Open terminal at the root of reactApp project:
+## 5. Open terminal at the root of reactApp project:
+
 - Run this to initialize the react app in development
 ```bat
 npm run dev
