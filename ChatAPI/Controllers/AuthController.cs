@@ -18,9 +18,8 @@ namespace ChatAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly string SECRET_KEY = "Key";
         private readonly IUserRepository _userRepository;
-        private readonly string SecretKey;
+        private readonly string privateKeyFile = "key.pem";
         private readonly string Issuer;
         private readonly string Audience;
         private readonly DateTime AccessTokenExpire = DateTime.Now.AddSeconds(15);
@@ -32,7 +31,6 @@ namespace ChatAPI.Controllers
             _userRepository = new UserRepository();
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             var jwtSection = config.GetSection("Jwt");
-            SecretKey = jwtSection[SECRET_KEY] ?? "";
             Issuer = jwtSection["Issuer"] ?? "";
             Audience = jwtSection["Audience"] ?? "";
         }
@@ -153,30 +151,41 @@ namespace ChatAPI.Controllers
          */
         private string? GenerateAccessToken(User user, DateTime exp)
         {
-            if (SecretKey == "" || Issuer == "" || Audience == "")
+            if (Issuer == "" || Audience == "")
             {
                 return null;
             }
+            string privateKeyContent = System.IO.File.ReadAllText(privateKeyFile);
+            using (RSA rsa = RSA.Create())
+            {
+                rsa.ImportFromPem(privateKeyContent.ToCharArray());
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var securityKey = new RsaSecurityKey(rsa);
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256)
+                {
+                    // Reference: https://stackoverflow.com/questions/62307933/rsa-disposed-object-error-every-other-test
+                    // This will solve rsa dispose error every test case
+                    CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
+                };
 
-            var claims = new[] {
+                var claims = new[] {
                 new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.MobilePhone,user.PhoneNumber),
                 new Claim(ClaimTypes.GivenName,user.Name),
             };
 
-            var token = new JwtSecurityToken(
-                Issuer,
-                Audience,
-                claims,
-                expires: exp,
-                signingCredentials: credentials);
+                var token = new JwtSecurityToken(
+                    Issuer,
+                    Audience,
+                    claims,
+                    expires: exp,
+                    signingCredentials: credentials);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
         }
+
         private RefreshTokenModel GenerateRefreshToken(DateTime exp)
         {
             var refreshToken = new RefreshTokenModel

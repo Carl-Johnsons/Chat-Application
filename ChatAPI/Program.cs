@@ -1,14 +1,17 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+
+
 
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 IConfigurationSection jwtSection = config.GetSection("Jwt");
-var secretKey = jwtSection["Key"];
 var issuer = jwtSection["Issuer"];
 var audience = jwtSection["Audience"];
 
@@ -27,22 +30,33 @@ service.AddSingleton<RsaSecurityKey>(provider =>
 {
     // It's required to register the RSA key with depedency injection.
     // If you don't do this, the RSA instance will be prematurely disposed.
-    RSA rsa = RSA.Create();
+    var certificatePath = "certificate.pem";
+    var certificate = new X509Certificate2(certificatePath);
+    var publicKeyByte = certificate.GetPublicKey();
+    Console.WriteLine("public key:\n" + Encoding.UTF8.GetString(publicKeyByte) + "\nEnd public key");
+    var rsaPublicKey = RSA.Create();
+    rsaPublicKey.ImportRSAPublicKey(publicKeyByte, out _);
+    return new RsaSecurityKey(rsaPublicKey);
 });
 
 
 service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
-    options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey ?? "")),
-        ClockSkew = TimeSpan.Zero, // Make the jwt token expire time more accurate
-        ValidIssuer = issuer,
-        ValidAudience = audience,
+        SecurityKey rsa = service.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
+        options.IncludeErrorDetails = true; // <- great for debugging
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = rsa,
+            RequireExpirationTime = true, // <- JWTs are required to have "exp" property set
+            ValidateLifetime = true, // <- the "exp" will be validated
+            ClockSkew = TimeSpan.Zero, // Make the jwt token expire time more accurate
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+        };
     });
 
 service.AddControllers();
@@ -117,7 +131,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
-app.UseAuthorization();
+app.UseAuthorization(); // Can use [Authorize] middleware
 
 app.MapControllers();
 

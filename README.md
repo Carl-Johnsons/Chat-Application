@@ -3,8 +3,15 @@
 This project is for education purpose and takes inpiration from Zalo
 
 ## 1. Set up the chatAPI
+- Open cmd with OpenSSL or git bash with OpenSSL
 
-- Create an appsettings.json and put it at the root of the chatAPI project
+- Run this line will create a key.pem and certificate.pem for security usage at the root of the chatAPI project
+```shell
+openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
+```
+### Install OpenSSL: https://stackoverflow.com/questions/50625283/how-to-install-openssl-in-windows-10
+
+- Next, Create an appsettings.json and put it at the root of the chatAPI project
 
 - Inside the json file paste as follow:
 ### NOTE: the issuer must have no trailing "/" Example: wrong url: https://localhost:7093/
@@ -14,10 +21,6 @@ This project is for education purpose and takes inpiration from Zalo
     "Default": "Your database url"
   },
   "Jwt": {
-    "Key": {
-      "Private": "Your private key",
-      "Public": "Your public key"
-    },
     "Issuer": "Your issuer url",
     "Audience": "Your audience url"
   },
@@ -66,9 +69,10 @@ VITE_BASE_API_URL="Your URL"
 VITE_SIGNALR_URL="[Hub URL]/chatHub"
 VITE_PORT="Your react app port"
 ```
+## 4. :
 
-## 4. Run StartAllService.bat at the root of the repo to start ChatService and ChatAPI
-## 5. Open terminal at the root of reactApp project:
+## 5. Run StartAllService.bat at the root of the repo to start ChatService and ChatAPI
+## 6. Open terminal at the root of reactApp project:
 - Run this to initialize the react app in development
 ```bat
 npm run dev
