@@ -4,6 +4,7 @@ using BussinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BussinessObject.Migrations
 {
     [DbContext(typeof(ChatApplicationContext))]
-    partial class ChatApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240210212248_Add_GroupUser")]
+    partial class Add_GroupUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,6 +84,10 @@ namespace BussinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Group_Avatar_URL");
 
+                    b.Property<int?>("GroupDeputyId")
+                        .HasColumnType("int")
+                        .HasColumnName("Group_Deputy_ID");
+
                     b.Property<string>("GroupInviteUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -97,6 +104,8 @@ namespace BussinessObject.Migrations
                         .HasColumnName("Group_Name");
 
                     b.HasKey("GroupId");
+
+                    b.HasIndex("GroupDeputyId");
 
                     b.HasIndex("GroupLeaderId");
 
@@ -370,11 +379,17 @@ namespace BussinessObject.Migrations
 
             modelBuilder.Entity("BussinessObject.Models.Group", b =>
                 {
+                    b.HasOne("BussinessObject.Models.User", "GroupDeputy")
+                        .WithMany()
+                        .HasForeignKey("GroupDeputyId");
+
                     b.HasOne("BussinessObject.Models.User", "GroupLeader")
                         .WithMany()
                         .HasForeignKey("GroupLeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("GroupDeputy");
 
                     b.Navigation("GroupLeader");
                 });

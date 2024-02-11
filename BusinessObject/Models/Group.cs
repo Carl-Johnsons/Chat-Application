@@ -16,14 +16,11 @@ public partial class Group
     public string GroupName { get; set; } = null!;
     [Column("Group_Leader_ID")]
     public int GroupLeaderId { get; set; }
-    [Column("Group_Deputy_ID")]
-    public int? GroupDeputyId { get; set; }
+
     [Column("Group_Avatar_URL")]
     public string GroupAvatarUrl { get; set; } = null!;
     [Column("Group_Invite_URL")]
     public string GroupInviteUrl { get; set; } = null!;
-
-    public virtual User? GroupDeputy { get; set; }
 
     public virtual User GroupLeader { get; set; } = null!;
 }

@@ -18,9 +18,9 @@ namespace ChatAPI.Controllers
     [Authorize] // using built in ASP.NET filter
     public class UsersController : ControllerBase
     {
-        IUserRepository _userRepository;
-        IFriendRepository _friendRepository;
-        IFriendRequestRepository _friendRequestRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IFriendRepository _friendRepository;
+        private readonly IFriendRequestRepository _friendRequestRepository;
         private readonly string BASE_ADDRESS = "https://localhost:7190";
         private UserClaim CurrentUserClaim => GetCurrentUserClaim();
         public UsersController()
@@ -50,7 +50,7 @@ namespace ChatAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<User> userList = (List<User>)_userRepository.Get();
+            List<User> userList = _userRepository.Get();
 
             if (userList.IsNullOrEmpty())
             {

@@ -26,6 +26,8 @@ public partial class ChatApplicationContext : DbContext
 
     public virtual DbSet<GroupMessage> GroupMessages { get; set; }
 
+    public virtual DbSet<GroupUser> GroupUser { get; set; }
+
     public virtual DbSet<ImageMessage> ImageMessages { get; set; }
 
     public virtual DbSet<IndividualMessage> IndividualMessages { get; set; }
@@ -35,6 +37,7 @@ public partial class ChatApplicationContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserBlock> UserBlocks { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -138,6 +141,19 @@ public partial class ChatApplicationContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__UserBlock__User___2C3393D0");
+        });
+
+        modelBuilder.Entity<GroupUser>(entity =>
+        {
+            entity.HasOne(d => d.Group).WithMany()
+                .HasForeignKey(d => d.GroupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__GroupUser__User");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__GroupUser__Group");
         });
 
         OnModelCreatingPartial(modelBuilder);

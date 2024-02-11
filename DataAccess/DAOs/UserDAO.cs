@@ -67,8 +67,9 @@ namespace DataAccess.DAOs
             return _context.SaveChanges();
         }
 
-        public int Delete(int userId)
+        public int Delete(int? userId)
         {
+            _ = userId ?? throw new Exception("user id can't be null");
             var user = Get(userId)
                         ?? throw new Exception("User is null! Aborting delete operation");
             _context.Users.Remove(user);
