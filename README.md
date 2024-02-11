@@ -10,25 +10,28 @@ This project is for education purpose and takes inpiration from Zalo
 ### NOTE: the issuer must have no trailing "/" Example: wrong url: https://localhost:7093/
 ```json
 {
+  "ConnectionStrings": {
+    "Default": "Your database url"
+  },
+  "Jwt": {
+    "Key": {
+      "Private": "Your private key",
+      "Public": "Your public key"
+    },
+    "Issuer": "Your issuer url",
+    "Audience": "Your audience url"
+  },
+  "Imgur": {
+    "ClientID": "Your Imgur Client ID",
+    "ClientSecret": "Your Imgur Client secret"
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "Default": "Your database url"
-  },
-  "Jwt": {
-    "Key": "Your secrect key",
-    "Issuer": "Your issuer url",
-    "Audience": "Your audience url"
-  },
-  "Imgur": {
-    "ClientID": "Your Imgur Client ID",
-    "ClientSecret": "Your Imgur Clien secret"
-  }
+  "AllowedHosts": "*"
 }
 ```
 
@@ -39,16 +42,16 @@ This project is for education purpose and takes inpiration from Zalo
 
 ```json
 {
+  "ClientPort": {
+    "Default": [Your client port]
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*",
-  "ClientPort": {
-    "Default": [Your client port]
-  }
+  "AllowedHosts": "*"
 }
 ```
 

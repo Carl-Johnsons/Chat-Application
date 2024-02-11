@@ -20,10 +20,9 @@ namespace DataAccess.DAOs
                 }
             }
         }
-        private readonly ChatApplicationContext _context = new();
         public List<UserBlock> Get()
         {
-
+            using var _context = new ChatApplicationContext();
             return _context.UserBlocks
                             .Include(ub => ub.BlockedUser)
                             .Include(ub => ub.User)
@@ -32,6 +31,7 @@ namespace DataAccess.DAOs
         public List<UserBlock> GetByUserId(int? userId)
         {
             _ = userId ?? throw new Exception("user id is null");
+            using var _context = new ChatApplicationContext();
             return _context.UserBlocks
                             .Include(ub => ub.BlockedUser)
                             .Include(ub => ub.User)
@@ -41,6 +41,7 @@ namespace DataAccess.DAOs
         public List<UserBlock> GetByBlockedUserId(int? blockedUserId)
         {
             _ = blockedUserId ?? throw new Exception("block user id is null");
+            using var _context = new ChatApplicationContext();
             return _context.UserBlocks
                             .Include(ub => ub.BlockedUser)
                             .Include(ub => ub.User)
@@ -51,6 +52,7 @@ namespace DataAccess.DAOs
         {
             _ = userId ?? throw new Exception("user id is null");
             _ = blockedUserId ?? throw new Exception("block user id is null");
+            using var _context = new ChatApplicationContext();
             return _context.UserBlocks
                             .Include(ub => ub.BlockedUser)
                             .Include(ub => ub.User)
@@ -63,6 +65,7 @@ namespace DataAccess.DAOs
             {
                 throw new Exception("This user has already been block by that user! Aborting add operation");
             }
+            using var _context = new ChatApplicationContext();
             _context.UserBlocks.Add(userBlock);
             return _context.SaveChanges();
         }
@@ -70,6 +73,7 @@ namespace DataAccess.DAOs
         {
             var userblocked = GetByUserIdAndBlockedUserId(userId, blockedUserID)
                         ?? throw new Exception("User block not found! Aborting delete operation");
+            using var _context = new ChatApplicationContext();
             _context.UserBlocks.Remove(userblocked);
             return _context.SaveChanges();
         }

@@ -23,10 +23,10 @@ namespace DataAccess.DAOs
             }
         }
 
-        private readonly ChatApplicationContext _context = new();
         private readonly IFriendRepository _friendRepository = new FriendRepository();
         public int Add(FriendRequest friendRequest)
         {
+            using var _context = new ChatApplicationContext();
             //Check 2-side
             var friendList = _friendRepository.GetByUserId(friendRequest.SenderId);
             var friend = friendList
@@ -42,6 +42,7 @@ namespace DataAccess.DAOs
         }
         public List<FriendRequest> GetByReceiverId(int? receiverId)
         {
+            using var _context = new ChatApplicationContext();
             _ = receiverId ?? throw new Exception("Receiver Id is null");
             return _context.FriendRequests
                 .Include(fr => fr.Sender)
@@ -50,6 +51,7 @@ namespace DataAccess.DAOs
         }
         public List<FriendRequest> GetBySenderId(int? senderId)
         {
+            using var _context = new ChatApplicationContext();
             _ = senderId ?? throw new Exception("Sender Id is null");
             return _context.FriendRequests
                 .Include(fr => fr.Receiver)
@@ -58,6 +60,7 @@ namespace DataAccess.DAOs
         }
         public FriendRequest? GetBySenderIdAndReceiverId(int? senderId, int? receiverId)
         {
+            using var _context = new ChatApplicationContext();
             _ = senderId ?? throw new Exception("Sender Id is null");
             _ = receiverId ?? throw new Exception("Receiver Id is null");
             return _context.FriendRequests
@@ -66,6 +69,7 @@ namespace DataAccess.DAOs
         }
         public int UpdateStatus(int? senderId, int? receiverId, string? status)
         {
+            using var _context = new ChatApplicationContext();
             var fr = GetBySenderIdAndReceiverId(senderId, receiverId) ?? throw new Exception("Friend request not found! Abort updating status operation!");
             fr.Status = status;
             _context.FriendRequests.Update(fr);
@@ -73,6 +77,7 @@ namespace DataAccess.DAOs
         }
         public int Delete(int senderId, int receiverId)
         {
+            using var _context = new ChatApplicationContext();
             var fr = GetBySenderIdAndReceiverId(senderId, receiverId) ?? throw new Exception("Friend request not found! Abort deleting operation!");
             _context.FriendRequests.Remove(fr);
             return _context.SaveChanges();

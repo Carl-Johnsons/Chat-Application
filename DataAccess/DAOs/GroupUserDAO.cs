@@ -23,14 +23,15 @@ namespace DataAccess.DAOs
                 }
             }
         }
-        private readonly ChatApplicationContext _context = new();
         public List<GroupUser> Get()
         {
+            using var _context = new ChatApplicationContext();
             return _context.GroupUser.ToList();
         }
         public List<GroupUser> GetByGroupId(int? groupId)
         {
             _ = groupId ?? throw new Exception("Group id is null");
+            using var _context = new ChatApplicationContext();
             return _context.GroupUser
                     .Where(gu => gu.GroupId == groupId)
                     .Include(gu => gu.User)
@@ -46,6 +47,7 @@ namespace DataAccess.DAOs
         public List<GroupUser> GetByUserId(int? userId)
         {
             _ = userId ?? throw new Exception("User Id is null");
+            using var _context = new ChatApplicationContext();
             return _context.GroupUser
                     .Where(gu => gu.UserId == userId)
                     .Include(gu => gu.Group)
@@ -61,6 +63,7 @@ namespace DataAccess.DAOs
         public GroupUser? GetByGroupIdAndUserId(int? groupId, int? userId)
         {
             EnsureGroupIdAndUserIdNotNull(groupId, userId);
+            using var _context = new ChatApplicationContext();
             return _context.GroupUser
                     .Include(gu => gu.Group)
                     .Include(gu => gu.User)
@@ -73,6 +76,7 @@ namespace DataAccess.DAOs
             EnsureGroupExisted(groupUser.GroupId);
             EnsureUserExisted(groupUser.UserId);
             EnsureRoleValid(groupUser.Role);
+            using var _context = new ChatApplicationContext();
             _context.GroupUser.Add(groupUser);
             return _context.SaveChanges();
         }
@@ -81,12 +85,14 @@ namespace DataAccess.DAOs
             GroupUser oldGroupUser = EnsureGroupUserExisted(groupUser.GroupId, groupUser.UserId);
             EnsureRoleValid(groupUser.Role);
             oldGroupUser.Role = groupUser.Role;
+            using var _context = new ChatApplicationContext();
             _context.GroupUser.Update(oldGroupUser);
             return _context.SaveChanges();
         }
         public int Delete(int? groupId, int? userId)
         {
             var groupUser = EnsureGroupUserExisted(groupId, userId);
+            using var _context = new ChatApplicationContext();
             _context.GroupUser.Remove(groupUser);
             return _context.SaveChanges();
         }

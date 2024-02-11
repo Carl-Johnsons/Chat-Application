@@ -22,24 +22,26 @@ namespace DataAccess.DAOs
             }
         }
 
-        private readonly ChatApplicationContext _context = new();
-
         public int Add(Group? group)
         {
+            using var _context = new ChatApplicationContext();
             EnsureGroupNotNull(group);
             _context.Groups.Add(group);
             return _context.SaveChanges();
         }
         public List<Group> Get()
         {
+            using var _context = new ChatApplicationContext();
             return _context.Groups.ToList();
         }
         public Group? Get(int? groupId)
         {
+            using var _context = new ChatApplicationContext();
             return _context.Groups.SingleOrDefault(g => g.GroupId == groupId);
         }
         public int Update(Group? updatedGroup)
         {
+            using var _context = new ChatApplicationContext();
             EnsureGroupNotNull(updatedGroup);
             var oldGroup = EnsureGroupExisted(updatedGroup.GroupId);
             _context.Entry(oldGroup).CurrentValues.SetValues(updatedGroup);
@@ -47,6 +49,7 @@ namespace DataAccess.DAOs
         }
         public int Delete(int? groupId)
         {
+            using var _context = new ChatApplicationContext();
             var group = EnsureGroupExisted(groupId);
             _context.Groups.Remove(group);
             return _context.SaveChanges();

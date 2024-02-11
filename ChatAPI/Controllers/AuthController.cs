@@ -18,13 +18,14 @@ namespace ChatAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private const string SECRET_KEY = "Key";
-        IUserRepository _userRepository;
-        private string SecretKey;
-        private string Issuer;
-        private string Audience;
-        private const int AccessTokenExpireMinutes = 15;
-        private const int RefreshTokenExpireDays = 7;
+        private readonly string SECRET_KEY = "Key";
+        private readonly IUserRepository _userRepository;
+        private readonly string SecretKey;
+        private readonly string Issuer;
+        private readonly string Audience;
+        private readonly DateTime AccessTokenExpire = DateTime.Now.AddSeconds(15);
+        private readonly DateTime RefreshTokenExpire = DateTime.Now.AddMinutes(2);
+        private readonly string RefreshTokenCookieName = "refresh-token";
 
         public AuthController()
         {
@@ -35,7 +36,27 @@ namespace ChatAPI.Controllers
             Issuer = jwtSection["Issuer"] ?? "";
             Audience = jwtSection["Audience"] ?? "";
         }
+        [HttpGet("Refresh")]
+        public ActionResult<TokenModel> Refresh()
+        {
+            var refreshToken = Request.Cookies[RefreshTokenCookieName];
 
+            User? user = ValidateRefreshToken(refreshToken);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Refresh token is not valid");
+            }
+            string? accessToken = GenerateAccessToken(user, AccessTokenExpire);
+            if (accessToken == null)
+            {
+                return BadRequest("Secret key or issuer or audience is undefined");
+            }
+            var token = new TokenModel
+            {
+                Token = accessToken
+            };
+            return Ok(token);
+        }
         // POST api/login
         [HttpPost("Login")]
         public ActionResult<TokenModel> Login([FromBody] UserLoginModel userLoginModel)
@@ -54,14 +75,18 @@ namespace ChatAPI.Controllers
                 return NotFound();
             }
 
-            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddMinutes(AccessTokenExpireMinutes));
-            var refreshToken = GenerateRefreshToken(DateTime.Now.AddDays(RefreshTokenExpireDays));
+            string? accessToken = GenerateAccessToken(user, AccessTokenExpire);
+            var refreshToken = GenerateRefreshToken(RefreshTokenExpire);
 
             user.RefreshToken = refreshToken.Token;
             user.RefreshTokenCreated = refreshToken.TokenCreatedAt;
             user.RefreshTokenExpired = refreshToken.TokenExpiredAt;
 
-            _userRepository.Update(user);
+            int affectedRow = _userRepository.Update(user);
+            if (affectedRow <= 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
+            }
 
             if (accessToken == null)
             {
@@ -71,6 +96,23 @@ namespace ChatAPI.Controllers
             {
                 Token = accessToken
             };
+            // Add refresh token to httpOnly Cookie
+            if (refreshToken.Token != null)
+            {
+                Response.Cookies.Append(RefreshTokenCookieName, refreshToken.Token, new CookieOptions
+                {
+                    Expires = refreshToken.TokenExpiredAt ?? DateTime.Now,
+                    // This attribute allow to use cookie at server-side, not client-side,
+                    // which help prevent Cross-Site Scripting (XSS) attacks
+                    HttpOnly = true,
+                    // Enable HTTPS
+                    Secure = true,
+                    // Allow cookie to be sent with request.
+                    // However, this would be exposed to cross-site request forgery (CSRF) attacks 
+                    SameSite = SameSiteMode.None
+                });
+            }
+
             return Ok(token);
         }
         // POST api/login
@@ -92,31 +134,19 @@ namespace ChatAPI.Controllers
             return StatusCode(StatusCodes.Status201Created);
         }
 
-        [HttpPost("RefreshToken")]
-        public ActionResult<TokenModel> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
+        [HttpPost("Logout")]
+        public ActionResult Logout()
         {
-            if (refreshTokenModel == null)
+            Response.Cookies.Append(RefreshTokenCookieName, "", new CookieOptions
             {
-                return BadRequest("Refresh token is null");
-            }
+                Expires = DateTime.Now.AddDays(-1),
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
 
-            User? user = ValidateRefreshToken(refreshTokenModel);
-            if (user == null)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, "Refresh token is not valid");
-            }
-            string? accessToken = GenerateAccessToken(user, DateTime.Now.AddMinutes(AccessTokenExpireMinutes));
-            if (accessToken == null)
-            {
-                return BadRequest("Secret key or issuer or audience is undefined");
-            }
-            var token = new TokenModel
-            {
-                Token = accessToken
-            };
-            return Ok(token);
+            return NoContent();
         }
-
 
         /**
          * The key is the variable from appsettings.json
@@ -157,9 +187,13 @@ namespace ChatAPI.Controllers
             };
             return refreshToken;
         }
-        private User? ValidateRefreshToken(RefreshTokenModel refreshToken)
+        private User? ValidateRefreshToken(string? refreshToken)
         {
-            User? user = _userRepository.GetByRefreshToken(refreshToken.Token);
+            if (refreshToken == null)
+            {
+                return null;
+            }
+            User? user = _userRepository.GetByRefreshToken(refreshToken);
             if (user == null ||
                 (user.RefreshTokenExpired != null
                 && user.RefreshTokenExpired < DateTime.Now))
@@ -169,7 +203,6 @@ namespace ChatAPI.Controllers
             return user;
         }
     }
-
 
     public class UserLoginModel
     {

@@ -24,14 +24,15 @@ namespace DataAccess.DAOs
 
             }
         }
-        private readonly ChatApplicationContext _context = new();
 
         public List<IndividualMessage> Get()
         {
+            using var _context = new ChatApplicationContext();
             return _context.IndividualMessages.Include(im => im.Message).ToList();
         }
         public List<IndividualMessage> Get(int senderId, int receiverId)
         {
+            using var _context = new ChatApplicationContext();
             var individualMessages = _context.IndividualMessages
                 .Include(im => im.Message)
                 .Where(im =>
@@ -55,12 +56,14 @@ namespace DataAccess.DAOs
             {
                 throw new Exception("individual message is null");
             }
+            using var _context = new ChatApplicationContext();
             _context.IndividualMessages.Add(individualMessage);
             return _context.SaveChanges();
         }
         public int Update(IndividualMessage individualMessage)
         {
             var oldMessage = MessageDAO.Instance.Get(individualMessage.MessageId) ?? throw new Exception("Individual message is null! Aborting update operation");
+            using var _context = new ChatApplicationContext();
             _context.Entry(oldMessage).CurrentValues.SetValues(individualMessage);
             return _context.SaveChanges();
         }

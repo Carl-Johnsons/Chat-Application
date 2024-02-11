@@ -19,19 +19,21 @@ namespace DataAccess.DAOs
                 }
             }
         }
-        private readonly ChatApplicationContext _context = new();
         public List<Message> Get()
         {
+            using var _context = new ChatApplicationContext();
             return _context.Messages.ToList(); ;
         }
         public Message? Get(int? messageId)
         {
             _ = messageId ?? throw new Exception("Message id is null");
+            using var _context = new ChatApplicationContext();
             return _context.Messages.SingleOrDefault(m => m.MessageId == messageId); ;
         }
         public int Add(Message message)
         {
             _ = message ?? throw new Exception("Message is null! Abort adding message operation");
+            using var _context = new ChatApplicationContext();
             _context.Messages.Add(message);
             return _context.SaveChanges();
         }
@@ -39,6 +41,7 @@ namespace DataAccess.DAOs
         {
             _ = updateMessage ?? throw new Exception("Update message is null! Abort updating message operation");
             var oldMessage= Get(updateMessage.MessageId) ?? throw new Exception("Message not found! Abort updating message operation");
+            using var _context = new ChatApplicationContext();
             _context.Entry(oldMessage).CurrentValues.SetValues(updateMessage);
             return _context.SaveChanges();
         }
@@ -46,6 +49,7 @@ namespace DataAccess.DAOs
         {
             _ = messageId ?? throw new Exception("Update message is null! Abort updating message operation");
             var message = Get(messageId) ?? throw new Exception("Message not found! Abort updating message operation");
+            using var _context = new ChatApplicationContext();
             _context.Messages.Remove(message);
             return _context.SaveChanges();
         }

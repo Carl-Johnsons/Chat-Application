@@ -19,9 +19,9 @@ namespace DataAccess.DAOs
 
             }
         }
-        private readonly ChatApplicationContext _context = new();
         public List<GroupBlock> Get()
         {
+            using var _context = new ChatApplicationContext();
             return _context.GroupBlocks.Include(gb => gb.Group).Include(gb => gb.BlockedUserId).ToList();
         }
         public List<GroupBlock> GetByGroupID(int? groupId)
@@ -43,6 +43,7 @@ namespace DataAccess.DAOs
         }
         public int Add(GroupBlock? groupBlock)
         {
+            using var _context = new ChatApplicationContext();
             _ = groupBlock
                     ?? throw new Exception("group to block is null ! Aborting add operation");
             if (GetByGroupIdAndUserId(groupBlock.GroupId, groupBlock.BlockedUserId) != null)
@@ -54,6 +55,7 @@ namespace DataAccess.DAOs
         }
         public int Delete(int groupId, int blockUserId)
         {
+            using var _context = new ChatApplicationContext();
             var groupBlock = GetByGroupIdAndUserId(groupId, blockUserId)
                         ?? throw new Exception("Group block not found! aborting update operation");
             _context.GroupBlocks.Remove(groupBlock);

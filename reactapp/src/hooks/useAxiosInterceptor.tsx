@@ -34,15 +34,7 @@ const useAxiosInterceptor = (navigate: NavigateFunction) => {
         console.log("intercept");
 
         if (error?.response?.status == 401 && !prevRequest?._retry) {
-          if (!refresh) {
-            console.log("Unauthorized");
-            navigate("/login");
-            return;
-          }
-
           console.log("refreshing token");
-          console.log({ refresh });
-
           prevRequest._retry = true;
           const newAccessToken = await refresh();
           // Case: Token expired or invalid navigate user back to login page

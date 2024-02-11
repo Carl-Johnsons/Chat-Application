@@ -75,8 +75,8 @@ namespace ChatAPI.Controllers
             var publicUser = mapper.Map<PublicUserDTO>(user);
             return Ok(publicUser);
         }
-        [HttpGet("GetUserProfile")]
-        public IActionResult GetUserProfile()
+        [HttpGet("Me")]
+        public IActionResult Me()
         {
             if (CurrentUserClaim == null)
             {

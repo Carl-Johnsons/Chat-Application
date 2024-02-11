@@ -22,9 +22,9 @@ public class FriendDAO
             }
         }
     }
-    private readonly ChatApplicationContext _context = new();
     public int Add(Friend friend)
     {
+        using var _context = new ChatApplicationContext();
         if (GetFriendsByUserIdOrFriendId(friend.UserId, friend.UserId) != null)
         {
             throw new Exception("They are already friend! Aborting add friend operation");
@@ -34,6 +34,7 @@ public class FriendDAO
     }
     public List<Friend> GetByUserId(int userId)
     {
+        using var _context = new ChatApplicationContext();
         MessageRepository messageRepository = new();
         return _context.Friends
             .Where(f => f.UserId == userId || f.FriendId == userId)
@@ -52,6 +53,7 @@ public class FriendDAO
     }
     public List<Friend> GetByFriendId(int friendId)
     {
+        using var _context = new ChatApplicationContext();
         return _context.Friends
             .Where(f => f.UserId == friendId || f.FriendId == friendId)
             .Include(f => f.User)
@@ -59,6 +61,7 @@ public class FriendDAO
     }
     public Friend? GetFriendsByUserIdOrFriendId(int userId, int friendId)
     {
+        using var _context = new ChatApplicationContext();
         return _context.Friends.FirstOrDefault(
             f =>
             (f.UserId == userId && f.FriendId == friendId)
@@ -67,8 +70,8 @@ public class FriendDAO
     }
     public int Delete(int userId, int friendId)
     {
+        using var _context = new ChatApplicationContext();
         Friend? friendToRemove = GetFriendsByUserIdOrFriendId(userId, friendId) ?? throw new Exception("Friend not found! Aborting delete operation");
-
         _context.Friends.Remove(friendToRemove);
         return _context.SaveChanges();
     }

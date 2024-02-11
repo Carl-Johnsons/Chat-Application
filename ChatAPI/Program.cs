@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Cryptography;
 using System.Text;
 
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -15,6 +16,21 @@ var builder = WebApplication.CreateBuilder(args);
 var service = builder.Services;
 
 // Add services to the container.
+//Reference: https://blog.devgenius.io/jwt-authentication-in-asp-net-core-e67dca9ae3e8
+/*
+ * Configure validation of JWT signed with a private asymmetric key.
+ * 
+ * We'll use a public key to validate if the token was signed
+ * with the corresponding private key.
+ */
+service.AddSingleton<RsaSecurityKey>(provider =>
+{
+    // It's required to register the RSA key with depedency injection.
+    // If you don't do this, the RSA instance will be prematurely disposed.
+    RSA rsa = RSA.Create();
+});
+
+
 service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     options.TokenValidationParameters = new TokenValidationParameters
@@ -73,7 +89,8 @@ service.AddCors(
                 .AllowAnyHeader();
                 policy.WithOrigins(issuer)
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowCredentials();
             }
         );
     });
