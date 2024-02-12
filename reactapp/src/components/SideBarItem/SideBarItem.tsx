@@ -1,10 +1,21 @@
 import images from "../../assets";
+import { MessageType } from "../../models";
 import Avatar from "../Avatar";
 import style from "./SideBarItem.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(style);
 
+type GroupConversationVariant = {
+  type: "groupConversation";
+  groupId: number;
+  image: string;
+  conversationName: string;
+  lastMessage?: string;
+  isActive?: boolean;
+  isNewMessage?: boolean;
+  onClick?: (groupId: number, type: MessageType) => void;
+};
 type ConversationVariant = {
   type: "conversation";
   userId: number;
@@ -13,7 +24,7 @@ type ConversationVariant = {
   lastMessage?: string;
   isActive?: boolean;
   isNewMessage?: boolean;
-  onClick?: (userId: number) => void;
+  onClick?: (userId: number, type: MessageType) => void;
 };
 type SearchItemVariant = {
   type: "searchItem";
@@ -25,10 +36,14 @@ type SearchItemVariant = {
   onClick?: (userId: number) => void;
 };
 
-type Variants = ConversationVariant | SearchItemVariant;
+type Variants =
+  | ConversationVariant
+  | SearchItemVariant
+  | GroupConversationVariant;
 
 const SideBarItem = (variant: Variants) => {
   let userId: number = 0;
+  let groupId: number = 0;
   let image: string = images.defaultAvatarImg;
   let conversationName: string = "";
   let searchName: string = "";
@@ -36,7 +51,7 @@ const SideBarItem = (variant: Variants) => {
   let isActive: boolean | undefined;
   let lastMessage: string | undefined;
   let isNewMessage: boolean | undefined;
-  let onClick: ((userId: number) => void) | undefined;
+  let onClick: ((id: number, type: MessageType) => void) | undefined;
 
   if (variant.type === "conversation") {
     ({
@@ -50,6 +65,16 @@ const SideBarItem = (variant: Variants) => {
     } = variant);
   } else if (variant.type === "searchItem") {
     ({ userId, image, searchName, phoneNumber, isActive, onClick } = variant);
+  } else if (variant.type === "groupConversation") {
+    ({
+      groupId,
+      image,
+      conversationName,
+      lastMessage,
+      isActive,
+      isNewMessage,
+      onClick,
+    } = variant);
   }
   return (
     <div
@@ -63,12 +88,18 @@ const SideBarItem = (variant: Variants) => {
       )}
       role="button"
       onClick={() => {
-        if (onClick) {
-          onClick(userId);
+        if (!onClick) {
+          return;
         }
-        return;
+        if (userId) {
+          onClick(userId, "Individual");
+          return;
+        }
+        if (groupId) {
+          onClick(groupId, "Group");
+          return;
+        }
       }}
-      data-user-id={userId}
     >
       <div
         className={cx(
@@ -103,7 +134,10 @@ const SideBarItem = (variant: Variants) => {
               "bottom-0"
             )}
           >
-            {variant.type === "conversation" ? conversationName : searchName}
+            {variant.type === "conversation" ||
+            variant.type === "groupConversation"
+              ? conversationName
+              : searchName}
           </div>
         </div>
         <div

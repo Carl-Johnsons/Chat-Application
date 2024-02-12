@@ -4,23 +4,22 @@ import AppButton from "../AppButton";
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
-import { sendIndividualMessage } from "../../services/message";
+import { sendGroupMessage, sendIndividualMessage } from "../../services/message";
 import {
   signalRDisableNotifyUserTyping,
   signalRNotifyUserTyping,
   signalRSendIndividualMessage,
   useSignalREvents,
 } from "../../hooks";
-import { SenderReceiverArray } from "../../models";
+import { GroupMessage, IndividualMessage, SenderReceiverArray } from "../../models";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
   const [inputValue, setInputValue] = useState("");
   const [userId] = useGlobalState("userId");
   const [activeConversation] = useGlobalState("activeConversation");
-  const [individualMessages, setIndividualMessages] = useGlobalState(
-    "individualMessageList"
-  );
+  const [messageList, setMessageList] = useGlobalState("messageList");
+  const [messageType] = useGlobalState("messageType");
   const [connection] = useGlobalState("connection");
   // hook
   const invokeAction = useSignalREvents({ connection: connection });
@@ -28,17 +27,31 @@ const ChatViewFooter = () => {
   const inputTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const fetchSendMessage = async () => {
-    const [data] = await sendIndividualMessage(
-      userId,
-      activeConversation,
-      inputValue
-    );
-    if (!data) {
-      return;
+    // This active conversation may be wrong for the group message. Implement later
+    if (messageType == "Individual") {
+      const [data] = await sendIndividualMessage(
+        userId,
+        activeConversation,
+        inputValue
+      );
+      if (!data) {
+        return;
+      }
+      setMessageList([...(messageList as IndividualMessage[]), data]);
+      invokeAction(signalRSendIndividualMessage(data));
+      setInputValue("");
+    } else if (messageType == "Group") {
+      const [data] = await sendGroupMessage(
+        userId,
+        activeConversation,
+        inputValue
+      );
+      if (!data) {
+        return;
+      }
+      setMessageList([...(messageList as GroupMessage[]), data]);
+      setInputValue("");
     }
-    setIndividualMessages([...individualMessages, data]);
-    invokeAction(signalRSendIndividualMessage(data));
-    setInputValue("");
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);

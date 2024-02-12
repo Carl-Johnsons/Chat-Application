@@ -60,6 +60,20 @@ namespace ChatAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+        [HttpGet("GetGroupUserByUserId/{userId}")]
+        public IActionResult GetGroupUserByUserId(int userId)
+        {
+            try
+            {
+                var groupUserList = _groupUserRepository.GetByUserId(userId);
+                var groupPublicUserDTO = mapper.Map<List<GroupUser>, List<GroupPublicUserDTO>>(groupUserList);
+                return Ok(groupPublicUserDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
         [HttpPost]
         public IActionResult CreateGroup([FromBody] GroupWithLeaderId group)
@@ -88,8 +102,36 @@ namespace ChatAPI.Controllers
         {
             try
             {
+                groupUser.Role = GroupUserRole.MEMBER;
                 _groupUserRepository.Add(groupUser);
                 return StatusCode(StatusCodes.Status201Created);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPost("Leave")]
+        public IActionResult Leave([FromBody] GroupUser groupUser)
+        {
+            try
+            {
+                _groupUserRepository.Delete(groupUser.GroupId, groupUser.UserId);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult Put([FromBody] Group group)
+        {
+            try
+            {
+                _groupRepository.Update(group);
+                return CreatedAtAction(nameof(Get), new { id = group.GroupId }, group);
             }
             catch (Exception ex)
             {
@@ -110,19 +152,7 @@ namespace ChatAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-        [HttpDelete("Leave")]
-        public IActionResult Leave([FromBody] GroupUser groupUser)
-        {
-            try
-            {
-                _groupUserRepository.Delete(groupUser.GroupId, groupUser.UserId);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
+
     }
     public class GroupWithLeaderId : Group
     {

@@ -6,9 +6,7 @@ import { SignalREvent } from "../../data/constants";
 
 const useIndividualMessageSubscription = (connection?: HubConnection) => {
   const [activeConversation] = useGlobalState("activeConversation");
-  const [individualMessageList, setIndividualMessageList] = useGlobalState(
-    "individualMessageList"
-  );
+  const [messageList, setMessageList] = useGlobalState("messageList");
 
   useEffect(() => {
     if (!connection) {
@@ -20,18 +18,12 @@ const useIndividualMessageSubscription = (connection?: HubConnection) => {
         console.log("Not the current active conversation");
         return;
       }
-      setIndividualMessageList([...individualMessageList, im]);
-      console.log({ im });
+      setMessageList([...(messageList as IndividualMessage[]), im]);
     });
     return () => {
       connection.off(SignalREvent.RECEIVE_INDIVIDUAL_MESSAGE);
     };
-  }, [
-    activeConversation,
-    connection,
-    individualMessageList,
-    setIndividualMessageList,
-  ]);
+  }, [activeConversation, connection, messageList, setMessageList]);
 };
 
 export default useIndividualMessageSubscription;

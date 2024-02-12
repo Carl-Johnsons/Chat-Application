@@ -6,7 +6,7 @@ import classNames from "classnames/bind";
 import AppButton from "../AppButton";
 import { useGlobalState } from "../../globalState";
 import { memo, useEffect, useState } from "react";
-import { User } from "../../models";
+import { Group, User } from "../../models";
 import images from "../../assets";
 
 const cx = classNames.bind(style);
@@ -14,26 +14,35 @@ const cx = classNames.bind(style);
 const ChatViewHeader = () => {
   const [showAside, setShowAside] = useGlobalState("showAside");
   const [userMap] = useGlobalState("userMap");
+  const [groupMap] = useGlobalState("groupMap");
+  const [messageType] = useGlobalState("messageType");
   const [activeConversation] = useGlobalState("activeConversation");
   //Local state
-  const [receiver, setReceiver] = useState<User>();
+  const [receiver, setReceiver] = useState<User | Group>();
   useEffect(() => {
     if (activeConversation === 0) {
       return;
     }
 
-    if (userMap.has(activeConversation)) {
+    if (messageType == "Individual" && userMap.has(activeConversation)) {
       setReceiver(userMap.get(activeConversation));
+      return;
     }
-  }, [activeConversation, userMap]);
+    if (messageType == "Group" && groupMap.has(activeConversation)) {
+      setReceiver(groupMap.get(activeConversation));
+      return;
+    }
+  }, [activeConversation, groupMap, messageType, userMap]);
 
   const handleToggleAside = () => setShowAside(!showAside);
-
+  const avatar =
+    (receiver as User)?.avatarUrl ?? (receiver as Group)?.groupAvatarUrl;
+  const name = (receiver as User)?.name ?? (receiver as Group)?.groupName;
   return (
     <>
       <div className={cx("avatar-container")}>
         <Avatar
-          src={receiver ? receiver.avatarUrl : images.userIcon}
+          src={receiver ? avatar : images.userIcon}
           className={cx("rounded-circle")}
           alt="avatar"
         />
@@ -56,7 +65,7 @@ const ChatViewHeader = () => {
               "bottom-0"
             )}
           >
-            {receiver && receiver.name}
+            {receiver && name}
           </div>
         </div>
         <div className={cx("user-status")}>Vừa mới truy cập</div>

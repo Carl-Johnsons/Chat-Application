@@ -1,12 +1,12 @@
-import { User } from ".";
+import { MessageType, User } from ".";
 
 export type Message = {
-  messageId: number;
+  messageId?: number;
   senderId: number;
   content: string;
-  time: string;
-  messageType: string;
+  time?: string;
+  messageType: MessageType;
   messageFormat: string;
   active: boolean;
-  sender: User | null;
+  sender?: User | null;
 };

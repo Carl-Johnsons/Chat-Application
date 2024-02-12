@@ -2,7 +2,10 @@ import { HubConnection, HubConnectionState } from "@microsoft/signalr";
 import {
   Friend,
   FriendRequest,
+  Group,
+  GroupMessage,
   IndividualMessage,
+  MessageType,
   ModalType,
   User,
 } from "../models";
@@ -24,8 +27,11 @@ const initialState = {
   friendList: null as unknown as Friend[],
   // FriendRequest
   friendRequestList: null as unknown as FriendRequest[],
-  // IndividualMessage
-  individualMessageList: null as unknown as IndividualMessage[],
+  // Group
+  groupMap: new Map<number, Group>(),
+  // IndividualMessage | GroupMessage
+  messageList: null as unknown as IndividualMessage[] | GroupMessage[],
+  messageType: null as unknown as MessageType,
   // Boolean
   isLeftShow: true,
   isRightShow: true,

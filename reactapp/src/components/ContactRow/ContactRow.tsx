@@ -10,16 +10,17 @@ import {
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { MenuContactIndex } from "../../data/constants";
+import { Group, User } from "../../models";
 const cx = classNames.bind(style);
 interface Props {
-  userId: number;
+  entityId: number;
   onClickBtnAcceptFriendRequest?: (userId: number) => void;
   onClickBtnDetail?: (userId: number) => void;
   onClickBtnDelFriend?: (userId: number) => void;
   onClickBtnDelFriendRequest?: (userId: number) => void;
 }
 const ContactRow = ({
-  userId,
+  entityId,
   onClickBtnAcceptFriendRequest = () => {},
   onClickBtnDetail = () => {},
   onClickBtnDelFriend = () => {},
@@ -27,7 +28,18 @@ const ContactRow = ({
 }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
   const [userMap] = useGlobalState("userMap");
-  const currentUser = userMap.get(userId);
+  const [groupMap] = useGlobalState("groupMap");
+  const currentEntity =
+    activeContactType === MenuContactIndex.GROUP_LIST
+      ? groupMap.get(entityId)
+      : userMap.get(entityId);
+
+  const avatar =
+    (currentEntity as User)?.avatarUrl ??
+    (currentEntity as Group)?.groupAvatarUrl;
+
+  const name =
+    (currentEntity as User)?.name ?? (currentEntity as Group)?.groupName;
   return (
     <div className={cx("contact-row", "d-flex", "justify-content-between")}>
       <div
@@ -42,7 +54,7 @@ const ContactRow = ({
           <Avatar
             variant="avatar-img-40px"
             className={cx("rounded-circle")}
-            src={currentUser?.avatarUrl ?? ""}
+            src={avatar ?? ""}
             alt="user icon"
           />
         </div>
@@ -58,7 +70,7 @@ const ContactRow = ({
               "bottom-0"
             )}
           >
-            {currentUser?.name ?? ""}
+            {name ?? ""}
           </div>
         </div>
       </div>
@@ -72,7 +84,7 @@ const ContactRow = ({
               "align-items-center",
               "fw-bold"
             )}
-            onClick={() => onClickBtnAcceptFriendRequest(userId)}
+            onClick={() => onClickBtnAcceptFriendRequest(entityId)}
           >
             <FontAwesomeIcon icon={faCheck} />
           </AppButton>
@@ -86,7 +98,7 @@ const ContactRow = ({
             "align-items-center",
             "fw-bold"
           )}
-          onClick={() => onClickBtnDetail(userId)}
+          onClick={() => onClickBtnDetail(entityId)}
         >
           <FontAwesomeIcon icon={faEllipsis} />
         </AppButton>
@@ -100,8 +112,8 @@ const ContactRow = ({
           )}
           onClick={() =>
             activeContactType === MenuContactIndex.FRIEND_LIST
-              ? onClickBtnDelFriend(userId)
-              : onClickBtnDelFriendRequest(userId)
+              ? onClickBtnDelFriend(entityId)
+              : onClickBtnDelFriendRequest(entityId)
           }
         >
           <FontAwesomeIcon icon={faClose} />

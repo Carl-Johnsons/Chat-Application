@@ -15,10 +15,10 @@ interface Props {
 }
 
 const ChatViewContainer = ({ className }: Props) => {
-  const [individualMessages] = useGlobalState("individualMessageList");
+  const [messageList] = useGlobalState("messageList");
   const [userMap] = useGlobalState("userMap");
   const [userTypingId] = useGlobalState("userTypingId");
-  const userTyping = userMap.get(userTypingId);
+  const userTyping = userMap.get(userTypingId ?? 0);
 
   const messageContainerRef = useRef(null);
 
@@ -27,7 +27,7 @@ const ChatViewContainer = ({ className }: Props) => {
       const ele = messageContainerRef.current as HTMLElement;
       ele.scrollTop = ele.scrollHeight;
     }
-  }, [individualMessages]);
+  }, [messageList]);
 
   return (
     <div

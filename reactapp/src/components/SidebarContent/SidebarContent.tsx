@@ -7,10 +7,14 @@ import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
 import { useModal, useScreenSectionNavigator } from "../../hooks";
-import { User } from "../../models";
+import { MessageType, User } from "../../models";
 import { menuContacts } from "../../data/constants";
-import { getIndividualMessageList } from "../../services/message";
+import {
+  getGroupMessageList,
+  getIndividualMessageList,
+} from "../../services/message";
 import { getFriendList, getFriendRequestList } from "../../services/user";
+import { getGroupUserByUserId } from "../../services/group";
 
 const cx = classNames.bind(style);
 
@@ -23,30 +27,50 @@ const SidebarContent = () => {
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
   const [, setFriendRequestList] = useGlobalState("friendRequestList");
-  const [, setIndividualMessages] = useGlobalState("individualMessageList");
+  const [, setMessageList] = useGlobalState("messageList");
+  const [messageType, setMessageType] = useGlobalState("messageType");
+
   const [activeConversation, setActiveConversation] =
     useGlobalState("activeConversation");
   const [searchResult] = useGlobalState("searchResult");
   const [activeContactType, setActiveContactType] =
     useGlobalState("activeContactType");
+  const [groupMap] = useGlobalState("groupMap");
   // Hook
   const { handleShowModal } = useModal();
   const { handleClickScreenSection } = useScreenSectionNavigator();
 
   const handleClickConversation = useCallback(
-    async (receiverId: number) => {
+    async (receiverId: number, type: MessageType) => {
       handleClickScreenSection(false);
       setActiveConversation(receiverId);
       if (!userId) {
         return;
       }
-      const [data] = await getIndividualMessageList(userId, receiverId);
-      data && setIndividualMessages(data);
+      if (type === "Group") {
+        const [data] = await getGroupMessageList(receiverId);
+        if (!data) {
+          return;
+        }
+        setMessageList(data);
+        setMessageType("Group");
+        return;
+      }
+      if (type === "Individual") {
+        const [data] = await getIndividualMessageList(userId, receiverId);
+        if (!data) {
+          return;
+        }
+        setMessageList(data);
+        setMessageType("Individual");
+        return;
+      }
     },
     [
       handleClickScreenSection,
       setActiveConversation,
-      setIndividualMessages,
+      setMessageList,
+      setMessageType,
       userId,
     ]
   );
@@ -113,14 +137,32 @@ const SidebarContent = () => {
     };
     fetchFriendRequestList();
   }, [setFriendRequestList, userId, userMap]);
-  
+
+  // useEffect(() => {
+  //   if (!friendList || friendList.length === 0 || activeConversation !== 0) {
+  //     return;
+  //   }
+  //   //Initial with the first friend in the list
+  //   handleClickConversation(friendList[0].friendNavigation.userId);
+  // }, [friendList, handleClickConversation, activeConversation]);
+
   useEffect(() => {
-    if (!friendList || friendList.length === 0 || activeConversation !== 0) {
-      return;
-    }
-    //Initial with the first friend in the list
-    handleClickConversation(friendList[0].friendNavigation.userId);
-  }, [friendList, handleClickConversation, activeConversation]);
+    const fetchGroupList = async () => {
+      if (!userId) {
+        return;
+      }
+      const [groupUserList] = await getGroupUserByUserId(userId);
+      if (!groupUserList) {
+        return;
+      }
+      groupUserList.forEach((groupUser) => {
+        if (groupUser.group) {
+          groupMap.set(groupUser.groupId, groupUser.group);
+        }
+      });
+    };
+    fetchGroupList();
+  }, [groupMap, userId]);
 
   function handleClickMenuContact(index: number) {
     handleClickScreenSection(false);
@@ -151,7 +193,27 @@ const SidebarContent = () => {
                 conversationName={name}
                 lastMessage="Hello world lllllldasfasgjhasjgkhsagjsllllllllllll"
                 onClick={handleClickConversation}
-                isActive={activeConversation === userId}
+                isActive={
+                  activeConversation === userId && messageType == "Individual"
+                }
+              />
+            );
+          })}
+        {groupMap &&
+          [...groupMap.entries()].map(([groupId, group]) => {
+            const { groupName, groupAvatarUrl } = group;
+            return (
+              <SideBarItem
+                key={groupId}
+                type="groupConversation"
+                groupId={groupId}
+                image={groupAvatarUrl}
+                conversationName={groupName}
+                lastMessage="Hello world lllllldasfasgjhasjgkhsagjsllllllllllll"
+                onClick={handleClickConversation}
+                isActive={
+                  activeConversation === groupId && messageType == "Group"
+                }
               />
             );
           })}

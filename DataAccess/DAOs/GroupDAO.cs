@@ -51,6 +51,7 @@ namespace DataAccess.DAOs
             validation.EnsureGroupNotNull(updatedGroup);
             var oldGroup = validation.EnsureGroupExisted(updatedGroup.GroupId);
             _context.Entry(oldGroup).CurrentValues.SetValues(updatedGroup);
+            _context.Groups.Update(oldGroup);
             return _context.SaveChanges();
         }
         public int Delete(int? groupId)

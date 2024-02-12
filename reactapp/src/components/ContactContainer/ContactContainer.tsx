@@ -27,6 +27,7 @@ interface Props {
 const ContactContainer = ({ className }: Props) => {
   const [userId] = useGlobalState("userId");
   const [userMap] = useGlobalState("userMap");
+  const [groupMap] = useGlobalState("groupMap");
   const [activeContactType] = useGlobalState("activeContactType");
   const [friendList, setFriendList] = useGlobalState("friendList");
   const [friendRequestList, setFriendRequestList] =
@@ -89,8 +90,10 @@ const ContactContainer = ({ className }: Props) => {
     const [status, error] = await deleteFriend(userId, friendId);
     if (status && status >= 200 && status <= 299) {
       console.log("del friend successfully");
-      console.log({friendList});
-      setFriendList(friendList.filter((f) => f.friendNavigation.userId !== friendId));
+      console.log({ friendList });
+      setFriendList(
+        friendList.filter((f) => f.friendNavigation.userId !== friendId)
+      );
     } else {
       console.log("del friend failed");
       console.error(error);
@@ -131,7 +134,7 @@ const ContactContainer = ({ className }: Props) => {
             return (
               <ContactRow
                 key={friendObject.userId}
-                userId={friendObject.userId}
+                entityId={friendObject.userId}
                 onClickBtnDetail={() =>
                   handleClickBtnDetail(friendObject.userId)
                 }
@@ -141,6 +144,11 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
+        {groupMap &&
+          activeContactType === MenuContactIndex.GROUP_LIST &&
+          [...groupMap.entries()].map(([groupId, group]) => {
+            return <ContactRow key={groupId} entityId={groupId} />;
+          })}
         {friendRequestList &&
           activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
           friendRequestList.map((friendRequest, index) => {
@@ -148,7 +156,7 @@ const ContactContainer = ({ className }: Props) => {
             return (
               <ContactRow
                 key={index}
-                userId={sender.userId}
+                entityId={sender.userId}
                 onClickBtnAcceptFriendRequest={() =>
                   handleClickAcpFriend(sender.userId)
                 }
