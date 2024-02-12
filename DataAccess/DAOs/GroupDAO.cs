@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using DataAccess.Utils;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DataAccess.DAOs
@@ -9,7 +10,6 @@ namespace DataAccess.DAOs
         private static GroupDAO? instance = null;
         private static readonly object instanceLock = new();
 
-        private GroupDAO() { }
         public static GroupDAO Instance
         {
             get
@@ -21,11 +21,16 @@ namespace DataAccess.DAOs
                 }
             }
         }
+        private readonly ValidationUtils validation;
+        private GroupDAO()
+        {
+            validation = new ValidationUtils();
+        }
 
         public int Add(Group? group)
         {
             using var _context = new ChatApplicationContext();
-            EnsureGroupNotNull(group);
+            validation.EnsureGroupNotNull(group);
             _context.Groups.Add(group);
             return _context.SaveChanges();
         }
@@ -36,35 +41,25 @@ namespace DataAccess.DAOs
         }
         public Group? Get(int? groupId)
         {
+            validation.EnsureGroupIdNotNull(groupId);
             using var _context = new ChatApplicationContext();
             return _context.Groups.SingleOrDefault(g => g.GroupId == groupId);
         }
         public int Update(Group? updatedGroup)
         {
             using var _context = new ChatApplicationContext();
-            EnsureGroupNotNull(updatedGroup);
-            var oldGroup = EnsureGroupExisted(updatedGroup.GroupId);
+            validation.EnsureGroupNotNull(updatedGroup);
+            var oldGroup = validation.EnsureGroupExisted(updatedGroup.GroupId);
             _context.Entry(oldGroup).CurrentValues.SetValues(updatedGroup);
             return _context.SaveChanges();
         }
         public int Delete(int? groupId)
         {
             using var _context = new ChatApplicationContext();
-            var group = EnsureGroupExisted(groupId);
+            var group = validation.EnsureGroupExisted(groupId);
             _context.Groups.Remove(group);
             return _context.SaveChanges();
         }
-        private void EnsureGroupNotNull([NotNull] Group? group)
-        {
-            _ = group ?? throw new Exception("Group can't be null");
-        }
-        private Group EnsureGroupExisted([NotNull] int? groupId)
-        {
-            _ = groupId
-                    ?? throw new Exception("Group Id can't be null");
-            var group = Get(groupId)
-                    ?? throw new Exception("Group not found!");
-            return group;
-        }
+
     }
 }

@@ -1,23 +1,27 @@
 ﻿using BussinessObject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repositories.Interfaces
 {
     public interface IMessageRepository
     {
-        IEnumerable<Message> GetMessageList();
-        IEnumerable<IndividualMessage> GetIndividualMessageList();
-        IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId);
-        IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId);
+        public List<Message> GetMessageList();
+        public Message? GetMessage(int? messageId);
+        public int AddMessage(Message message);
+        public int UpdateMessage(Message messageUpdate);
+        public int DeleteMessage(int messageId);
 
-        Message GetMessage(int messageId);
-        int AddIndividualMessage(IndividualMessage individualMessage);
-        int AddMessage(Message message);
-        int UpdateMessage(Message messageUpdate);
-        int DeleteMessage(int messageId);
+        // ======================= Individual message ==================
+        public List<IndividualMessage> GetIndividualMessageList();
+        public List<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId);
+        public IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId);
+        public int AddIndividualMessage(IndividualMessage individualMessage);
+        public int DeleteIndividualMessage(int messageId);
+        // ======================= Group message =======================
+        public List<GroupMessage> GetGroupMessageList();
+        public List<GroupMessage> GetGroupMessageList(int groupReceiverId);
+        public GroupMessage? GetLastGroupMessage(int groupReceiverId);
+        public int AddGroupMessage(GroupMessage groupMessage);
+        public int DeleteGroupMessage(int messageId);
+
     }
 }

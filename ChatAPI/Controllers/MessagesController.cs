@@ -10,12 +10,11 @@ namespace ChatAPI.Controllers
     [Authorize]
     public class MessagesController : ControllerBase
     {
-        MessageRepository messageRepository;
+        private readonly MessageRepository messageRepository;
         public MessagesController()
         {
             messageRepository = new MessageRepository();
         }
-
         [HttpGet]
         public IActionResult Get()
         {
@@ -41,10 +40,6 @@ namespace ChatAPI.Controllers
         public IActionResult GetIndividualMessage()
         {
             var individualMessages = messageRepository.GetIndividualMessageList();
-            if (individualMessages == null)
-            {
-                return NotFound();
-            }
             return Ok(individualMessages);
         }
 
@@ -69,25 +64,40 @@ namespace ChatAPI.Controllers
             }
             return Ok(lastIndividualMessage);
         }
+        [HttpGet("GetGroupMessage")]
+        public IActionResult GetGroupMessage()
+        {
+            var gmList = messageRepository.GetGroupMessageList();
+            return Ok(gmList);
+        }
+        [HttpGet("GetGroupMessage/{groupId}")]
+        public IActionResult GetGroupMessage(int groupId)
+        {
+            var gmList = messageRepository.GetGroupMessageList(groupId);
+            return Ok(gmList);
+        }
 
         [HttpPost("SendIndividualMessage")]
         public IActionResult SendIndividualMessage([FromBody] IndividualMessage individualMessage)
         {
-            if (individualMessage == null)
-            {
-                return NotFound();
-            }
-            int result = messageRepository.AddIndividualMessage(individualMessage);
-            if (result < 1)
-            {
-                return BadRequest("Operation add individual message failed");
-            }
+            messageRepository.AddIndividualMessage(individualMessage);
             return CreatedAtAction(nameof(GetIndividualMessage), new
             {
                 senderId = individualMessage.Message.SenderId,
                 receiverId = individualMessage.UserReceiverId
             }, individualMessage);
         }
+
+        [HttpPost("SendGroupMessage")]
+        public IActionResult SendGroupMessage([FromBody] GroupMessage groupMessage)
+        {
+            messageRepository.AddGroupMessage(groupMessage);
+            return CreatedAtAction(nameof(GetGroupMessage), new
+            {
+                groupId = groupMessage.GroupReceiverId,
+            }, groupMessage);
+        }
+
         [HttpDelete("DeleteMessage/{messageId}")]
         public IActionResult DeleteMessage(int messageId)
         {

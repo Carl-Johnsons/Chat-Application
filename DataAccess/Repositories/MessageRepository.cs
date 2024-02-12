@@ -1,11 +1,6 @@
 ﻿using BussinessObject.Models;
 using DataAccess.DAOs;
 using DataAccess.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
@@ -13,16 +8,30 @@ namespace DataAccess.Repositories
     {
         private readonly MessageDAO MessageInstance = MessageDAO.Instance;
         private readonly IndividualMessageDAO IndividualMessageInstance = IndividualMessageDAO.Instance;
-        public IEnumerable<Message> GetMessageList() => MessageInstance.Get();
-        public IEnumerable<IndividualMessage> GetIndividualMessageList() => IndividualMessageInstance.Get();
-        public Message GetMessage(int messageId) => MessageInstance.Get(messageId);
-        public IEnumerable<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId) => IndividualMessageInstance.Get(senderId, receiverId);
-        public IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId) => IndividualMessageInstance.GetLastMessage(senderId, receiverId);
+        private readonly GroupMessageDAO GroupMessageIntance = GroupMessageDAO.Instance;
+        public List<Message> GetMessageList() => MessageInstance.Get();
+        public Message? GetMessage(int? messageId) => MessageInstance.Get(messageId);
         public int AddMessage(Message message) => MessageInstance.Add(message);
-        public int AddIndividualMessage(IndividualMessage individualMessage) => IndividualMessageInstance.Add(individualMessage);
         public int UpdateMessage(Message messageUpdate) => MessageInstance.Update(messageUpdate);
         public int DeleteMessage(int messageId) => MessageInstance.Delete(messageId);
+
+        // ======================= Individual message ==================
+        public List<IndividualMessage> GetIndividualMessageList() => IndividualMessageInstance.Get();
+        public List<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId) => IndividualMessageInstance.Get(senderId, receiverId);
+        public IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId) => IndividualMessageInstance.GetLastMessage(senderId, receiverId);
+        public int AddIndividualMessage(IndividualMessage individualMessage) => IndividualMessageInstance.Add(individualMessage);
         public int DeleteIndividualMessage(int messageId) => IndividualMessageInstance.Delete(messageId);
 
+        // ======================= Group message =======================
+        public List<GroupMessage> GetGroupMessageList() => GroupMessageIntance.Get();
+        public List<GroupMessage> GetGroupMessageList(int groupReceiverId) => GroupMessageIntance.GetByGroupId(groupReceiverId);
+        public GroupMessage? GetLastGroupMessage(int groupReceiverId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int AddGroupMessage(GroupMessage groupMessage) => GroupMessageIntance.Add(groupMessage);
+
+        public int DeleteGroupMessage(int messageId) => GroupMessageIntance.Delete(messageId);
     }
 }

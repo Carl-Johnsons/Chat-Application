@@ -1,15 +1,14 @@
 ﻿using BussinessObject.Constants;
 using BussinessObject.Models;
 using DataAccess.Repositories;
+using DataAccess.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAOs
 {
     public class GroupUserDAO
     {
-        private GroupUserDAO()
-        {
-        }
+
         private static GroupUserDAO? instance = null;
         private static readonly object instanceLock = new();
         public static GroupUserDAO Instance
@@ -23,6 +22,11 @@ namespace DataAccess.DAOs
                 }
             }
         }
+        private readonly ValidationUtils validation;
+        private GroupUserDAO()
+        {
+            validation = new ValidationUtils();
+        }
         public List<GroupUser> Get()
         {
             using var _context = new ChatApplicationContext();
@@ -30,7 +34,7 @@ namespace DataAccess.DAOs
         }
         public List<GroupUser> GetByGroupId(int? groupId)
         {
-            _ = groupId ?? throw new Exception("Group id is null");
+            validation.EnsureGroupIdNotNull(groupId);
             using var _context = new ChatApplicationContext();
             return _context.GroupUser
                     .Where(gu => gu.GroupId == groupId)
@@ -46,7 +50,7 @@ namespace DataAccess.DAOs
         }
         public List<GroupUser> GetByUserId(int? userId)
         {
-            _ = userId ?? throw new Exception("User Id is null");
+            validation.EnsureUserIdNotNull(userId);
             using var _context = new ChatApplicationContext();
             return _context.GroupUser
                     .Where(gu => gu.UserId == userId)
@@ -62,7 +66,8 @@ namespace DataAccess.DAOs
         }
         public GroupUser? GetByGroupIdAndUserId(int? groupId, int? userId)
         {
-            EnsureGroupIdAndUserIdNotNull(groupId, userId);
+            validation.EnsureGroupExisted(groupId);
+            validation.EnsureUserExisted(userId);
             using var _context = new ChatApplicationContext();
             return _context.GroupUser
                     .Include(gu => gu.Group)
@@ -72,18 +77,18 @@ namespace DataAccess.DAOs
         }
         public int Add(GroupUser groupUser)
         {
-            EnsureGroupUserNotExist(groupUser.GroupId, groupUser.UserId);
-            EnsureGroupExisted(groupUser.GroupId);
-            EnsureUserExisted(groupUser.UserId);
-            EnsureRoleValid(groupUser.Role);
+            validation.EnsureGroupUserNotExist(groupUser.GroupId, groupUser.UserId);
+            validation.EnsureGroupExisted(groupUser.GroupId);
+            validation.EnsureUserExisted(groupUser.UserId);
+            validation.EnsureRoleValid(groupUser.Role);
             using var _context = new ChatApplicationContext();
             _context.GroupUser.Add(groupUser);
             return _context.SaveChanges();
         }
         public int UpdateRole(GroupUser groupUser)
         {
-            GroupUser oldGroupUser = EnsureGroupUserExisted(groupUser.GroupId, groupUser.UserId);
-            EnsureRoleValid(groupUser.Role);
+            GroupUser oldGroupUser = validation.EnsureGroupUserExisted(groupUser.GroupId, groupUser.UserId);
+            validation.EnsureRoleValid(groupUser.Role);
             oldGroupUser.Role = groupUser.Role;
             using var _context = new ChatApplicationContext();
             _context.GroupUser.Update(oldGroupUser);
@@ -91,66 +96,10 @@ namespace DataAccess.DAOs
         }
         public int Delete(int? groupId, int? userId)
         {
-            var groupUser = EnsureGroupUserExisted(groupId, userId);
+            var groupUser = validation.EnsureGroupUserExisted(groupId, userId);
             using var _context = new ChatApplicationContext();
             _context.GroupUser.Remove(groupUser);
             return _context.SaveChanges();
-        }
-        /**
-         * This method will throw an exception if group or user does not exist
-         */
-        private void EnsureGroupIdAndUserIdNotNull(int? groupId, int? userId)
-        {
-            _ = groupId
-                    ?? throw new Exception("Group Id can't be null");
-            _ = userId
-                    ?? throw new Exception("User Id can't be null");
-        }
-        private void EnsureGroupUserNotExist(int? groupId, int? userId)
-        {
-            if (GetByGroupIdAndUserId(groupId, userId) != null)
-            {
-                throw new Exception("This user is already in the group!");
-            }
-        }
-        private void EnsureGroupExisted(int? groupId)
-        {
-            GroupRepository _groupRepo = new();
-            _ = _groupRepo.Get(groupId)
-                ?? throw new Exception("This group is not exist!");
-        }
-        private void EnsureUserExisted(int? userId)
-        {
-            UserRepository _userRepo = new();
-            _ = _userRepo.Get(userId)
-                            ?? throw new Exception("This user is not exist!");
-        }
-        private void EnsureRoleValid(string? role)
-        {
-            if (role == null)
-            {
-                throw new Exception("This role \"" + role + "\" is not valid");
-            }
-            if (role.Equals(GroupUserRole.LEADER))
-            {
-                return;
-            }
-            if (role.Equals(GroupUserRole.DEPUTY))
-            {
-                return;
-            }
-            if (role.Equals(GroupUserRole.MEMBER))
-            {
-                return;
-            }
-            throw new Exception("This role \"" + role + "\" is not valid");
-        }
-        private GroupUser EnsureGroupUserExisted(int? groupId, int? userId)
-        {
-            EnsureGroupExisted(groupId);
-            EnsureUserExisted(userId);
-            return GetByGroupIdAndUserId(groupId, userId)
-                            ?? throw new Exception("This user is already not in the group!");
         }
     }
 }

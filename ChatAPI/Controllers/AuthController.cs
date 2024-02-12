@@ -22,8 +22,8 @@ namespace ChatAPI.Controllers
         private readonly string privateKeyFile = "key.pem";
         private readonly string Issuer;
         private readonly string Audience;
-        private readonly DateTime AccessTokenExpire = DateTime.Now.AddSeconds(15);
-        private readonly DateTime RefreshTokenExpire = DateTime.Now.AddMinutes(2);
+        private readonly DateTime AccessTokenExpire = DateTime.Now.AddMinutes(15);
+        private readonly DateTime RefreshTokenExpire = DateTime.Now.AddDays(7);
         private readonly string RefreshTokenCookieName = "refresh-token";
 
         public AuthController()

@@ -33,7 +33,6 @@ service.AddSingleton<RsaSecurityKey>(provider =>
     var certificatePath = "certificate.pem";
     var certificate = new X509Certificate2(certificatePath);
     var publicKeyByte = certificate.GetPublicKey();
-    Console.WriteLine("public key:\n" + Encoding.UTF8.GetString(publicKeyByte) + "\nEnd public key");
     var rsaPublicKey = RSA.Create();
     rsaPublicKey.ImportRSAPublicKey(publicKeyByte, out _);
     return new RsaSecurityKey(rsaPublicKey);

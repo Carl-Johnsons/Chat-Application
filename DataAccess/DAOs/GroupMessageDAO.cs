@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using DataAccess.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAOs
@@ -19,6 +20,11 @@ namespace DataAccess.DAOs
 
             }
         }
+        private readonly ValidationUtils validation;
+        private GroupMessageDAO()
+        {
+            validation = new ValidationUtils();
+        }
         public List<GroupMessage> Get()
         {
             using var _context = new ChatApplicationContext();
@@ -26,14 +32,10 @@ namespace DataAccess.DAOs
                    .Include(gm => gm.Message)
                    .ToList();
         }
-
         public List<GroupMessage> GetByGroupId(int? groupId)
         {
+            validation.EnsureGroupIdNotNull(groupId);
             using var _context = new ChatApplicationContext();
-            if (groupId == null)
-            {
-                throw new Exception("Group id is null");
-            }
             var groupMessages = _context.GroupMessages
                                 .Include(gm => gm.Message)
                                 .Where(gm => gm.GroupReceiverId == groupId)
@@ -42,35 +44,40 @@ namespace DataAccess.DAOs
         }
         public GroupMessage? GetByMessageId(int? messageId)
         {
+            validation.EnsureMessageIdNotNull(messageId);
             using var _context = new ChatApplicationContext();
-            _ = messageId ?? throw new Exception("Message id is null");
             var groupMessage = _context.GroupMessages
                                     .SingleOrDefault(gm => gm.MessageId == messageId);
             return groupMessage;
 
         }
-        public int Add(GroupMessage groupMessage)
+        public int Add(GroupMessage? groupMessage)
         {
+            validation.EnsureGroupMessageNotNull(groupMessage);
+            validation.EnsureGroupExisted(groupMessage.GroupReceiverId);
+            validation.EnsureUserExisted(groupMessage.Message.SenderId);
+            validation.EnsureGroupUserExisted(groupMessage.GroupReceiverId, groupMessage.Message.SenderId);
             using var _context = new ChatApplicationContext();
             _context.GroupMessages.Add(groupMessage);
             return _context.SaveChanges();
         }
-        public int Update(GroupMessage groupMessage)
+        public int Update(GroupMessage? groupMessage)
         {
-            using var _context = new ChatApplicationContext();
-            var oldMessage = GetByMessageId(groupMessage.MessageId) 
+            validation.EnsureGroupMessageNotNull(groupMessage);
+            var oldMessage = GetByMessageId(groupMessage.MessageId)
                     ?? throw new Exception("Group message not found! Aborting update operation");
+            using var _context = new ChatApplicationContext();
             _context.Entry(oldMessage).CurrentValues.SetValues(groupMessage);
+            _context.GroupMessages.Update(oldMessage);
             return _context.SaveChanges();
         }
-        public int Delete(int messageId)
+        public int Delete(int? messageId)
         {
             using var _context = new ChatApplicationContext();
-            var message = GetByMessageId(messageId) 
+            var message = GetByMessageId(messageId)
                     ?? throw new Exception("Group message not found! Aborting delete operation");
             _context.GroupMessages.Remove(message);
             return _context.SaveChanges();
-
         }
     }
 }
