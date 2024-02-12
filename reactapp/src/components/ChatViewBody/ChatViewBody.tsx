@@ -4,46 +4,57 @@ import { useGlobalState } from "../../globalState";
 import style from "./ChatViewBody.module.scss";
 import classNames from "classnames/bind";
 import Message from "../Message";
-import { GroupMessage, IndividualMessage } from "../../models";
+import Avatar from "../Avatar";
+import images from "../../assets";
 
 const cx = classNames.bind(style);
 
 const ChatViewBody = () => {
   const [userId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
   const [messageList] = useGlobalState("messageList");
+  const [messageType] = useGlobalState("messageType");
 
   const createMessageItemContainer = useCallback(() => {
     if (!messageList || messageList.length === 0) {
       return;
     }
-    let start =
-      (messageList[0] as IndividualMessage).userReceiverId ??
-      (messageList[0] as GroupMessage).groupReceiverId;
+    let start = messageList[0].message.senderId;
     let startIndex = 0;
     const messageContainers = [];
     // For removing Reactjs key warning
     let key = 0;
     for (let i = 1; i <= messageList.length; i++) {
-      const receiverId =
-        (messageList[i] as IndividualMessage)?.userReceiverId ??
-        (messageList[i] as GroupMessage)?.groupReceiverId;
+      const senderId = messageList[i]?.message.senderId;
 
-      if (i !== messageList.length && start === receiverId) {
+      if (i !== messageList.length && start === senderId) {
         continue;
       }
       const subArray = messageList.slice(startIndex, i);
       if (i < messageList.length) {
-        start = receiverId;
+        start = senderId;
         startIndex = i;
       }
-      const isSender =
-        userId !== (subArray[0] as IndividualMessage).userReceiverId ??
-        (subArray[0] as GroupMessage).groupReceiverId;
+      const subArraySenderId = subArray[0].message.senderId;
+      const isSender = userId === subArraySenderId;
+
       const messageContainer = (
         <div
           key={key}
-          className={cx("message-item-container", "mb-3", isSender && "sender")}
+          className={cx(
+            "message-item-container",
+            "d-flex",
+            "mb-3",
+            isSender && "sender"
+          )}
         >
+          {!isSender && messageType === "Group" && (
+            <Avatar
+              className={cx("rounded-circle", "me-2")}
+              src={userMap.get(subArraySenderId)?.avatarUrl ?? images.userIcon}
+              alt="avatar"
+            />
+          )}
           <div
             className={cx(
               "message-list",
@@ -53,18 +64,18 @@ const ChatViewBody = () => {
               isSender ? "align-items-end" : "align-items-start"
             )}
           >
-            {subArray.map((im) => (
-              <Message
-                key={im.messageId}
-                name={
-                  ((im as IndividualMessage).userReceiverId ??
-                    (im as GroupMessage).groupReceiverId) + ""
-                }
-                content={im.message.content}
-                time={im.message.time ?? ""}
-                sender={isSender}
-              />
-            ))}
+            {subArray.map((im, index) => {
+              return (
+                <Message
+                  key={im.messageId}
+                  userId={im.message.senderId}
+                  content={im.message.content}
+                  time={im.message.time ?? ""}
+                  sender={isSender}
+                  showUsername={index === 0}
+                />
+              );
+            })}
           </div>
         </div>
       );

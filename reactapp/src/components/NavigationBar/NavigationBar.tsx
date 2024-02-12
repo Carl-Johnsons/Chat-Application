@@ -23,8 +23,6 @@ type NavItem = {
 };
 
 const NavigationBar = () => {
-  const [, setModalUserId] = useGlobalState("modalUserId");
-
   const { handleShowModal } = useModal();
   const [activeNav, setActiveNav] = useGlobalState("activeNav");
   const { handleClickScreenSection } = useScreenSectionNavigator();
@@ -81,7 +79,6 @@ const NavigationBar = () => {
   const handleClick = (linkId: number) => {
     handleClickScreenSection(true);
     if (linkId === 0) {
-      setModalUserId(userId);
       handleShowModal(userId);
       return;
     }
@@ -114,7 +111,7 @@ const NavigationBar = () => {
         >
           <Avatar
             variant="avatar-img-40px"
-            className={cx("rounded-circle", index !== 0 && "p-2")}
+            className={cx(index !== 0 ? "p-2" : "rounded-circle")}
             src={item.image}
             alt={item.imageAlt}
           />

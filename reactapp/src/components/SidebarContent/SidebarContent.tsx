@@ -15,6 +15,7 @@ import {
 } from "../../services/message";
 import { getFriendList, getFriendRequestList } from "../../services/user";
 import { getGroupUserByUserId } from "../../services/group";
+import { getGroupUserByGroupId } from "../../services/group/getGroupUserByGroupId.service";
 
 const cx = classNames.bind(style);
 
@@ -23,7 +24,6 @@ const SidebarContent = () => {
   const [userId] = useGlobalState("userId");
   const [isSearchBarFocus] = useGlobalState("isSearchBarFocus");
   const [activeNav] = useGlobalState("activeNav");
-  const [, setModaUserId] = useGlobalState("modalUserId");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [friendList, setFriendList] = useGlobalState("friendList");
   const [, setFriendRequestList] = useGlobalState("friendRequestList");
@@ -36,6 +36,7 @@ const SidebarContent = () => {
   const [activeContactType, setActiveContactType] =
     useGlobalState("activeContactType");
   const [groupMap] = useGlobalState("groupMap");
+  const [groupUserMap] = useGlobalState("groupUserMap");
   // Hook
   const { handleShowModal } = useModal();
   const { handleClickScreenSection } = useScreenSectionNavigator();
@@ -78,7 +79,6 @@ const SidebarContent = () => {
     if (!searchResult) {
       return;
     }
-    setModaUserId(searchResult.userId);
     handleShowModal(searchResult.userId);
   };
 
@@ -151,18 +151,30 @@ const SidebarContent = () => {
       if (!userId) {
         return;
       }
+      // Get many group that the current user is in
       const [groupUserList] = await getGroupUserByUserId(userId);
       if (!groupUserList) {
         return;
       }
-      groupUserList.forEach((groupUser) => {
-        if (groupUser.group) {
-          groupMap.set(groupUser.groupId, groupUser.group);
+      for (const gu of groupUserList) {
+        if (!gu.group) {
+          continue;
         }
-      });
+        groupMap.set(gu.groupId, gu.group);
+        // Get all user in this single group
+        const [userGroupList] = await getGroupUserByGroupId(gu.groupId);
+        if (!userGroupList) {
+          continue;
+        }
+        const userIdList = [];
+        for (const userGroup of userGroupList) {
+          userIdList.push(userGroup.userId);
+        }
+        groupUserMap.set(gu.groupId, userIdList);
+      }
     };
     fetchGroupList();
-  }, [groupMap, userId]);
+  }, [groupMap, groupUserMap, userId]);
 
   function handleClickMenuContact(index: number) {
     handleClickScreenSection(false);

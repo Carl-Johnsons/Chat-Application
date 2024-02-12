@@ -29,7 +29,7 @@ const ModalContainer = () => {
   // global state
   const [userId] = useGlobalState("userId");
   const [userMap] = useGlobalState("userMap");
-  const [modalUserId] = useGlobalState("modalUserId");
+  const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
   const [showModal] = useGlobalState("showModal");
   const [activeModal, setActiveModal] = useGlobalState("activeModal");
@@ -51,7 +51,7 @@ const ModalContainer = () => {
       console.log("current user is null");
       return;
     }
-    const [fr, error] = await sendFriendRequest(currentUser, modalUserId);
+    const [fr, error] = await sendFriendRequest(currentUser, modalEntityId);
     console.log(fr);
     if (!fr) {
       console.error(error);

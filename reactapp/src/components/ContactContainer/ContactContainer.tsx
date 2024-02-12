@@ -32,7 +32,6 @@ const ContactContainer = ({ className }: Props) => {
   const [friendList, setFriendList] = useGlobalState("friendList");
   const [friendRequestList, setFriendRequestList] =
     useGlobalState("friendRequestList");
-  const [, setModalUserId] = useGlobalState("modalUserId");
   const [connection] = useGlobalState("connection");
 
   // hooks
@@ -40,7 +39,6 @@ const ContactContainer = ({ className }: Props) => {
   const invokeAction = useSignalREvents({ connection: connection });
 
   const handleClickBtnDetail = (userId: number) => {
-    setModalUserId(userId);
     handleShowModal(userId);
   };
   const handleClickAcpFriend = async (friendId: number) => {

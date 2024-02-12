@@ -17,7 +17,7 @@ const initialState = {
   activeContactType: 0,
   activeNav: 1,
   activeModal: 0,
-  modalUserId: null as unknown as number,
+  modalEntityId: null as unknown as number,
   userId: null as unknown as number,
   userTypingId: null as unknown as number | null,
   // User
@@ -29,6 +29,7 @@ const initialState = {
   friendRequestList: null as unknown as FriendRequest[],
   // Group
   groupMap: new Map<number, Group>(),
+  groupUserMap: new Map<number, number[]>(),
   // IndividualMessage | GroupMessage
   messageList: null as unknown as IndividualMessage[] | GroupMessage[],
   messageType: null as unknown as MessageType,

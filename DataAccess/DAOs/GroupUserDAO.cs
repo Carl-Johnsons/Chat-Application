@@ -44,7 +44,6 @@ namespace DataAccess.DAOs
                         GroupId = gu.GroupId,
                         UserId = gu.UserId,
                         Role = gu.Role,
-                        User = gu.User
                     })
                     .ToList();
         }

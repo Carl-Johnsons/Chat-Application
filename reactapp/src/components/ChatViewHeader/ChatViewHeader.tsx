@@ -8,6 +8,7 @@ import { useGlobalState } from "../../globalState";
 import { memo, useEffect, useState } from "react";
 import { Group, User } from "../../models";
 import images from "../../assets";
+import { useModal } from "../../hooks";
 
 const cx = classNames.bind(style);
 
@@ -19,6 +20,8 @@ const ChatViewHeader = () => {
   const [activeConversation] = useGlobalState("activeConversation");
   //Local state
   const [receiver, setReceiver] = useState<User | Group>();
+  // hook
+  const { handleShowModal } = useModal();
   useEffect(() => {
     if (activeConversation === 0) {
       return;
@@ -35,12 +38,15 @@ const ChatViewHeader = () => {
   }, [activeConversation, groupMap, messageType, userMap]);
 
   const handleToggleAside = () => setShowAside(!showAside);
+  const handleClickAvatar = () => {
+    handleShowModal(activeConversation);
+  };
   const avatar =
     (receiver as User)?.avatarUrl ?? (receiver as Group)?.groupAvatarUrl;
   const name = (receiver as User)?.name ?? (receiver as Group)?.groupName;
   return (
     <>
-      <div className={cx("avatar-container")}>
+      <div role="button" className={cx("avatar-container")} onClick={handleClickAvatar}>
         <Avatar
           src={receiver ? avatar : images.userIcon}
           className={cx("rounded-circle")}

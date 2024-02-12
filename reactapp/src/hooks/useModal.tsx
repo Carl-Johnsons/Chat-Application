@@ -7,15 +7,17 @@ const useModal = () => {
   const [friendList] = useGlobalState("friendList");
   const [showModal, setShowModal] = useGlobalState("showModal");
   const [, setActiveModal] = useGlobalState("activeModal");
+  const [, setModalEntityId] = useGlobalState("modalEntityId");
 
-  const handleShowModal = (modalUserId: number) => {
+  const handleShowModal = (entityId: number) => {
     let type: ModalType;
-    if (userId === modalUserId) {
+    if (userId === entityId) {
       type = "Personal";
     } else {
-      const friend = friendList.filter((f) => f.friendId === modalUserId);
+      const friend = friendList.filter((f) => f.friendId === entityId);
       type = friend[0] ? "Friend" : "Stranger";
     }
+    setModalEntityId(entityId);
     setModalType(type);
     setShowModal(true);
   };
