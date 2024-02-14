@@ -16,6 +16,7 @@ import {
 } from "../../hooks";
 import { useGlobalState } from "../../globalState";
 import { sendFriendRequest } from "../../services/user";
+import CreateGroupModalContent from "../CreateGroupModalContent";
 
 const cx = classNames.bind(style);
 
@@ -38,10 +39,15 @@ const ModalContainer = () => {
   const { handleHideModal } = useModal();
   const invokeAction = useSignalREvents({ connection: connection });
   // local state
-  const [modalBodyHeight, setModalBodyHeight] = useState(0);
+  // const [modalBodyHeight, setModalBodyHeight] = useState(0);
+  const [modalBodyDimension, setModalBodyDimension] = useState({
+    width: 384,
+    height: 0,
+  });
   // reference
   const modalContentsRef = useRef<ModalContent[]>();
   const profileRef = useRef(null);
+  const createGroupRef = useRef(null);
   const updateProfileRef = useRef(null);
   const updateAvatarRef = useRef(null);
 
@@ -61,70 +67,90 @@ const ModalContainer = () => {
     fr.sender = currentUser;
     invokeAction(signalRSendFriendRequest(fr));
   };
-
-  if (modalType === "Personal") {
-    modalContentsRef.current = [
-      {
-        title: "Thông tin cá nhân",
-        ref: profileRef,
-        modalContent: (
-          <ProfileModalContent
-            type="Personal"
-            onClickUpdate={() => handleClick(1)}
-            onClickEditUserName={() => handleClick(1)}
-            onClickEditAvatar={() => handleClick(2)}
-          />
-        ),
-      },
-      {
-        title: "Cập nhật thông tin cá nhân",
-        ref: updateProfileRef,
-        modalContent: (
-          <UpdateProfileModalContent onClickCancel={() => handleClick(0)} />
-        ),
-      },
-      {
-        title: "Cập nhật thông tin cá nhân",
-        ref: updateAvatarRef,
-        modalContent: <UpdateAvatarModalContent />,
-      },
-    ];
-  } else if (modalType === "Friend") {
-    modalContentsRef.current = [
-      {
-        title: "Thông tin tài khoản",
-        ref: profileRef,
-        modalContent: <ProfileModalContent type="Friend" />,
-      },
-    ];
-  } else if (modalType === "Stranger") {
-    modalContentsRef.current = [
-      {
-        title: "Thông tin tài khoản",
-        ref: profileRef,
-        modalContent: (
-          <ProfileModalContent
-            type="Stranger"
-            onClickSendFriendRequest={handleClickSendFriendRequest}
-          />
-        ),
-      },
-    ];
-  } else {
-    modalContentsRef.current = [
-      {
-        title: "Thông tin nhóm",
-        ref: profileRef,
-        modalContent: <ProfileModalContent type="Group" />,
-      },
-    ];
+  switch (modalType) {
+    case "Personal":
+      modalContentsRef.current = [
+        {
+          title: "Thông tin cá nhân",
+          ref: profileRef,
+          modalContent: (
+            <ProfileModalContent
+              type="Personal"
+              onClickUpdate={() => handleClick(1)}
+              onClickEditUserName={() => handleClick(1)}
+              onClickEditAvatar={() => handleClick(2)}
+            />
+          ),
+        },
+        {
+          title: "Cập nhật thông tin cá nhân",
+          ref: updateProfileRef,
+          modalContent: (
+            <UpdateProfileModalContent onClickCancel={() => handleClick(0)} />
+          ),
+        },
+        {
+          title: "Cập nhật thông tin cá nhân",
+          ref: updateAvatarRef,
+          modalContent: <UpdateAvatarModalContent />,
+        },
+      ];
+      break;
+    case "Friend":
+      modalContentsRef.current = [
+        {
+          title: "Thông tin tài khoản",
+          ref: profileRef,
+          modalContent: <ProfileModalContent type="Friend" />,
+        },
+      ];
+      break;
+    case "Stranger":
+      modalContentsRef.current = [
+        {
+          title: "Thông tin tài khoản",
+          ref: profileRef,
+          modalContent: (
+            <ProfileModalContent
+              type="Stranger"
+              onClickSendFriendRequest={handleClickSendFriendRequest}
+            />
+          ),
+        },
+      ];
+      break;
+    case "Group":
+      modalContentsRef.current = [
+        {
+          title: "Thông tin nhóm",
+          ref: profileRef,
+          modalContent: <ProfileModalContent type="Group" />,
+        },
+      ];
+      break;
+    case "CreateGroup":
+      modalContentsRef.current = [
+        {
+          title: "Tạo nhóm",
+          ref: createGroupRef,
+          modalContent: <CreateGroupModalContent />,
+        },
+      ];
+      break;
+    default:
+      modalContentsRef.current = [];
+      break;
   }
 
   useEffect(() => {
     modalContentsRef.current &&
       modalContentsRef.current.forEach((item, index) => {
         if (showModal && activeModal == index && item.ref.current) {
-          setModalBodyHeight((item.ref.current as HTMLElement).offsetHeight);
+          setModalBodyDimension({
+            width: (item.ref.current as unknown as HTMLElement).offsetWidth,
+            height: (item.ref.current as unknown as HTMLElement).offsetHeight,
+          });
+          console.log((item.ref.current as unknown as HTMLElement).offsetWidth);
         }
       });
   }, [activeModal, showModal]);
@@ -150,6 +176,9 @@ const ModalContainer = () => {
           "align-items-center",
           activeModal != 0 && "ps-2"
         )}
+        style={{
+          width: modalBodyDimension.width,
+        }}
       >
         <Modal.Title className={cx("modal-title")}>
           {activeModal != 0 && (
@@ -162,7 +191,7 @@ const ModalContainer = () => {
             </AppButton>
           )}
 
-          {modalContentsRef.current[activeModal].title}
+          {modalContentsRef.current[activeModal]?.title}
         </Modal.Title>
         <Button
           className={cx(
@@ -184,15 +213,17 @@ const ModalContainer = () => {
           "flex-column",
           "transition-all-0_2s-ease-in-out"
         )}
-        style={{ height: modalBodyHeight }}
+        style={{
+          width: modalBodyDimension.width,
+          height: modalBodyDimension.height,
+        }}
       >
         <ul className={cx("list-unstyled", "d-flex", "position-relative")}>
-          {modalContentsRef.current.map((item, index) => (
+          {modalContentsRef.current?.map((item, index) => (
             <li
               key={index}
               ref={item.ref}
               className={cx(
-                "w-50",
                 "h-fit-content",
                 "position-absolute",
                 activeModal == index && "active"

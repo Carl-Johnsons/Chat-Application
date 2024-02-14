@@ -1,13 +1,10 @@
-$modal-dialog-width: 384px;
-$modal-dialog-height: 556.16px;
 $modal-header-height: 52.14px;
 $margin-left-right-child-element: 1rem;
 
 .info-modal {
     .modal-dialog {
-        width: $modal-dialog-width;
-        height: $modal-dialog-height;
-
+        display: flex;
+        justify-content: center;
         .modal-title {
             > button {
                 width: 35px;
@@ -17,7 +14,7 @@ $margin-left-right-child-element: 1rem;
 
         .modal-content {
             border-radius: var(--modal-border-radius);
-
+            width: auto;
             .modal-header {
                 height: $modal-header-height;
                 .modal-title {

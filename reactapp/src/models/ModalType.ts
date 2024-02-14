@@ -1,1 +1,6 @@
-export type ModalType = "Personal" | "Friend" | "Stranger" | "Group";
+export type ModalType =
+  | "Personal"
+  | "Friend"
+  | "Stranger"
+  | "Group"
+  | "CreateGroup";

@@ -6,7 +6,10 @@ import className from "classnames/bind";
 import { useGlobalState } from "../../globalState";
 import { useState } from "react";
 
-import { formatDateWithSeparator, getMaxDayinMonth } from "../../utils/DateUtils";
+import {
+  formatDateWithSeparator,
+  getMaxDayinMonth,
+} from "../../utils/DateUtils";
 import { updateUser } from "../../services/user";
 const cx = className.bind(style);
 
@@ -63,7 +66,7 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
     years.push(i);
   }
   return (
-    <>
+    <div className={cx("update-profile-modal-content", "m-0")}>
       <div className={cx("user-name", "mt-2", "mb-4")}>
         <label className={cx("mb-1")}>Tên hiển thị</label>
         <input
@@ -205,7 +208,7 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
           Cập nhật
         </AppButton>
       </div>
-    </>
+    </div>
   );
 };
 

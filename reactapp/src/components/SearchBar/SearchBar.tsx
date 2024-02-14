@@ -6,6 +6,7 @@ import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
 import { searchUser } from "../../services/user";
+import { useModal } from "../../hooks";
 
 const cx = classNames.bind(style);
 
@@ -25,6 +26,8 @@ const SearchBar = () => {
   const [closeBtnClass, setCloseBtnClass] = useState(
     cx("btn-add-friend", "me-1", "d-none")
   );
+  //hook
+  const { handleShowModal } = useModal();
 
   useEffect(() => {
     if (inputValue.length != 10) {
@@ -74,10 +77,17 @@ const SearchBar = () => {
     setCloseBtnClass(cx("btn-add-friend", "me-1"));
     setIsSearchBarFocus(true);
   };
-  const handleClick = () => {
-    setButtonClass(cx("btn-add-friend", "me-1"));
-    setCloseBtnClass(cx("btn-add-friend", "me-1", "d-none"));
-    setIsSearchBarFocus(false);
+  const handleClick = (index: number) => {
+    switch (index) {
+      case 1:
+        handleShowModal({ modalType: "CreateGroup" });
+        break;
+      case 2:
+        setButtonClass(cx("btn-add-friend", "me-1"));
+        setCloseBtnClass(cx("btn-add-friend", "me-1", "d-none"));
+        setIsSearchBarFocus(false);
+        break;
+    }
   };
   return (
     <div
@@ -102,7 +112,7 @@ const SearchBar = () => {
           return (
             <AppButton
               key={index}
-              onClick={index == 2 ? handleClick : undefined}
+              onClick={() => handleClick(index)}
               variant="app-btn-primary-transparent"
               className={item.className ?? ""}
             >

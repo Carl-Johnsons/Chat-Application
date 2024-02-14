@@ -79,7 +79,7 @@ const SidebarContent = () => {
     if (!searchResult) {
       return;
     }
-    handleShowModal(searchResult.userId);
+    handleShowModal({ entityId: searchResult.userId });
   };
 
   useEffect(() => {

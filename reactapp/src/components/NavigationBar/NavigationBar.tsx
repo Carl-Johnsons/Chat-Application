@@ -79,7 +79,7 @@ const NavigationBar = () => {
   const handleClick = (linkId: number) => {
     handleClickScreenSection(true);
     if (linkId === 0) {
-      handleShowModal(userId, "Personal");
+      handleShowModal({ entityId: userId, modalType: "Personal" });
       return;
     }
     if (linkId === items.length - 1) {

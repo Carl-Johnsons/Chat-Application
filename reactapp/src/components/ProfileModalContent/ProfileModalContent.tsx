@@ -115,7 +115,7 @@ const ProfileModalContent = (variant: Variants) => {
   }, [setUserMap, userIdList, userMap]);
 
   return (
-    <>
+    <div className={cx("profile-modal-content", "m-0")}>
       {!isGroup && (
         <div className={cx("background-img-container", "m-0")}>
           <img
@@ -125,7 +125,14 @@ const ProfileModalContent = (variant: Variants) => {
           />
         </div>
       )}
-      <div className={cx("info-container", isPersonal ? "pb-4" : "pb-2")}>
+      <div
+        className={cx(
+          "info-container",
+          "ps-3",
+          "pe-3",
+          isPersonal ? "pb-4" : "pb-2"
+        )}
+      >
         <div
           className={cx(
             "info-detail",
@@ -218,7 +225,9 @@ const ProfileModalContent = (variant: Variants) => {
           className={cx(
             "personal-information-container",
             "d-flex",
-            "flex-column"
+            "flex-column",
+            "ps-3",
+            "pe-3"
           )}
         >
           <div className={cx("personal-information-row")}>
@@ -249,7 +258,9 @@ const ProfileModalContent = (variant: Variants) => {
           className={cx(
             "personal-information-container",
             "d-flex",
-            "flex-column"
+            "flex-column",
+            "ps-3",
+            "pe-3"
           )}
         >
           <div className={cx("personal-information-row")}>
@@ -277,7 +288,7 @@ const ProfileModalContent = (variant: Variants) => {
         </div>
       )}
       {/* Footer */}
-      <div className={cx("footer", "mb-3")}>
+      <div className={cx("footer", "mb-3", "ps-3", "pe-3")}>
         <div className={cx("container-divider-2px", "ms-0", "me-0")}></div>
 
         {isPersonal && (
@@ -291,7 +302,7 @@ const ProfileModalContent = (variant: Variants) => {
           </AppButton>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

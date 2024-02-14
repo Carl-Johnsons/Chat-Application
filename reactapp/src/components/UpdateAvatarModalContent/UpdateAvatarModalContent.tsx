@@ -9,7 +9,7 @@ const cx = classNames.bind(style);
 
 const UpdateAvatarModalContent = () => {
   return (
-    <>
+    <div className={cx("update-avatar-modal-content", "m-0")}>
       <div className={cx("mt-4", "mb-4")}>
         <AppButton
           variant="app-btn-tertiary"
@@ -31,7 +31,7 @@ const UpdateAvatarModalContent = () => {
           </li>
         </ul>
       </div>
-    </>
+    </div>
   );
 };
 

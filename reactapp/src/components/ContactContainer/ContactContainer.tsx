@@ -39,7 +39,7 @@ const ContactContainer = ({ className }: Props) => {
   const invokeAction = useSignalREvents({ connection: connection });
 
   const handleClickBtnDetail = (userId: number) => {
-    handleShowModal(userId);
+    handleShowModal({ entityId: userId });
   };
   const handleClickAcpFriend = async (friendId: number) => {
     const senderId = friendId;
@@ -144,7 +144,7 @@ const ContactContainer = ({ className }: Props) => {
           })}
         {groupMap &&
           activeContactType === MenuContactIndex.GROUP_LIST &&
-          [...groupMap.entries()].map(([groupId, group]) => {
+          [...groupMap.entries()].map(([groupId]) => {
             return <ContactRow key={groupId} entityId={groupId} />;
           })}
         {friendRequestList &&

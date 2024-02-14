@@ -9,7 +9,10 @@ import classnames from "classnames/bind";
 
 import {
   faBell,
+  faCopy,
   faGear,
+  faLink,
+  faShare,
   faThumbTack,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +23,9 @@ const AsideBody = () => {
   const [messageType] = useGlobalState("messageType");
   const [userMap] = useGlobalState("userMap");
   const [groupMap] = useGlobalState("groupMap");
+  const [groupUserMap] = useGlobalState("groupUserMap");
+
+  const isGroup = messageType === "Group";
 
   const currentEntity =
     messageType === "Individual"
@@ -30,7 +36,8 @@ const AsideBody = () => {
     (currentEntity as Group)?.groupAvatarUrl;
   const name =
     (currentEntity as User)?.name ?? (currentEntity as Group)?.groupName;
-
+  const groupLink = (currentEntity as Group)?.groupInviteUrl;
+  const groupUser = isGroup ? groupUserMap.get(activeConversation) : undefined;
   return (
     <>
       <div
@@ -122,19 +129,17 @@ const AsideBody = () => {
                 "align-items-center"
               )}
             >
-              {messageType === "Group" ? (
+              {isGroup ? (
                 <FontAwesomeIcon icon={faUserGroup} />
               ) : (
                 <FontAwesomeIcon icon={faUserGroup} />
               )}
             </AppButton>
             <p className={cx("pt-1", "text-center")}>
-              {messageType === "Group"
-                ? "Thêm thành viên"
-                : "Tạo nhóm trò chuyện"}
+              {isGroup ? "Thêm thành viên" : "Tạo nhóm trò chuyện"}
             </p>
           </div>
-          {messageType === "Group" && (
+          {isGroup && (
             <div
               className={cx(
                 "btn-container",
@@ -160,6 +165,71 @@ const AsideBody = () => {
           )}
         </div>
       </div>
+      {isGroup && (
+        <div className={cx("ps-3", "pe-3", "pt-2")}>
+          <button
+            className={cx("fw-medium", "btn")}
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseExample"
+            role="button"
+          >
+            Thành viên nhóm
+          </button>
+          <div className="collapse" id="collapseExample">
+            <div className={cx("d-flex", "align-items-center", "pt-2")}>
+              <div className={cx("icon")}>
+                <FontAwesomeIcon icon={faUserGroup} />
+              </div>
+              {groupUser?.length} thành viên
+            </div>
+            <div className={cx("d-flex", "justify-content-between", "pt-2")}>
+              <div className={cx("d-flex", "align-items-center")}>
+                <div className={cx("icon")}>
+                  <FontAwesomeIcon icon={faLink} />
+                </div>
+                <div>
+                  Link tham gia nhóm
+                  <div>
+                    <a href={groupLink}>{groupLink}</a>
+                  </div>
+                </div>
+              </div>
+              <div
+                className={cx(
+                  "d-flex",
+                  "align-items-center",
+                  "justify-content-around"
+                )}
+              >
+                <AppButton
+                  variant="app-btn-primary"
+                  className={cx(
+                    "functional-btn",
+                    "rounded-circle",
+                    "d-flex",
+                    "justify-content-center",
+                    "align-items-center"
+                  )}
+                >
+                  <FontAwesomeIcon icon={faCopy} />
+                </AppButton>
+                <AppButton
+                  variant="app-btn-primary"
+                  className={cx(
+                    "functional-btn",
+                    "rounded-circle",
+                    "d-flex",
+                    "justify-content-center",
+                    "align-items-center"
+                  )}
+                >
+                  <FontAwesomeIcon icon={faShare} />
+                </AppButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

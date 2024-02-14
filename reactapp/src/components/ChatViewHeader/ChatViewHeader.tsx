@@ -39,14 +39,18 @@ const ChatViewHeader = () => {
 
   const handleToggleAside = () => setShowAside(!showAside);
   const handleClickAvatar = () => {
-    handleShowModal(activeConversation);
+    handleShowModal({ entityId: activeConversation });
   };
   const avatar =
     (receiver as User)?.avatarUrl ?? (receiver as Group)?.groupAvatarUrl;
   const name = (receiver as User)?.name ?? (receiver as Group)?.groupName;
   return (
     <>
-      <div role="button" className={cx("avatar-container")} onClick={handleClickAvatar}>
+      <div
+        role="button"
+        className={cx("avatar-container")}
+        onClick={handleClickAvatar}
+      >
         <Avatar
           src={receiver ? avatar : images.userIcon}
           className={cx("rounded-circle")}

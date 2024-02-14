@@ -1,6 +1,9 @@
 import { useGlobalState } from "../globalState";
 import { ModalType } from "../models";
-
+interface ModalProps {
+  entityId?: number;
+  modalType?: ModalType;
+}
 const useModal = () => {
   const [userId] = useGlobalState("userId");
   const [, setModalType] = useGlobalState("modalType");
@@ -10,7 +13,7 @@ const useModal = () => {
   const [, setActiveModal] = useGlobalState("activeModal");
   const [, setModalEntityId] = useGlobalState("modalEntityId");
 
-  const handleShowModal = (entityId: number, modalType?: ModalType) => {
+  const handleShowModal = ({ entityId, modalType }: ModalProps) => {
     let type: ModalType;
     if (messageType === "Group") {
       type = "Group";
@@ -20,8 +23,7 @@ const useModal = () => {
       const friend = friendList.filter((f) => f.friendId === entityId);
       type = friend[0] ? "Friend" : "Stranger";
     }
-    setModalEntityId(entityId);
-    console.log(modalType ?? type);
+    entityId && setModalEntityId(entityId);
     setModalType(modalType ?? type);
     setShowModal(true);
   };
@@ -31,7 +33,7 @@ const useModal = () => {
   };
   const handleToggleModal = (modalUserId: number) => {
     const state = !showModal;
-    state ? handleShowModal(modalUserId) : handleHideModal();
+    state ? handleShowModal({ entityId: modalUserId }) : handleHideModal();
     setShowModal(state);
   };
 
