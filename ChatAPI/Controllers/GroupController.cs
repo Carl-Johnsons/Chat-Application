@@ -76,12 +76,16 @@ namespace ChatAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateGroup([FromBody] GroupWithLeaderId group)
+        public IActionResult CreateGroup([FromBody] GroupWithMemberId group)
         {
             try
             {
-                _groupRepository.Add(group);
+                if (group.GroupMembers == null || group.GroupMembers.Count < 2)
+                {
+                    throw new Exception("Group can not initialize with member lower than 3");
+                }
 
+                _groupRepository.Add(group);
                 // After add the group to the database, the generated Id should have been attach to the group object
                 // Add relationshop for leader and group
                 _groupUserRepository.Add(new GroupUser()
@@ -90,6 +94,19 @@ namespace ChatAPI.Controllers
                     UserId = group.GroupLeaderId,
                     Role = GroupUserRole.LEADER
                 });
+
+                // Add relationship for group member
+
+                foreach (var memberId in group.GroupMembers)
+                {
+                    _groupUserRepository.Add(new GroupUser()
+                    {
+                        GroupId = group.GroupId,
+                        UserId = memberId,
+                        Role = GroupUserRole.MEMBER
+                    });
+                }
+
                 return CreatedAtAction(nameof(Get), new { id = group.GroupId }, group);
             }
             catch (Exception ex)
@@ -154,10 +171,13 @@ namespace ChatAPI.Controllers
         }
 
     }
-    public class GroupWithLeaderId : Group
+    public class GroupWithMemberId : Group
     {
         [Required]
         [JsonProperty("groupLeaderId")]
         public int GroupLeaderId { get; set; }
+        [Required]
+        [JsonProperty("groupMembers")]
+        public List<int> GroupMembers { get; set; } = null!;
     }
 }

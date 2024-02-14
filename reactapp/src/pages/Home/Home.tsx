@@ -54,7 +54,9 @@ const Home = () => {
           "flex-grow-1",
           "flex-md-grow-0",
           "flex-shrink-1",
-          "flex-sm-shrink-0"
+          "flex-sm-shrink-0",
+          "d-flex",
+          "flex-column"
         )}
       >
         <SidebarContent />

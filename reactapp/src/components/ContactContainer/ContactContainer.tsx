@@ -110,14 +110,9 @@ const ContactContainer = ({ className }: Props) => {
     }
   };
   return (
-    <>
+    <div className={cx(className)}>
       <div
-        className={cx(
-          "contact-page-header",
-          "d-flex",
-          "align-items-center",
-          className
-        )}
+        className={cx("contact-page-header", "d-flex", "align-items-center")}
       >
         <ContactHeader
           image={menuContacts[activeContactType].image}
@@ -166,7 +161,7 @@ const ContactContainer = ({ className }: Props) => {
             );
           })}
       </div>
-    </>
+    </div>
   );
 };
 

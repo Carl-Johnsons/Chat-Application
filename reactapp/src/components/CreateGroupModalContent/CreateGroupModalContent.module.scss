@@ -1,5 +1,5 @@
 $user-selection-container-width: 520px;
-$search-result-container-max-height: 376px;
+$search-result-container-height: 376px;
 
 /* Hide the default checkbox */
 input[type="checkbox"] {
@@ -31,6 +31,14 @@ input[type="checkbox"]:checked::before {
     transform: translate(-50%, -50%);
     font-family: Arial, sans-serif;
 }
+//Hide the file input
+input#fileInput {
+    visibility: hidden;
+    top: 0;
+    position: absolute;
+    left: -5000px;
+}
+
 .create-group-modal-content {
     width: 520px;
 }
@@ -59,7 +67,7 @@ input[type="checkbox"]:checked::before {
 .user-selection-container {
     width: $user-selection-container-width;
     .search-result-container {
-        max-height: $search-result-container-max-height;
+        height: $search-result-container-height;
     }
     .selected-user-container {
         width: 184px;

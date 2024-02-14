@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
 import classnames from "classnames/bind";
@@ -7,18 +7,41 @@ import AppButton from "../AppButton";
 import style from "./CreateGroupModalContent.module.scss";
 import Avatar from "../Avatar";
 import { useGlobalState } from "../../globalState";
-import { Friend } from "../../models";
+import { Friend, GroupWithMemberId } from "../../models";
+import { useModal } from "../../hooks";
+import { createGroup } from "../../services/group";
+import { uploadImage } from "../../services/tool/uploadImage.service";
 const cx = classnames.bind(style);
 
 const CreateGroupModalContent = () => {
+  const [userId] = useGlobalState("userId");
+  const [groupMap, setGroupMap] = useGlobalState("groupMap");
+  const { handleHideModal } = useModal();
   const [friendList] = useGlobalState("friendList");
-
   const [selectedUser, setSelectedUser] = useState<Friend[]>([]);
+  const [previewImgURL, setPreviewImgURL] = useState<string>();
+
+  const inputFileRef = useRef(null);
+  const [form, setForm] = useState({
+    avatarFile: null as unknown as File,
+    groupName: "",
+    searchValue: "",
+  });
+
+  console.log(form.avatarFile);
+
+  const filterFriendList = useMemo(() => {
+    return friendList.filter((f) =>
+      f.friendNavigation.name.includes(form.searchValue)
+    );
+  }, [form.searchValue, friendList]);
+
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, friendList.length);
   }, [friendList]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
 
@@ -41,6 +64,32 @@ const CreateGroupModalContent = () => {
       setSelectedUser([...selectedUser, friend]);
     }
   };
+  const handleAvatarInputChange =
+    useRef<(e: React.ChangeEvent<HTMLInputElement>) => void>();
+  useEffect(() => {
+    handleAvatarInputChange.current = (
+      e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      const file = e.target?.files?.[0];
+      if (!file) {
+        return;
+      }
+      previewImgURL && window.URL.revokeObjectURL(previewImgURL);
+      setForm((prev) => ({ ...prev, avatarFile: file }));
+      setPreviewImgURL(window.URL.createObjectURL(file));
+    };
+    return () => {
+      previewImgURL && window.URL.revokeObjectURL(previewImgURL);
+    };
+  }, [previewImgURL]);
+
+  const handleClickAvatarButton = () => {
+    if (!inputFileRef.current) {
+      return;
+    }
+    const inpEle = inputFileRef.current as HTMLElement;
+    inpEle.click();
+  };
   const handleDeleteSelectedUser = (index: number) => {
     inputRefs.current[index].checked = false;
     setSelectedUser([
@@ -48,6 +97,32 @@ const CreateGroupModalContent = () => {
       ...selectedUser.slice(index + 1, selectedUser.length),
     ]);
   };
+  const handleClickCreateGroup = async () => {
+    // A group is created if the member size is greater than 2
+    if (selectedUser.length < 2 || form.groupName.length <= 2) {
+      return;
+    }
+    //Upload img to imgur
+    const [imgurImage] = await uploadImage(form.avatarFile);
+
+    const members = selectedUser.map((f) => f.friendId);
+    const model: GroupWithMemberId = {
+      groupName: form.groupName,
+      groupLeaderId: userId,
+      groupMembers: members,
+      groupInviteUrl: "string",
+      groupAvatarUrl: imgurImage?.data.link ?? "",
+    };
+    const [newGroup] = await createGroup(model);
+    if (!newGroup || !newGroup.groupId) {
+      return;
+    }
+    const newMap = new Map(groupMap);
+    newMap.set(newGroup.groupId, newGroup);
+    setGroupMap(newMap);
+    handleHideModal();
+  };
+
   return (
     <div className={cx("create-group-modal-content")}>
       <div
@@ -60,8 +135,25 @@ const CreateGroupModalContent = () => {
         )}
       >
         <div>
-          <AppButton className={cx("avatar-btn", "rounded-circle")}>
-            <FontAwesomeIcon icon={faCamera} />
+          <input
+            ref={inputFileRef}
+            onChange={handleAvatarInputChange.current}
+            type="file"
+            id={cx("fileInput")}
+          />
+          <AppButton
+            className={cx("avatar-btn", "rounded-circle", "p-0")}
+            onClick={handleClickAvatarButton}
+          >
+            {previewImgURL ? (
+              <Avatar
+                className={cx("rounded-circle")}
+                src={previewImgURL}
+                alt="preview group img"
+              />
+            ) : (
+              <FontAwesomeIcon icon={faCamera} />
+            )}
           </AppButton>
         </div>
         <div className={cx("w-100", "ps-3")}>
@@ -69,6 +161,9 @@ const CreateGroupModalContent = () => {
             className={cx("input-group-name", "w-100", "pb-2")}
             type="text"
             placeholder="Nhập tên nhóm..."
+            onChange={(e) => {
+              setForm((prev) => ({ ...prev, groupName: e.target.value }));
+            }}
           />
         </div>
       </div>
@@ -88,7 +183,10 @@ const CreateGroupModalContent = () => {
         <input
           className={cx("input-search", "w-100", "border-0")}
           type="text"
-          placeholder="Nhập tên nhóm..."
+          onChange={(e) => {
+            setForm((prev) => ({ ...prev, searchValue: e.target.value }));
+          }}
+          placeholder="Nhập tên hoặc số điện thoại..."
         />
       </div>
       <div className={cx("user-selection-container", "mb-3", "d-flex")}>
@@ -102,9 +200,10 @@ const CreateGroupModalContent = () => {
             "w-100"
           )}
         >
-          {friendList.map((friend, index) => {
+          {filterFriendList.map((friend, index) => {
             return (
               <div
+                key={index}
                 className={cx("pt-2", "pb-2", "d-flex", "align-items-center")}
               >
                 <input
@@ -115,6 +214,7 @@ const CreateGroupModalContent = () => {
                   }}
                   id={index + ""}
                   onChange={handleChange}
+                  checked={selectedUser.includes(friend)}
                   data-friend-id={friend.friendId}
                 />
                 <label htmlFor={index + ""}>
@@ -136,10 +236,8 @@ const CreateGroupModalContent = () => {
             "flex-shrink-0"
           )}
         >
-          <label htmlFor=""> Đã chọn {selectedUser.length}/100</label>
+          <label> Đã chọn {selectedUser.length}/100</label>
           {selectedUser.map((friend, index) => {
-            console.log({ friend });
-
             const avatar = friend.friendNavigation.avatarUrl;
             const name = friend.friendNavigation.name;
             return (
@@ -154,13 +252,21 @@ const CreateGroupModalContent = () => {
                   "ps-3",
                   "pe-3",
                   "pt-1",
-                  "pb-1"
+                  "pb-1",
+                  "mb-1"
                 )}
               >
-                <div className={cx("d-flex", "align-items-center", "w-100")}>
+                <div
+                  className={cx(
+                    "d-flex",
+                    "align-items-center",
+                    "w-100",
+                    "pe-2"
+                  )}
+                >
                   <Avatar
                     variant="avatar-img-30px"
-                    className={cx("me-2", "rounded-circle")}
+                    className={cx("rounded-circle")}
                     src={avatar}
                     alt="user avatar"
                   />
@@ -168,6 +274,7 @@ const CreateGroupModalContent = () => {
                     className={cx(
                       "user-name-container",
                       "position-relative",
+                      "ms-2",
                       "w-100"
                     )}
                   >
@@ -201,10 +308,15 @@ const CreateGroupModalContent = () => {
         <AppButton
           variant="app-btn-primary"
           className={cx("fw-medium", "me-2")}
+          onClick={handleHideModal}
         >
           Hủy
         </AppButton>
-        <AppButton variant="app-btn-secondary" className={cx("fw-medium")}>
+        <AppButton
+          variant="app-btn-secondary"
+          className={cx("fw-medium")}
+          onClick={handleClickCreateGroup}
+        >
           Tạo nhóm
         </AppButton>
       </div>

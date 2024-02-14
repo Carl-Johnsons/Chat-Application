@@ -188,7 +188,10 @@ const SidebarContent = () => {
       </div>
       <div
         className={cx(
+          "overflow-y-scroll",
+          "overflow-x-hidden",
           "conversation-list",
+          "flex-grow-1",
           (activeNav !== 1 || isSearchBarFocus) && "d-none"
         )}
       >

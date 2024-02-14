@@ -3,6 +3,7 @@ export type { FriendRequest } from "./FriendRequest";
 export type { Group } from "./Group";
 export type { GroupMessage } from "./GroupMessage";
 export type { GroupUser } from "./GroupUser";
+export type { GroupWithMemberId } from "./GroupWithMemberId";
 export type { IndividualMessage } from "./IndividualMessage";
 export type { JwtToken } from "./JwtToken";
 export type { Message } from "./Message";

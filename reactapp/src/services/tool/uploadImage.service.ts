@@ -1,4 +1,4 @@
-import axiosInstance from "../../utils/Api/axios";
+import { ImgurImage } from "../../models/ImgurImage";
 
 /**
  * Upload an img using fetch API
@@ -6,14 +6,29 @@ import axiosInstance from "../../utils/Api/axios";
  * @returns
  */
 export const uploadImage = async (
-  file: string | Blob
-): Promise<[string | null, unknown]> => {
+  file: Blob
+): Promise<[ImgurImage | null, unknown]> => {
   try {
-    const url = "/api/Tools/UploadImageImgur/";
+    const url =
+      import.meta.env.VITE_BASE_API_URL + "/api/Tools/UploadImageImgur";
     const formData = new FormData();
     formData.append("ImageFile", file);
-    const response = await axiosInstance.post(url, formData);
-    return [response.data, null];
+    // This function is still error because axios always set content-type
+    // to application/json for no reason
+
+    // const response = await axiosInstance.post(url, formData, {
+    //   headers: {
+    //     "Content-Type": "multipart/form-data",
+    //   },
+    // });
+
+    // Using the old fashion is good for the mean time
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+    const imgurImage: ImgurImage = await response.json();
+    return [imgurImage, null];
   } catch (error) {
     return [null, error];
   }

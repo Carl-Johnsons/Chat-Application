@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 
@@ -12,7 +13,7 @@ namespace ChatAPI.Controllers
     {
 
         [HttpPost("UploadImageImgur")]
-        public async Task<string?> UploadAvatar(IFormFile ImageFile)
+        public async Task<IActionResult> UploadAvatar(IFormFile ImageFile)
         {
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             var imgurSection = config.GetSection("Imgur");
@@ -20,38 +21,30 @@ namespace ChatAPI.Controllers
             var clientSecret = imgurSection["ClientSecret"];
             try
             {
-                if (ImageFile != null && ImageFile.Length > 0)
+                if (ImageFile == null || ImageFile.Length == 0)
                 {
-                    using var httpClient = new HttpClient();
-                    using var form = new MultipartFormDataContent();
-                    using var stream = new MemoryStream();
-
-                    await ImageFile.CopyToAsync(stream);
-                    byte[] fileBytes = stream.ToArray();
-                    form.Add(new ByteArrayContent(fileBytes, 0, fileBytes.Length), "image", "image.png");
-
-                    //Authorization: Client-ID YOUR_CLIENT_ID
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", clientId);
-                    var img_response = await httpClient.PostAsync("https://api.imgur.com/3/upload", form);
-                    img_response.EnsureSuccessStatusCode();
-                    var responseContent = await img_response.Content.ReadAsStringAsync();
-                    var responseObject = JObject.Parse(responseContent);
-                    if (responseObject == null)
-                    {
-                        throw new Exception("response is null");
-                    }
-                    // Get the URL of the uploaded image
-                    var imageUrl = responseObject["data"]?["link"]?.Value<string>();
-                    return imageUrl;
+                    return BadRequest("File object is null");
                 }
+                using var httpClient = new HttpClient();
+                using var form = new MultipartFormDataContent();
+                using var stream = new MemoryStream();
 
+                await ImageFile.CopyToAsync(stream);
+                byte[] fileBytes = stream.ToArray();
+                form.Add(new ByteArrayContent(fileBytes, 0, fileBytes.Length), "image", "image.png");
+
+                //Authorization: Client-ID YOUR_CLIENT_ID
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", clientId);
+                var img_response = await httpClient.PostAsync("https://api.imgur.com/3/upload", form);
+                img_response.EnsureSuccessStatusCode();
+                var responseContent = await img_response.Content.ReadAsStringAsync();
+
+                return Content(responseContent, "application/json"); 
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-            return "img/user.png";
-
         }
     }
 }

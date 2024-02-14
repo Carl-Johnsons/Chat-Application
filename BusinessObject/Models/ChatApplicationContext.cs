@@ -77,12 +77,12 @@ public partial class ChatApplicationContext : DbContext
         {
             entity.HasOne(d => d.BlockedUser).WithMany()
                 .HasForeignKey(d => d.BlockedUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupBloc__Block__33D4B598");
 
             entity.HasOne(d => d.Group).WithMany()
                 .HasForeignKey(d => d.GroupId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupBloc__Group__32E0915F");
         });
         modelBuilder.Entity<GroupMessage>(entity =>
@@ -147,12 +147,12 @@ public partial class ChatApplicationContext : DbContext
         {
             entity.HasOne(d => d.Group).WithMany()
                 .HasForeignKey(d => d.GroupId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupUser__User");
 
             entity.HasOne(d => d.User).WithMany()
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__GroupUser__Group");
         });
 

@@ -170,7 +170,6 @@ namespace ChatAPI.Controllers
 
                 var claims = new[] {
                 new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
-                new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.MobilePhone,user.PhoneNumber),
                 new Claim(ClaimTypes.GivenName,user.Name),
             };
