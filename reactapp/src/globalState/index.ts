@@ -32,7 +32,7 @@ const initialState = {
   groupUserMap: new Map<number, number[]>(),
   // IndividualMessage | GroupMessage
   messageList: null as unknown as IndividualMessage[] | GroupMessage[],
-  messageType: null as unknown as MessageType,
+  messageType: "Individual" as MessageType,
   // Boolean
   isLeftShow: true,
   isRightShow: true,

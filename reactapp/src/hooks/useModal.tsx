@@ -4,21 +4,25 @@ import { ModalType } from "../models";
 const useModal = () => {
   const [userId] = useGlobalState("userId");
   const [, setModalType] = useGlobalState("modalType");
+  const [messageType] = useGlobalState("messageType");
   const [friendList] = useGlobalState("friendList");
   const [showModal, setShowModal] = useGlobalState("showModal");
   const [, setActiveModal] = useGlobalState("activeModal");
   const [, setModalEntityId] = useGlobalState("modalEntityId");
 
-  const handleShowModal = (entityId: number) => {
+  const handleShowModal = (entityId: number, modalType?: ModalType) => {
     let type: ModalType;
-    if (userId === entityId) {
+    if (messageType === "Group") {
+      type = "Group";
+    } else if (userId === entityId) {
       type = "Personal";
     } else {
       const friend = friendList.filter((f) => f.friendId === entityId);
       type = friend[0] ? "Friend" : "Stranger";
     }
     setModalEntityId(entityId);
-    setModalType(type);
+    console.log(modalType ?? type);
+    setModalType(modalType ?? type);
     setShowModal(true);
   };
   const handleHideModal = () => {

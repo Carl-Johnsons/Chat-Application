@@ -45,7 +45,6 @@ type Variants =
 
 const ProfileModalContent = (variant: Variants) => {
   const [modalEntityId] = useGlobalState("modalEntityId");
-  const [messageType] = useGlobalState("messageType");
   const [userMap, setUserMap] = useGlobalState("userMap");
   const [groupMap] = useGlobalState("groupMap");
   const [groupUserMap] = useGlobalState("groupUserMap");
@@ -66,7 +65,7 @@ const ProfileModalContent = (variant: Variants) => {
   const isPersonal = type === "Personal";
   const isFriend = type === "Friend";
   const isStranger = type === "Stranger";
-  const isGroup = messageType === "Group";
+  const isGroup = type === "Group";
 
   if (isPersonal) {
     ({ onClickUpdate, onClickEditAvatar, onClickEditUserName } = variant);
@@ -77,10 +76,9 @@ const ProfileModalContent = (variant: Variants) => {
   } else {
     ({ onClickMessaging } = variant);
   }
-  const entity =
-    messageType === "Individual"
-      ? userMap.get(modalEntityId)
-      : groupMap.get(modalEntityId);
+  const entity = !isGroup
+    ? userMap.get(modalEntityId)
+    : groupMap.get(modalEntityId);
 
   const userIdList = isGroup ? groupUserMap.get(modalEntityId) : undefined;
 
@@ -132,8 +130,7 @@ const ProfileModalContent = (variant: Variants) => {
           className={cx(
             "info-detail",
             "d-flex",
-            !isPersonal && "pb-4",
-            messageType === "Individual" && "individual"
+            !isGroup ? "individual" : "pb-4"
           )}
         >
           <div
@@ -190,7 +187,7 @@ const ProfileModalContent = (variant: Variants) => {
               "info-button-container",
               "d-flex",
               "justify-content-between",
-              "pt-2"
+              !isGroup && "pt-5"
             )}
           >
             {!isGroup && (

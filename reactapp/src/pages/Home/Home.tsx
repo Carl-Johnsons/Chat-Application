@@ -7,6 +7,7 @@ import SidebarContent from "../../components/SidebarContent";
 import ChatViewContainer from "../../components/ChatViewContainer";
 import ContactContainer from "../../components/ContactContainer/ContactContainer";
 import ModalContainer from "../../components/ModalContainer";
+import AsideContainer from "../../components/AsideContainer";
 
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";
@@ -86,7 +87,7 @@ const Home = () => {
             showAside && activeNav === 1 && "d-xl-block"
           )}
         >
-          <div>Aside</div>
+          <AsideContainer />
         </div>
       </div>
       <ModalContainer />

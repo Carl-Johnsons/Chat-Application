@@ -97,7 +97,7 @@ const ModalContainer = () => {
         modalContent: <ProfileModalContent type="Friend" />,
       },
     ];
-  } else {
+  } else if (modalType === "Stranger") {
     modalContentsRef.current = [
       {
         title: "Thông tin tài khoản",
@@ -108,6 +108,14 @@ const ModalContainer = () => {
             onClickSendFriendRequest={handleClickSendFriendRequest}
           />
         ),
+      },
+    ];
+  } else {
+    modalContentsRef.current = [
+      {
+        title: "Thông tin nhóm",
+        ref: profileRef,
+        modalContent: <ProfileModalContent type="Group" />,
       },
     ];
   }

@@ -84,7 +84,7 @@ const ChatViewBody = () => {
     }
 
     return messageContainers;
-  }, [messageList, userId]);
+  }, [messageList, messageType, userId, userMap]);
 
   return <>{createMessageItemContainer()}</>;
 };
