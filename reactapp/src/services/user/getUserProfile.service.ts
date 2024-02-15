@@ -5,8 +5,9 @@ export const getUserProfile = async (): Promise<[User | null, unknown]> => {
   try {
     const url = "/api/Users/Me";
     const response = await axiosInstance.get(url);
-
-    return [response.data, null];
+    const user: User = response.data;
+    user.isOnline = false;
+    return [user, null];
   } catch (error) {
     return [null, error];
   }

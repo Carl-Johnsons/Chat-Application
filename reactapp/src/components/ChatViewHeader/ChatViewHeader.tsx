@@ -16,26 +16,29 @@ const ChatViewHeader = () => {
   const [showAside, setShowAside] = useGlobalState("showAside");
   const [userMap] = useGlobalState("userMap");
   const [groupMap] = useGlobalState("groupMap");
+  const [groupUserMap] = useGlobalState("groupUserMap");
   const [messageType] = useGlobalState("messageType");
   const [activeConversation] = useGlobalState("activeConversation");
   //Local state
   const [receiver, setReceiver] = useState<User | Group>();
   // hook
   const { handleShowModal } = useModal();
+  const isGroup = messageType === "Group";
+
   useEffect(() => {
     if (activeConversation === 0) {
       return;
     }
 
-    if (messageType == "Individual" && userMap.has(activeConversation)) {
+    if (!isGroup && userMap.has(activeConversation)) {
       setReceiver(userMap.get(activeConversation));
       return;
     }
-    if (messageType == "Group" && groupMap.has(activeConversation)) {
+    if (isGroup && groupMap.has(activeConversation)) {
       setReceiver(groupMap.get(activeConversation));
       return;
     }
-  }, [activeConversation, groupMap, messageType, userMap]);
+  }, [activeConversation, groupMap, isGroup, userMap]);
 
   const handleToggleAside = () => setShowAside(!showAside);
   const handleClickAvatar = () => {
@@ -44,6 +47,7 @@ const ChatViewHeader = () => {
   const avatar =
     (receiver as User)?.avatarUrl ?? (receiver as Group)?.groupAvatarUrl;
   const name = (receiver as User)?.name ?? (receiver as Group)?.groupName;
+  const isOnline = (receiver as User)?.isOnline;
   return (
     <>
       <div
@@ -78,7 +82,13 @@ const ChatViewHeader = () => {
             {receiver && name}
           </div>
         </div>
-        <div className={cx("user-status")}>Vừa mới truy cập</div>
+        <div className={cx("user-status")}>
+          {isGroup
+            ? `${groupUserMap.get(activeConversation)?.length} thành viên`
+            : isOnline
+            ? "Online"
+            : "Offline"}
+        </div>
       </div>
       <div className={cx("icon-container", "ps")}>
         <AppButton

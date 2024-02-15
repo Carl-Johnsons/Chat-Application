@@ -9,7 +9,7 @@ import style from "./NavigationBar.module.scss";
 import className from "classnames/bind";
 import images from "../../assets";
 import { useModal, useScreenSectionNavigator } from "../../hooks";
-import { getUser } from "../../services/user";
+import { getUser, getUserProfile } from "../../services/user";
 
 const cx = className.bind(style);
 
@@ -26,27 +26,36 @@ const NavigationBar = () => {
   const { handleShowModal } = useModal();
   const [activeNav, setActiveNav] = useGlobalState("activeNav");
   const { handleClickScreenSection } = useScreenSectionNavigator();
+  const [, setUserId] = useGlobalState("userId");
   const [userId] = useGlobalState("userId");
   const [userMap, setUserMap] = useGlobalState("userMap");
-  const [connection] = useGlobalState("connection");
   const user = userMap.get(userId);
 
   useEffect(() => {
-    if (!userId || userMap.has(userId)) {
+    if (userId) {
       return;
     }
     const fetchUserData = async () => {
-      const [userData] = await getUser(userId);
-      if (userData) {
-        //  Create a shallow copy to mutate the map object,
-        // Using set method is not going to mutate the map so the component will not re-render
-        const newUserMap = new Map([...userMap]);
-        newUserMap.set(userId, userData);
-        setUserMap(newUserMap);
+
+      const [user] = await getUserProfile();
+      if (!user) {
+        return;
       }
+      setUserId(user.userId);
+
+      const [userData] = await getUser(user.userId);
+      
+      if (!userData) {
+        return;
+      }
+      //  Create a shallow copy to mutate the map object,
+      // Using set method is not going to mutate the map so the component will not re-render
+      const newUserMap = new Map([...userMap]);
+      newUserMap.set(user.userId, userData);
+      setUserMap(newUserMap);
     };
     fetchUserData();
-  }, [setUserMap, userId, userMap, connection]);
+  }, [setUserId, setUserMap, userId, userMap]);
 
   const items: NavItem[] = [
     {
@@ -76,6 +85,7 @@ const NavigationBar = () => {
       imageAlt: "Log out icon",
     },
   ];
+
   const handleClick = (linkId: number) => {
     handleClickScreenSection(true);
     if (linkId === 0) {

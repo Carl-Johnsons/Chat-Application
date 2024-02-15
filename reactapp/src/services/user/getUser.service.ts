@@ -11,7 +11,9 @@ export const getUser = async (
   try {
     const url = "/api/Users/" + userId;
     const response = await axiosInstance.get(url);
-    return [response.data, null];
+    const user: User = response.data;
+    user.isOnline = false;
+    return [user, null];
   } catch (error) {
     return [null, error];
   }

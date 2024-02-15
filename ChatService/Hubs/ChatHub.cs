@@ -43,22 +43,23 @@ namespace ChatService.Hubs
                 Console.WriteLine(ex.Message);
             }
             Console.Out.WriteLineAsync("============================");
-            await Clients.All.SendAsync("Connected");
+            var userIdOnlineList = UserConnectionMap.Select(uc => uc.Value);
+            await Clients.All.SendAsync("Connected", userIdOnlineList);
             await base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             await Console.Out.WriteLineAsync("Disconnected");
-            if (UserConnectionMap.TryRemove(Context.ConnectionId, out _))
+            if (UserConnectionMap.TryRemove(Context.ConnectionId, out int userDisconnectedId))
             {
                 Console.WriteLine($"Connection {Context.ConnectionId} disconnected and removed from UserConnectionMap.");
+                await Clients.All.SendAsync("Disconnected", userDisconnectedId);
             }
             else
             {
                 Console.WriteLine($"Connection {Context.ConnectionId} disconnected, but it was not found in UserConnectionMap.");
             }
             await Console.Out.WriteLineAsync("============================");
-            await Clients.All.SendAsync("Disconnected");
             await base.OnDisconnectedAsync(exception);
         }
         public async Task SendIndividualMessage(IndividualMessage individualMessage)

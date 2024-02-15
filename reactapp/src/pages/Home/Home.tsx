@@ -12,13 +12,10 @@ import AsideContainer from "../../components/AsideContainer";
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";
 import { useScreenSectionNavigator, useSignalRConnection } from "../../hooks";
-import { getUserProfile } from "../../services/user";
 
 const cx = classNames.bind(style);
 
 const Home = () => {
-  const [, setUserId] = useGlobalState("userId");
-  const [userMap] = useGlobalState("userMap");
   const [, setConnection] = useGlobalState("connection");
   const [showAside] = useGlobalState("showAside");
   const [activeNav] = useGlobalState("activeNav");
@@ -29,18 +26,6 @@ const Home = () => {
   useEffect(() => {
     conn && setConnection(conn);
   }, [conn, setConnection]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const [user] = await getUserProfile();
-      if (!user) {
-        return;
-      }
-      setUserId(user.userId);
-      userMap.set(user.userId, user);
-    };
-    fetchUserData();
-  }, [setUserId, userMap]);
 
   return (
     <div className={cx("container-fluid", "p-0", "d-flex", "w-100", "h-100")}>
