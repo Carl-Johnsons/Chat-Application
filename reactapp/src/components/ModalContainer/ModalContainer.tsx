@@ -54,11 +54,9 @@ const ModalContainer = () => {
   const handleClickSendFriendRequest = async () => {
     const currentUser = userMap.get(userId);
     if (!currentUser) {
-      console.log("current user is null");
       return;
     }
     const [fr, error] = await sendFriendRequest(currentUser, modalEntityId);
-    console.log(fr);
     if (!fr) {
       console.error(error);
       return;
@@ -150,7 +148,6 @@ const ModalContainer = () => {
             width: (item.ref.current as unknown as HTMLElement).offsetWidth,
             height: (item.ref.current as unknown as HTMLElement).offsetHeight,
           });
-          console.log((item.ref.current as unknown as HTMLElement).offsetWidth);
         }
       });
   }, [activeModal, showModal]);

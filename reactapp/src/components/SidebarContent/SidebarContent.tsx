@@ -91,6 +91,7 @@ const SidebarContent = () => {
       if (!friendListData) {
         return;
       }
+
       setFriendList(friendListData);
 
       const newMap = new Map(userMap);
@@ -99,6 +100,11 @@ const SidebarContent = () => {
         if (newMap.has(friend.friendNavigation.userId)) {
           continue;
         }
+        friend.friendNavigation = {
+          ...friend.friendNavigation,
+          isOnline: false,
+        };
+
         newMap.set(friend.friendNavigation.userId, friend.friendNavigation);
         isChange = true;
       }

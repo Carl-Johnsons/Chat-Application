@@ -50,7 +50,7 @@ const NavigationBar = () => {
       }
       //  Create a shallow copy to mutate the map object,
       // Using set method is not going to mutate the map so the component will not re-render
-      const newUserMap = new Map([...userMap]);
+      const newUserMap = new Map(userMap);
       newUserMap.set(user.userId, userData);
       setUserMap(newUserMap);
     };

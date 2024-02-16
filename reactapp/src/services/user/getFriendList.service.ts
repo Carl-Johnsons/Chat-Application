@@ -1,4 +1,4 @@
-import { Friend } from "../../models";
+import { DefaultUser, Friend } from "../../models";
 import axiosInstance from "../../utils/Api/axios";
 
 /**
@@ -13,15 +13,17 @@ export const getFriendList = async (
   try {
     const url = "/api/Users/GetFriend/" + userId;
     const response = await axiosInstance.get(url);
+    const friendList: Friend[] = response.data;
+    friendList.forEach(
+      (friend) =>
+        (friend.friendNavigation = {
+          ...DefaultUser,
+          ...friend.friendNavigation,
+        })
+    );
 
     return [response.data, null];
   } catch (error) {
     return [null, error];
   }
-  // Only get friendNavigation then convert it to array
-  //resolve(data.map(item => item.friendNavigation));
-
-  //refactor later (Uncomment)
-  //ChatApplicationNamespace.LoadFriendData(_FRIEND_LIST);
-  //ChatApplicationNamespace.LoadConversationList(_FRIEND_LIST);
 };

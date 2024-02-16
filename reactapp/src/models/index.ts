@@ -1,3 +1,4 @@
+export { DefaultUser } from "./DefaultUser";
 export type { Friend } from "./Friend";
 export type { FriendRequest } from "./FriendRequest";
 export type { Group } from "./Group";

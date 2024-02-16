@@ -15,7 +15,6 @@ const useIndividualMessageSubscription = (connection?: HubConnection) => {
     connection.on(SignalREvent.RECEIVE_INDIVIDUAL_MESSAGE, (json: string) => {
       const im: IndividualMessage = JSON.parse(json);
       if (activeConversation !== im.message.senderId) {
-        console.log("Not the current active conversation");
         return;
       }
       setMessageList([...(messageList as IndividualMessage[]), im]);

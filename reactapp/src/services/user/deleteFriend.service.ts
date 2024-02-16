@@ -11,13 +11,4 @@ export const deleteFriend = async (
   } catch (error) {
     return [null, error];
   }
-  //refactor later
-  //Notify other user
-  //_CONNECTION.invoke("DeleteFriend", friendObject.userId).catch(function (err) {
-  //    console.log("Error when notify deleting friend");
-  //});
-
-  //refactor later
-  //Updating friend list
-  //ChatApplicationNamespace.GetFriendList();
 };

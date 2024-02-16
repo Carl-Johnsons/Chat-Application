@@ -4,24 +4,33 @@ import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
 
 const useConnectedSubscription = (connection?: HubConnection) => {
-  const [, setConnectionState] = useGlobalState("connectionState");
+  const [userMap, setUserMap] = useGlobalState("userMap");
   useEffect(() => {
     if (!connection) {
       return;
     }
-    const handleConnectionStateChange = () => {
+    connection.on(SignalREvent.CONNECTED, (userIdOnlineList: number[]) => {
       if (!connection) {
         return;
       }
-      setConnectionState(connection?.state);
-    };
-    connection.on(SignalREvent.CONNECTED, () => {
-      handleConnectionStateChange();
+      let isChanged = false;
+      const newUserMap = new Map([...userMap]);
+      userIdOnlineList.forEach((userId) => {
+        const user = newUserMap.get(userId);
+        if (user) {
+          isChanged = true;
+          newUserMap.set(userId, { ...user, isOnline: true });
+        }
+      });
+      if (isChanged) {
+        setUserMap(newUserMap);
+      }
+      console.log("signalR Connected");
     });
     return () => {
       connection.off(SignalREvent.CONNECTED);
     };
-  }, [connection, setConnectionState]);
+  }, [connection, setUserMap, userMap]);
 };
 
 export default useConnectedSubscription;

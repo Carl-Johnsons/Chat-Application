@@ -1,5 +1,5 @@
 import axiosInstance from "../../utils/Api/axios";
-import { User } from "../../models";
+import { DefaultUser, User } from "../../models";
 
 /**
  * @param {number} userId
@@ -11,8 +11,8 @@ export const getUser = async (
   try {
     const url = "/api/Users/" + userId;
     const response = await axiosInstance.get(url);
-    const user: User = response.data;
-    user.isOnline = false;
+    const user: User = { ...DefaultUser, ...response.data };
+
     return [user, null];
   } catch (error) {
     return [null, error];

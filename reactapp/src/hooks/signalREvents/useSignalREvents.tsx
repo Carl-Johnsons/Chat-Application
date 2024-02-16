@@ -14,6 +14,7 @@ import useConnectedSubscription from "./useConnectedSubscription";
 import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
 import useDisableNotifyUserTypingSubscription from "./useDisableNotifyUserTypingSubscription";
 import useAcceptedFriendRequestSubscription from "./useAcceptedFriendRequestSubscription";
+import useDisconnectedSubscription from "./useDisconnectedSubscription";
 
 interface SignalREvent {
   name: string;
@@ -32,12 +33,13 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
   // global state
   const [connectionState] = useGlobalState("connectionState");
   // hook
-  useConnectedSubscription(connection);
-  useIndividualMessageSubscription(connection);
-  useFriendRequestSubscription(connection);
-  useNotifyUserTypingSubscription(connection);
-  useDisableNotifyUserTypingSubscription(connection);
   useAcceptedFriendRequestSubscription(connection);
+  useConnectedSubscription(connection);
+  useDisableNotifyUserTypingSubscription(connection);
+  useDisconnectedSubscription(connection);
+  useFriendRequestSubscription(connection);
+  useIndividualMessageSubscription(connection);
+  useNotifyUserTypingSubscription(connection);
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
