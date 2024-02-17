@@ -1,8 +1,15 @@
+import { useEffect, useState } from "react";
 import images from "../../assets";
-import { MessageType } from "../../models";
+import { useGlobalState } from "../../globalState";
+import { GroupMessage, IndividualMessage, MessageType } from "../../models";
+import {
+  getLastGroupMessage,
+  getLastIndividualMessage,
+} from "../../services/message";
 import Avatar from "../Avatar";
 import style from "./SideBarItem.module.scss";
 import classNames from "classnames/bind";
+import moment from "moment";
 
 const cx = classNames.bind(style);
 
@@ -11,7 +18,6 @@ type GroupConversationVariant = {
   groupId: number;
   image: string;
   conversationName: string;
-  lastMessage?: string;
   isActive?: boolean;
   isNewMessage?: boolean;
   onClick?: (groupId: number, type: MessageType) => void;
@@ -21,7 +27,6 @@ type ConversationVariant = {
   userId: number;
   image: string;
   conversationName: string;
-  lastMessage?: string;
   isActive?: boolean;
   isNewMessage?: boolean;
   onClick?: (userId: number, type: MessageType) => void;
@@ -42,6 +47,16 @@ type Variants =
   | GroupConversationVariant;
 
 const SideBarItem = (variant: Variants) => {
+  const [currentUserId] = useGlobalState("userId");
+  const [userMap] = useGlobalState("userMap");
+
+  //local state
+  const [lastMessage, setLastMessage] = useState<
+    IndividualMessage | GroupMessage | null
+  >();
+  const [descriptionContent, setDescriptionContent] = useState("");
+  const [timeContent, setTimeContent] = useState("");
+
   let userId: number = 0;
   let groupId: number = 0;
   let image: string = images.defaultAvatarImg;
@@ -49,37 +64,72 @@ const SideBarItem = (variant: Variants) => {
   let searchName: string = "";
   let phoneNumber: string = "";
   let isActive: boolean | undefined;
-  let lastMessage: string | undefined;
   let isNewMessage: boolean | undefined;
   let onClick: ((id: number, type: MessageType) => void) | undefined;
 
-  if (variant.type === "conversation") {
-    ({
-      userId,
-      image,
-      conversationName,
-      lastMessage,
-      isActive,
-      isNewMessage,
-      onClick,
-    } = variant);
-  } else if (variant.type === "searchItem") {
+  const isConversation = variant.type === "conversation";
+  const isSearchItem = variant.type === "searchItem";
+  const isGroupConversation = variant.type === "groupConversation";
+  if (isConversation) {
+    ({ userId, image, conversationName, isActive, isNewMessage, onClick } =
+      variant);
+  } else if (isSearchItem) {
     ({ userId, image, searchName, phoneNumber, isActive, onClick } = variant);
-  } else if (variant.type === "groupConversation") {
-    ({
-      groupId,
-      image,
-      conversationName,
-      lastMessage,
-      isActive,
-      isNewMessage,
-      onClick,
-    } = variant);
+  } else if (isGroupConversation) {
+    ({ groupId, image, conversationName, isActive, isNewMessage, onClick } =
+      variant);
   }
+  // Fetch last message if this component is a conversation
+  useEffect(() => {
+    const fetchLastMessage = async () => {
+      if (isConversation) {
+        const [data] = await getLastIndividualMessage(currentUserId, userId);
+        setLastMessage(data);
+      } else if (isGroupConversation) {
+        console.log({ groupId });
+        const [data] = await getLastGroupMessage(groupId);
+        setLastMessage(data);
+      }
+    };
+    fetchLastMessage();
+  }, [currentUserId, groupId, isConversation, isGroupConversation, userId]);
+  // Description
+  useEffect(() => {
+    if (!isSearchItem && lastMessage) {
+      const sender =
+        currentUserId === lastMessage.message.senderId
+          ? "You: "
+          : isGroupConversation
+          ? `${userMap.get(lastMessage.message.senderId)?.name}: `
+          : "";
+
+      setDescriptionContent(
+        lastMessage ? `${sender}${lastMessage.message.content}` : ""
+      );
+    } else {
+      setDescriptionContent(phoneNumber && `Phone Number: ${phoneNumber}`);
+    }
+  }, [
+    currentUserId,
+    isGroupConversation,
+    isSearchItem,
+    lastMessage,
+    phoneNumber,
+    userMap,
+  ]);
+  // Time
+  useEffect(() => {
+    if (!lastMessage) {
+      return;
+    }
+    const d = new Date(lastMessage.message.time + "");
+    const formattedDate = moment(d).fromNow(true);
+    setTimeContent(formattedDate);
+  }, [lastMessage]);
   return (
     <div
       className={cx(
-        "conversation",
+        "side-bar-item",
         "w-100",
         "position-relative",
         "d-flex",
@@ -115,17 +165,11 @@ const SideBarItem = (variant: Variants) => {
           alt="user avatar"
         />
       </div>
-      <div className={cx("conversation-description", "flex-grow-1")}>
-        <div
-          className={cx(
-            "conversation-name-container",
-            "mt-2",
-            "position-relative"
-          )}
-        >
+      <div className={cx("item-description", "flex-grow-1")}>
+        <div className={cx("item-name-container", "mt-2", "position-relative")}>
           <div
             className={cx(
-              "conversation-name",
+              "item-name",
               "text-truncate",
               "position-absolute",
               "top-0",
@@ -140,16 +184,11 @@ const SideBarItem = (variant: Variants) => {
               : searchName}
           </div>
         </div>
-        <div
-          className={cx(
-            "conversation-last-message-container",
-            "position-relative"
-          )}
-        >
+        <div className={cx("description-container", "position-relative")}>
           {/* This container need position absolute to truncate text dynamically based on the parent size */}
           <div
             className={cx(
-              "conversation-last-message",
+              "description",
               "text-truncate",
               "position-absolute",
               "top-0",
@@ -158,13 +197,11 @@ const SideBarItem = (variant: Variants) => {
               "bottom-0"
             )}
           >
-            {lastMessage
-              ? `Last Message: ${lastMessage}`
-              : phoneNumber && `Phone Number: ${phoneNumber}`}
+            {descriptionContent}
           </div>
         </div>
       </div>
-      {variant.type === "conversation" && (
+      {!isSearchItem && (
         <>
           <div
             className={cx(
@@ -176,7 +213,7 @@ const SideBarItem = (variant: Variants) => {
               "top-0"
             )}
           >
-            Hôm qua
+            {timeContent}
           </div>
           <div
             className={cx(

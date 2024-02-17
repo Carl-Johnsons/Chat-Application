@@ -1,4 +1,4 @@
-.conversation {
+.side-bar-item {
     height: 4rem;
     transition: background-color 0.15s ease-in-out;
     padding-left: 20px;
@@ -10,17 +10,17 @@
     &.active {
         background-color: var(--light-blue);
     }
-    .conversation-description {
-        .conversation-name-container {
+    .item-description {
+        .item-name-container {
             font-size: 16px;
             width: 80%;
             height: 24px;
         }
-        .conversation-last-message-container {
+        .description-container {
             font-size: 14px;
             width: 80%;
             height: 20px;
-            .conversation-last-message {
+            .description {
                 color: #788ba4;
             }
         }
@@ -37,12 +37,8 @@
             height: 16px;
             transform: translate(-100%, -80%);
         }
-        .conversation-description {
-            .conversation-last-message-container {
-                .conversation-last-message {
-                    color: black;
-                }
-            }
+        .description-container {
+            color: black;
         }
     }
 }

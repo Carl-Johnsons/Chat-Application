@@ -212,7 +212,6 @@ const SidebarContent = () => {
                 userId={userId}
                 image={avatarUrl}
                 conversationName={name}
-                lastMessage="Hello world lllllldasfasgjhasjgkhsagjsllllllllllll"
                 onClick={handleClickConversation}
                 isActive={
                   activeConversation === userId && messageType == "Individual"
@@ -230,7 +229,6 @@ const SidebarContent = () => {
                 groupId={groupId}
                 image={groupAvatarUrl}
                 conversationName={groupName}
-                lastMessage="Hello world lllllldasfasgjhasjgkhsagjsllllllllllll"
                 onClick={handleClickConversation}
                 isActive={
                   activeConversation === groupId && messageType == "Group"
@@ -238,31 +236,6 @@ const SidebarContent = () => {
               />
             );
           })}
-        {/* <Conversation
-          userId={1}
-          image={images.defaultAvatarImg}
-          conversationName="Đức"
-          lastMessage="You: Hello world lllllldasfasgjhasjgkhsagjsllllllllllll"
-          onClick={handleClickConversation}
-          isActive={activeConversation == 1}
-        />
-        <Conversation
-          userId={2}
-          image={images.defaultAvatarImg}
-          conversationName="A"
-          lastMessage="This is very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooong string"
-          onClick={handleClickConversation}
-          isActive={activeConversation == 2}
-        />
-        <Conversation
-          userId={3}
-          image={images.defaultAvatarImg}
-          conversationName="This name is very loooooooooooooooooooooooooooooooooooooooooooooooooooooooong"
-          lastMessage="This is very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooong string"
-          onClick={handleClickConversation}
-          isActive={activeConversation == 3}
-          isNewMessage={true}
-        /> */}
       </div>
       <div className={cx((activeNav !== 2 || isSearchBarFocus) && "d-none")}>
         {menuContacts.map((menuContact, index) => (

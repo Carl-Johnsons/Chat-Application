@@ -3,6 +3,7 @@ import { useGlobalState } from "../../globalState";
 import style from "./Message.module.scss";
 import classNames from "classnames/bind";
 import { getUser } from "../../services/user";
+import moment from "moment";
 
 const cx = classNames.bind(style);
 interface Props {
@@ -51,7 +52,7 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
         </div>
       )}
       <div className={cx("content", "mb-2")}>{content}</div>
-      <div className={cx("time")}>{time}</div>
+      <div className={cx("time")}>{moment(new Date(time)).format("HH:mm")}</div>
     </div>
   );
 };

@@ -7,7 +7,7 @@ import axiosInstance from "../../utils/Api/axios";
  * @param receiverId
  * @returns
  */
-export const getLastIndividualMessageList = async (
+export const getLastIndividualMessage = async (
   senderId: number,
   receiverId: number
 ): Promise<[IndividualMessage | null, unknown]> => {
