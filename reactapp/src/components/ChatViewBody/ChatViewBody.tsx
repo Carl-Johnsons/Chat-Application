@@ -6,8 +6,12 @@ import classNames from "classnames/bind";
 import Message from "../Message";
 import Avatar from "../Avatar";
 import images from "../../assets";
-import { getNextIndividualMessageList } from "../../services/message/getNextIndividualMessageList.service";
-import { IndividualMessage } from "../../models";
+import { GroupMessage, IndividualMessage } from "../../models";
+import {
+  getNextGroupMessageList,
+  getNextIndividualMessageList,
+} from "../../services/message";
+import useDebounce from "../../hooks/useDebounce";
 
 const cx = classNames.bind(style);
 
@@ -40,28 +44,41 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     if (!userId || !activeConversation || isConversationEmpty.current) {
       return;
     }
-    console.log("Fetching data....");
+    const skipBatch = skipBatchRef.current;
+    let ml: IndividualMessage[] | GroupMessage[] | null = null;
     if (messageType === "Individual") {
-      const skipBatch = skipBatchRef.current;
-      const [ml] = await getNextIndividualMessageList(
+      const [data] = await getNextIndividualMessageList(
         userId,
         activeConversation,
         skipBatch
       );
-      if (!ml || ml.length === 0) {
-        console.log("message list empty");
-        isConversationEmpty.current = true;
+      ml = data;
+    } else if (messageType === "Group") {
+      const [data] = await getNextGroupMessageList(
+        activeConversation,
+        skipBatch
+      );
+      ml = data;
+    }
+    if (ml === null || ml.length === 0) {
+      isConversationEmpty.current = true;
+      return;
+    }
+    const firstOldMessage = messageList[0];
+    firstOldMessageIdRef.current = firstOldMessage.messageId;
+    isFetchNextBatchRef.current = true;
+    skipBatchRef.current = skipBatch + 1;
+    setTimeout(() => {
+      if (ml === null) {
         return;
       }
-      const firstOldMessage = messageList[0];
-      firstOldMessageIdRef.current = firstOldMessage.messageId;
-      setTimeout(() => {
-        isFetchNextBatchRef.current = true;
-        skipBatchRef.current = skipBatch + 1;
-        setMessageList([...ml, ...(messageList as IndividualMessage[])]);
-      }, 500);
-    }
+      setMessageList([...ml, ...messageList] as
+        | GroupMessage[]
+        | IndividualMessage[]);
+    }, 100);
   }, [activeConversation, messageList, messageType, setMessageList, userId]);
+
+  const debounceFetchData = useDebounce(fethNextBatch, 100);
 
   const onScroll = useCallback(() => {
     if (!messageContainerRef.current) {
@@ -70,9 +87,9 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     const { scrollTop } = messageContainerRef.current as HTMLElement;
     const isNearTop = Math.round(scrollTop) < 1;
     if (isNearTop) {
-      fethNextBatch();
+      debounceFetchData();
     }
-  }, [fethNextBatch]);
+  }, [debounceFetchData]);
 
   useEffect(() => {
     if (!messageContainerRef.current) {
@@ -87,7 +104,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
   }, [onScroll]);
 
   const scrollToLastMessage = () => {
-    console.log(isFetchNextBatchRef.current);
 
     if (!messageContainerRef.current || isFetchNextBatchRef.current) {
       return;
@@ -110,7 +126,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     if (!ele) {
       return;
     }
-    // console.log({ messageList });
     containerEle.scrollTop = ele.offsetTop - 20;
     isFetchNextBatchRef.current = false;
   };

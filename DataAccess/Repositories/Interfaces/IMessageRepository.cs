@@ -20,6 +20,7 @@ namespace DataAccess.Repositories.Interfaces
         // ======================= Group message =======================
         public List<GroupMessage> GetGroupMessageList();
         public List<GroupMessage> GetGroupMessageList(int groupReceiverId);
+        public List<GroupMessage> GetGroupMessageList(int groupReceiverId, int skipBatch);
         public GroupMessage? GetLastGroupMessage(int groupReceiverId);
         public int AddGroupMessage(GroupMessage groupMessage);
         public int DeleteGroupMessage(int messageId);

@@ -87,6 +87,12 @@ namespace ChatAPI.Controllers
             return Ok(gmList);
         }
 
+        [HttpGet("GetGroupMessage/{groupId}/skip/{skipBatch}")]
+        public IActionResult GetGroupMessage(int groupId, int skipBatch)
+        {
+            var gmList = messageRepository.GetGroupMessageList(groupId, skipBatch);
+            return Ok(gmList);
+        }
         [HttpPost("SendIndividualMessage")]
         public IActionResult SendIndividualMessage([FromBody] IndividualMessage individualMessage)
         {

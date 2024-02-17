@@ -1,4 +1,5 @@
-﻿using BussinessObject.Models;
+﻿using BussinessObject.Constants;
+using BussinessObject.Models;
 using DataAccess.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,23 @@ namespace DataAccess.DAOs
             var groupMessages = _context.GroupMessages
                                 .Include(gm => gm.Message)
                                 .Where(gm => gm.GroupReceiverId == groupId)
+                                .OrderByDescending(gm => gm.MessageId)
+                                .Take(MessageConstant.LIMIT)
+                                .OrderBy(gm => gm.MessageId)
+                                .ToList();
+            return groupMessages;
+        }
+        public List<GroupMessage> GetByGroupId(int? groupId, int skipBatch)
+        {
+            validation.EnsureGroupIdNotNull(groupId);
+            using var _context = new ChatApplicationContext();
+            var groupMessages = _context.GroupMessages
+                                .Include(gm => gm.Message)
+                                .Where(gm => gm.GroupReceiverId == groupId)
+                                .OrderByDescending(gm => gm.MessageId)
+                                .Skip(skipBatch * MessageConstant.LIMIT)
+                                .Take(MessageConstant.LIMIT)
+                                .OrderBy(gm => gm.MessageId)
                                 .ToList();
             return groupMessages;
         }

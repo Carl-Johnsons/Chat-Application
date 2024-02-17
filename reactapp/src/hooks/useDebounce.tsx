@@ -1,14 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import useTimeout from "./useTimeout";
 
-const useDebounce = (
-  callback: (...args: unknown[]) => void,
-  delay: number,
-  dependencies: unknown[]
-) => {
+const useDebounce = (callback: (...args: unknown[]) => void, delay: number) => {
   const { reset, clear } = useTimeout(callback, delay);
-  useEffect(reset, [...dependencies, reset]);
+  const debounceCallback = useMemo(() => reset, [reset]);
   useEffect(clear, [clear]);
+  return debounceCallback;
 };
 
 export default useDebounce;

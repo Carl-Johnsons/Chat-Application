@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import AppButton from "../AppButton";
 
 import style from "./ChatViewFooter.module.scss";
@@ -31,20 +31,18 @@ const ChatViewFooter = () => {
   const [connection] = useGlobalState("connection");
   // hook
   const invokeAction = useSignalREvents({ connection: connection });
-
+  const debounceInvokeAction = useDebounce(() => {
+    invokeAction(signalRDisableNotifyUserTyping(model));
+  }, 1000);
   const model: SenderReceiverArray = {
     senderIdList: [userId],
     receiverIdList: [activeConversation],
   };
   // debounce to remove the user typing notification
-  useDebounce(
-    () => {
-      invokeAction(signalRDisableNotifyUserTyping(model));
-    },
-    1000,
-    [inputValue]
-  );
-
+  useEffect(() => {
+    debounceInvokeAction();
+  }, [debounceInvokeAction, inputValue]);
+  
   const fetchSendMessage = async () => {
     // This active conversation may be wrong for the group message. Implement later
     if (messageType == "Individual") {

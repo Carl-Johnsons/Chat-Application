@@ -26,6 +26,7 @@ namespace DataAccess.Repositories
         // ======================= Group message =======================
         public List<GroupMessage> GetGroupMessageList() => GroupMessageIntance.Get();
         public List<GroupMessage> GetGroupMessageList(int groupReceiverId) => GroupMessageIntance.GetByGroupId(groupReceiverId);
+        public List<GroupMessage> GetGroupMessageList(int groupReceiverId, int skipBatch) => GroupMessageIntance.GetByGroupId(groupReceiverId, skipBatch);
         public GroupMessage? GetLastGroupMessage(int groupReceiverId)
         {
             throw new NotImplementedException();
