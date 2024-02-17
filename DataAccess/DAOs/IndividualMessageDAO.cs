@@ -1,4 +1,5 @@
-﻿using BussinessObject.Models;
+﻿using BussinessObject.Constants;
+using BussinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,24 @@ namespace DataAccess.DAOs
                 .Where(im =>
                     (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
                     || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
+                .OrderByDescending(im => im.MessageId)
+                .Take(MessageConstant.LIMIT)
+                .OrderBy(im => im.MessageId)
+                .ToList();
+            return individualMessages;
+        }
+        public List<IndividualMessage> Get(int senderId, int receiverId, int skipBatch)
+        {
+            using var _context = new ChatApplicationContext();
+            var individualMessages = _context.IndividualMessages
+                .Include(im => im.Message)
+                .Where(im =>
+                    (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
+                    || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
+                .OrderByDescending(im => im.MessageId)
+                .Skip(skipBatch * MessageConstant.LIMIT)
+                .Take(MessageConstant.LIMIT)
+                .OrderBy(im => im.MessageId)
                 .ToList();
             return individualMessages;
         }

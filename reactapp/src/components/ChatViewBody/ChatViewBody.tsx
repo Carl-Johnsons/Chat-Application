@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { HTMLProps, memo, useCallback, useEffect, useRef } from "react";
 import { useGlobalState } from "../../globalState";
 
 import style from "./ChatViewBody.module.scss";
@@ -6,14 +6,117 @@ import classNames from "classnames/bind";
 import Message from "../Message";
 import Avatar from "../Avatar";
 import images from "../../assets";
+import { getNextIndividualMessageList } from "../../services/message/getNextIndividualMessageList.service";
+import { IndividualMessage } from "../../models";
 
 const cx = classNames.bind(style);
 
-const ChatViewBody = () => {
+const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
+  // Transform from array to object
+  const mergedProps = Object.assign({}, ...htmlProp);
+
   const [userId] = useGlobalState("userId");
   const [userMap] = useGlobalState("userMap");
-  const [messageList] = useGlobalState("messageList");
+  const [messageList, setMessageList] = useGlobalState("messageList");
   const [messageType] = useGlobalState("messageType");
+  const [activeConversation] = useGlobalState("activeConversation");
+
+  const messageContainerRef = useRef(null);
+  // For determine whether to keep the original scroll pos or scroll to bottm
+  const isFetchNextBatchRef = useRef(false);
+  // To check whether the conversation is empty in order not to call API whenever the scroll pos reach the top
+  const isConversationEmpty = useRef(false);
+  const skipBatchRef = useRef(1);
+  const firstOldMessageIdRef = useRef<number | null>();
+
+  // Reset flag variable if change conversation
+  useEffect(() => {
+    skipBatchRef.current = 1;
+    isFetchNextBatchRef.current = false;
+    isConversationEmpty.current = false;
+  }, [activeConversation, messageType]);
+
+  const fethNextBatch = useCallback(async () => {
+    if (!userId || !activeConversation || isConversationEmpty.current) {
+      return;
+    }
+    console.log("Fetching data....");
+    if (messageType === "Individual") {
+      const skipBatch = skipBatchRef.current;
+      const [ml] = await getNextIndividualMessageList(
+        userId,
+        activeConversation,
+        skipBatch
+      );
+      if (!ml || ml.length === 0) {
+        console.log("message list empty");
+        isConversationEmpty.current = true;
+        return;
+      }
+      const firstOldMessage = messageList[0];
+      firstOldMessageIdRef.current = firstOldMessage.messageId;
+      setTimeout(() => {
+        isFetchNextBatchRef.current = true;
+        skipBatchRef.current = skipBatch + 1;
+        setMessageList([...ml, ...(messageList as IndividualMessage[])]);
+      }, 500);
+    }
+  }, [activeConversation, messageList, messageType, setMessageList, userId]);
+
+  const onScroll = useCallback(() => {
+    if (!messageContainerRef.current) {
+      return;
+    }
+    const { scrollTop } = messageContainerRef.current as HTMLElement;
+    const isNearTop = Math.round(scrollTop) < 1;
+    if (isNearTop) {
+      fethNextBatch();
+    }
+  }, [fethNextBatch]);
+
+  useEffect(() => {
+    if (!messageContainerRef.current) {
+      return;
+    }
+    const ele = messageContainerRef.current as HTMLElement;
+    ele.addEventListener("scroll", onScroll);
+
+    return () => {
+      ele.removeEventListener("scroll", onScroll);
+    };
+  }, [onScroll]);
+
+  const scrollToLastMessage = () => {
+    console.log(isFetchNextBatchRef.current);
+
+    if (!messageContainerRef.current || isFetchNextBatchRef.current) {
+      return;
+    }
+    const ele = messageContainerRef.current as HTMLElement;
+    ele.scrollTop = ele.scrollHeight;
+  };
+  const scrollToFirstOldMessage = () => {
+    if (
+      !firstOldMessageIdRef.current ||
+      !messageContainerRef.current ||
+      !isFetchNextBatchRef.current
+    ) {
+      return;
+    }
+    const containerEle = messageContainerRef.current as HTMLElement;
+    const ele = document.getElementById(
+      `message_${firstOldMessageIdRef.current}`
+    );
+    if (!ele) {
+      return;
+    }
+    // console.log({ messageList });
+    containerEle.scrollTop = ele.offsetTop - 20;
+    isFetchNextBatchRef.current = false;
+  };
+
+  useEffect(scrollToLastMessage, [messageList]);
+  useEffect(scrollToFirstOldMessage, [messageList]);
 
   const createMessageItemContainer = useCallback(() => {
     if (!messageList || messageList.length === 0) {
@@ -68,11 +171,14 @@ const ChatViewBody = () => {
               return (
                 <Message
                   key={im.messageId}
-                  userId={im.message.senderId}
-                  content={im.message.content}
-                  time={im.message.time ?? ""}
+                  message={{
+                    userId: im.message.senderId,
+                    content: im.message.content,
+                    time: im.message.time ?? "",
+                  }}
                   sender={isSender}
                   showUsername={index === 0}
+                  id={`message_${im.message.messageId}`}
                 />
               );
             })}
@@ -86,7 +192,11 @@ const ChatViewBody = () => {
     return messageContainers;
   }, [messageList, messageType, userId, userMap]);
 
-  return <>{createMessageItemContainer()}</>;
+  return (
+    <div ref={messageContainerRef} {...mergedProps}>
+      {createMessageItemContainer()}
+    </div>
+  );
 };
 
 export default memo(ChatViewBody);

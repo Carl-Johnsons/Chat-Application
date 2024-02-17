@@ -13,6 +13,7 @@ namespace DataAccess.Repositories.Interfaces
         // ======================= Individual message ==================
         public List<IndividualMessage> GetIndividualMessageList();
         public List<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId);
+        public List<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId, int skipBatch);
         public IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId);
         public int AddIndividualMessage(IndividualMessage individualMessage);
         public int DeleteIndividualMessage(int messageId);

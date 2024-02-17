@@ -53,6 +53,16 @@ namespace ChatAPI.Controllers
             }
             return Ok(individualMessages);
         }
+        [HttpGet("GetIndividualMessage/{senderId}/{receiverId}/skip/{skipBatch}")]
+        public IActionResult GetIndividualMessage(int senderId, int receiverId, int skipBatch)
+        {
+            var individualMessages = messageRepository.GetIndividualMessageList(senderId, receiverId, skipBatch);
+            if (individualMessages == null)
+            {
+                return NotFound();
+            }
+            return Ok(individualMessages);
+        }
 
         [HttpGet("GetLastIndividualMessage/{senderId}/{receiverId}")]
         public IActionResult GetLastIndividualMessage(int senderId, int receiverId)

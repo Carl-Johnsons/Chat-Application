@@ -18,6 +18,7 @@ namespace DataAccess.Repositories
         // ======================= Individual message ==================
         public List<IndividualMessage> GetIndividualMessageList() => IndividualMessageInstance.Get();
         public List<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId) => IndividualMessageInstance.Get(senderId, receiverId);
+        public List<IndividualMessage> GetIndividualMessageList(int senderId, int receiverId, int skipBatch) => IndividualMessageInstance.Get(senderId, receiverId, skipBatch);
         public IndividualMessage? GetLastIndividualMessage(int senderId, int receiverId) => IndividualMessageInstance.GetLastMessage(senderId, receiverId);
         public int AddIndividualMessage(IndividualMessage individualMessage) => IndividualMessageInstance.Add(individualMessage);
         public int DeleteIndividualMessage(int messageId) => IndividualMessageInstance.Delete(messageId);

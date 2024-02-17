@@ -6,7 +6,7 @@ import ChatViewFooter from "../ChatViewFooter";
 import style from "./ChatViewContainer.module.scss";
 import classNames from "classnames/bind";
 
-import { memo, useEffect, useRef } from "react";
+import { memo } from "react";
 import ChatViewBody from "../ChatViewBody";
 
 const cx = classNames.bind(style);
@@ -15,19 +15,9 @@ interface Props {
 }
 
 const ChatViewContainer = ({ className }: Props) => {
-  const [messageList] = useGlobalState("messageList");
   const [userMap] = useGlobalState("userMap");
   const [userTypingId] = useGlobalState("userTypingId");
   const userTyping = userMap.get(userTypingId ?? 0);
-
-  const messageContainerRef = useRef(null);
-
-  useEffect(() => {
-    if (messageContainerRef.current) {
-      const ele = messageContainerRef.current as HTMLElement;
-      ele.scrollTop = ele.scrollHeight;
-    }
-  }, [messageList]);
 
   return (
     <div
@@ -50,12 +40,9 @@ const ChatViewContainer = ({ className }: Props) => {
           "overflow-y-hidden"
         )}
       >
-        <div
-          ref={messageContainerRef}
+        <ChatViewBody
           className={cx("message-container", "overflow-y-scroll")}
-        >
-          <ChatViewBody />
-        </div>
+        />
         {userTyping && (
           <div className={cx("user-input-notification")}>
             User {userTyping.name} is typing ...

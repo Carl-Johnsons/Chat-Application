@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { HTMLProps, useEffect } from "react";
 import { useGlobalState } from "../../globalState";
 import style from "./Message.module.scss";
 import classNames from "classnames/bind";
@@ -6,14 +6,23 @@ import { getUser } from "../../services/user";
 
 const cx = classNames.bind(style);
 interface Props {
-  userId: number;
-  content: string;
-  time: string;
+  message: {
+    userId: number;
+    content: string;
+    time: string;
+  };
   showUsername?: boolean;
   sender?: boolean;
 }
-const Message = ({ userId, content, time, showUsername, sender }: Props) => {
+const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
+  message,
+  showUsername,
+  sender,
+  ...htmlProp
+}) => {
+  const mergeProp = Object.assign(htmlProp);
   const [userMap, setUserMap] = useGlobalState("userMap");
+  const { userId, content, time } = message;
   const user = userMap.get(userId);
   // Map unknown user in the group
   useEffect(() => {
@@ -32,7 +41,10 @@ const Message = ({ userId, content, time, showUsername, sender }: Props) => {
     fetchUserInGroup();
   }, [setUserMap, user, userId, userMap]);
   return (
-    <div className={cx("message", "mb-1", "text-break", sender && "sender")}>
+    <div
+      className={cx("message", "mb-1", "text-break", sender && "sender")}
+      {...mergeProp}
+    >
       {showUsername && (
         <div className={cx("user-name", "mb-1")}>
           {user?.name ?? "Annonymous"}
