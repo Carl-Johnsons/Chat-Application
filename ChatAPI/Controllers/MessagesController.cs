@@ -93,6 +93,17 @@ namespace ChatAPI.Controllers
             var gmList = messageRepository.GetGroupMessageList(groupId, skipBatch);
             return Ok(gmList);
         }
+
+        [HttpGet("GetLastGroupMessage/{groupId}")]
+        public IActionResult GetLastGroupMessage(int groupId)
+        {
+            var lastGroupMessage = messageRepository.GetLastGroupMessage(groupId);
+            if (lastGroupMessage == null)
+            {
+                return NotFound();
+            }
+            return Ok(lastGroupMessage);
+        }
         [HttpPost("SendIndividualMessage")]
         public IActionResult SendIndividualMessage([FromBody] IndividualMessage individualMessage)
         {

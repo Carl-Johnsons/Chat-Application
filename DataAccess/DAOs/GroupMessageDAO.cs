@@ -33,7 +33,7 @@ namespace DataAccess.DAOs
                    .Include(gm => gm.Message)
                    .ToList();
         }
-        public List<GroupMessage> GetByGroupId(int? groupId)
+        public List<GroupMessage> Get(int? groupId)
         {
             validation.EnsureGroupIdNotNull(groupId);
             using var _context = new ChatApplicationContext();
@@ -46,7 +46,7 @@ namespace DataAccess.DAOs
                                 .ToList();
             return groupMessages;
         }
-        public List<GroupMessage> GetByGroupId(int? groupId, int skipBatch)
+        public List<GroupMessage> Get(int? groupId, int skipBatch)
         {
             validation.EnsureGroupIdNotNull(groupId);
             using var _context = new ChatApplicationContext();
@@ -59,6 +59,16 @@ namespace DataAccess.DAOs
                                 .OrderBy(gm => gm.MessageId)
                                 .ToList();
             return groupMessages;
+        }
+        public GroupMessage? GetLastMessage(int? groupId)
+        {
+            validation.EnsureGroupIdNotNull(groupId);
+            using var _context = new ChatApplicationContext();
+            return _context.GroupMessages
+                            .Include(gm => gm.Message)
+                            .Where(gm => gm.GroupReceiverId == groupId)
+                            .OrderByDescending(gm => gm.MessageId)
+                            .FirstOrDefault();
         }
         public GroupMessage? GetByMessageId(int? messageId)
         {

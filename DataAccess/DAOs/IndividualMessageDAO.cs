@@ -60,14 +60,18 @@ namespace DataAccess.DAOs
                 .ToList();
             return individualMessages;
         }
+
+        // I think this query is not optimized
         public IndividualMessage? GetLastMessage(int senderId, int receiverId)
         {
-            var individualMessages = Get(senderId, receiverId);
-            if (individualMessages == null || individualMessages.Count == 0)
-            {
-                return null;
-            }
-            return individualMessages[individualMessages.Count - 1];
+            using var _context = new ChatApplicationContext();
+            return _context.IndividualMessages
+                            .Include(im => im.Message)
+                            .Where(im =>
+                                (im.Message.SenderId == senderId && im.UserReceiverId == receiverId)
+                                || (im.Message.SenderId == receiverId && im.UserReceiverId == senderId))
+                            .OrderByDescending(im => im.MessageId)
+                            .FirstOrDefault();
         }
         public int Add(IndividualMessage individualMessage)
         {
