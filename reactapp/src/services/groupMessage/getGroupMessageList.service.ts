@@ -9,7 +9,7 @@ export const getGroupMessageList = async (
   groupId: number
 ): Promise<[IndividualMessage[] | null, unknown]> => {
   try {
-    const url = "/api/Messages/GetGroupMessage/" + groupId;
+    const url = "/api/Messages/group/" + groupId;
     const response = await axiosInstance.get(url);
     return [response.data, null];
   } catch (error) {

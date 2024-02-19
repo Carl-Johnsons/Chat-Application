@@ -34,7 +34,7 @@ export const sendIndividualMessage = async (
   };
 
   try {
-    const url = "/api/Messages/SendIndividualMessage";
+    const url = "/api/Messages/individual";
     const respone = await axiosInstance.post(url, messageObject);
     return [respone.data, null];
   } catch (error) {

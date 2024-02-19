@@ -7,11 +7,10 @@ import Message from "../Message";
 import Avatar from "../Avatar";
 import images from "../../assets";
 import { GroupMessage, IndividualMessage } from "../../models";
-import {
-  getNextGroupMessageList,
-  getNextIndividualMessageList,
-} from "../../services/message";
+
 import useDebounce from "../../hooks/useDebounce";
+import { getNextIndividualMessageList } from "../../services/individualMessage";
+import { getNextGroupMessageList } from "../../services/groupMessage";
 
 const cx = classNames.bind(style);
 

@@ -11,7 +11,7 @@ export const getNextGroupMessageList = async (
   skipBatch: number
 ): Promise<[GroupMessage[] | null, unknown]> => {
   try {
-    const url = `/api/Messages/GetGroupMessage/${groupId}/skip/${skipBatch}`;
+    const url = `/api/Messages/group/${groupId}/skip/${skipBatch}`;
     const response = await axiosInstance.get(url);
     return [response.data, null];
   } catch (error) {

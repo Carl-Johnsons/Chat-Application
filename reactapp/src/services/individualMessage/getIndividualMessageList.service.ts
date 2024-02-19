@@ -2,18 +2,16 @@ import { IndividualMessage } from "../../models";
 import axiosInstance from "../../utils/Api/axios";
 
 /**
- *
- * @param senderId
- * @param receiverId
+ * @param {number} senderId
+ * @param {number} receiverId
  * @returns
  */
-export const getLastIndividualMessage = async (
+export const getIndividualMessageList = async (
   senderId: number,
   receiverId: number
-): Promise<[IndividualMessage | null, unknown]> => {
+): Promise<[IndividualMessage[] | null, unknown]> => {
   try {
-    const url =
-      "/api/Messages/GetLastIndividualMessage/" + senderId + "/" + receiverId;
+    const url = `/api/Messages/individual/${senderId}/${receiverId}`;
     const response = await axiosInstance.get(url);
     return [response.data, null];
   } catch (error) {

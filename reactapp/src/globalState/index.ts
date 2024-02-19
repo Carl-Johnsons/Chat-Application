@@ -33,6 +33,7 @@ const initialState = {
   // IndividualMessage | GroupMessage
   messageList: null as unknown as IndividualMessage[] | GroupMessage[],
   messageType: "Individual" as MessageType,
+  lastMessageList: null as unknown as IndividualMessage[] | GroupMessage[],
   // Boolean
   isLeftShow: true,
   isRightShow: true,

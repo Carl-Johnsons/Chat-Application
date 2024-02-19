@@ -7,15 +7,26 @@ import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
 import { useModal, useScreenSectionNavigator } from "../../hooks";
-import { MessageType, User } from "../../models";
-import { menuContacts } from "../../data/constants";
 import {
-  getGroupMessageList,
-  getIndividualMessageList,
-} from "../../services/message";
-import { getFriendList, getFriendRequestList } from "../../services/user";
-import { getGroupUserByUserId } from "../../services/group";
-import { getGroupUserByGroupId } from "../../services/group/getGroupUserByGroupId.service";
+  GroupMessage,
+  IndividualMessage,
+  MessageType,
+  User,
+} from "../../models";
+import { menuContacts } from "../../data/constants";
+
+import {
+  getFriendList,
+  getFriendRequestList,
+  getUser,
+} from "../../services/user";
+import {
+  getGroupUserByGroupId,
+  getGroupUserByUserId,
+} from "../../services/group";
+import { getGroupMessageList } from "../../services/groupMessage";
+import { getIndividualMessageList } from "../../services/individualMessage";
+import { getLastMessageList } from "../../services/message";
 
 const cx = classNames.bind(style);
 
@@ -25,10 +36,12 @@ const SidebarContent = () => {
   const [isSearchBarFocus] = useGlobalState("isSearchBarFocus");
   const [activeNav] = useGlobalState("activeNav");
   const [userMap, setUserMap] = useGlobalState("userMap");
-  const [friendList, setFriendList] = useGlobalState("friendList");
+  const [, setFriendList] = useGlobalState("friendList");
   const [, setFriendRequestList] = useGlobalState("friendRequestList");
   const [, setMessageList] = useGlobalState("messageList");
   const [messageType, setMessageType] = useGlobalState("messageType");
+  const [lastMessageList, setLastMessageList] =
+    useGlobalState("lastMessageList");
 
   const [activeConversation, setActiveConversation] =
     useGlobalState("activeConversation");
@@ -182,6 +195,28 @@ const SidebarContent = () => {
     fetchGroupList();
   }, [groupMap, groupUserMap, userId]);
 
+  useEffect(() => {
+    const fetchLastMessageList = async () => {
+      if (!userId) {
+        return;
+      }
+      const [lmList] = await getLastMessageList(userId);
+      if (!lmList) {
+        return;
+      }
+      for (const messageEntity of lmList) {
+        const sender = userMap.get(messageEntity.message.senderId);
+        //Fetch unknown user
+        if (!sender) {
+          const [u] = await getUser(messageEntity.message.senderId);
+          u && userMap.set(messageEntity.message.senderId, u);
+        }
+      }
+      setLastMessageList(lmList);
+    };
+    fetchLastMessageList();
+  }, [setLastMessageList, userId, userMap]);
+
   function handleClickMenuContact(index: number) {
     handleClickScreenSection(false);
     setActiveContactType(index);
@@ -192,7 +227,7 @@ const SidebarContent = () => {
       <div className={cx("search-bar-container")}>
         <SearchBar />
       </div>
-      {(activeNav !== 1 || isSearchBarFocus) && (
+      {activeNav === 1 && !isSearchBarFocus && (
         <div
           className={cx(
             "overflow-y-scroll",
@@ -201,44 +236,44 @@ const SidebarContent = () => {
             "flex-grow-1"
           )}
         >
-          {friendList &&
-            friendList.map((friend) => {
-              const friendNavigation = friend.friendNavigation;
-              const { userId, avatarUrl, name } = friendNavigation;
+          {lastMessageList &&
+            lastMessageList.map((m) => {
+              if (m.message.messageType === "Group") {
+                const { groupReceiverId, message } = m as GroupMessage;
+                return (
+                  <SideBarItem
+                    key={message.messageId}
+                    type="groupConversation"
+                    lastMessage={message}
+                    groupId={groupReceiverId}
+                    onClick={handleClickConversation}
+                    isActive={
+                      activeConversation === groupReceiverId &&
+                      messageType == "Group"
+                    }
+                  />
+                );
+              }
+              const { userReceiverId, message } = m as IndividualMessage;
+              const otherUserId =
+                userReceiverId === userId ? message.senderId : userReceiverId;
               return (
                 <SideBarItem
-                  key={userId}
-                  type="conversation"
-                  userId={userId}
-                  image={avatarUrl}
-                  conversationName={name}
+                  key={message.messageId}
+                  type="individualConversation"
+                  userId={otherUserId}
+                  lastMessage={message}
                   onClick={handleClickConversation}
                   isActive={
-                    activeConversation === userId && messageType == "Individual"
-                  }
-                />
-              );
-            })}
-          {groupMap &&
-            [...groupMap.entries()].map(([groupId, group]) => {
-              const { groupName, groupAvatarUrl } = group;
-              return (
-                <SideBarItem
-                  key={groupId}
-                  type="groupConversation"
-                  groupId={groupId}
-                  image={groupAvatarUrl}
-                  conversationName={groupName}
-                  onClick={handleClickConversation}
-                  isActive={
-                    activeConversation === groupId && messageType == "Group"
+                    activeConversation === otherUserId &&
+                    messageType == "Individual"
                   }
                 />
               );
             })}
         </div>
       )}
-      {(activeNav !== 2 || isSearchBarFocus) && (
+      {activeNav === 2 && !isSearchBarFocus && (
         <div>
           {menuContacts.map((menuContact, index) => (
             <MenuContact
@@ -252,7 +287,7 @@ const SidebarContent = () => {
           ))}
         </div>
       )}
-      {!isSearchBarFocus && (
+      {isSearchBarFocus && (
         <div className={cx("bg-secondary", "w-100", "h-100")}>
           {searchResult && (
             <SideBarItem

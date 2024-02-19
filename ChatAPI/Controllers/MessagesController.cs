@@ -3,6 +3,7 @@ using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DataAccess.Repositories.Interfaces;
+using BussinessObject.Interfaces;
 
 namespace ChatAPI.Controllers
 {
@@ -36,12 +37,13 @@ namespace ChatAPI.Controllers
             }
             return Ok(message);
         }
-        
+
         [HttpGet("GetLast/{userId}")]
         public IActionResult GetLast(int? userId)
         {
             var ml = messageRepository.GetLastestLastMessageList(userId);
-            return Ok(ml);
+            List<object> lastMessageList = ml.ToList<object>();
+            return Ok(lastMessageList);
         }
         [HttpDelete("DeleteMessage/{messageId}")]
         public IActionResult DeleteMessage(int messageId)

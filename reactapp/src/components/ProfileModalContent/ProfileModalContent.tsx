@@ -9,8 +9,6 @@ import Avatar from "../Avatar";
 import { useGlobalState } from "../../globalState";
 import { convertISODateToVietnameseFormat } from "../../utils/DateUtils";
 import { Group, User } from "../../models";
-import { useEffect } from "react";
-import { getUser } from "../../services/user";
 
 const cx = classNames.bind(style);
 
@@ -45,7 +43,7 @@ type Variants =
 
 const ProfileModalContent = (variant: Variants) => {
   const [modalEntityId] = useGlobalState("modalEntityId");
-  const [userMap, setUserMap] = useGlobalState("userMap");
+  const [userMap] = useGlobalState("userMap");
   const [groupMap] = useGlobalState("groupMap");
   const [groupUserMap] = useGlobalState("groupUserMap");
 
@@ -89,30 +87,6 @@ const ProfileModalContent = (variant: Variants) => {
   const avatar =
     (entity as User)?.avatarUrl ?? (entity as Group)?.groupAvatarUrl;
   const background = (entity as User)?.backgroundUrl;
-
-  // Map unknown user in the group
-  useEffect(() => {
-    const fetchUserInGroup = async () => {
-      let isFetched = false;
-      if (!userIdList) {
-        return;
-      }
-      const newUserMap = new Map(userMap);
-      for (const memberId of userIdList) {
-        if (newUserMap.has(memberId)) {
-          continue;
-        }
-        const [member] = await getUser(memberId);
-        if (!member) {
-          continue;
-        }
-        isFetched = true;
-        newUserMap.set(member.userId, member);
-      }
-      isFetched && setUserMap(newUserMap);
-    };
-    fetchUserInGroup();
-  }, [setUserMap, userIdList, userMap]);
 
   return (
     <div className={cx("profile-modal-content", "m-0")}>

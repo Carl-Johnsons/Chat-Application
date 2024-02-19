@@ -27,7 +27,7 @@ export const sendGroupMessage = async (
   };
 
   try {
-    const url = "/api/Messages/SendGroupMessage";
+    const url = "/api/Messages/group";
     const respone = await axiosInstance.post(url, messageObject);
     return [respone.data, null];
   } catch (error) {

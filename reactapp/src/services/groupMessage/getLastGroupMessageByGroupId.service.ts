@@ -7,11 +7,11 @@ import axiosInstance from "../../utils/Api/axios";
  * @param receiverId
  * @returns
  */
-export const getLastGroupMessage = async (
+export const getLastGroupMessageByGroupId = async (
   groupId: number
 ): Promise<[GroupMessage | null, unknown]> => {
   try {
-    const url = "/api/Messages/GetLastGroupMessage/" + groupId;
+    const url = "/api/Messages/group/GetLastByGroupId/" + groupId;
     const response = await axiosInstance.get(url);
     return [response.data, null];
   } catch (error) {

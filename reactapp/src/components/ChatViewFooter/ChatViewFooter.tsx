@@ -4,10 +4,7 @@ import AppButton from "../AppButton";
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "../../globalState";
-import {
-  sendGroupMessage,
-  sendIndividualMessage,
-} from "../../services/message";
+
 import {
   signalRDisableNotifyUserTyping,
   signalRNotifyUserTyping,
@@ -20,6 +17,8 @@ import {
   SenderReceiverArray,
 } from "../../models";
 import useDebounce from "../../hooks/useDebounce";
+import { sendIndividualMessage } from "../../services/individualMessage";
+import { sendGroupMessage } from "../../services/groupMessage";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {

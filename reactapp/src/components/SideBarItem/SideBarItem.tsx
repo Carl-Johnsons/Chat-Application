@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import images from "../../assets";
 import { useGlobalState } from "../../globalState";
-import { GroupMessage, IndividualMessage, MessageType } from "../../models";
-import {
-  getLastGroupMessage,
-  getLastIndividualMessage,
-} from "../../services/message";
+import { Message, MessageType } from "../../models";
+
 import Avatar from "../Avatar";
 import style from "./SideBarItem.module.scss";
 import classNames from "classnames/bind";
@@ -16,17 +13,15 @@ const cx = classNames.bind(style);
 type GroupConversationVariant = {
   type: "groupConversation";
   groupId: number;
-  image: string;
-  conversationName: string;
+  lastMessage?: Message;
   isActive?: boolean;
   isNewMessage?: boolean;
   onClick?: (groupId: number, type: MessageType) => void;
 };
-type ConversationVariant = {
-  type: "conversation";
+type IndividualConversationVariant = {
+  type: "individualConversation";
   userId: number;
-  image: string;
-  conversationName: string;
+  lastMessage?: Message;
   isActive?: boolean;
   isNewMessage?: boolean;
   onClick?: (userId: number, type: MessageType) => void;
@@ -42,70 +37,54 @@ type SearchItemVariant = {
 };
 
 type Variants =
-  | ConversationVariant
+  | IndividualConversationVariant
   | SearchItemVariant
   | GroupConversationVariant;
 
 const SideBarItem = (variant: Variants) => {
   const [currentUserId] = useGlobalState("userId");
   const [userMap] = useGlobalState("userMap");
+  const [groupMap] = useGlobalState("groupMap");
 
-  //local state
-  const [lastMessage, setLastMessage] = useState<
-    IndividualMessage | GroupMessage | null
-  >();
   const [descriptionContent, setDescriptionContent] = useState("");
   const [timeContent, setTimeContent] = useState("");
 
   let userId: number = 0;
   let groupId: number = 0;
   let image: string = images.defaultAvatarImg;
-  let conversationName: string = "";
+  let lastMessage: Message | undefined;
   let searchName: string = "";
   let phoneNumber: string = "";
   let isActive: boolean | undefined;
   let isNewMessage: boolean | undefined;
   let onClick: ((id: number, type: MessageType) => void) | undefined;
 
-  const isConversation = variant.type === "conversation";
+  const isIndividualConversation = variant.type === "individualConversation";
   const isSearchItem = variant.type === "searchItem";
   const isGroupConversation = variant.type === "groupConversation";
-  if (isConversation) {
-    ({ userId, image, conversationName, isActive, isNewMessage, onClick } =
-      variant);
+
+  if (isIndividualConversation) {
+    ({ userId, isActive, lastMessage, isNewMessage, onClick } = variant);
   } else if (isSearchItem) {
     ({ userId, image, searchName, phoneNumber, isActive, onClick } = variant);
   } else if (isGroupConversation) {
-    ({ groupId, image, conversationName, isActive, isNewMessage, onClick } =
-      variant);
+    ({ groupId, isActive, lastMessage, isNewMessage, onClick } = variant);
   }
-  // Fetch last message if this component is a conversation
-  useEffect(() => {
-    const fetchLastMessage = async () => {
-      if (isConversation) {
-        const [data] = await getLastIndividualMessage(currentUserId, userId);
-        setLastMessage(data);
-      } else if (isGroupConversation) {
-        console.log({ groupId });
-        const [data] = await getLastGroupMessage(groupId);
-        setLastMessage(data);
-      }
-    };
-    fetchLastMessage();
-  }, [currentUserId, groupId, isConversation, isGroupConversation, userId]);
+
+  const lastMessageSender = userMap.get(lastMessage?.senderId ?? -1);
   // Description
   useEffect(() => {
     if (!isSearchItem && lastMessage) {
+      if (!lastMessageSender?.name) {
+        return;
+      }
       const sender =
-        currentUserId === lastMessage.message.senderId
+        currentUserId === lastMessage.senderId
           ? "You: "
           : isGroupConversation
-          ? `${userMap.get(lastMessage.message.senderId)?.name}: `
+          ? `${lastMessageSender.name}: `
           : "";
-
-      setDescriptionContent(
-        lastMessage ? `${sender}${lastMessage.message.content}` : ""
-      );
+      setDescriptionContent(`${sender}${lastMessage.content}`);
     } else {
       setDescriptionContent(phoneNumber && `Phone Number: ${phoneNumber}`);
     }
@@ -114,6 +93,7 @@ const SideBarItem = (variant: Variants) => {
     isGroupConversation,
     isSearchItem,
     lastMessage,
+    lastMessageSender?.name,
     phoneNumber,
     userMap,
   ]);
@@ -122,10 +102,23 @@ const SideBarItem = (variant: Variants) => {
     if (!lastMessage) {
       return;
     }
-    const d = new Date(lastMessage.message.time + "");
+    const d = new Date(lastMessage.time + "");
     const formattedDate = moment(d).fromNow(true);
     setTimeContent(formattedDate);
   }, [lastMessage]);
+
+  const entityAvatar = isIndividualConversation
+    ? userMap.get(userId)?.avatarUrl
+    : isGroupConversation
+    ? groupMap.get(groupId)?.groupAvatarUrl
+    : undefined;
+
+  const entityName = isIndividualConversation
+    ? userMap.get(userId)?.name
+    : isGroupConversation
+    ? groupMap.get(groupId)?.groupName
+    : searchName;
+
   return (
     <div
       className={cx(
@@ -160,7 +153,7 @@ const SideBarItem = (variant: Variants) => {
         )}
       >
         <Avatar
-          src={image}
+          src={isSearchItem ? image : entityAvatar ?? ""}
           className={cx("rounded-circle")}
           alt="user avatar"
         />
@@ -178,10 +171,7 @@ const SideBarItem = (variant: Variants) => {
               "bottom-0"
             )}
           >
-            {variant.type === "conversation" ||
-            variant.type === "groupConversation"
-              ? conversationName
-              : searchName}
+            {entityName}
           </div>
         </div>
         <div className={cx("description-container", "position-relative")}>
