@@ -2,12 +2,12 @@
 import { useEffect } from "react";
 import { useGlobalState } from "../../globalState";
 //components
-import NavigationBar from "../../components/NavigationBar";
-import SidebarContent from "../../components/SidebarContent";
-import ChatViewContainer from "../../components/ChatViewContainer";
-import ContactContainer from "../../components/ContactContainer/ContactContainer";
-import ModalContainer from "../../components/ModalContainer";
-import AsideContainer from "../../components/AsideContainer";
+import NavigationBar from "../../components/Nav/NavigationBar";
+import SidebarContent from "../../components/SideBar/SidebarContent";
+import ChatViewContainer from "../../components/ChatView/ChatViewContainer";
+import ContactContainer from "../../components/ContactView/ContactContainer/ContactContainer";
+import ModalContainer from "../../components/Modal/ModalContainer";
+import AsideContainer from "../../components/Aside/AsideContainer";
 
 import style from "./Home.module.scss";
 import classNames from "classnames/bind";

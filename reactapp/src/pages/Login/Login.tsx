@@ -1,5 +1,5 @@
-import LoginForm from "../../components/LoginForm";
-import ModalContainer from "../../components/ModalContainer";
+import LoginForm from "../../components/Auth/LoginForm";
+import ModalContainer from "../../components/Modal/ModalContainer";
 import images from "../../assets";
 import style from "./Login.module.scss";
 import classNames from "classnames/bind";
