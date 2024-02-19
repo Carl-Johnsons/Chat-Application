@@ -192,82 +192,80 @@ const SidebarContent = () => {
       <div className={cx("search-bar-container")}>
         <SearchBar />
       </div>
-      <div
-        className={cx(
-          "overflow-y-scroll",
-          "overflow-x-hidden",
-          "conversation-list",
-          "flex-grow-1",
-          (activeNav !== 1 || isSearchBarFocus) && "d-none"
-        )}
-      >
-        {friendList &&
-          friendList.map((friend) => {
-            const friendNavigation = friend.friendNavigation;
-            const { userId, avatarUrl, name } = friendNavigation;
-            return (
-              <SideBarItem
-                key={userId}
-                type="conversation"
-                userId={userId}
-                image={avatarUrl}
-                conversationName={name}
-                onClick={handleClickConversation}
-                isActive={
-                  activeConversation === userId && messageType == "Individual"
-                }
-              />
-            );
-          })}
-        {groupMap &&
-          [...groupMap.entries()].map(([groupId, group]) => {
-            const { groupName, groupAvatarUrl } = group;
-            return (
-              <SideBarItem
-                key={groupId}
-                type="groupConversation"
-                groupId={groupId}
-                image={groupAvatarUrl}
-                conversationName={groupName}
-                onClick={handleClickConversation}
-                isActive={
-                  activeConversation === groupId && messageType == "Group"
-                }
-              />
-            );
-          })}
-      </div>
-      <div className={cx((activeNav !== 2 || isSearchBarFocus) && "d-none")}>
-        {menuContacts.map((menuContact, index) => (
-          <MenuContact
-            key={index}
-            index={index}
-            image={menuContact.image}
-            name={menuContact.name}
-            isActive={activeContactType === index}
-            onClick={handleClickMenuContact}
-          />
-        ))}
-      </div>
-      <div
-        className={cx(
-          "bg-secondary",
-          "w-100",
-          "h-100",
-          !isSearchBarFocus && "d-none"
-        )}
-      >
-        {searchResult && (
-          <SideBarItem
-            type="searchItem"
-            userId={searchResult.userId}
-            searchName={searchResult.name}
-            image={searchResult.avatarUrl}
-            phoneNumber={searchResult.phoneNumber}
-            onClick={() => handleClickSearchResult(searchResult)}
-          />
-        )}
-      </div>
+      {(activeNav !== 1 || isSearchBarFocus) && (
+        <div
+          className={cx(
+            "overflow-y-scroll",
+            "overflow-x-hidden",
+            "conversation-list",
+            "flex-grow-1"
+          )}
+        >
+          {friendList &&
+            friendList.map((friend) => {
+              const friendNavigation = friend.friendNavigation;
+              const { userId, avatarUrl, name } = friendNavigation;
+              return (
+                <SideBarItem
+                  key={userId}
+                  type="conversation"
+                  userId={userId}
+                  image={avatarUrl}
+                  conversationName={name}
+                  onClick={handleClickConversation}
+                  isActive={
+                    activeConversation === userId && messageType == "Individual"
+                  }
+                />
+              );
+            })}
+          {groupMap &&
+            [...groupMap.entries()].map(([groupId, group]) => {
+              const { groupName, groupAvatarUrl } = group;
+              return (
+                <SideBarItem
+                  key={groupId}
+                  type="groupConversation"
+                  groupId={groupId}
+                  image={groupAvatarUrl}
+                  conversationName={groupName}
+                  onClick={handleClickConversation}
+                  isActive={
+                    activeConversation === groupId && messageType == "Group"
+                  }
+                />
+              );
+            })}
+        </div>
+      )}
+      {(activeNav !== 2 || isSearchBarFocus) && (
+        <div>
+          {menuContacts.map((menuContact, index) => (
+            <MenuContact
+              key={index}
+              index={index}
+              image={menuContact.image}
+              name={menuContact.name}
+              isActive={activeContactType === index}
+              onClick={handleClickMenuContact}
+            />
+          ))}
+        </div>
+      )}
+      {!isSearchBarFocus && (
+        <div className={cx("bg-secondary", "w-100", "h-100")}>
+          {searchResult && (
+            <SideBarItem
+              type="searchItem"
+              userId={searchResult.userId}
+              searchName={searchResult.name}
+              image={searchResult.avatarUrl}
+              phoneNumber={searchResult.phoneNumber}
+              onClick={() => handleClickSearchResult(searchResult)}
+            />
+          )}
+        </div>
+      )}
     </>
   );
 };

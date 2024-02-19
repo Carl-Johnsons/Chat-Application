@@ -61,8 +61,53 @@ namespace DataAccess.DAOs
             return individualMessages;
         }
 
+        public List<IndividualMessage> GetLast(int? senderId)
+        {
+            using var _context = new ChatApplicationContext();
+            var imList = (from table1 in (
+                     from im in _context.IndividualMessages
+                     join m in _context.Messages
+                     on im.MessageId equals m.MessageId into msgGroup
+                     from groupedMsg in msgGroup
+                     where groupedMsg.SenderId == senderId || im.UserReceiverId == senderId
+                     group new { im, groupedMsg } by new
+                     {
+                         UserId = groupedMsg.SenderId == senderId ? groupedMsg.SenderId : im.UserReceiverId,
+                         OtherUserId = groupedMsg.SenderId == senderId ? im.UserReceiverId : groupedMsg.SenderId,
+                     } into grouped
+                     select new
+                     {
+                         grouped.Key.UserId,
+                         grouped.Key.OtherUserId,
+                         LatestTime = grouped.Max(x => x.groupedMsg.Time)
+                     })
+                          from table2 in (
+                              from im in _context.IndividualMessages
+                              join m in _context.Messages
+                              on im.MessageId equals m.MessageId into msgGroup
+                              from groupedMsg in msgGroup
+                              select new
+                              {
+                                  im,
+                                  m = groupedMsg
+                              }
+                          )
+                          where (table1.UserId == table2.m.SenderId && table1.OtherUserId == table2.im.UserReceiverId && table1.LatestTime == table2.m.Time)
+                                || (table1.OtherUserId == table2.m.SenderId && table1.UserId == table2.im.UserReceiverId && table1.LatestTime == table2.m.Time)
+                          // 2 ways comparison
+                          select new IndividualMessage
+                          {
+                              MessageId = table2.m.MessageId,
+                              Read = table2.im.Read,
+                              Status = table2.im.Status,
+                              UserReceiverId = table2.im.UserReceiverId,
+                              Message = table2.m
+                          }).ToList();
+            return imList;
+        }
+
         // I think this query is not optimized
-        public IndividualMessage? GetLastMessage(int senderId, int receiverId)
+        public IndividualMessage? GetLast(int senderId, int receiverId)
         {
             using var _context = new ChatApplicationContext();
             return _context.IndividualMessages

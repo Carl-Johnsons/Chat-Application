@@ -60,7 +60,46 @@ namespace DataAccess.DAOs
                                 .ToList();
             return groupMessages;
         }
-        public GroupMessage? GetLastMessage(int? groupId)
+
+        public List<GroupMessage> GetLastByUserId(int? senderId)
+        {
+            using var _context = new ChatApplicationContext();
+            var gmList = (
+                            from table1 in (
+                                 from gm in _context.GroupMessages
+                                 join m in _context.Messages on gm.MessageId equals m.MessageId into msgGroup
+                                 from message in msgGroup
+                                 where _context.GroupUser.Any(gu => gu.UserId == senderId && gu.GroupId == gm.GroupReceiverId)
+                                 group new { gm, message } by gm.GroupReceiverId into grouped
+                                 select new
+                                 {
+                                     Group_Receiver_ID = grouped.Key,
+                                     LatestTime = grouped.Max(g => g.message.Time)
+                                 }
+                            )
+                            join table2 in (
+                                 from gm in _context.GroupMessages
+                                 join m in _context.Messages
+                                 on gm.MessageId equals m.MessageId into msgGroup
+                                 from m in msgGroup
+                                 select new
+                                 {
+                                     gm,
+                                     m
+                                 }
+                            ) 
+                            on new { table1.Group_Receiver_ID, table1.LatestTime }
+                            equals new { Group_Receiver_ID = table2.gm.GroupReceiverId, LatestTime = table2.m.Time }
+                            select new GroupMessage
+                            {
+                                GroupReceiverId = table2.gm.GroupReceiverId,
+                                MessageId = table2.m.MessageId,
+                                Message = table2.m
+                            }
+                          ).ToList();
+            return gmList;
+        }
+        public GroupMessage? GetLastByGroupId(int? groupId)
         {
             validation.EnsureGroupIdNotNull(groupId);
             using var _context = new ChatApplicationContext();

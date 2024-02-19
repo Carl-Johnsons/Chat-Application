@@ -44,11 +44,6 @@ public class FriendDAO
                 UserId = f.UserId,
                 FriendNavigation = f.UserId == userId ? f.FriendNavigation : f.User
             })
-            .AsEnumerable() // Convert into client-side to handle sorting
-            .OrderByDescending(f =>
-            {
-                return messageRepository.GetLastIndividualMessage(f.UserId, f.FriendId)?.Message?.Time ?? DateTime.MinValue;
-            })
             .ToList();
     }
     public List<Friend> GetByFriendId(int friendId)

@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BussinessObject.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BussinessObject.Models;
 [Table("IndividualMessage")]
 [PrimaryKey(nameof(MessageId))]
-public partial class IndividualMessage
+public partial class IndividualMessage : IMessage
 {
     [Column("Message_ID")]
     public int MessageId { get; set; }

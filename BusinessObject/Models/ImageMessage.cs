@@ -1,4 +1,5 @@
 ﻿
+using BussinessObject.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BussinessObject.Models;
 [Table("ImageMessage")]
 [PrimaryKey(nameof(MessageId))]
-public partial class ImageMessage
+public partial class ImageMessage : IMessage
 {
     [Column("Message_ID")]
     public int MessageId { get; set; }

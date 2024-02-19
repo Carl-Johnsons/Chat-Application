@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BussinessObject.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace BussinessObject.Models;
 
 [Table("GroupMessage")]
 [PrimaryKey(nameof(MessageId), nameof(GroupReceiverId))]
 
-public partial class GroupMessage
+public partial class GroupMessage : IMessage
 {
     [Column("Message_ID")]
     public int MessageId { get; set; }

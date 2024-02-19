@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatAPI", "ChatAPI\ChatAPI.
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "reactapp", "ReactApp\reactapp.esproj", "{E2E059FF-88AA-4847-B1C0-C4955925F38B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatService", "ChatService\ChatService.csproj", "{BFCBFB39-B04E-4047-B1BC-7C2EF33006F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatService", "ChatService\ChatService.csproj", "{BFCBFB39-B04E-4047-B1BC-7C2EF33006F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessTests", "DataAccessTests\DataAccessTests.csproj", "{060AB5CD-2576-4DF2-B461-6A3276D6593A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{BFCBFB39-B04E-4047-B1BC-7C2EF33006F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFCBFB39-B04E-4047-B1BC-7C2EF33006F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFCBFB39-B04E-4047-B1BC-7C2EF33006F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{060AB5CD-2576-4DF2-B461-6A3276D6593A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{060AB5CD-2576-4DF2-B461-6A3276D6593A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{060AB5CD-2576-4DF2-B461-6A3276D6593A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{060AB5CD-2576-4DF2-B461-6A3276D6593A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
