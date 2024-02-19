@@ -41,6 +41,7 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
     };
     fetchUserInGroup();
   }, [setUserMap, user, userId, userMap]);
+
   return (
     <div
       className={cx("message", "mb-1", "text-break", sender && "sender")}
@@ -52,7 +53,9 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
         </div>
       )}
       <div className={cx("content", "mb-2")}>{content}</div>
-      <div className={cx("time")}>{moment(new Date(time)).format("HH:mm")}</div>
+      <div className={cx("time")}>
+        {moment(new Date(time)).format("HH:mm")} {time}
+      </div>
     </div>
   );
 };

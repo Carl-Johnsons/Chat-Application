@@ -26,22 +26,26 @@ const ChatViewFooter = () => {
   const [userId] = useGlobalState("userId");
   const [activeConversation] = useGlobalState("activeConversation");
   const [messageList, setMessageList] = useGlobalState("messageList");
+  const [lastMessageList, setLastMessageList] =
+    useGlobalState("lastMessageList");
   const [messageType] = useGlobalState("messageType");
   const [connection] = useGlobalState("connection");
   // hook
   const invokeAction = useSignalREvents({ connection: connection });
-  const debounceInvokeAction = useDebounce(() => {
-    invokeAction(signalRDisableNotifyUserTyping(model));
-  }, 1000);
+
   const model: SenderReceiverArray = {
     senderIdList: [userId],
     receiverIdList: [activeConversation],
   };
+
+  const debounceInvokeAction = useDebounce(() => {
+    invokeAction(signalRDisableNotifyUserTyping(model));
+  }, 1000);
   // debounce to remove the user typing notification
   useEffect(() => {
     debounceInvokeAction();
   }, [debounceInvokeAction, inputValue]);
-  
+
   const fetchSendMessage = async () => {
     // This active conversation may be wrong for the group message. Implement later
     if (messageType == "Individual") {
@@ -53,10 +57,32 @@ const ChatViewFooter = () => {
       if (!data) {
         return;
       }
+
       setMessageList([...(messageList as IndividualMessage[]), data]);
       invokeAction(signalRSendIndividualMessage(data));
       setInputValue("");
-    } else if (messageType == "Group") {
+      //Update last message
+      for (let index = 0; index < lastMessageList.length; index++) {
+        if (lastMessageList[index].message.messageType === "Group") {
+          continue;
+        }
+        const im = lastMessageList[index] as IndividualMessage;
+        if (
+          (userId === im.message.senderId &&
+            activeConversation === im.userReceiverId) ||
+          (activeConversation === im.message.senderId &&
+            userId === im.userReceiverId)
+        ) {
+          setLastMessageList([
+            data,
+            ...lastMessageList.slice(0, index),
+            ...lastMessageList.splice(index + 1, lastMessageList.length),
+          ] as IndividualMessage[] | GroupMessage[]);
+          return;
+        }
+      }
+    }
+    if (messageType == "Group") {
       const [data] = await sendGroupMessage(
         userId,
         activeConversation,
@@ -67,6 +93,21 @@ const ChatViewFooter = () => {
       }
       setMessageList([...(messageList as GroupMessage[]), data]);
       setInputValue("");
+      //Update last message
+      for (let index = 0; index < lastMessageList.length; index++) {
+        if (lastMessageList[index].message.messageType === "Individual") {
+          continue;
+        }
+        const im = lastMessageList[index] as GroupMessage;
+        if (activeConversation === im.groupReceiverId) {
+          setLastMessageList([
+            data,
+            ...lastMessageList.slice(0, index),
+            ...lastMessageList.splice(index + 1, lastMessageList.length),
+          ] as IndividualMessage[] | GroupMessage[]);
+          return;
+        }
+      }
     }
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

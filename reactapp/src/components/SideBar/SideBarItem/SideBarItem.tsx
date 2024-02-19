@@ -105,7 +105,7 @@ const SideBarItem = (variant: Variants) => {
     const d = new Date(lastMessage.time + "");
     const formattedDate = moment(d).fromNow(true);
     setTimeContent(formattedDate);
-  }, [lastMessage]);
+  }, [lastMessage, lastMessage?.time]);
 
   const entityAvatar = isIndividualConversation
     ? userMap.get(userId)?.avatarUrl
