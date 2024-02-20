@@ -2,7 +2,7 @@ $user-selection-container-width: 520px;
 $search-result-container-height: 376px;
 
 /* Hide the default checkbox */
-input[type="checkbox"] {
+.custom-input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -16,12 +16,12 @@ input[type="checkbox"] {
 }
 
 /* Style the checked state and add the check symbol */
-input[type="checkbox"]:checked {
+.custom-input[type="checkbox"]:checked {
     background-color: var(--blue);
     border-color: var(--blue);
 }
 
-input[type="checkbox"]:checked::before {
+.custom-input[type="checkbox"]:checked::before {
     content: "\2713"; /* Unicode check symbol */
     color: #fff; /* Color of the check symbol */
     font-size: 8px; /* Adjust the size of the check symbol */
@@ -32,7 +32,7 @@ input[type="checkbox"]:checked::before {
     font-family: Arial, sans-serif;
 }
 //Hide the file input
-input#fileInput {
+.custom-input#fileInput {
     visibility: hidden;
     top: 0;
     position: absolute;

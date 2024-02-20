@@ -10,7 +10,7 @@ export const uploadImage = async (
 ): Promise<[ImgurImage | null, unknown]> => {
   try {
     const url =
-      import.meta.env.VITE_BASE_API_URL + "/api/Tools/UploadImageImgur";
+      process.env.NEXT_PUBLIC_BASE_API_URL + "/api/Tools/UploadImageImgur";
     const formData = new FormData();
     formData.append("ImageFile", file);
     // This function is still error because axios always set content-type

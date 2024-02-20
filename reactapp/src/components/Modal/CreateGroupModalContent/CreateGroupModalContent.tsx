@@ -207,7 +207,7 @@ const CreateGroupModalContent = () => {
                 className={cx("pt-2", "pb-2", "d-flex", "align-items-center")}
               >
                 <input
-                  className={cx("me-2")}
+                  className={cx("custom-input","me-2")}
                   type="checkbox"
                   ref={(el) => {
                     if (el) inputRefs.current[index] = el;

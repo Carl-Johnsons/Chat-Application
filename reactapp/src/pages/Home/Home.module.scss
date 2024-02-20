@@ -2,13 +2,9 @@ $navbar-width: 60px;
 $left-width: 354px;
 $chat-info-width: 344px;
 
-* {
-    user-select: none;
-}
-
-body::-webkit-scrollbar {
-    display: none;
-}
+// body::-webkit-scrollbar {
+//     display: none;
+// }
 .navbar-section {
     flex-basis: $navbar-width;
 }

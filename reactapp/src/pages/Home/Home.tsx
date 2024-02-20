@@ -20,7 +20,7 @@ const Home = () => {
   const [showAside] = useGlobalState("showAside");
   const [activeNav] = useGlobalState("activeNav");
   //Local state
-  const conn = useSignalRConnection(import.meta.env.VITE_SIGNALR_URL);
+  const conn = useSignalRConnection(process.env.NEXT_PUBLIC_SIGNALR_URL ?? "");
   //Ref
   const { leftRef, rightRef } = useScreenSectionNavigator();
   useEffect(() => {

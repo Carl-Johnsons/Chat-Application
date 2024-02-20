@@ -65,9 +65,9 @@ openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certifi
 - Then put these in your .env file
 
 ```env
-VITE_BASE_API_URL="Your URL"
-VITE_SIGNALR_URL="[Hub URL]/chatHub"
-VITE_PORT="Your react app port"
+NEXT_PUBLIC_BASE_API_URL="Your URL"
+NEXT_PUBLIC_SIGNALR_URL="[Hub URL]/chatHub"
+NEXT_PUBLIC_PORT="Your react app port"
 ```
 ## 4. Run StartAllService.bat at the root of the repo to start ChatService and ChatAPI
 

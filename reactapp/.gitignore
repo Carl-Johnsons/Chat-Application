@@ -25,3 +25,8 @@ dist-ssr
 
 # Environment variable
 .env
+
+# Next
+.next
+next-env.d.ts
+dist
