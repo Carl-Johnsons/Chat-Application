@@ -3,7 +3,7 @@ import AppButton from "../../shared/AppButton";
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
 
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { useState } from "react";
 
 import {

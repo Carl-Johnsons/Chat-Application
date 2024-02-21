@@ -1,6 +1,6 @@
 import { HubConnection } from "@microsoft/signalr";
 import { useEffect } from "react";
-import { useGlobalState } from "../../globalState";
+import { useGlobalState } from "../globalState";
 
 const useDisconnectedSubscription = (connection?: HubConnection) => {
   const [userMap, setUserMap] = useGlobalState("userMap");

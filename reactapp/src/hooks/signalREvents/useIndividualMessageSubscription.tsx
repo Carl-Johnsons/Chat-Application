@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGlobalState } from "../../globalState";
+import { useGlobalState } from "../globalState";
 import { HubConnection } from "@microsoft/signalr";
 import { IndividualMessage } from "../../models";
 import { SignalREvent } from "../../data/constants";

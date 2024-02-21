@@ -1,15 +1,17 @@
-import LoginForm from "../../components/Auth/LoginForm";
-import ModalContainer from "../../components/Modal/ModalContainer";
-import images from "../../assets";
+"use client";
+
+import images from "@/assets/index";
 import style from "./Login.module.scss";
 import classNames from "classnames/bind";
+import LoginForm from "@/components/Auth/LoginForm";
+import ModalContainer from "@/components/Modal/ModalContainer";
 
 const cx = classNames.bind(style);
 
 const Login = () => {
   return (
     <div
-      style={{ backgroundImage: `url(${images.backgroundAuthForm})` }}
+      style={{ backgroundImage: `url(${images.backgroundAuthForm.src})` }}
       className={cx(
         "container-fluid",
         "p-0",
@@ -20,7 +22,6 @@ const Login = () => {
         "h-100"
       )}
     >
-
       <div
         className={cx(
           "d-flex",
@@ -57,7 +58,7 @@ const Login = () => {
           )}
         >
           <img
-            src={images.peopleMessaging}
+            src={images.peopleMessaging.src}
             alt="zalo logo"
             className={cx("w-100", "h-75", "object-fit-cover")}
           />

@@ -2,7 +2,7 @@ import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
 import { useEffect } from "react";
 import { SenderReceiverArray } from "../../models";
-import { useGlobalState } from "../../globalState";
+import { useGlobalState } from "../globalState";
 
 const useNotifyUserTypingSubscription = (connection?: HubConnection) => {
   const [, setUserTypingId] = useGlobalState("userTypingId");

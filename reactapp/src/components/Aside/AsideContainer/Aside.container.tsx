@@ -1,7 +1,7 @@
+
 import AsideBody from "../AsideBody";
 import AsideHeader from "../AsideHeader";
-
-import style from "./AsideContainer.module.scss";
+import style from "./Aside.container.module.scss";
 import classnames from "classnames/bind";
 
 const cx = classnames.bind(style);

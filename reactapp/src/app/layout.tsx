@@ -1,3 +1,7 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./global.scss";
+import "./index.scss"
+
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,11 +14,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  
   return (
     <html lang="en">
       <body>
         <div id="root">{children}</div>
-        <script type="module" src="/src/main.tsx"></script>
       </body>
     </html>
   );

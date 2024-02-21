@@ -1,1 +1,1 @@
-export { default } from "./AsideBody";
+export { default } from "./Aside.body";

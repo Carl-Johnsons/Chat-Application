@@ -8,7 +8,7 @@ import {
   MessageType,
   ModalType,
   User,
-} from "../models";
+} from "../../models";
 import { createGlobalState } from "react-hooks-global-state";
 
 const initialState = {

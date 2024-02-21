@@ -5,7 +5,7 @@ import MenuContact from "../../ContactView/MenuContact";
 import SideBarItem from "../SideBarItem";
 import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { useModal, useScreenSectionNavigator } from "../../../hooks";
 import {
   GroupMessage,
@@ -81,7 +81,6 @@ const SidebarContent = () => {
       }
     },
     [
-      handleClickScreenSection,
       setActiveConversation,
       setMessageList,
       setMessageType,
@@ -218,7 +217,7 @@ const SidebarContent = () => {
   }, [setLastMessageList, userId, userMap]);
 
   function handleClickMenuContact(index: number) {
-    handleClickScreenSection(false);
+    // handleClickScreenSection(false);
     setActiveContactType(index);
   }
 

@@ -1,12 +1,7 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AppButton from "../../shared/AppButton";
-import Avatar from "../../shared/Avatar";
-
-import { Group, User } from "../../../models";
-import { useGlobalState } from "../../../globalState";
-import style from "./AsideBody.module.scss";
+import style from "./Aside.body.module.scss";
 import classnames from "classnames/bind";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
   faCopy,
@@ -16,6 +11,16 @@ import {
   faThumbTack,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
+// component
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import images from "@/assets/index";
+
+//hook
+import { useGlobalState } from "@/hooks/globalState";
+// model
+import { User } from "@/models/User";
+import { Group } from "@/models/Group";
 const cx = classnames.bind(style);
 
 const AsideBody = () => {
@@ -33,7 +38,8 @@ const AsideBody = () => {
       : groupMap.get(activeConversation);
   const avatar =
     (currentEntity as User)?.avatarUrl ??
-    (currentEntity as Group)?.groupAvatarUrl;
+    (currentEntity as Group)?.groupAvatarUrl ??
+    images.userIcon;
   const name =
     (currentEntity as User)?.name ?? (currentEntity as Group)?.groupName;
   const groupLink = (currentEntity as Group)?.groupInviteUrl;

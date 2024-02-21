@@ -7,7 +7,7 @@ import {
   IndividualMessage,
   SenderReceiverArray,
 } from "../../models";
-import { useGlobalState } from "../../globalState";
+import { useGlobalState } from "../globalState";
 import useIndividualMessageSubscription from "./useIndividualMessageSubscription";
 import useFriendRequestSubscription from "./useFriendRequestSubscription";
 import useConnectedSubscription from "./useConnectedSubscription";

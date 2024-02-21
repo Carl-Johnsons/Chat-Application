@@ -3,7 +3,7 @@ import AppButton from "../../shared/AppButton";
 
 import style from "./ChatViewFooter.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 
 import {
   signalRDisableNotifyUserTyping,

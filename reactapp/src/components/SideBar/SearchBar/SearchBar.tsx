@@ -4,7 +4,7 @@ import AppButton from "../../shared/AppButton";
 import Avatar from "../../shared/Avatar";
 import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { searchUser } from "../../../services/user";
 import { useModal } from "../../../hooks";
 

@@ -1,1 +1,1 @@
-export { default } from "./AsideContainer";
+export { default } from "./Aside.container";

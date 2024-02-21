@@ -6,7 +6,7 @@ import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "../../shared/AppButton";
 import Avatar from "../../shared/Avatar";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { convertISODateToVietnameseFormat } from "../../../utils/DateUtils";
 import { Group, User } from "../../../models";
 

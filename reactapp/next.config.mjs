@@ -3,7 +3,14 @@
 // dotenv.config();
 
 const nextConfig = {
-    output: 'export', // Outputs a Single-Page Application (SPA).
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "**",
+            },
+        ],
+    }
 }
 
 export default nextConfig

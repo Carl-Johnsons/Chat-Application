@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import images from "../../../assets";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { Message, MessageType } from "../../../models";
 
 import Avatar from "../../shared/Avatar";

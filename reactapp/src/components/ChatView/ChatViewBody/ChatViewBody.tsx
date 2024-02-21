@@ -1,5 +1,5 @@
 import { HTMLProps, memo, useCallback, useEffect, useRef } from "react";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 
 import style from "./ChatViewBody.module.scss";
 import classNames from "classnames/bind";

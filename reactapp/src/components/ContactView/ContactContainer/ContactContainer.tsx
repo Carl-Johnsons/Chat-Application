@@ -3,7 +3,7 @@ import ContactHeader from "../ContactHeader";
 import style from "./ContactContainer.module.scss";
 import classNames from "classnames/bind";
 import { memo } from "react";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { MenuContactIndex, menuContacts } from "../../../data/constants";
 import ContactRow from "../ContactRow";
 import {

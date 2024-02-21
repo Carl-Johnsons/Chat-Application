@@ -1,18 +1,21 @@
-import { useGlobalState } from "../../../globalState";
 import { useEffect } from "react";
 
 import { Nav } from "react-bootstrap";
+
+import styles from "./NavigationBar.module.scss";
+import classNames from "classnames/bind";
+import images from "@/assets/index";
+import Avatar from "@/components/shared/Avatar";
 import NavItem from "../NavItem";
-import Avatar from "../../shared/Avatar";
 
-import style from "./NavigationBar.module.scss";
-import className from "classnames/bind";
-import images from "../../../assets";
-import { useModal, useScreenSectionNavigator } from "../../../hooks";
-import { getUser, getUserProfile } from "../../../services/user";
+//hook
+import { useGlobalState } from "@/hooks/globalState";
+import { useLogout } from "@/hooks/useLogout";
+import { useModal } from "@/hooks/useModal";
+import { useScreenSectionNavigator } from "@/hooks/useScreenSectionNavigator";
+import { getUserProfile, getUser } from "@/services/user";
 
-const cx = className.bind(style);
-
+const cx = classNames.bind(styles);
 type NavItem = {
   dataContent: string;
   href: string;
@@ -31,12 +34,12 @@ const NavigationBar = () => {
   const [userMap, setUserMap] = useGlobalState("userMap");
   const user = userMap.get(userId);
 
+  const logout = useLogout();
   useEffect(() => {
     if (userId) {
       return;
     }
     const fetchUserData = async () => {
-
       const [user] = await getUserProfile();
       if (!user) {
         return;
@@ -44,7 +47,7 @@ const NavigationBar = () => {
       setUserId(user.userId);
 
       const [userData] = await getUser(user.userId);
-      
+
       if (!userData) {
         return;
       }
@@ -61,27 +64,27 @@ const NavigationBar = () => {
     {
       dataContent: "info-modal",
       href: "#",
-      image: user?.avatarUrl || images.userIcon,
+      image: user?.avatarUrl || images.userIcon.src,
       imageAlt: "User Icon",
       navLinkClassName: cx("nav-avatar"),
     },
     {
       dataContent: "conversation-page",
       href: "#",
-      image: images.chatIcon,
+      image: images.chatIcon.src,
       imageAlt: "Chat Icon",
     },
     {
       dataContent: "contact-page",
       href: "#",
-      image: images.contactIcon,
+      image: images.contactIcon.src,
       imageAlt: "Chat Icon",
       className: "mb-auto",
     },
     {
       dataContent: "log-out",
-      href: "/logout",
-      image: images.logOutIcon,
+      href: "#",
+      image: images.logOutIcon.src,
       imageAlt: "Log out icon",
     },
   ];
@@ -93,6 +96,7 @@ const NavigationBar = () => {
       return;
     }
     if (linkId === items.length - 1) {
+      logout();
       return;
     }
     setActiveNav(linkId);
@@ -101,11 +105,7 @@ const NavigationBar = () => {
     <Nav
       className={cx(
         "application-nav-bar",
-        "border-0",
-        "nav-tabs",
-        "d-flex",
-        "flex-column",
-        "h-100"
+        " border-0 nav-tabs d-flex flex-column h-100"
       )}
     >
       {items.map((item, index) => (
@@ -121,7 +121,7 @@ const NavigationBar = () => {
         >
           <Avatar
             variant="avatar-img-40px"
-            className={cx(index !== 0 ? "p-2" : "rounded-circle")}
+            className={index !== 0 ? "p-2" : "rounded-circle"}
             src={item.image}
             alt={item.imageAlt}
           />

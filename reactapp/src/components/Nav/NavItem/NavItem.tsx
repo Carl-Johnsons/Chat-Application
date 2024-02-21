@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import style from "./NavItem.module.scss";
 import classNames from "classnames/bind";
 
@@ -36,7 +36,7 @@ const NavItem = ({
           isActive ? "active" : "",
           navLinkClassName
         )}
-        to={href}
+        href={href}
         data-content={dataContent}
         onClick={() => onClick(index)}
       >

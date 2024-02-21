@@ -6,7 +6,7 @@ import classnames from "classnames/bind";
 import AppButton from "../../shared/AppButton";
 import style from "./CreateGroupModalContent.module.scss";
 import Avatar from "../../shared/Avatar";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { Friend, GroupWithMemberId } from "../../../models";
 import { useModal } from "../../../hooks";
 import { createGroup } from "../../../services/group";

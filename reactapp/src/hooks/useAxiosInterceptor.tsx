@@ -1,21 +1,23 @@
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { useLayoutEffect } from "react";
 import { useRefreshToken } from ".";
-import { NavigateFunction } from "react-router-dom";
 import axiosInstance from "../utils/Api/axios";
 import { getLocalStorageItem } from "../utils/LocalStorageUtils";
+import { useRouter } from "next/navigation";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
 
-const useAxiosInterceptor = (navigate: NavigateFunction) => {
-  //refresh is not working if the current user is not indentified
+const useAxiosInterceptor = () => {
+  const router = useRouter();
   const refresh = useRefreshToken();
+  console.log("mount axios interceptor");
 
   useLayoutEffect(() => {
     const requestInterceptor = axiosInstance.interceptors.request.use(
       (config) => {
+        console.log("Intercept request");
         const accessToken = getLocalStorageItem("accessToken")?.token;
         if (!config.headers.Authorization && accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`;
@@ -31,7 +33,7 @@ const useAxiosInterceptor = (navigate: NavigateFunction) => {
       (response) => response,
       async (error: AxiosError) => {
         const prevRequest = error?.config as CustomAxiosRequestConfig;
-        console.log("intercept");
+        console.log("intercept response");
 
         if (error?.response?.status == 401 && !prevRequest?._retry) {
           console.log("refreshing token");
@@ -40,7 +42,7 @@ const useAxiosInterceptor = (navigate: NavigateFunction) => {
           // Case: Token expired or invalid navigate user back to login page
           if (!newAccessToken) {
             console.log("refresh token expire");
-            navigate("/login");
+            router.push("/login");
             return;
           }
           console.log("refresh token valid");
@@ -57,7 +59,7 @@ const useAxiosInterceptor = (navigate: NavigateFunction) => {
       axiosInstance.interceptors.request.eject(requestInterceptor);
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, [navigate, refresh]);
+  }, [refresh]);
   return axiosInstance;
 };
 export { useAxiosInterceptor };

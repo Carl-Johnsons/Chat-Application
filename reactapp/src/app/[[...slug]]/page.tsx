@@ -1,10 +1,9 @@
-import "../../index.scss";
 import { ClientOnly } from "./client";
 
 export function generateStaticParams() {
   return [{ slug: [""] }];
 }
 
-export default function Page() {
+export default function App() {
   return <ClientOnly />;
 }

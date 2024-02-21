@@ -1,6 +1,4 @@
-import style from "./Avatar.module.scss";
-import className from "classnames/bind";
-const cx = className.bind(style);
+import Image from "next/image";
 type AppImageVariants = "16" | "20" | "30" | "40" | "45" | "50" | "80";
 type VariantType<T extends string> = `avatar-img-${T}px`;
 
@@ -14,12 +12,19 @@ interface Props {
 }
 
 const Avatar = ({ variant = "avatar-img", src, alt, className }: Props) => {
+  const isDefault = variant === "avatar-img";
+  const size = isDefault
+    ? 45
+    : parseInt(variant.replace("avatar-img-", ""), 10);
   return (
-    <img
-      draggable="false"
-      className={cx(variant, className)}
+    <Image
       src={src}
       alt={alt}
+      className={`${className}`}
+      width={size}
+      height={size}
+      loading="lazy"
+      draggable="false"
     />
   );
 };

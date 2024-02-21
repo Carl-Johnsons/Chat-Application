@@ -20,7 +20,6 @@ enum SignalREvent {
   RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",
   RECEIVE_DISABLE_NOTIFY_USER_TYPING = "ReceiveDisableNotifyUserTyping",
 }
-
 const menuContacts: MenuContact[] = [
   { image: images.userSolid, name: "Danh sách bạn bè" },
   { image: images.userGroupSolid, name: "Danh sách nhóm" },

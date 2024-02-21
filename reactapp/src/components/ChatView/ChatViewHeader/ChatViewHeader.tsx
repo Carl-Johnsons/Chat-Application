@@ -4,7 +4,7 @@ import appImages from "../../../assets";
 import style from "./ChatViewHeader.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "../../shared/AppButton";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { memo, useEffect, useState } from "react";
 import { Group, User } from "../../../models";
 import images from "../../../assets";

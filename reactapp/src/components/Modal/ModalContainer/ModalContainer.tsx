@@ -14,7 +14,7 @@ import {
   useModal,
   useSignalREvents,
 } from "../../../hooks";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import { sendFriendRequest } from "../../../services/user";
 import CreateGroupModalContent from "../CreateGroupModalContent";
 

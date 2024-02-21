@@ -1,24 +1,21 @@
 import { useState } from "react";
 import { Form, InputGroup } from "react-bootstrap";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faMobilePhone } from "@fortawesome/free-solid-svg-icons";
-import AppButton from "../../shared/AppButton";
+import AppButton from "@/components/shared/AppButton";
 
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
-import { setLocalStorageItem } from "../../../utils/LocalStorageUtils";
-import { login } from "../../../services/auth/login.service";
+import { login } from "@/services/auth";
+import { setLocalStorageItem } from "@/utils/LocalStorageUtils";
+import { useRouter } from "next/navigation";
 
 const cx = classNames.bind(style);
 
 const LoginForm = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
 
   const handleClick = async () => {
     const [data] = await login(phoneNumber, password);
@@ -26,7 +23,7 @@ const LoginForm = () => {
       return;
     }
     setLocalStorageItem("isAuthenticated", true);
-    navigate(from, { replace: true });
+    router.push("/home");
   };
 
   return (
@@ -72,9 +69,9 @@ const LoginForm = () => {
           <Form.Check type="checkbox" label="Remmember me" />
         </Form.Group>
         <Form.Group>
-          <Link to="./forgotPassword" className={cx("link-secondary")}>
+          {/* <Link to="./forgotPassword" className={cx("link-secondary")}>
             Forgot password?
-          </Link>
+          </Link> */}
         </Form.Group>
       </div>
       <AppButton

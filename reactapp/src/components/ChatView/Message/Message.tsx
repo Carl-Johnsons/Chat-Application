@@ -1,5 +1,5 @@
 import { HTMLProps, useEffect } from "react";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import style from "./Message.module.scss";
 import classNames from "classnames/bind";
 import { getUser } from "../../../services/user";

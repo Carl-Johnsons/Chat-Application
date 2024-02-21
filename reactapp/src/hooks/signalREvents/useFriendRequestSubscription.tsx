@@ -1,7 +1,7 @@
 import { HubConnection } from "@microsoft/signalr";
 import { useEffect } from "react";
 import { FriendRequest } from "../../models";
-import { useGlobalState } from "../../globalState";
+import { useGlobalState } from "../globalState";
 import { SignalREvent } from "../../data/constants";
 
 const useFriendRequestSubscription = (connection?: HubConnection) => {

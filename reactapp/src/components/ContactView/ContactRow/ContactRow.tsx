@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useGlobalState } from "../../../globalState";
+import { useGlobalState } from "../../../hooks/globalState";
 import AppButton from "../../shared/AppButton";
 import Avatar from "../../shared/Avatar";
 import style from "./ContactRow.module.scss";
