@@ -1,4 +1,5 @@
-import Avatar from "../../shared/Avatar";
+import Avatar from "@/components/shared/Avatar";
+
 import style from "./MenuContact.module.scss";
 import classNames from "classnames/bind";
 

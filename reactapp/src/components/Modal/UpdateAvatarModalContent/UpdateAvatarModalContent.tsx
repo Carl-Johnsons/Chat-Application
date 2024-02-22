@@ -1,9 +1,9 @@
-import AppButton from "../../shared/AppButton";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+
 import style from "./UpdateAvatarModalContent.module.scss";
 import classNames from "classnames/bind";
-import images from "../../../assets";
-import Avatar from "../../shared/Avatar";
-style;
+import images from "@/assets";
 
 const cx = classNames.bind(style);
 
@@ -25,7 +25,7 @@ const UpdateAvatarModalContent = () => {
             <Avatar
               variant="avatar-img-80px"
               className={cx("rounded-circle")}
-              src={images.defaultAvatarImg}
+              src={images.defaultAvatarImg.src}
               alt="avatar image"
             />
           </li>

@@ -1,9 +1,11 @@
+import moment from "moment";
 import { HTMLProps, useEffect } from "react";
-import { useGlobalState } from "../../../hooks/globalState";
+
+import { useGlobalState } from "@/hooks";
+import { getUser } from "@/services/user";
+
 import style from "./Message.module.scss";
 import classNames from "classnames/bind";
-import { getUser } from "../../../services/user";
-import moment from "moment";
 
 const cx = classNames.bind(style);
 interface Props {

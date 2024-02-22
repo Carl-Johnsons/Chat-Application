@@ -1,32 +1,22 @@
 import { useEffect, useCallback } from "react";
-import SearchBar from "../SearchBar";
-import MenuContact from "../../ContactView/MenuContact";
 
+import MenuContact from "@/components/ContactView/MenuContact";
+import SearchBar from "../SearchBar";
 import SideBarItem from "../SideBarItem";
+
+import { useGlobalState, useModal, useScreenSectionNavigator } from "@/hooks";
+
+import { User, MessageType, IndividualMessage, GroupMessage } from "@/models";
+import { menuContacts } from "data/constants";
+
+import { getGroupUserByUserId, getGroupUserByGroupId } from "@/services/group";
+import { getGroupMessageList } from "@/services/groupMessage";
+import { getIndividualMessageList } from "@/services/individualMessage";
+import { getLastMessageList } from "@/services/message";
+import { getFriendList, getFriendRequestList, getUser } from "@/services/user";
+
 import style from "./SidebarContent.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../../hooks/globalState";
-import { useModal, useScreenSectionNavigator } from "../../../hooks";
-import {
-  GroupMessage,
-  IndividualMessage,
-  MessageType,
-  User,
-} from "../../../models";
-import { menuContacts } from "../../../data/constants";
-
-import {
-  getFriendList,
-  getFriendRequestList,
-  getUser,
-} from "../../../services/user";
-import {
-  getGroupUserByGroupId,
-  getGroupUserByUserId,
-} from "../../../services/group";
-import { getGroupMessageList } from "../../../services/groupMessage";
-import { getIndividualMessageList } from "../../../services/individualMessage";
-import { getLastMessageList } from "../../../services/message";
 
 const cx = classNames.bind(style);
 
@@ -80,12 +70,7 @@ const SidebarContent = () => {
         return;
       }
     },
-    [
-      setActiveConversation,
-      setMessageList,
-      setMessageType,
-      userId,
-    ]
+    [setActiveConversation, setMessageList, setMessageType, userId]
   );
   const handleClickSearchResult = (searchResult: User | null) => {
     if (!searchResult) {

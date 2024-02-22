@@ -30,4 +30,4 @@ const useTimeout = (callback: (...args: unknown[]) => void, delay: number) => {
   return { set, clear, reset };
 };
 
-export default useTimeout;
+export { useTimeout };

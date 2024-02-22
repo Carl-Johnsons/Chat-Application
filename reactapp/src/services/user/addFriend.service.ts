@@ -1,4 +1,4 @@
-import axiosInstance from "../../utils/Api/axios";
+import { axiosInstance } from "@/utils";
 
 /**
  * Add a friend using fetch API

@@ -1,6 +1,6 @@
-import axiosInstance from "../../utils/Api/axios";
-import { GroupMessage } from "../../models";
-import { getCurrentDateTimeInISO8601 } from "../../utils/DateUtils";
+import { GroupMessage } from "@/models";
+import { axiosInstance } from "@/utils";
+import { getCurrentDateTimeInISO8601 } from "@/utils";
 
 /**
  * @param {number} senderId

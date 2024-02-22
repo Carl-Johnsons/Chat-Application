@@ -27,11 +27,11 @@
     "baseUrl": "src",
     "paths": {
       "@/components/*": ["components/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/models/*": ["models/*"],
-      "@/assets/*": ["assets/*"],
-      "@/services/*": ["services/*"],
-      "@/utils/*": ["utils/*"]
+      "@/hooks": ["hooks/index"],
+      "@/models": ["models/index"],
+      "@/assets": ["assets/index"],
+      "@/services/*": ["services/*/index"],
+      "@/utils": ["utils/index"]
     }
   },
   "include": [

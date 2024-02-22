@@ -1,14 +1,17 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera, faPen } from "@fortawesome/free-solid-svg-icons";
 
-import images from "../../../assets";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+
+import { useGlobalState } from "@/hooks";
+
+import { convertISODateToVietnameseFormat } from "@/utils";
+import { Group, User } from "@/models";
+
 import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
-import AppButton from "../../shared/AppButton";
-import Avatar from "../../shared/Avatar";
-import { useGlobalState } from "../../../hooks/globalState";
-import { convertISODateToVietnameseFormat } from "../../../utils/DateUtils";
-import { Group, User } from "../../../models";
+import images from "@/assets";
 
 const cx = classNames.bind(style);
 
@@ -95,7 +98,7 @@ const ProfileModalContent = (variant: Variants) => {
           <img
             className={cx("w-100", "h-100", "object-fit-cover")}
             draggable="false"
-            src={background || images.defaultBackgroundImg}
+            src={background || images.defaultBackgroundImg.src}
           />
         </div>
       )}
@@ -120,7 +123,7 @@ const ProfileModalContent = (variant: Variants) => {
             <Avatar
               variant="avatar-img-80px"
               className={cx("rounded-circle")}
-              src={avatar || images.defaultAvatarImg}
+              src={avatar || images.defaultAvatarImg.src}
               alt="avatar image"
             />
             {/* Only personal can edit their avatar */}
@@ -244,7 +247,7 @@ const ProfileModalContent = (variant: Variants) => {
           <div className={cx("member-avatar-container")}>
             {userIdList?.map((userId, index) => {
               const member = userMap.get(userId);
-              const avatar = member?.avatarUrl ?? images.userIcon;
+              const avatar = member?.avatarUrl ?? images.userIcon.src;
               return (
                 <Avatar
                   key={userId}

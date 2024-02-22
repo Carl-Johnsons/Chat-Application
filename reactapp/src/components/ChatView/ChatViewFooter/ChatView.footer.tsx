@@ -1,24 +1,22 @@
 import { memo, useEffect, useState } from "react";
-import AppButton from "../../shared/AppButton";
 
-import style from "./ChatViewFooter.module.scss";
+import style from "./ChatView.footer.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../../hooks/globalState";
+import AppButton from "@/components/shared/AppButton";
 
 import {
   signalRDisableNotifyUserTyping,
   signalRNotifyUserTyping,
   signalRSendIndividualMessage,
+  useDebounce,
+  useGlobalState,
   useSignalREvents,
-} from "../../../hooks";
-import {
-  GroupMessage,
-  IndividualMessage,
-  SenderReceiverArray,
-} from "../../../models";
-import useDebounce from "../../../hooks/useDebounce";
-import { sendIndividualMessage } from "../../../services/individualMessage";
-import { sendGroupMessage } from "../../../services/groupMessage";
+} from "@/hooks";
+
+import { GroupMessage, IndividualMessage, SenderReceiverArray } from "@/models";
+
+import { sendGroupMessage } from "@/services/groupMessage";
+import { sendIndividualMessage } from "@/services/individualMessage";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {

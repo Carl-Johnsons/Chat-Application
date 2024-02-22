@@ -1,5 +1,5 @@
-import { IndividualMessage } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
+import { IndividualMessage } from "@/models";
+import { axiosInstance } from "@/utils";
 
 /**
  *

@@ -1,4 +1,4 @@
-import images from "../assets";
+import images from "@/assets";
 
 interface MenuContact {
   image: string;
@@ -21,9 +21,9 @@ enum SignalREvent {
   RECEIVE_DISABLE_NOTIFY_USER_TYPING = "ReceiveDisableNotifyUserTyping",
 }
 const menuContacts: MenuContact[] = [
-  { image: images.userSolid, name: "Danh sách bạn bè" },
-  { image: images.userGroupSolid, name: "Danh sách nhóm" },
-  { image: images.envelopeOpenRegular, name: "Lời mời kết bạn" },
+  { image: images.userSolid.src, name: "Danh sách bạn bè" },
+  { image: images.userGroupSolid.src, name: "Danh sách nhóm" },
+  { image: images.envelopeOpenRegular.src, name: "Lời mời kết bạn" },
 ];
 
 export { menuContacts, MenuContactIndex, SignalREvent };

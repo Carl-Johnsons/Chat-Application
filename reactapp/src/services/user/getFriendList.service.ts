@@ -1,5 +1,5 @@
-import { DefaultUser, Friend } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
+import { DefaultUser, Friend } from "@/models";
+import { axiosInstance } from "@/utils";
 
 /**
  * if you want only friend array, you can use this line

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import images from "../../../assets";
-import AppButton from "../../shared/AppButton";
-import Avatar from "../../shared/Avatar";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+
+import { useGlobalState, useModal } from "@/hooks";
+
+import { searchUser } from "@/services/user";
+
 import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState } from "../../../hooks/globalState";
-import { searchUser } from "../../../services/user";
-import { useModal } from "../../../hooks";
+import images from "@/assets";
 
 const cx = classNames.bind(style);
 
@@ -51,7 +53,7 @@ const SearchBar = () => {
       children: (
         <Avatar
           variant="avatar-img-16px"
-          src={images.addUserIcon}
+          src={images.addUserIcon.src}
           alt="add user icon"
         />
       ),
@@ -61,7 +63,7 @@ const SearchBar = () => {
       children: (
         <Avatar
           variant="avatar-img-16px"
-          src={images.addUserIcon}
+          src={images.addUserIcon.src}
           alt="add group icon"
         />
       ),

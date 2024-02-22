@@ -1,5 +1,5 @@
-import { User } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
+import { axiosInstance } from "@/utils";
+import { User } from "@/models";
 
 export const getUserProfile = async (): Promise<[User | null, unknown]> => {
   try {

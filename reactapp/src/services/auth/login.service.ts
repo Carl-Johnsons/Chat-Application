@@ -1,6 +1,5 @@
-import { JwtToken } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
-import { setLocalStorageItem } from "../../utils/LocalStorageUtils";
+import { JwtToken } from "@/models";
+import { axiosInstance } from "@/utils";
 
 export const login = async (
   phoneNumber: string,
@@ -9,12 +8,7 @@ export const login = async (
   try {
     const url = "/api/Auth/Login";
     const respone = await axiosInstance.post(url, { phoneNumber, password });
-    const jwtToken: JwtToken = respone.data;
-    if (jwtToken) {
-      setLocalStorageItem("accessToken", jwtToken);
-      return [jwtToken, null];
-    }
-    return [null, null];
+    return [respone.data, null];
   } catch (error) {
     return [null, error];
   }

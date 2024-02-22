@@ -1,9 +1,9 @@
-import { useGlobalState } from "../../../hooks/globalState";
+import { useGlobalState } from "@/hooks";
 
 import ChatViewHeader from "../ChatViewHeader";
 import ChatViewFooter from "../ChatViewFooter";
 
-import style from "./ChatViewContainer.module.scss";
+import style from "./ChatView.container.module.scss";
 import classNames from "classnames/bind";
 
 import { memo } from "react";

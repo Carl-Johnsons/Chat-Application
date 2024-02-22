@@ -1,9 +1,9 @@
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { useLayoutEffect } from "react";
-import { useRefreshToken } from ".";
-import axiosInstance from "../utils/Api/axios";
-import { getLocalStorageItem } from "../utils/LocalStorageUtils";
+import { useLocalStorage, useRefreshToken } from ".";
 import { useRouter } from "next/navigation";
+import { axiosInstance } from "@/utils";
+import { JwtToken } from "@/models";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
@@ -12,13 +12,14 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 const useAxiosInterceptor = () => {
   const router = useRouter();
   const refresh = useRefreshToken();
-  console.log("mount axios interceptor");
+  const [accessTokenObj] = useLocalStorage("accessToken");
 
   useLayoutEffect(() => {
     const requestInterceptor = axiosInstance.interceptors.request.use(
       (config) => {
         console.log("Intercept request");
-        const accessToken = getLocalStorageItem("accessToken")?.token;
+        const accessToken = (accessTokenObj as unknown as JwtToken)?.token;
+
         if (!config.headers.Authorization && accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`;
         }
@@ -33,19 +34,15 @@ const useAxiosInterceptor = () => {
       (response) => response,
       async (error: AxiosError) => {
         const prevRequest = error?.config as CustomAxiosRequestConfig;
-        console.log("intercept response");
 
         if (error?.response?.status == 401 && !prevRequest?._retry) {
-          console.log("refreshing token");
           prevRequest._retry = true;
           const newAccessToken = await refresh();
           // Case: Token expired or invalid navigate user back to login page
           if (!newAccessToken) {
-            console.log("refresh token expire");
             router.push("/login");
             return;
           }
-          console.log("refresh token valid");
           if (prevRequest.headers) {
             prevRequest.headers.Authorization = `Bearer ${newAccessToken.token}`;
           }

@@ -1,5 +1,6 @@
-import { useGlobalState } from "./globalState";
-import { ModalType } from "../models";
+import { ModalType } from "models/ModalType";
+import { useGlobalState } from ".";
+
 interface ModalProps {
   entityId?: number;
   modalType?: ModalType;

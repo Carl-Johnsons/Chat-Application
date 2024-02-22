@@ -1,20 +1,19 @@
-import { refreshToken } from "../services/auth/refreshToken.service";
-import {
-  removeLocalStorageItem,
-  setLocalStorageItem,
-} from "../utils/LocalStorageUtils";
+import { refreshToken } from "@/services/auth";
+import { useLocalStorage } from ".";
 
 const useRefreshToken = () => {
+  const [, setAccessToken, removeAccessToken] = useLocalStorage("accessToken");
+  const [, setIsAuth, removeIsAuth] = useLocalStorage("isAuth");
   const refresh = async () => {
     const [newAccessToken, error] = await refreshToken();
 
     if (error || !newAccessToken) {
-      removeLocalStorageItem("accessToken");
-      setLocalStorageItem("isAuthenticated", false);
+      removeAccessToken();
+      removeIsAuth();
       return null;
     }
-    setLocalStorageItem("accessToken", newAccessToken);
-    setLocalStorageItem("isAuthenticated", true);
+    setAccessToken(newAccessToken);
+    setIsAuth(true);
     return newAccessToken;
   };
   return refresh;

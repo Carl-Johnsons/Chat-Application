@@ -1,5 +1,5 @@
-import { User, FriendRequest } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
+import { axiosInstance } from "@/utils";
+import { User, FriendRequest } from "@/models";
 
 /**
  * send friend request using fetch API

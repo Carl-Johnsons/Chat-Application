@@ -1,4 +1,4 @@
-import axiosInstance from "../../utils/Api/axios";
+import { axiosInstance } from "@/utils";
 
 export const deleteFriend = async (
   userId: number,

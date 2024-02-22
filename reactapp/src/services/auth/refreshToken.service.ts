@@ -1,5 +1,5 @@
-import { JwtToken } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
+import { axiosInstance } from "@/utils";
+import { JwtToken } from "models/JwtToken";
 
 export const refreshToken = async (): Promise<[JwtToken | null, unknown]> => {
   try {

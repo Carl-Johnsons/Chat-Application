@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
+
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import { useGlobalState, useModal } from "@/hooks";
+import { createGroup } from "@/services/group";
+import { uploadImage } from "@/services/tool";
+import { Friend, GroupWithMemberId } from "@/models";
+
+import style from "./CreateGroupModalContent.module.scss";
 import classnames from "classnames/bind";
 
-import AppButton from "../../shared/AppButton";
-import style from "./CreateGroupModalContent.module.scss";
-import Avatar from "../../shared/Avatar";
-import { useGlobalState } from "../../../hooks/globalState";
-import { Friend, GroupWithMemberId } from "../../../models";
-import { useModal } from "../../../hooks";
-import { createGroup } from "../../../services/group";
-import { uploadImage } from "../../../services/tool/uploadImage.service";
 const cx = classnames.bind(style);
 
 const CreateGroupModalContent = () => {
@@ -207,7 +208,7 @@ const CreateGroupModalContent = () => {
                 className={cx("pt-2", "pb-2", "d-flex", "align-items-center")}
               >
                 <input
-                  className={cx("custom-input","me-2")}
+                  className={cx("custom-input", "me-2")}
                   type="checkbox"
                   ref={(el) => {
                     if (el) inputRefs.current[index] = el;

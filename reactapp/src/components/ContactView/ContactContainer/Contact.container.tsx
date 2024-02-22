@@ -1,22 +1,21 @@
-import ContactHeader from "../ContactHeader";
-
-import style from "./ContactContainer.module.scss";
-import classNames from "classnames/bind";
 import { memo } from "react";
-import { useGlobalState } from "../../../hooks/globalState";
-import { MenuContactIndex, menuContacts } from "../../../data/constants";
+
+import ContactHeader from "../ContactHeader";
 import ContactRow from "../ContactRow";
+
 import {
   signalRSendAcceptFriendRequest,
+  useGlobalState,
   useModal,
   useSignalREvents,
-} from "../../../hooks";
-import {
-  addFriend,
-  deleteFriend,
-  deleteFriendRequest,
-} from "../../../services/user";
-import { Friend } from "../../../models";
+} from "@/hooks";
+
+import { Friend } from "@/models";
+import { menuContacts, MenuContactIndex } from "data/constants";
+import { addFriend, deleteFriend, deleteFriendRequest } from "@/services/user";
+
+import style from "./Contact.container.module.scss";
+import classNames from "classnames/bind";
 
 const cx = classNames.bind(style);
 

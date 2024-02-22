@@ -1,16 +1,17 @@
 import { HTMLProps, memo, useCallback, useEffect, useRef } from "react";
-import { useGlobalState } from "../../../hooks/globalState";
 
-import style from "./ChatViewBody.module.scss";
+import style from "./ChatView.body.module.scss";
 import classNames from "classnames/bind";
+//component
+import Avatar from "@/components/shared/Avatar";
 import Message from "../Message";
-import Avatar from "../../shared/Avatar";
-import images from "../../../assets";
-import { GroupMessage, IndividualMessage } from "../../../models";
 
-import useDebounce from "../../../hooks/useDebounce";
-import { getNextIndividualMessageList } from "../../../services/individualMessage";
-import { getNextGroupMessageList } from "../../../services/groupMessage";
+import { GroupMessage, IndividualMessage } from "@/models";
+
+import images from "@/assets";
+import { getNextIndividualMessageList } from "@/services/individualMessage";
+import { getNextGroupMessageList } from "@/services/groupMessage";
+import { useDebounce, useGlobalState } from "@/hooks";
 
 const cx = classNames.bind(style);
 
@@ -103,7 +104,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
   }, [onScroll]);
 
   const scrollToLastMessage = () => {
-
     if (!messageContainerRef.current || isFetchNextBatchRef.current) {
       return;
     }
@@ -168,7 +168,9 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
           {!isSender && messageType === "Group" && (
             <Avatar
               className={cx("rounded-circle", "me-2")}
-              src={userMap.get(subArraySenderId)?.avatarUrl ?? images.userIcon}
+              src={
+                userMap.get(subArraySenderId)?.avatarUrl ?? images.userIcon.src
+              }
               alt="avatar"
             />
           )}

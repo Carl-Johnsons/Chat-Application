@@ -2,6 +2,7 @@
 import React from "react";
 import { useAxiosInterceptor } from "../../hooks";
 import { ScreenSectionProvider } from "../../context/ScreenSectionProvider";
+import RequireAuth from "@/components/Auth/RequireAuth";
 
 interface Props {
   children: React.ReactNode;
@@ -12,4 +13,4 @@ const Layout = ({ children }: Props) => {
   return <ScreenSectionProvider>{children}</ScreenSectionProvider>;
 };
 
-export default Layout;
+export default RequireAuth(Layout);

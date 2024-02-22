@@ -1,1 +1,1 @@
-export { default } from "./ContactHeader";
+export { default } from "./Contact.header";

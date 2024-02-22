@@ -1,6 +1,6 @@
+import { GroupMessage, IndividualMessage } from "@/models";
+import { axiosInstance } from "@/utils";
 import { AxiosResponse } from "axios";
-import { GroupMessage, IndividualMessage } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
 
 /**
  * @param {number} userId

@@ -1,6 +1,5 @@
-import axiosInstance from "../../utils/Api/axios";
-import { getCurrentDateTimeInISO8601 } from "../../utils/DateUtils";
-import { IndividualMessage } from "../../models";
+import { IndividualMessage } from "@/models";
+import { axiosInstance, getCurrentDateTimeInISO8601 } from "@/utils";
 
 /**
  * The sender is the current User while the receiver is the other user

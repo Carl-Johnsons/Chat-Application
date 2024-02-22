@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import style from "./NavItem.module.scss";
 import classNames from "classnames/bind";
 

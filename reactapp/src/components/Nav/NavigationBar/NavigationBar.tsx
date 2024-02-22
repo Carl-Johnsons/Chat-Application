@@ -1,20 +1,22 @@
 import { useEffect } from "react";
-
 import { Nav } from "react-bootstrap";
+
+import Avatar from "@/components/shared/Avatar";
+import NavItem from "../NavItem";
+//hook
+import {
+  useGlobalState,
+  useLogout,
+  useModal,
+  useScreenSectionNavigator,
+} from "@/hooks";
+
+//service
+import { getUserProfile, getUser } from "@/services/user";
 
 import styles from "./NavigationBar.module.scss";
 import classNames from "classnames/bind";
-import images from "@/assets/index";
-import Avatar from "@/components/shared/Avatar";
-import NavItem from "../NavItem";
-
-//hook
-import { useGlobalState } from "@/hooks/globalState";
-import { useLogout } from "@/hooks/useLogout";
-import { useModal } from "@/hooks/useModal";
-import { useScreenSectionNavigator } from "@/hooks/useScreenSectionNavigator";
-import { getUserProfile, getUser } from "@/services/user";
-
+import images from "@/assets";
 const cx = classNames.bind(styles);
 type NavItem = {
   dataContent: string;

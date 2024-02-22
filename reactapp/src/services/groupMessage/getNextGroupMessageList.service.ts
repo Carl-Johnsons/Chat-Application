@@ -1,5 +1,5 @@
-import { GroupMessage } from "../../models";
-import axiosInstance from "../../utils/Api/axios";
+import { axiosInstance } from "@/utils";
+import { GroupMessage } from "@/models";
 
 /**
  * @param {number} groupId

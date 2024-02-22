@@ -7,22 +7,25 @@ import AppButton from "@/components/shared/AppButton";
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
 import { login } from "@/services/auth";
-import { setLocalStorageItem } from "@/utils/LocalStorageUtils";
 import { useRouter } from "next/navigation";
+import { useLocalStorage } from "@/hooks";
 
 const cx = classNames.bind(style);
 
 const LoginForm = () => {
   const router = useRouter();
+  const [, setIsAuth] = useLocalStorage("isAuth");
+  const [, setAccessToken] = useLocalStorage("accessToken");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
   const handleClick = async () => {
-    const [data] = await login(phoneNumber, password);
-    if (!data) {
+    const [jwtToken] = await login(phoneNumber, password);
+    if (!jwtToken) {
       return;
     }
-    setLocalStorageItem("isAuthenticated", true);
+    setIsAuth(true);
+    setAccessToken(jwtToken);
     router.push("/home");
   };
 

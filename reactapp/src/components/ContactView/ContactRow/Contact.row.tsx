@@ -1,16 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useGlobalState } from "../../../hooks/globalState";
-import AppButton from "../../shared/AppButton";
-import Avatar from "../../shared/Avatar";
-import style from "./ContactRow.module.scss";
-import classNames from "classnames/bind";
 import {
   faCheck,
   faClose,
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
-import { MenuContactIndex } from "../../../data/constants";
-import { Group, User } from "../../../models";
+
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import { useGlobalState } from "@/hooks";
+import { Group, User } from "@/models";
+import { MenuContactIndex } from "data/constants";
+
+import style from "./Contact.row.module.scss";
+import classNames from "classnames/bind";
 const cx = classNames.bind(style);
 interface Props {
   entityId: number;

@@ -1,12 +1,15 @@
+import moment from "moment";
 import { useEffect, useState } from "react";
-import images from "../../../assets";
-import { useGlobalState } from "../../../hooks/globalState";
-import { Message, MessageType } from "../../../models";
+//component
+import Avatar from "@/components/shared/Avatar";
+//hook
+import { useGlobalState } from "@/hooks";
+//model
+import { Message, MessageType } from "@/models";
 
-import Avatar from "../../shared/Avatar";
 import style from "./SideBarItem.module.scss";
 import classNames from "classnames/bind";
-import moment from "moment";
+import images from "@/assets";
 
 const cx = classNames.bind(style);
 
@@ -51,7 +54,7 @@ const SideBarItem = (variant: Variants) => {
 
   let userId: number = 0;
   let groupId: number = 0;
-  let image: string = images.defaultAvatarImg;
+  let image: string = images.defaultAvatarImg.src;
   let lastMessage: Message | undefined;
   let searchName: string = "";
   let phoneNumber: string = "";

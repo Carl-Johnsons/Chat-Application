@@ -14,13 +14,12 @@ import {
 // component
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
-import images from "@/assets/index";
+import images from "@/assets";
 
 //hook
-import { useGlobalState } from "@/hooks/globalState";
+import { useGlobalState } from "@/hooks";
 // model
-import { User } from "@/models/User";
-import { Group } from "@/models/Group";
+import { User, Group } from "@/models";
 const cx = classnames.bind(style);
 
 const AsideBody = () => {
@@ -39,7 +38,7 @@ const AsideBody = () => {
   const avatar =
     (currentEntity as User)?.avatarUrl ??
     (currentEntity as Group)?.groupAvatarUrl ??
-    images.userIcon;
+    images.userIcon.src;
   const name =
     (currentEntity as User)?.name ?? (currentEntity as Group)?.groupName;
   const groupLink = (currentEntity as Group)?.groupInviteUrl;

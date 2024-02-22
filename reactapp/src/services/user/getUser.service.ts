@@ -1,5 +1,5 @@
-import axiosInstance from "../../utils/Api/axios";
-import { DefaultUser, User } from "../../models";
+import { axiosInstance } from "@/utils";
+import { DefaultUser, User } from "@/models";
 
 /**
  * @param {number} userId

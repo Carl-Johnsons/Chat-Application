@@ -1,10 +1,10 @@
 "use client";
 
-import images from "@/assets/index";
 import style from "./Login.module.scss";
 import classNames from "classnames/bind";
 import LoginForm from "@/components/Auth/LoginForm";
 import ModalContainer from "@/components/Modal/ModalContainer";
+import images from "@/assets";
 
 const cx = classNames.bind(style);
 

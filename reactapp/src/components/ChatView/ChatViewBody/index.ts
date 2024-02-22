@@ -1,1 +1,1 @@
-export { default } from "./ChatViewBody";
+export { default } from "./ChatView.body";

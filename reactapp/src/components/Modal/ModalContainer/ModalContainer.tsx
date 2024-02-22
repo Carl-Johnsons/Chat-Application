@@ -3,20 +3,22 @@ import { memo, useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 
-import style from "./ModalContainer.module.scss";
-import classNames from "classnames/bind";
+import AppButton from "@/components/shared/AppButton";
 import ProfileModalContent from "../ProfileModalContent";
 import UpdateProfileModalContent from "../UpdateProfileModalContent";
 import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
-import AppButton from "../../shared/AppButton";
+import CreateGroupModalContent from "../CreateGroupModalContent";
+
 import {
   signalRSendFriendRequest,
+  useGlobalState,
   useModal,
   useSignalREvents,
-} from "../../../hooks";
-import { useGlobalState } from "../../../hooks/globalState";
-import { sendFriendRequest } from "../../../services/user";
-import CreateGroupModalContent from "../CreateGroupModalContent";
+} from "@/hooks";
+import { sendFriendRequest } from "@/services/user";
+
+import style from "./ModalContainer.module.scss";
+import classNames from "classnames/bind";
 
 const cx = classNames.bind(style);
 

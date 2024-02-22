@@ -1,1 +1,1 @@
-export { default } from "./ChatViewFooter";
+export { default } from "./ChatView.footer";

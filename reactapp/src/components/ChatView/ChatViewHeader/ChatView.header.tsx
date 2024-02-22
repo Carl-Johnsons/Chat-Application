@@ -1,14 +1,15 @@
-import Avatar from "../../shared/Avatar";
-
-import appImages from "../../../assets";
-import style from "./ChatViewHeader.module.scss";
-import classNames from "classnames/bind";
-import AppButton from "../../shared/AppButton";
-import { useGlobalState } from "../../../hooks/globalState";
 import { memo, useEffect, useState } from "react";
-import { Group, User } from "../../../models";
-import images from "../../../assets";
-import { useModal } from "../../../hooks";
+
+import Avatar from "@/components/shared/Avatar";
+import AppButton from "@/components/shared/AppButton";
+
+import { useGlobalState, useModal } from "@/hooks";
+
+import { Group, User } from "@/models";
+
+import style from "./ChatView.header.module.scss";
+import classNames from "classnames/bind";
+import images from "@/assets";
 
 const cx = classNames.bind(style);
 
@@ -56,7 +57,7 @@ const ChatViewHeader = () => {
         onClick={handleClickAvatar}
       >
         <Avatar
-          src={receiver ? avatar : images.userIcon}
+          src={receiver ? avatar : images.userIcon.src}
           className={cx("rounded-circle")}
           alt="avatar"
         />
@@ -104,13 +105,13 @@ const ChatViewHeader = () => {
           {showAside ? (
             <Avatar
               variant="avatar-img-20px"
-              src={appImages.sidebarIconActive}
+              src={images.sidebarIconActive.src}
               alt="sidebar icon"
             />
           ) : (
             <Avatar
               variant="avatar-img-20px"
-              src={appImages.sidebarIcon}
+              src={images.sidebarIcon.src}
               alt="sidebar icon"
             />
           )}

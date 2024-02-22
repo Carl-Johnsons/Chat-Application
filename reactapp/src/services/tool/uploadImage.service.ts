@@ -1,4 +1,4 @@
-import { ImgurImage } from "../../models/ImgurImage";
+import { ImgurImage } from "@/models";
 
 /**
  * Upload an img using fetch API

@@ -1,1 +1,1 @@
-export { default } from "./ContactRow";
+export { default } from "./Contact.row";

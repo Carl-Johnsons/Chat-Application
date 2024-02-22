@@ -1,5 +1,5 @@
-import axiosInstance from "../../utils/Api/axios";
-import { FriendRequest } from "../../models";
+import { axiosInstance } from "@/utils";
+import { FriendRequest } from "@/models";
 
 /**
  * If you want to get only the sender array, you can use this line of code:

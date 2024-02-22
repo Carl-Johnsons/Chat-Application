@@ -1,6 +1,6 @@
-import Avatar from "../../shared/Avatar";
+import Avatar from "@/components/shared/Avatar";
 
-import style from "./ContactHeader.module.scss";
+import style from "./Contact.header.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(style);

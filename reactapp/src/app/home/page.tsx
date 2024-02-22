@@ -2,9 +2,11 @@
 
 // Hooks
 import { useEffect } from "react";
-import { useGlobalState } from "../../hooks/globalState";
-import { useScreenSectionNavigator } from "@/hooks/useScreenSectionNavigator";
-import { useSignalRConnection } from "@/hooks/useSignalRConnection";
+import {
+  useGlobalState,
+  useScreenSectionNavigator,
+  useSignalRConnection,
+} from "@/hooks";
 //components
 import styles from "./Home.module.scss";
 import classNames from "classnames/bind";
@@ -14,7 +16,6 @@ import ContactContainer from "@/components/ContactView/ContactContainer";
 import ModalContainer from "@/components/Modal/ModalContainer";
 import NavigationBar from "@/components/Nav/NavigationBar";
 import SidebarContent from "@/components/SideBar/SidebarContent";
-
 
 const cx = classNames.bind(styles);
 

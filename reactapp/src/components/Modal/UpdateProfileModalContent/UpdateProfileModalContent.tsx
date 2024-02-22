@@ -1,16 +1,15 @@
-import AppButton from "../../shared/AppButton";
+import { useState } from "react";
+
+import AppButton from "@/components/shared/AppButton";
+import { useGlobalState } from "@/hooks";
+import { updateUser } from "@/services/user";
 
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
 
-import { useGlobalState } from "../../../hooks/globalState";
-import { useState } from "react";
+import { getMaxDayinMonth, formatDateWithSeparator } from "@/utils";
 
-import {
-  formatDateWithSeparator,
-  getMaxDayinMonth,
-} from "../../../utils/DateUtils";
-import { updateUser } from "../../../services/user";
+
 const cx = className.bind(style);
 
 interface Props {
