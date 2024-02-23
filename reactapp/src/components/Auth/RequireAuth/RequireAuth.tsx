@@ -2,7 +2,7 @@ import { useLocalStorage } from "@/hooks";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
-const RequireAuth = (Component: React.FC) => {
+const RequireAuth = (Component: any) => {
   const requireAuth = (props: any) => {
     const [isAuth] = useLocalStorage("isAuth");
     useEffect(() => {
