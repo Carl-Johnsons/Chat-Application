@@ -239,14 +239,38 @@ namespace ChatAPI.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] User user)
+        public IActionResult Put(int id, [FromBody] PublicUserDTO publicUser)
         {
-            if (id != user.UserId)
+            if (id != publicUser.UserId)
             {
                 return BadRequest("Id mismatch when updating user");
             }
+            var oldUser = _userRepository.Get(id);
+            if (oldUser == null)
+            {
+                return NotFound("User not found!");
+            }
+            var user = new User()
+            {
+                UserId = publicUser.UserId,
+                Active = publicUser.Active,
+                AvatarUrl = publicUser.AvatarUrl,
+                BackgroundUrl = publicUser.BackgroundUrl,
+                Dob = publicUser.Dob,
+                Gender = publicUser.Gender,
+                Introduction = publicUser.Introduction,
+                Name= publicUser.Name,
+                PhoneNumber = publicUser.PhoneNumber,
+
+                Password = oldUser.Password,
+                Email = oldUser.Email,
+                RefreshTokenCreated = oldUser.RefreshTokenCreated,
+                RefreshToken = oldUser.RefreshToken,
+                RefreshTokenExpired = oldUser.RefreshTokenExpired
+            };
+
             _userRepository.Update(user);
-            var publicUser = mapper.Map<PublicUserDTO>(user);
+
             return Ok(publicUser);
         }
 
