@@ -12,14 +12,12 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 const useAxiosInterceptor = () => {
   const router = useRouter();
   const refresh = useRefreshToken();
-  const [accessTokenObj] = useLocalStorage("accessToken");
+  const [getAccessTokenObj] = useLocalStorage("accessToken");
 
   useLayoutEffect(() => {
     const requestInterceptor = axiosInstance.interceptors.request.use(
       (config) => {
-        console.log("Intercept request");
-        const accessToken = (accessTokenObj as unknown as JwtToken)?.token;
-
+        const accessToken = (getAccessTokenObj() as unknown as JwtToken)?.token;
         if (!config.headers.Authorization && accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`;
         }

@@ -8,7 +8,6 @@ interface ModalProps {
 const useModal = () => {
   const [userId] = useGlobalState("userId");
   const [, setModalType] = useGlobalState("modalType");
-  const [messageType] = useGlobalState("messageType");
   const [friendList] = useGlobalState("friendList");
   const [showModal, setShowModal] = useGlobalState("showModal");
   const [, setActiveModal] = useGlobalState("activeModal");
@@ -16,9 +15,7 @@ const useModal = () => {
 
   const handleShowModal = ({ entityId, modalType }: ModalProps) => {
     let type: ModalType;
-    if (messageType === "Group") {
-      type = "Group";
-    } else if (userId === entityId) {
+    if (userId === entityId) {
       type = "Personal";
     } else {
       const friend = friendList.filter((f) => f.friendId === entityId);

@@ -5,7 +5,7 @@ import AppButton from "@/components/shared/AppButton";
 
 import { useGlobalState, useModal } from "@/hooks";
 
-import { Group, User } from "@/models";
+import { Group, ModalType, User } from "@/models";
 
 import style from "./ChatView.header.module.scss";
 import classNames from "classnames/bind";
@@ -43,7 +43,8 @@ const ChatViewHeader = () => {
 
   const handleToggleAside = () => setShowAside(!showAside);
   const handleClickAvatar = () => {
-    handleShowModal({ entityId: activeConversation });
+    const modalType: ModalType = messageType === "Group" ? "Group" : "Friend";
+    handleShowModal({ entityId: activeConversation, modalType });
   };
   const avatar =
     (receiver as User)?.avatarUrl ?? (receiver as Group)?.groupAvatarUrl;
