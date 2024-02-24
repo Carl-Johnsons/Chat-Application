@@ -1,4 +1,7 @@
+import { MessageType } from ".";
+
 export type SenderReceiverArray = {
-  senderIdList: number[];
-  receiverIdList: number[];
+  senderId: number;
+  receiverId: number;
+  type: MessageType;
 };

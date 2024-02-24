@@ -48,6 +48,9 @@ openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certifi
   "ClientPort": {
     "Default": [Your client port]
   },
+  "ConnectionStrings": {
+    "Default": "[Your db connection string]"
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",

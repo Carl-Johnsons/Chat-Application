@@ -7,10 +7,12 @@ import AppButton from "@/components/shared/AppButton";
 import {
   signalRDisableNotifyUserTyping,
   signalRNotifyUserTyping,
+  signalRSendGroupMessage,
   signalRSendIndividualMessage,
   useDebounce,
   useGlobalState,
   useSignalREvents,
+  useSortableArray,
 } from "@/hooks";
 
 import { GroupMessage, IndividualMessage, SenderReceiverArray } from "@/models";
@@ -26,14 +28,22 @@ const ChatViewFooter = () => {
   const [messageList, setMessageList] = useGlobalState("messageList");
   const [lastMessageList, setLastMessageList] =
     useGlobalState("lastMessageList");
+
   const [messageType] = useGlobalState("messageType");
   const [connection] = useGlobalState("connection");
   // hook
   const invokeAction = useSignalREvents({ connection: connection });
+  const [moveMessageToTop] = useSortableArray<IndividualMessage | GroupMessage>(
+    lastMessageList,
+    setLastMessageList as React.Dispatch<
+      React.SetStateAction<(IndividualMessage | GroupMessage)[]>
+    >
+  );
 
   const model: SenderReceiverArray = {
-    senderIdList: [userId],
-    receiverIdList: [activeConversation],
+    senderId: userId,
+    receiverId: activeConversation,
+    type: messageType,
   };
 
   const debounceInvokeAction = useDebounce(() => {
@@ -60,24 +70,21 @@ const ChatViewFooter = () => {
       invokeAction(signalRSendIndividualMessage(data));
       setInputValue("");
       //Update last message
-      for (let index = 0; index < lastMessageList.length; index++) {
-        if (lastMessageList[index].message.messageType === "Group") {
-          continue;
+      const indexToUpdate = lastMessageList.findIndex((messageObj, index) => {
+        if (messageObj.message.messageType === "Group") {
+          return false;
         }
         const im = lastMessageList[index] as IndividualMessage;
-        if (
+        return (
           (userId === im.message.senderId &&
             activeConversation === im.userReceiverId) ||
           (activeConversation === im.message.senderId &&
             userId === im.userReceiverId)
-        ) {
-          setLastMessageList([
-            data,
-            ...lastMessageList.slice(0, index),
-            ...lastMessageList.splice(index + 1, lastMessageList.length),
-          ] as IndividualMessage[] | GroupMessage[]);
-          return;
-        }
+        );
+      });
+      if (indexToUpdate !== -1) {
+        lastMessageList[indexToUpdate] = data;
+        moveMessageToTop(indexToUpdate);
       }
     }
     if (messageType == "Group") {
@@ -90,21 +97,19 @@ const ChatViewFooter = () => {
         return;
       }
       setMessageList([...(messageList as GroupMessage[]), data]);
+      invokeAction(signalRSendGroupMessage(data));
       setInputValue("");
       //Update last message
-      for (let index = 0; index < lastMessageList.length; index++) {
-        if (lastMessageList[index].message.messageType === "Individual") {
-          continue;
+      const indexToUpdate = lastMessageList.findIndex((messageObj, index) => {
+        if (messageObj.message.messageType === "Individual") {
+          return false;
         }
-        const im = lastMessageList[index] as GroupMessage;
-        if (activeConversation === im.groupReceiverId) {
-          setLastMessageList([
-            data,
-            ...lastMessageList.slice(0, index),
-            ...lastMessageList.splice(index + 1, lastMessageList.length),
-          ] as IndividualMessage[] | GroupMessage[]);
-          return;
-        }
+        const gm = lastMessageList[index] as GroupMessage;
+        return activeConversation === gm.groupReceiverId;
+      });
+      if (indexToUpdate !== -1) {
+        lastMessageList[indexToUpdate] = data;
+        moveMessageToTop(indexToUpdate);
       }
     }
   };

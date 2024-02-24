@@ -4,9 +4,11 @@ import { useEffect, useRef } from "react";
 import {
   Friend,
   FriendRequest,
+  GroupMessage,
   IndividualMessage,
   SenderReceiverArray,
-} from "../../models";
+} from "@/models";
+
 import { useGlobalState } from "../globalState";
 import useIndividualMessageSubscription from "./useIndividualMessageSubscription";
 import useFriendRequestSubscription from "./useFriendRequestSubscription";
@@ -15,6 +17,7 @@ import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
 import useDisableNotifyUserTypingSubscription from "./useDisableNotifyUserTypingSubscription";
 import useAcceptedFriendRequestSubscription from "./useAcceptedFriendRequestSubscription";
 import useDisconnectedSubscription from "./useDisconnectedSubscription";
+import useGroupMessageSubscription from "./useGroupMessageSubscription";
 
 interface SignalREvent {
   name: string;
@@ -39,6 +42,7 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
   useDisconnectedSubscription(connection);
   useFriendRequestSubscription(connection);
   useIndividualMessageSubscription(connection);
+  useGroupMessageSubscription(connection);
   useNotifyUserTypingSubscription(connection);
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
@@ -77,6 +81,13 @@ export function signalRSendIndividualMessage(im: IndividualMessage) {
     args: [im],
   };
 }
+export function signalRSendGroupMessage(gm: GroupMessage) {
+  return {
+    name: "SendGroupMessage",
+    args: [gm],
+  };
+}
+
 export function signalRSendFriendRequest(fr: FriendRequest) {
   return {
     name: "SendFriendRequest",

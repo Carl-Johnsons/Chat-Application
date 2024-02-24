@@ -8,5 +8,6 @@ export { useModal } from "./useModal";
 export { useRefreshToken } from "./useRefreshToken";
 export { useScreenSectionNavigator } from "./useScreenSectionNavigator";
 export { useSignalRConnection } from "./useSignalRConnection";
+export { useSortableArray } from "./useSortableArray";
 export { useLocalStorage, useSessionStorage } from "./useStorage";
 export { useTimeout } from "./useTimeout";

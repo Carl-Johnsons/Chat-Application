@@ -3,48 +3,62 @@ using BussinessObject.Models;
 using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
+using DataAccess.Repositories;
+using BussinessObject.Constants;
+using ChatService.Models;
 
 namespace ChatService.Hubs
 {
-    public class ChatHub : Hub
+    public class ChatHub : Hub<IChatClient>
     {
+        private static GroupUserRepository _groupUserRepository;
         //Use the dictionary to map the userId and userConnectionId
         private static readonly ConcurrentDictionary<string, int> UserConnectionMap = new ConcurrentDictionary<string, int>();
 
         public ChatHub()
         {
+            _groupUserRepository = new GroupUserRepository();
         }
         public override async Task OnConnectedAsync()
         {
-            // The url would be like "https://yourhubURL:port?userId=???"
-            var userId = Context.GetHttpContext()?.Request?.Query["userId"];
+            var cancellationTokenSource = new CancellationTokenSource();
             try
             {
+                // The url would be like "https://yourhubURL:port?userId=???"
+                var userId = int.Parse(Context.GetHttpContext()?.Request?.Query["userId"]);
                 if (userId.Equals(null))
                 {
                     throw new Exception("user id is null abort map userId to the user map");
                 }
 
-                UserConnectionMap[Context.ConnectionId] = int.Parse(userId);
-                Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {userId}");
+
+                UserConnectionMap[Context.ConnectionId] = userId;
+                await Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {userId}");
                 Console.WriteLine(userId + " Connected");
 
-                Console.WriteLine("In MapUserData");
+                var groupIdList = _groupUserRepository.GetByUserId(userId).Select(g => g.GroupId).ToList();
+                //Join group
+                foreach (var groupId in groupIdList)
+                {
+                    await Console.Out.WriteLineAsync($"{userId} joining group {groupId}");
+                    await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+                }
+
+
                 foreach (var key in UserConnectionMap.Keys)
                 {
                     Console.WriteLine($"{key}: {UserConnectionMap[key]}");
                 }
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                Console.WriteLine($"Error: {ex.Message}");
             }
-            Console.Out.WriteLineAsync("============================");
+            await Console.Out.WriteLineAsync("============================");
             var userIdOnlineList = UserConnectionMap.Select(uc => uc.Value);
-            await Clients.All.SendAsync("Connected", userIdOnlineList);
+            await Clients.All.Connected(userIdOnlineList);
             await base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
@@ -53,7 +67,7 @@ namespace ChatService.Hubs
             if (UserConnectionMap.TryRemove(Context.ConnectionId, out int userDisconnectedId))
             {
                 Console.WriteLine($"Connection {Context.ConnectionId} disconnected and removed from UserConnectionMap.");
-                await Clients.All.SendAsync("Disconnected", userDisconnectedId);
+                await Clients.All.Disconnected(userDisconnectedId);
             }
             else
             {
@@ -66,13 +80,12 @@ namespace ChatService.Hubs
         {
             try
             {
-                await Console.Out.WriteLineAsync("Sending message: " + individualMessage.Message.Content);
                 // Have to get list because the 1 person can join on 2 different tab on browser
                 // So the connectionId may differnect but still 1 userId
                 var receiverConnectionIdList = UserConnectionMap.
-                Where(pair => pair.Value == individualMessage.UserReceiverId)
-                .Select(pair => pair.Key)
-                .ToList();
+                        Where(pair => pair.Value == individualMessage.UserReceiverId)
+                        .Select(pair => pair.Key)
+                        .ToList();
 
                 // If the receiver didn't online, simply do nothing
                 if (receiverConnectionIdList.Count <= 0)
@@ -88,11 +101,22 @@ namespace ChatService.Hubs
                 string json = JsonConvert.SerializeObject(individualMessage, settings);
                 foreach (var receiverConnectionId in receiverConnectionIdList)
                 {
-                    await Console.Out.WriteLineAsync(receiverConnectionId);
                     // Serialize your object to JSON with camel case attribute names
-                    await Clients.Client(receiverConnectionId).SendAsync("ReceiveIndividualMessage", json);
-                    //await Clients.All.SendAsync("ReceiveIndividualMessage", json);
+                    await Clients.Client(receiverConnectionId).ReceiveIndividualMessage(json);
                 }
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+            }
+        }
+        public async Task SendGroupMessage(GroupMessage groupMessage)
+        {
+            try
+            {
+                await Console.Out.WriteLineAsync($"Sending message to group {groupMessage.GroupReceiverId}");
+                await Clients.OthersInGroup(groupMessage.GroupReceiverId.ToString())
+                            .ReceiveGroupMessage(groupMessage);
             }
             catch (Exception ex)
             {
@@ -121,7 +145,7 @@ namespace ChatService.Hubs
             string json = JsonConvert.SerializeObject(friendRequest, settings);
             foreach (var receiverConnectionId in receiverConnectionIdList)
             {
-                await Clients.Client(receiverConnectionId).SendAsync("ReceiveFriendRequest", json);
+                await Clients.Client(receiverConnectionId).ReceiveFriendRequest(json);
             }
         }
         public async Task SendAcceptFriendRequest(Friend friend)
@@ -141,19 +165,18 @@ namespace ChatService.Hubs
             }
             foreach (var senderConnectionId in senderConnectionIdList)
             {
-                await Clients.Client(senderConnectionId).SendAsync("ReceiveAcceptFriendRequest", friend);
+                await Clients.Client(senderConnectionId).ReceiveAcceptFriendRequest(friend);
             }
         }
         public async Task NotifyUserTyping(SenderReceiverArrayModel model)
         {
-            List<int> ReceiverIdList = model.ReceiverIdList;
-            for (int i = 0; i < ReceiverIdList.Count; i++)
+            // Notify a list of user because they might have open mulit tab in browsers
+            if (model.Type == "Individual")
             {
-                // Notify a list of user because they might have open mulit tab in browsers
                 var receiverConnectionIdList = UserConnectionMap.
-                    Where(pair => pair.Value == ReceiverIdList[i])
-                    .Select(pair => pair.Key)
-                    .ToList();
+                                                Where(pair => pair.Value == model.ReceiverId)
+                                                .Select(pair => pair.Key)
+                                                .ToList();
                 // If the receiver didn't online, simply do nothing
                 if (receiverConnectionIdList.Count <= 0)
                 {
@@ -161,18 +184,23 @@ namespace ChatService.Hubs
                 }
                 foreach (var receiverConnectionId in receiverConnectionIdList)
                 {
-                    await Clients.Client(receiverConnectionId).SendAsync("ReceiveNotifyUserTyping", model);
+                    await Clients.Client(receiverConnectionId).ReceiveNotifyUserTyping(model);
                 }
+                return;
             }
+            if (model.Type == "Group")
+            {
+                await Clients.OthersInGroup(model.ReceiverId.ToString()).ReceiveNotifyUserTyping(model);
+            }
+
         }
         public async Task DisableNotifyUserTyping(SenderReceiverArrayModel model)
         {
-            List<int> ReceiverIdList = model.ReceiverIdList;
-            for (int i = 0; i < ReceiverIdList.Count; i++)
+            if (model.Type == "Individual")
             {
                 // Notify a list of user because they might have open mulit tab in browsers
                 var receiverConnectionIdList = UserConnectionMap.
-                    Where(pair => pair.Value == ReceiverIdList[i])
+                    Where(pair => pair.Value == model.ReceiverId)
                     .Select(pair => pair.Key)
                     .ToList();
 
@@ -184,12 +212,23 @@ namespace ChatService.Hubs
                 }
                 foreach (var receiverConnectionId in receiverConnectionIdList)
                 {
-                    await Clients.Client(receiverConnectionId).SendAsync("ReceiveDisableNotifyUserTyping", model);
+                    await Clients.Client(receiverConnectionId).ReceiveDisableNotifyUserTyping();
                 }
+                return;
+            }
+            if (model.Type == "Group")
+            {
+                await Clients.OthersInGroup(model.ReceiverId.ToString()).ReceiveDisableNotifyUserTyping();
             }
         }
-        public async Task JoinRoom(string Name, string Room)
+        public async Task JoinGroup(List<int> groupIdList)
         {
+            foreach (var groupId in groupIdList)
+            {
+                await Console.Out.WriteLineAsync($"{UserConnectionMap[Context.ConnectionId]} joining group {groupId}");
+                await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+            }
+
             //Users userConnection = new Users()
             //{
             //    Name = Name,
@@ -206,16 +245,10 @@ namespace ChatService.Hubs
             //await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", chat_bot,
             //        "Welcome to the chat room!");
         }
-    }
-    public class SenderReceiverArrayModel
-    {
-        [Required]
-        [JsonPropertyName("senderIdList")]
-        public List<int> SenderIdList { get; set; }
-
-        [Required]
-        [JsonPropertyName("receiverIdList")]
-        public List<int> ReceiverIdList { get; set; }
+        public async Task LeaveGroup(int groupId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
+        }
     }
 
 }

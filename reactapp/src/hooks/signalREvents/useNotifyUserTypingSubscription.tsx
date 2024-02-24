@@ -13,7 +13,7 @@ const useNotifyUserTypingSubscription = (connection?: HubConnection) => {
     connection.on(
       SignalREvent.RECEIVE_NOTIFY_USER_TYPING,
       (model: SenderReceiverArray) => {
-        setUserTypingId(model.senderIdList[0]);
+        setUserTypingId(model.senderId);
       }
     );
     return () => {
