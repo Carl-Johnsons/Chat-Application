@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faCamera, faEllipsis, faPen } from "@fortawesome/free-solid-svg-icons";
 
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
@@ -15,26 +15,31 @@ import images from "@/assets";
 
 const cx = classNames.bind(style);
 
-type PersonalVariant = {
+type BaseVariant = {
+  modalEntityId: number;
+};
+
+type PersonalVariant = BaseVariant & {
   type: "Personal";
   onClickUpdate?: () => void;
   onClickEditAvatar?: () => void;
   onClickEditUserName?: () => void;
 };
 
-type FriendVariant = {
+type FriendVariant = BaseVariant & {
   type: "Friend";
   onClickCalling?: () => void;
   onClickMessaging?: () => void;
 };
 
-type StrangerVariant = {
+type StrangerVariant = BaseVariant & {
   type: "Stranger";
   onClickSendFriendRequest?: () => void;
   onClickMessaging?: () => void;
 };
-type GroupVariant = {
+type GroupVariant = BaseVariant & {
   type: "Group";
+  onClickMoreMemberInfo?: () => void;
   onClickMessaging?: () => void;
 };
 
@@ -45,13 +50,14 @@ type Variants =
   | GroupVariant;
 
 const ProfileModalContent = (variant: Variants) => {
-  const [modalEntityId] = useGlobalState("modalEntityId");
   const [userMap] = useGlobalState("userMap");
   const [groupMap] = useGlobalState("groupMap");
   const [groupUserMap] = useGlobalState("groupUserMap");
 
   //Extract variable
   const type = variant.type;
+  //Base variable
+  const modalEntityId = variant.modalEntityId;
   //Personal
   let onClickUpdate: (() => void) | undefined;
   let onClickEditAvatar: (() => void) | undefined;
@@ -62,6 +68,8 @@ const ProfileModalContent = (variant: Variants) => {
   let onClickSendFriendRequest: (() => void) | undefined;
   //Friend & Stranger
   let onClickMessaging: (() => void) | undefined;
+  //Group
+  let onClickMoreMemberInfo: (() => void) | undefined;
 
   const isPersonal = type === "Personal";
   const isFriend = type === "Friend";
@@ -75,7 +83,7 @@ const ProfileModalContent = (variant: Variants) => {
   } else if (isStranger) {
     ({ onClickSendFriendRequest, onClickMessaging } = variant);
   } else {
-    ({ onClickMessaging } = variant);
+    ({ onClickMessaging, onClickMoreMemberInfo } = variant);
   }
   const entity = !isGroup
     ? userMap.get(modalEntityId)
@@ -246,6 +254,9 @@ const ProfileModalContent = (variant: Variants) => {
 
           <div className={cx("member-avatar-container")}>
             {userIdList?.map((userId, index) => {
+              if (index >= 4) {
+                return;
+              }
               const member = userMap.get(userId);
               const avatar = member?.avatarUrl ?? images.userIcon.src;
               return (
@@ -254,6 +265,8 @@ const ProfileModalContent = (variant: Variants) => {
                   variant="avatar-img-40px"
                   src={avatar}
                   className={cx(
+                    "border",
+                    "border-light",
                     "rounded-circle",
                     index === 0 && "first-avatar"
                   )}
@@ -261,6 +274,17 @@ const ProfileModalContent = (variant: Variants) => {
                 />
               );
             })}
+            <AppButton
+              variant="app-btn-primary"
+              className={cx("more-member-info-btn", "p-0", "rounded-circle")}
+              onClick={onClickMoreMemberInfo}
+            >
+              <FontAwesomeIcon
+                className={cx("m-0")}
+                icon={faEllipsis}
+                width={40}
+              />
+            </AppButton>
           </div>
         </div>
       )}

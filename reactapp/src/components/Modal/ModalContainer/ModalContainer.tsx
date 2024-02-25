@@ -8,6 +8,7 @@ import ProfileModalContent from "../ProfileModalContent";
 import UpdateProfileModalContent from "../UpdateProfileModalContent";
 import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
 import CreateGroupModalContent from "../CreateGroupModalContent";
+import ListGroupMemberModalContent from "../ListingGroupMemberModalContent/ListGroupMember.modalContent";
 
 import {
   signalRSendFriendRequest,
@@ -49,9 +50,13 @@ const ModalContainer = () => {
   // reference
   const modalContentsRef = useRef<ModalContent[]>();
   const profileRef = useRef(null);
+  const profile2Ref = useRef(null); // For nested profile modal
   const createGroupRef = useRef(null);
+  const listingGroupMemberRef = useRef(null);
   const updateProfileRef = useRef(null);
   const updateAvatarRef = useRef(null);
+
+  const memberIdRef = useRef<number>();
 
   const handleClickSendFriendRequest = async () => {
     const currentUser = userMap.get(userId);
@@ -75,6 +80,7 @@ const ModalContainer = () => {
           ref: profileRef,
           modalContent: (
             <ProfileModalContent
+              modalEntityId={userId}
               type="Personal"
               onClickUpdate={() => handleClick(1)}
               onClickEditUserName={() => handleClick(1)}
@@ -101,7 +107,9 @@ const ModalContainer = () => {
         {
           title: "Thông tin tài khoản",
           ref: profileRef,
-          modalContent: <ProfileModalContent type="Friend" />,
+          modalContent: (
+            <ProfileModalContent type="Friend" modalEntityId={modalEntityId} />
+          ),
         },
       ];
       break;
@@ -113,6 +121,7 @@ const ModalContainer = () => {
           modalContent: (
             <ProfileModalContent
               type="Stranger"
+              modalEntityId={modalEntityId}
               onClickSendFriendRequest={handleClickSendFriendRequest}
             />
           ),
@@ -124,7 +133,38 @@ const ModalContainer = () => {
         {
           title: "Thông tin nhóm",
           ref: profileRef,
-          modalContent: <ProfileModalContent type="Group" />,
+          modalContent: (
+            <ProfileModalContent
+              type="Group"
+              modalEntityId={modalEntityId}
+              onClickMoreMemberInfo={() => {
+                handleClick(1);
+              }}
+            />
+          ),
+        },
+        {
+          title: "Thành viên nhóm",
+          ref: listingGroupMemberRef,
+          modalContent: (
+            <ListGroupMemberModalContent
+              onClickMember={(memberId) => {
+                // Need to solve the nested profile modal
+                handleClick(2);
+                memberIdRef.current = memberId;
+              }}
+            />
+          ),
+        },
+        {
+          title: "Thông tin tài khoản",
+          ref: profile2Ref,
+          modalContent: (
+            <ProfileModalContent
+              type="Friend"
+              modalEntityId={memberIdRef.current ?? -1}
+            />
+          ),
         },
       ];
       break;
