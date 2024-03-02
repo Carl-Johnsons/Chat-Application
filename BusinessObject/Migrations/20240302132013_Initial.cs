@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BussinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial_Create : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Group",
+                columns: table => new
+                {
+                    Group_ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Group_Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Group_Avatar_URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Group_Invite_URL = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Group", x => x.Group_ID);
+                });
+
             migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
@@ -27,6 +42,8 @@ namespace BussinessObject.Migrations
                     Introduction = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenCreated = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RefreshTokenExpired = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Active = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
@@ -82,30 +99,51 @@ namespace BussinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Group",
+                name: "GroupBlock",
                 columns: table => new
                 {
-                    Group_ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Group_Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Group_Leader_ID = table.Column<int>(type: "int", nullable: false),
-                    Group_Deputy_ID = table.Column<int>(type: "int", nullable: true),
-                    Group_Avatar_URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Group_Invite_URL = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Group_ID = table.Column<int>(type: "int", nullable: false),
+                    Blocked_User_ID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Group", x => x.Group_ID);
+                    table.PrimaryKey("PK_GroupBlock", x => new { x.Group_ID, x.Blocked_User_ID });
                     table.ForeignKey(
-                        name: "FK_Group_User_Group_Deputy_ID",
-                        column: x => x.Group_Deputy_ID,
-                        principalTable: "User",
-                        principalColumn: "User_ID");
-                    table.ForeignKey(
-                        name: "FK_Group_User_Group_Leader_ID",
-                        column: x => x.Group_Leader_ID,
+                        name: "FK__GroupBloc__Block__33D4B598",
+                        column: x => x.Blocked_User_ID,
                         principalTable: "User",
                         principalColumn: "User_ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK__GroupBloc__Group__32E0915F",
+                        column: x => x.Group_ID,
+                        principalTable: "Group",
+                        principalColumn: "Group_ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupUser",
+                columns: table => new
+                {
+                    Group_ID = table.Column<int>(type: "int", nullable: false),
+                    User_ID = table.Column<int>(type: "int", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupUser", x => new { x.Group_ID, x.User_ID });
+                    table.ForeignKey(
+                        name: "FK__GroupUser__Group",
+                        column: x => x.User_ID,
+                        principalTable: "User",
+                        principalColumn: "User_ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK__GroupUser__User",
+                        column: x => x.Group_ID,
+                        principalTable: "Group",
+                        principalColumn: "Group_ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -152,28 +190,6 @@ namespace BussinessObject.Migrations
                         column: x => x.User_ID,
                         principalTable: "User",
                         principalColumn: "User_ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GroupBlock",
-                columns: table => new
-                {
-                    Group_ID = table.Column<int>(type: "int", nullable: false),
-                    Blocked_User_ID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GroupBlock", x => new { x.Group_ID, x.Blocked_User_ID });
-                    table.ForeignKey(
-                        name: "FK__GroupBloc__Block__33D4B598",
-                        column: x => x.Blocked_User_ID,
-                        principalTable: "User",
-                        principalColumn: "User_ID");
-                    table.ForeignKey(
-                        name: "FK__GroupBloc__Group__32E0915F",
-                        column: x => x.Group_ID,
-                        principalTable: "Group",
-                        principalColumn: "Group_ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -254,16 +270,6 @@ namespace BussinessObject.Migrations
                 column: "Receiver_ID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Group_Group_Deputy_ID",
-                table: "Group",
-                column: "Group_Deputy_ID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Group_Group_Leader_ID",
-                table: "Group",
-                column: "Group_Leader_ID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GroupBlock_Blocked_User_ID",
                 table: "GroupBlock",
                 column: "Blocked_User_ID");
@@ -272,6 +278,11 @@ namespace BussinessObject.Migrations
                 name: "IX_GroupMessage_Group_Receiver_ID",
                 table: "GroupMessage",
                 column: "Group_Receiver_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupUser_User_ID",
+                table: "GroupUser",
+                column: "User_ID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IndividualMessage_User_Receiver_ID",
@@ -303,6 +314,9 @@ namespace BussinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "GroupMessage");
+
+            migrationBuilder.DropTable(
+                name: "GroupUser");
 
             migrationBuilder.DropTable(
                 name: "ImageMessage");
