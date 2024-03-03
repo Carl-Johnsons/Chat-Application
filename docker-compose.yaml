@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  chatdb:
+    build:
+      context: .
+      dockerfile: chatdb.Dockerfile
+    container_name: chat-db
+    volumes:
+      - chat-sql-data:/var/opt/mssql
+    ports:
+      # Microsoft SQL Server uses the default port 1433 for all database connections
+      - '1433:1433'
+    networks:
+      - back-end
+
+  chatapi:
+    build:
+      context: .
+      dockerfile: ./ChatAPI/Dockerfile
+    container_name: chat-api
+    ports:
+      - '7190:80'
+    depends_on:
+      - chatdb
+    networks:
+      - back-end
+  chathub:
+    build:
+      context: .
+      dockerfile: ./ChatService/Dockerfile
+    container_name: chat-hub
+    ports:
+      - '7234:80'
+    depends_on:
+      - chatdb
+    networks:
+      - back-end
+
+networks:
+  back-end:
+
+
+volumes:
+  chat-sql-data:
+
+
