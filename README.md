@@ -74,19 +74,7 @@ NEXT_PUBLIC_PORT="Your react app port"
 ```
 ## 4. Run services with Docker
 - Run docker engine or "Docker desktop (Window)" in your local machine
-- Download docker egine: https://docs.docker.com/engine/install/ 
-- Run StartAllService.bat at the root of the repo to start ChatService, ChatAPI and ChatDB in docker
-
-## 5. Run react app:
-
-- Open terminal at the root of reactApp project
-- Run this to initialize the react app in development
-```bat
-npm run dev
-```
-- Or run this in production
-```bat
-npm run build
-npm run preview
-```
-
+- Download docker engine: https://docs.docker.com/engine/install/ 
+- Run StartAllService.bat at the root of the repo to start ChatService, ChatAPI, ChatDB and react-app in docker
+- Access to http://localhost:3000 to see the result
+### RAM Usage: Need at least 3.5Gb for docker
