@@ -1,9 +1,9 @@
 import { useLocalStorage } from "@/hooks";
 import { redirect } from "next/navigation";
-import { useEffect } from "react";
+import { JSXElementConstructor, useEffect } from "react";
 
-const RequireAuth = (Component: any) => {
-  const requireAuth = (props: any) => {
+const RequireAuth = (Component: JSXElementConstructor<any>) => {
+  const requireAuth = (props: object) => {
     const [isAuth] = useLocalStorage("isAuth");
     useEffect(() => {
       if (!isAuth()) {

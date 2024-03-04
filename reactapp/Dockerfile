@@ -1,0 +1,52 @@
+FROM node:21-alpine3.18 AS base
+
+# Building dependencies
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+COPY package.json package-lock.json* ./
+
+# Running a clean install
+RUN \
+    if [ -f package-lock.json ]; then npm ci; \
+    else echo "Lockfile not found" && exit 1; \
+    fi
+#   For production Image Optimization with Next.js, the optional 'sharp' package is strongly recommended.
+# Run 'npm i sharp', and Next.js will use it automatically for Image Optimization.
+RUN npm i sharp
+
+# Building src folder
+FROM base as builder
+
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY .eslintrc.cjs ./
+COPY . .
+RUN npm run build
+
+# Production image, copy all file build from above and run next.js
+FROM base as runner
+WORKDIR /app
+
+#  ?
+ENV NODE_ENV=development
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+COPY --from=builder /app/public ./public
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+# In standalone version, next.js doesn't copy static and public file by default
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+
+# Addition environment variable for server.js to run properly
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD [ "node", "server.js" ]

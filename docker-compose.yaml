@@ -25,6 +25,7 @@ services:
       - chatdb
     networks:
       - back-end
+  # SignalR service to enable real-time communication
   chathub:
     build:
       context: .
@@ -37,8 +38,18 @@ services:
     networks:
       - back-end
 
+  react-app:
+    build:
+      context: ./reactapp
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    networks:
+      - front-end
+
 networks:
   back-end:
+  front-end:
 
 
 volumes:

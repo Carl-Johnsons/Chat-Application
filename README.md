@@ -72,10 +72,14 @@ NEXT_PUBLIC_BASE_API_URL="Your URL"
 NEXT_PUBLIC_SIGNALR_URL="[Hub URL]/chatHub"
 NEXT_PUBLIC_PORT="Your react app port"
 ```
-## 4. Run StartAllService.bat at the root of the repo to start ChatService and ChatAPI
+## 4. Run services with Docker
+- Run docker engine or "Docker desktop (Window)" in your local machine
+- Download docker egine: https://docs.docker.com/engine/install/ 
+- Run StartAllService.bat at the root of the repo to start ChatService, ChatAPI and ChatDB in docker
 
-## 5. Open terminal at the root of reactApp project:
+## 5. Run react app:
 
+- Open terminal at the root of reactApp project
 - Run this to initialize the react app in development
 ```bat
 npm run dev

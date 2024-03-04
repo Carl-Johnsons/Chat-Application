@@ -6,6 +6,5 @@ ENV MSSQL_SA_PASSWORD PejOPjrzzBFkWnU0uJtevbZxEzyMfOWV
 
 EXPOSE 1433
 
-COPY chatApplication.BAK ./chatApplication.BAK
 # Run Microsoft SQL Server and initialization script (at the same time)
 CMD /bin/bash /usr/src/app/run-initialization.sh & /opt/mssql/bin/sqlservr
