@@ -38,10 +38,11 @@ services:
     networks:
       - back-end
 
-  react-app:
+  reactapp:
     build:
       context: ./reactapp
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
+    container_name: react-app
     ports:
       - '3000:3000'
     networks:

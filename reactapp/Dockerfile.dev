@@ -1,0 +1,7 @@
+# Development image, copy all file build from above and run next.js
+FROM base as dev
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm i
+COPY . .
+CMD [ "npm", "run", "dev" ]

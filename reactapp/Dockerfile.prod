@@ -27,12 +27,12 @@ COPY . .
 RUN npm run build
 
 # Production image, copy all file build from above and run next.js
-FROM base as runner
+FROM base as prod
 WORKDIR /app
 
-#  ?
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
+#  ?
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
