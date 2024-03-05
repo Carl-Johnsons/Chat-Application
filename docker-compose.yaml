@@ -41,13 +41,21 @@ services:
   reactapp:
     build:
       context: ./reactapp
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     container_name: react-app
     ports:
       - '3000:3000'
     networks:
       - front-end
-
+    develop:
+      watch: 
+        - path: ./reactapp/package.json
+          action: rebuild
+        - path: ./reactapp
+          target: /app
+          action: sync
+        - path: .env
+          action: sync+restart
 networks:
   back-end:
   front-end:
