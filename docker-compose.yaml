@@ -2,15 +2,42 @@ version: '3.8'
 
 services:
   chatdb:
-    build:
-      context: .
-      dockerfile: chatdb.Dockerfile
+    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: chat-db
     volumes:
-      - chat-sql-data:/var/opt/mssql
+      - ./chat-sql-data:/var/opt/mssql/data # bind mount
+    user: root #mssql
     ports:
       # Microsoft SQL Server uses the default port 1433 for all database connections
       - '1433:1433'
+    networks:
+      - back-end
+    env_file:
+      - .env
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: ${SA_PASSWORD}
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${SA_PASSWORD} -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+
+
+  chatdb.configurator:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    volumes:
+      - ./data:/docker-entrypoint-initdb.d
+    depends_on:
+      chatdb:
+        condition: service_healthy
+    env_file:
+      - .env
+    # command: >
+    #   bash -c '/opt/mssql-tools/bin/sqlcmd -S chatdb -U sa -P ${SA_PASSWORD} -i docker-entrypoint-initdb.d/backup.sql;
+    #   echo "All done!";'
     networks:
       - back-end
 
@@ -59,9 +86,4 @@ services:
 networks:
   back-end:
   front-end:
-
-
-volumes:
-  chat-sql-data:
-
 
