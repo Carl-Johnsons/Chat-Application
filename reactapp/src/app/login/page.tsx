@@ -1,8 +1,8 @@
 "use client";
 
-import LoginForm from "@/components/Auth/LoginForm";
-import ModalContainer from "@/components/Modal/ModalContainer";
 import images from "@/assets";
+import LoginForm from "@/components/Auth/LoginForm";
+import RegisterForm from "@/components/Auth/RegisterForm";
 
 const Login = () => {
   return (
@@ -12,17 +12,17 @@ const Login = () => {
         "container-fluid p-0 d-flex justify-content-center align-items-center w-100 h-100"
       }
     >
-      <div className={"d-flex w-75 h-75 rounded-5 overflow-hidden shadow-lg"}>
-        <div
+      <div className={"d-flex ms-xxs me-xxs rounded-5 overflow-hidden shadow-lg"}>
+        {/* <div
           className={
-            "left flex-grow-1 d-flex justify-content-center align-items-center bg-light bg-opacity-75"
+            "flex-1 d-flex justify-content-center align-items-center bg-light bg-opacity-75"
           }
         >
           <LoginForm />
-        </div>
+        </div> */}
         <div
           className={
-            "right flex-grow-1 d-none d-md-flex justify-content-center align-items-end bg-primary bg-opacity-25"
+            "flex-1 d-none d-md-flex justify-content-center align-items-end bg-primary bg-opacity-25"
           }
         >
           <img
@@ -31,8 +31,14 @@ const Login = () => {
             className={"w-100 h-75 object-fit-cover"}
           />
         </div>
+        <div
+          className={
+            "flex-1 d-flex justify-content-center align-items-center bg-light bg-opacity-75"
+          }
+        >
+          <RegisterForm />
+        </div>
       </div>
-      <ModalContainer />
     </div>
   );
 };

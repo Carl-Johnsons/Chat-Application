@@ -18,3 +18,4 @@ export type { ModalType } from "./ModalType";
 export type { RequestMethod } from "./RequestMethod";
 export type { SenderReceiverArray } from "./SenderReceiverArray";
 export type { User } from "./User";
+export type { UserInputForm } from "./UserInputForm";
