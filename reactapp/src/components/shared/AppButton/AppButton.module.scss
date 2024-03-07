@@ -10,7 +10,8 @@
         color: $text-color;
         background-color: $bg-color-hover;
     }
-    &:active {
+    &:active,
+    &:focus-visible {
         color: $text-color;
         background-color: $bg-color-active;
     }
