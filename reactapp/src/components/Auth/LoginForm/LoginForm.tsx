@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock, faMobilePhone } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faLock,
+  faMobilePhone,
+} from "@fortawesome/free-solid-svg-icons";
 import AppButton from "@/components/shared/AppButton";
 
 import style from "./LoginForm.module.scss";
@@ -9,10 +13,14 @@ import classNames from "classnames/bind";
 import { login } from "@/services/auth";
 import { useRouter } from "next/navigation";
 import { useLocalStorage } from "@/hooks";
+import Link from "next/link";
 
 const cx = classNames.bind(style);
+interface Props {
+  onClickNavigationLink?: () => void;
+}
 
-const LoginForm = () => {
+const LoginForm = ({ onClickNavigationLink }: Props) => {
   const router = useRouter();
   const [, setIsAuth] = useLocalStorage("isAuth");
   const [, setAccessToken] = useLocalStorage("accessToken");
@@ -30,7 +38,16 @@ const LoginForm = () => {
   };
 
   return (
-    <Form className={cx("p-3", "p-lg-5")}>
+    <Form className={cx("me-3", "pt-3", "ps-5", "pe-5", "position-relative")}>
+      <div
+        onClick={onClickNavigationLink}
+        className={cx("navigate-link", "h6", "position-absolute")}
+      >
+        <span className={cx("me-2")}> Register</span>
+        <span>
+          <FontAwesomeIcon icon={faArrowRight} />
+        </span>
+      </div>
       <div className={cx("h2", "mt-3")}>Sign In to Zalo</div>
       <div className={cx("text-muted", "mb-4")}>
         We'll never share your email with anyone else.
@@ -72,9 +89,9 @@ const LoginForm = () => {
           <Form.Check type="checkbox" label="Remmember me" />
         </Form.Group>
         <Form.Group>
-          {/* <Link to="./forgotPassword" className={cx("link-secondary")}>
+          <Link href="./forgotPassword" className={cx("link-secondary")}>
             Forgot password?
-          </Link> */}
+          </Link>
         </Form.Group>
       </div>
       <AppButton

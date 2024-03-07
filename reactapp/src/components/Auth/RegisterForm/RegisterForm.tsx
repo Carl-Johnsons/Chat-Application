@@ -4,6 +4,7 @@ import { Form, InputGroup } from "react-bootstrap";
 import style from "./RegisterForm.module.scss";
 import classNames from "classnames/bind";
 import {
+  faArrowLeft,
   faCalendarDay,
   faEnvelope,
   faLock,
@@ -19,7 +20,11 @@ import { uploadImage } from "@/services/tool";
 
 const cx = classNames.bind(style);
 
-const RegisterForm = () => {
+interface Props {
+  onClickNavigationLink?: () => void;
+}
+
+const RegisterForm = ({ onClickNavigationLink }: Props) => {
   const [form, setForm] = useState<UserInputForm>({
     phoneNumber: "",
     password: "",
@@ -83,9 +88,28 @@ const RegisterForm = () => {
   };
 
   return (
-    <Form className={cx("p-3", "ps-md-5", "pe-md-5")}>
-      <div className={cx("h1", "text-blue-active", "mb-3")}>Register</div>
-      <div className={cx("p", "text-blue-active", "mb-3")}>
+    <Form
+      className={cx(
+        "mt-3",
+        "mb-3",
+        "ms-3",
+        "me-3",
+        "position-relative"
+      )}
+    >
+      <div
+        className={cx("navigate-link", "h6", "position-absolute")}
+        onClick={onClickNavigationLink}
+      >
+        <span>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </span>
+        <span className={cx("ms-2")}>Log in</span>
+      </div>
+      <div className={cx("h2", "text-blue-active", "mb-3", "text-end")}>
+        Register
+      </div>
+      <div className={cx("p", "text-blue-active", "mb-3", "text-end")}>
         Create your account! It free and it only takes a minute
       </div>
       <div className={cx("d-flex", "justify-content-between", "gap-3")}>

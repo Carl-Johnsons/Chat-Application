@@ -1,0 +1,34 @@
+.form-container {
+    width: 75%;
+    height: 550px;
+}
+
+#login-form,
+#banner-img,
+#register-form {
+    width: 50%;
+    height: 100%;
+    transition: all 0.75s ease-in-out;
+}
+
+#login-form.active {
+    left: 0;
+
+    ~ #register-form {
+        right: -50%;
+    }
+    ~ #banner-img {
+        left: 50%;
+    }
+}
+#register-form.active {
+    right: 0;
+
+    // Select previous siblings
+    #login-form:has(~ &) {
+        left: -50%;
+    }
+    #banner-img:has(~ &) {
+        left: 0%;
+    }
+}

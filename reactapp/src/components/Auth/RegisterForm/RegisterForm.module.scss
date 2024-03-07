@@ -1,0 +1,10 @@
+.navigate-link {
+    cursor: pointer;
+    text-decoration: none;
+    top: 0;
+    left: 0;
+    &:hover,
+    &:focus-within {
+        text-decoration: underline;
+    }
+}

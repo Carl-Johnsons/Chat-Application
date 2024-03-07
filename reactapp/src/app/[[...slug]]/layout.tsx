@@ -4,11 +4,7 @@ import { useAxiosInterceptor } from "../../hooks";
 import { ScreenSectionProvider } from "../../context/ScreenSectionProvider";
 import RequireAuth from "@/components/Auth/RequireAuth";
 
-interface Props {
-  children: React.ReactNode;
-}
-
-const Layout = ({ children }: Props) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   useAxiosInterceptor();
   return <ScreenSectionProvider>{children}</ScreenSectionProvider>;
 };
