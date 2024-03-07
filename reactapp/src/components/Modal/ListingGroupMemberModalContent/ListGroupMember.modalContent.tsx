@@ -63,7 +63,8 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
                   <Avatar
                     src={user.avatarUrl}
                     alt="user avatar"
-                    className={cx("rounded-circle", "me-2")}
+                    className={cx("me-2")}
+                    avatarClassName={cx("rounded-circle")}
                   />
                   <div>{user.name}</div>
                 </AppButton>

@@ -55,7 +55,7 @@ const ContactRow = ({
         <div className={cx("avatar-container")}>
           <Avatar
             variant="avatar-img-40px"
-            className={cx("rounded-circle")}
+            avatarClassName={cx("rounded-circle")}
             src={avatar ?? ""}
             alt="user icon"
           />

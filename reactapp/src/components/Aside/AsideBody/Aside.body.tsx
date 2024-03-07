@@ -57,7 +57,7 @@ const AsideBody = () => {
         <div className={cx("pt-4")}>
           <Avatar
             variant="avatar-img-50px"
-            className={cx("rounded-circle")}
+            avatarClassName={cx("rounded-circle")}
             src={avatar}
             alt="user avatar"
           />

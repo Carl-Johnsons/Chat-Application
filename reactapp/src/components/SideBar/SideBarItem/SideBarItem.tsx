@@ -157,7 +157,7 @@ const SideBarItem = (variant: Variants) => {
       >
         <Avatar
           src={isSearchItem ? image : entityAvatar ?? ""}
-          className={cx("rounded-circle")}
+          avatarClassName={cx("rounded-circle")}
           alt="user avatar"
         />
       </div>

@@ -148,7 +148,7 @@ const CreateGroupModalContent = () => {
           >
             {previewImgURL ? (
               <Avatar
-                className={cx("rounded-circle")}
+                avatarClassName={cx("rounded-circle")}
                 src={previewImgURL}
                 alt="preview group img"
               />
@@ -220,7 +220,8 @@ const CreateGroupModalContent = () => {
                 />
                 <label htmlFor={index + ""}>
                   <Avatar
-                    className={cx("me-2", "rounded-circle")}
+                    className={cx("me-2")}
+                    avatarClassName={cx("rounded-circle")}
                     src={friend.friendNavigation.avatarUrl}
                     alt="user avatar"
                   />
@@ -267,7 +268,7 @@ const CreateGroupModalContent = () => {
                 >
                   <Avatar
                     variant="avatar-img-30px"
-                    className={cx("rounded-circle")}
+                    avatarClassName={cx("rounded-circle")}
                     src={avatar}
                     alt="user avatar"
                   />

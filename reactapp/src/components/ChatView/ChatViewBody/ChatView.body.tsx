@@ -167,7 +167,8 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
         >
           {!isSender && messageType === "Group" && (
             <Avatar
-              className={cx("rounded-circle", "me-2")}
+              className={cx("me-2")}
+              avatarClassName={cx("rounded-circle")}
               src={
                 userMap.get(subArraySenderId)?.avatarUrl ?? images.userIcon.src
               }

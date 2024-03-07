@@ -9,20 +9,10 @@ $modal-width: 384px;
 .info-container {
     padding-top: 14px;
     .info-detail.individual > .avatar-img-container {
-        img {
-            position: absolute;
+        height: 0;
+        .avatar-img {
             border: 2px solid white;
             transform: translateY(-40%);
-        }
-        .avatar-edit-btn {
-            right: 0;
-            transform: translate(-40%, 55%);
-            width: 30px;
-            height: 30px;
-            > svg {
-                width: 16px;
-                height: 16px;
-            }
         }
     }
     .info-button-container {

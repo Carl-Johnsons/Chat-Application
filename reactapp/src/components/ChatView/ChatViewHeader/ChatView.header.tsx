@@ -59,7 +59,7 @@ const ChatViewHeader = () => {
       >
         <Avatar
           src={receiver ? avatar : images.userIcon.src}
-          className={cx("rounded-circle")}
+          avatarClassName={cx("rounded-circle")}
           alt="avatar"
         />
       </div>
@@ -99,7 +99,8 @@ const ChatViewHeader = () => {
             "icon-btn",
             showAside && "active",
             "d-flex",
-            "justify-content-center"
+            "justify-content-center",
+            "align-items-center"
           )}
           onClick={handleToggleAside}
         >

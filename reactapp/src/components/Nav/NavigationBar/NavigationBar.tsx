@@ -123,7 +123,7 @@ const NavigationBar = () => {
         >
           <Avatar
             variant="avatar-img-40px"
-            className={index !== 0 ? "p-2" : "rounded-circle"}
+            avatarClassName={cx(index === 0 ? "rounded-circle" : "p-2")}
             src={item.image}
             alt={item.imageAlt}
           />

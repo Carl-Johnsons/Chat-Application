@@ -24,7 +24,7 @@ const UpdateAvatarModalContent = () => {
           <li>
             <Avatar
               variant="avatar-img-80px"
-              className={cx("rounded-circle")}
+              avatarClassName={cx("rounded-circle")}
               src={images.defaultAvatarImg.src}
               alt="avatar image"
             />

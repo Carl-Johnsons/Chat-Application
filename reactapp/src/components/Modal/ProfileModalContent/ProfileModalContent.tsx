@@ -125,33 +125,16 @@ const ProfileModalContent = (variant: Variants) => {
             !isGroup ? "individual" : "pb-4"
           )}
         >
-          <div
-            className={cx("w-25", "avatar-img-container", "position-relative")}
-          >
+          <div className={cx("w-25", "avatar-img-container")}>
             <Avatar
               variant="avatar-img-80px"
-              className={cx("rounded-circle")}
+              className={cx("rounded-circle", "avatar-img")}
+              avatarClassName={cx("rounded-circle")}
               src={avatar || images.defaultAvatarImg.src}
               alt="avatar image"
+              editable={isPersonal}
+              onClickEdit={onClickEditAvatar}
             />
-            {/* Only personal can edit their avatar */}
-            {isPersonal && (
-              <AppButton
-                className={cx(
-                  "avatar-edit-btn",
-                  "rounded-circle",
-                  "p-0",
-                  "position-absolute",
-                  "d-inline-flex",
-                  "justify-content-center",
-                  "align-items-center"
-                )}
-                onClick={onClickEditAvatar}
-              >
-                <FontAwesomeIcon icon={faCamera} />
-              </AppButton>
-            )}
-            {/* Only personal can edit their avatar */}
           </div>
           <div className={cx("user-name", "position-relative", "w-75")}>
             <span className={cx("me-2")}> {name}</span>
@@ -252,7 +235,7 @@ const ProfileModalContent = (variant: Variants) => {
             Thành viên &#40;{userIdList?.length}&#41;
           </div>
 
-          <div className={cx("member-avatar-container")}>
+          <div className={cx("member-avatar-container", "d-flex")}>
             {userIdList?.map((userId, index) => {
               if (index >= 4) {
                 return;
@@ -265,10 +248,13 @@ const ProfileModalContent = (variant: Variants) => {
                   variant="avatar-img-40px"
                   src={avatar}
                   className={cx(
-                    "border",
-                    "border-light",
                     "rounded-circle",
                     index === 0 && "first-avatar"
+                  )}
+                  avatarClassName={cx(
+                    "rounded-circle",
+                    "border",
+                    "border-light"
                   )}
                   alt="user avatar"
                 />
@@ -276,7 +262,12 @@ const ProfileModalContent = (variant: Variants) => {
             })}
             <AppButton
               variant="app-btn-primary"
-              className={cx("more-member-info-btn", "p-0", "rounded-circle")}
+              className={cx(
+                "more-member-info-btn",
+                "p-0",
+                "rounded-circle",
+                "z-0"
+              )}
               onClick={onClickMoreMemberInfo}
             >
               <FontAwesomeIcon
