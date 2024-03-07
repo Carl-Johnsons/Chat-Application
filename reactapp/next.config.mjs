@@ -10,6 +10,16 @@ const nextConfig = {
                 hostname: "**",
             },
         ],
+    },
+    sassOptions: {
+        logger: {
+            warn: function (message) {
+                console.warn(message)
+            },
+            debug: function (message) {
+                console.log(message)
+            }
+        }
     }
 }
 
