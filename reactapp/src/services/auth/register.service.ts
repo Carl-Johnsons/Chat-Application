@@ -1,8 +1,7 @@
-import { UserInputForm } from "@/models";
 import { axiosInstance } from "@/utils";
 
 export const register = async (
-  user: UserInputForm
+  user: object
 ): Promise<[boolean | null, unknown]> => {
   try {
     const url = "/api/Auth/Register";

@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Link from "next/link";
+import * as yup from "yup";
+import { InferType } from "yup";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
 import {
   faArrowRight,
   faLock,
@@ -11,23 +17,45 @@ import AppButton from "@/components/shared/AppButton";
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
 import { login } from "@/services/auth";
-import { useRouter } from "next/navigation";
 import { useLocalStorage } from "@/hooks";
-import Link from "next/link";
+import ErrorMessage from "@/components/shared/ErrorMessage";
 
 const cx = classNames.bind(style);
+const userSchema = yup
+  .object({
+    phoneNumber: yup
+      .string()
+      .required("Please enter phone number!")
+      .matches(/^\d+$/, "Phone number only contain number")
+      .length(10, "Phone number must have 10 digits")
+      .typeError("Please enter valid phone number!"),
+    password: yup
+      .string()
+      .required("Please enter password")
+      .min(6, "Password length must be equal or greater than 6!")
+      .max(32, "Password length must be equal or lower than 32!"),
+  })
+  .required();
+type UserSchema = InferType<typeof userSchema>;
 interface Props {
   onClickNavigationLink?: () => void;
 }
 
 const LoginForm = ({ onClickNavigationLink }: Props) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(userSchema) });
+
   const router = useRouter();
   const [, setIsAuth] = useLocalStorage("isAuth");
   const [, setAccessToken] = useLocalStorage("accessToken");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleClick = async () => {
+  const onSubmit: SubmitHandler<UserSchema> = async ({
+    phoneNumber,
+    password,
+  }) => {
     const [jwtToken] = await login(phoneNumber, password);
     if (!jwtToken) {
       return;
@@ -38,7 +66,10 @@ const LoginForm = ({ onClickNavigationLink }: Props) => {
   };
 
   return (
-    <Form className={cx("me-3", "pt-3", "ps-5", "pe-5", "position-relative")}>
+    <Form
+      className={cx("me-3", "pt-3", "ps-5", "pe-5", "position-relative")}
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div
         onClick={onClickNavigationLink}
         className={cx("navigate-link", "h6", "position-absolute")}
@@ -52,29 +83,32 @@ const LoginForm = ({ onClickNavigationLink }: Props) => {
       <div className={cx("text-muted", "mb-4")}>
         We'll never share your email with anyone else.
       </div>
-      <InputGroup className={cx("mb-3")}>
+      <InputGroup>
         <InputGroup.Text>
           <FontAwesomeIcon icon={faMobilePhone} />
         </InputGroup.Text>
         <Form.Control
           className={cx("shadow-none")}
           placeholder="Phone number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          {...register("phoneNumber")}
         />
       </InputGroup>
-      <InputGroup className={cx("mb-4")}>
+      <ErrorMessage visible={errors.phoneNumber?.message ? true : false}>
+        {errors.phoneNumber?.message}
+      </ErrorMessage>
+      <InputGroup >
         <InputGroup.Text>
           <FontAwesomeIcon icon={faLock} />
         </InputGroup.Text>
         <Form.Control
           className={cx("shadow-none")}
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          {...register("password")}
         />
       </InputGroup>
-
+      <ErrorMessage visible={errors.password?.message ? true : false}>
+        {errors.password?.message}
+      </ErrorMessage>
       <div
         className={cx(
           "d-flex",
@@ -97,7 +131,7 @@ const LoginForm = ({ onClickNavigationLink }: Props) => {
       <AppButton
         variant="app-btn-secondary"
         className={cx("w-100", "mb-3")}
-        onClick={handleClick}
+        type="submit"
       >
         Login
       </AppButton>

@@ -1,24 +1,21 @@
 .form-container {
-    width: 75%;
-    height: 550px;
+    width: 100%;
+    height: 650px;
 }
 
 #login-form,
 #banner-img,
 #register-form {
-    width: 50%;
+    width: 100%;
     height: 100%;
-    transition: all 0.75s ease-in-out;
+    transition: all 0.5s ease-in-out;
 }
 
 #login-form.active {
     left: 0;
 
     ~ #register-form {
-        right: -50%;
-    }
-    ~ #banner-img {
-        left: 50%;
+        right: -100%;
     }
 }
 #register-form.active {
@@ -26,9 +23,41 @@
 
     // Select previous siblings
     #login-form:has(~ &) {
-        left: -50%;
+        left: -100%;
     }
-    #banner-img:has(~ &) {
-        left: 0%;
+}
+
+@media only screen and (min-width: 768px) {
+    .form-container {
+        width: 75%;
+        height: 600px;
+    }
+
+    #login-form,
+    #banner-img,
+    #register-form {
+        width: 50%;
+    }
+
+    #login-form.active {
+        left: 0;
+
+        ~ #register-form {
+            right: -50%;
+        }
+        ~ #banner-img {
+            left: 50%;
+        }
+    }
+    #register-form.active {
+        right: 0;
+
+        // Select previous siblings
+        #login-form:has(~ &) {
+            left: -50%;
+        }
+        #banner-img:has(~ &) {
+            left: 0%;
+        }
     }
 }

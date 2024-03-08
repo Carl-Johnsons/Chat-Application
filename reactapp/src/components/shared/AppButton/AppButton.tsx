@@ -9,6 +9,7 @@ type Secondary = VariantType<"app-btn-secondary">;
 type Tertiary = VariantType<"app-btn-tertiary">;
 interface Props {
   variant?: Primary | Secondary | Tertiary;
+  type?: "button" | "reset" | "submit";
   className?: string;
   children?: React.ReactNode;
   onClick?: () => void;
@@ -17,12 +18,14 @@ const AppButton = ({
   variant = "app-btn-primary",
   className = "",
   children = "",
+  type = "button",
   onClick = () => {},
 }: Props) => {
   return (
     <Button
       variant="default"
       className={cx(variant, className)}
+      type={type}
       onClick={onClick}
     >
       {children}

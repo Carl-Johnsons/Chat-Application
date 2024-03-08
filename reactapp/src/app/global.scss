@@ -94,6 +94,12 @@ $color-variables: (
 .flex-1 {
     flex: 1;
 }
+.text-align-right {
+    text-align: right;
+}
+.text-align-left {
+    text-align: left;
+}
 
 .transition-all-0_2s-ease-in-out {
     transition: all 0.2s ease-in-out;
