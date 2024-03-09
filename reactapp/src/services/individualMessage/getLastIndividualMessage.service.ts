@@ -10,12 +10,8 @@ import { axiosInstance } from "@/utils";
 export const getLastIndividualMessage = async (
   senderId: number,
   receiverId: number
-): Promise<[IndividualMessage | null, unknown]> => {
-  try {
-    const url = `/api/Messages/individual/GetLast/${senderId}/${receiverId}`;
-    const response = await axiosInstance.get(url);
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<IndividualMessage | null> => {
+  const url = `/api/Messages/individual/GetLast/${senderId}/${receiverId}`;
+  const response = await axiosInstance.get(url);
+  return response.data;
 };

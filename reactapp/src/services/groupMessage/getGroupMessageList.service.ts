@@ -1,4 +1,4 @@
-import { IndividualMessage } from "@/models";
+import { GroupMessage } from "@/models";
 import { axiosInstance } from "@/utils";
 
 /**
@@ -7,12 +7,8 @@ import { axiosInstance } from "@/utils";
  */
 export const getGroupMessageList = async (
   groupId: number
-): Promise<[IndividualMessage[] | null, unknown]> => {
-  try {
-    const url = "/api/Messages/group/" + groupId;
-    const response = await axiosInstance.get(url);
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<GroupMessage[] | null> => {
+  const url = "/api/Messages/group/" + groupId;
+  const response = await axiosInstance.get(url);
+  return response.data;
 };

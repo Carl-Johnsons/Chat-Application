@@ -9,12 +9,8 @@ import { GroupMessage } from "@/models";
 export const getNextGroupMessageList = async (
   groupId: number,
   skipBatch: number
-): Promise<[GroupMessage[] | null, unknown]> => {
-  try {
-    const url = `/api/Messages/group/${groupId}/skip/${skipBatch}`;
-    const response = await axiosInstance.get(url);
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<GroupMessage[] | null> => {
+  const url = `/api/Messages/group/${groupId}/skip/${skipBatch}`;
+  const response = await axiosInstance.get(url);
+  return response.data;
 };

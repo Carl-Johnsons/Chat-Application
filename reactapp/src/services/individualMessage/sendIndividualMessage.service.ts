@@ -13,7 +13,7 @@ export const sendIndividualMessage = async (
   senderId: number,
   receiverId: number,
   messageContent: string
-): Promise<[IndividualMessage | null, unknown]> => {
+): Promise<IndividualMessage | null> => {
   //individual message object
   const messageObject: IndividualMessage = {
     messageId: 0,
@@ -31,12 +31,7 @@ export const sendIndividualMessage = async (
       active: true,
     },
   };
-
-  try {
-    const url = "/api/Messages/individual";
-    const respone = await axiosInstance.post(url, messageObject);
-    return [respone.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+  const url = "/api/Messages/individual";
+  const respone = await axiosInstance.post(url, messageObject);
+  return respone.data;
 };

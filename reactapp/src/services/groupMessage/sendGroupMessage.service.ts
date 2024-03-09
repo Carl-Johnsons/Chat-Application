@@ -12,7 +12,7 @@ export const sendGroupMessage = async (
   senderId: number,
   groupReceiverId: number,
   messageContent: string
-): Promise<[GroupMessage | null, unknown]> => {
+): Promise<GroupMessage | null> => {
   //individual message object
   const messageObject: GroupMessage = {
     groupReceiverId: groupReceiverId,
@@ -26,11 +26,7 @@ export const sendGroupMessage = async (
     },
   };
 
-  try {
-    const url = "/api/Messages/group";
-    const respone = await axiosInstance.post(url, messageObject);
-    return [respone.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+  const url = "/api/Messages/group";
+  const respone = await axiosInstance.post(url, messageObject);
+  return respone.data;
 };

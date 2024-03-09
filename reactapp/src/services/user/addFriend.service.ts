@@ -11,14 +11,10 @@ import { axiosInstance } from "@/utils";
 export const addFriend = async (
   senderId: number,
   receiverId: number
-): Promise<[number | null, unknown]> => {
+): Promise<boolean | null> => {
   // Sender is the one who send the request not the current user
   // The current user is the one who accept the friend request
-  try {
-    const url = "/api/Users/AddFriend/" + senderId + "/" + receiverId;
-    const response = await axiosInstance.post(url);
-    return [response.status, null];
-  } catch (error) {
-    return [null, error];
-  }
+  const url = "/api/Users/AddFriend/" + senderId + "/" + receiverId;
+  const response = await axiosInstance.post(url);
+  return response.status === 201;
 };

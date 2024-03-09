@@ -11,12 +11,8 @@ export const getNextIndividualMessageList = async (
   senderId: number,
   receiverId: number,
   skipBatch: number
-): Promise<[IndividualMessage[] | null, unknown]> => {
-  try {
-    const url = `/api/Messages/individual/${senderId}/${receiverId}/skip/${skipBatch}`;
-    const response = await axiosInstance.get(url);
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<IndividualMessage[] | null> => {
+  const url = `/api/Messages/individual/${senderId}/${receiverId}/skip/${skipBatch}`;
+  const response = await axiosInstance.get(url);
+  return response.data;
 };

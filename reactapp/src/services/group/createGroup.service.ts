@@ -7,12 +7,8 @@ import { axiosInstance } from "@/utils";
  */
 export const createGroup = async (
   groupWithMemberId: GroupWithMemberId
-): Promise<[Group | null, unknown]> => {
-  try {
-    const url = "/api/Group";
-    const respone = await axiosInstance.post(url, groupWithMemberId);
-    return [respone.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<Group | null> => {
+  const url = "/api/Group";
+  const respone = await axiosInstance.post(url, groupWithMemberId);
+  return respone.data;
 };

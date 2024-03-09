@@ -9,21 +9,17 @@ import { axiosInstance } from "@/utils";
  */
 export const getFriendList = async (
   userId: number
-): Promise<[Friend[] | null, unknown]> => {
-  try {
-    const url = "/api/Users/GetFriend/" + userId;
-    const response = await axiosInstance.get(url);
-    const friendList: Friend[] = response.data;
-    friendList.forEach(
-      (friend) =>
-        (friend.friendNavigation = {
-          ...DefaultUser,
-          ...friend.friendNavigation,
-        })
-    );
+): Promise<Friend[] | null> => {
+  const url = "/api/Users/GetFriend/" + userId;
+  const response = await axiosInstance.get(url);
+  const friendList: Friend[] = response.data;
+  friendList.forEach(
+    (friend) =>
+      (friend.friendNavigation = {
+        ...DefaultUser,
+        ...friend.friendNavigation,
+      })
+  );
 
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+  return response.data;
 };

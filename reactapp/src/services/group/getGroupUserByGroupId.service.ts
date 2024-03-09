@@ -7,12 +7,8 @@ import { axiosInstance } from "@/utils";
  */
 export const getGroupUserByGroupId = async (
   groupId: number
-): Promise<[GroupUser[] | null, unknown]> => {
-  try {
-    const url = "/api/Group/GetGroupUserByGroupId/" + groupId;
-    const response = await axiosInstance.get(url);
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<GroupUser[] | null> => {
+  const url = "/api/Group/GetGroupUserByGroupId/" + groupId;
+  const response = await axiosInstance.get(url);
+  return response.data;
 };

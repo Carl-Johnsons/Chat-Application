@@ -10,12 +10,8 @@ import { axiosInstance } from "@/utils";
 export const deleteFriendRequest = async (
   senderId: number,
   receiverId: number
-): Promise<[number | null, unknown]> => {
-  try {
-    const url = "/api/Users/RemoveFriendRequest/" + senderId + "/" + receiverId;
-    const response = await axiosInstance.delete(url);
-    return [response.status, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<boolean | null> => {
+  const url = "/api/Users/RemoveFriendRequest/" + senderId + "/" + receiverId;
+  const response = await axiosInstance.delete(url);
+  return response.status === 204;
 };

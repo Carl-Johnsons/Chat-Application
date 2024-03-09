@@ -9,12 +9,8 @@ import { axiosInstance } from "@/utils";
  */
 export const getLastGroupMessageByGroupId = async (
   groupId: number
-): Promise<[GroupMessage | null, unknown]> => {
-  try {
-    const url = "/api/Messages/group/GetLastByGroupId/" + groupId;
-    const response = await axiosInstance.get(url);
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<GroupMessage | null> => {
+  const url = "/api/Messages/group/GetLastByGroupId/" + groupId;
+  const response = await axiosInstance.get(url);
+  return response.data;
 };

@@ -9,12 +9,8 @@ import { FriendRequest } from "@/models";
  */
 export const getFriendRequestList = async (
   userId: number
-): Promise<[FriendRequest[] | null, unknown]> => {
-  try {
-    const url = "/api/Users/GetFriendRequestsByReceiverId/" + userId;
-    const response = await axiosInstance.get(url);
-    return [response.data, null];
-  } catch (error) {
-    return [null, error];
-  }
+): Promise<FriendRequest[] | null> => {
+  const url = "/api/Users/GetFriendRequestsByReceiverId/" + userId;
+  const response = await axiosInstance.get(url);
+  return response.data;
 };
