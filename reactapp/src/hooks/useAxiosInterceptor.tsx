@@ -1,9 +1,10 @@
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { useLayoutEffect } from "react";
-import { useLocalStorage, useRefreshToken } from ".";
+import { useLocalStorage } from ".";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/utils";
 import { JwtToken } from "@/models";
+import { useRefreshToken } from "./queries/auth";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
@@ -11,7 +12,8 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 
 const useAxiosInterceptor = () => {
   const router = useRouter();
-  const refresh = useRefreshToken();
+  const { mutate: refreshTokenMutate, data: newAccessToken } =
+    useRefreshToken();
   const [getAccessTokenObj] = useLocalStorage("accessToken");
 
   useLayoutEffect(() => {
@@ -35,7 +37,7 @@ const useAxiosInterceptor = () => {
 
         if (error?.response?.status == 401 && !prevRequest?._retry) {
           prevRequest._retry = true;
-          const newAccessToken = await refresh();
+          refreshTokenMutate();
           // Case: Token expired or invalid navigate user back to login page
           if (!newAccessToken) {
             router.push("/login");
@@ -54,7 +56,7 @@ const useAxiosInterceptor = () => {
       axiosInstance.interceptors.request.eject(requestInterceptor);
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, [refresh]);
+  }, [getAccessTokenObj, newAccessToken, refreshTokenMutate, router]);
   return axiosInstance;
 };
 export { useAxiosInterceptor };
