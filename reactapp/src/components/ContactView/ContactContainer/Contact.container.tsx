@@ -3,19 +3,22 @@ import { memo } from "react";
 import ContactHeader from "../ContactHeader";
 import ContactRow from "../ContactRow";
 
-import {
-  signalRSendAcceptFriendRequest,
-  useGlobalState,
-  useModal,
-  useSignalREvents,
-} from "@/hooks";
+import { useGlobalState, useModal } from "@/hooks";
 
-import { Friend } from "@/models";
 import { menuContacts, MenuContactIndex } from "data/constants";
-import { addFriend, deleteFriend, deleteFriendRequest } from "@/services/user";
 
 import style from "./Contact.container.module.scss";
 import classNames from "classnames/bind";
+import {
+  useAddFriend,
+  useDeleteFriend,
+  useDeleteFriendRequest,
+  useGetCurrentUser,
+  useGetFriendList,
+  useGetFriendRequestList,
+} from "@/hooks/queries/user";
+import { useGetGroupUserByUserId } from "hooks/queries/group/useGetGroupUserByUserId.query";
+import { ModalType } from "models/ModalType";
 
 const cx = classNames.bind(style);
 
@@ -24,89 +27,35 @@ interface Props {
 }
 
 const ContactContainer = ({ className }: Props) => {
-  const [userId] = useGlobalState("userId");
-  const [userMap] = useGlobalState("userMap");
-  const [groupMap] = useGlobalState("groupMap");
   const [activeContactType] = useGlobalState("activeContactType");
-  const [friendList, setFriendList] = useGlobalState("friendList");
-  const [friendRequestList, setFriendRequestList] =
-    useGlobalState("friendRequestList");
-  const [connection] = useGlobalState("connection");
+  const { data: currentUser } = useGetCurrentUser();
+  const { data: friendList } = useGetFriendList();
+  const { data: groupList } = useGetGroupUserByUserId(
+    currentUser?.userId ?? -1,
+    {
+      enabled: !!currentUser?.userId,
+    }
+  );
+  const { data: friendRequestList } = useGetFriendRequestList();
 
   // hooks
   const { handleShowModal } = useModal();
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { mutate: addFriendMutate } = useAddFriend();
+  const { mutate: deleteFriendMutate } = useDeleteFriend();
+  const { mutate: deleteFriendRequestMutate } = useDeleteFriendRequest();
 
-  const handleClickBtnDetail = (userId: number) => {
-    handleShowModal({ entityId: userId });
+  const handleClickBtnDetail = (entityId: number, type: ModalType) => {
+    handleShowModal({ entityId, modalType: type });
   };
   const handleClickAcpFriend = async (friendId: number) => {
-    const senderId = friendId;
-    const receiverId = userId;
-
-    const [status, error] = await addFriend(senderId, receiverId);
-    if (status && status >= 200 && status <= 299) {
-      console.log("acp friend successfully");
-      const sender = userMap.get(senderId);
-      const receiver = userMap.get(receiverId);
-      if (!sender) {
-        console.error(`This user with ID:${senderId} is null in the user map`);
-        return;
-      }
-      if (!receiver) {
-        console.error(
-          `This user with ID:${receiverId} is null in the user map`
-        );
-        return;
-      }
-      let friend: Friend = {
-        userId: senderId,
-        friendId: receiverId,
-        friendNavigation: sender,
-      };
-
-      setFriendList([...friendList, friend]);
-
-      setFriendRequestList(
-        friendRequestList.filter((fr) => fr.senderId !== senderId)
-      );
-      // Invert the property to send to other user
-      friend = {
-        userId: receiverId,
-        friendId: senderId,
-        friendNavigation: receiver,
-      };
-      invokeAction(signalRSendAcceptFriendRequest(friend));
-    } else {
-      console.log("acp friend failed");
-      console.error(error);
-    }
+    addFriendMutate({ senderId: friendId });
   };
 
   const handleClickDelFriend = async (friendId: number) => {
-    const [status, error] = await deleteFriend(userId, friendId);
-    if (status && status >= 200 && status <= 299) {
-      console.log("del friend successfully");
-      console.log({ friendList });
-      setFriendList(
-        friendList.filter((f) => f.friendNavigation.userId !== friendId)
-      );
-    } else {
-      console.log("del friend failed");
-      console.error(error);
-    }
+    deleteFriendMutate({ friendId });
   };
-  const handleClickDelFriendRequest = async (friendRequestId: number) => {
-    const [status, error] = await deleteFriendRequest(friendRequestId, userId);
-    if (status && status >= 200 && status <= 299) {
-      console.log("del friend request successfully");
-      setFriendRequestList(
-        friendRequestList.filter((fr) => fr.senderId !== friendRequestId)
-      );
-    } else {
-      console.log("del friend request failed");
-      console.error(error);
-    }
+  const handleClickDelFriendRequest = async (senderId: number) => {
+    deleteFriendRequestMutate({ senderId });
   };
   return (
     <div className={cx(className)}>
@@ -128,7 +77,7 @@ const ContactContainer = ({ className }: Props) => {
                 key={friendObject.userId}
                 entityId={friendObject.userId}
                 onClickBtnDetail={() =>
-                  handleClickBtnDetail(friendObject.userId)
+                  handleClickBtnDetail(friendObject.userId, "Friend")
                 }
                 onClickBtnDelFriend={() =>
                   handleClickDelFriend(friendObject.userId)
@@ -136,10 +85,18 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {groupMap &&
+        {groupList &&
           activeContactType === MenuContactIndex.GROUP_LIST &&
-          [...groupMap.entries()].map(([groupId]) => {
-            return <ContactRow key={groupId} entityId={groupId} />;
+          groupList.map((gu) => {
+            return (
+              <ContactRow
+                key={gu.groupId}
+                entityId={gu.groupId}
+                onClickBtnDetail={() =>
+                  handleClickBtnDetail(gu.groupId, "Group")
+                }
+              />
+            );
           })}
         {friendRequestList &&
           activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
@@ -152,7 +109,9 @@ const ContactContainer = ({ className }: Props) => {
                 onClickBtnAcceptFriendRequest={() =>
                   handleClickAcpFriend(sender.userId)
                 }
-                onClickBtnDetail={() => handleClickBtnDetail(sender.userId)}
+                onClickBtnDetail={() =>
+                  handleClickBtnDetail(sender.userId, "Stranger")
+                }
                 onClickBtnDelFriendRequest={() =>
                   handleClickDelFriendRequest(sender.userId)
                 }

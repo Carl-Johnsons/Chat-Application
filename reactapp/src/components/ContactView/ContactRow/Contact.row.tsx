@@ -13,6 +13,8 @@ import { MenuContactIndex } from "data/constants";
 
 import style from "./Contact.row.module.scss";
 import classNames from "classnames/bind";
+import { useGetGroup } from "@/hooks/queries/group";
+import { useGetUser } from "@/hooks/queries/user";
 const cx = classNames.bind(style);
 interface Props {
   entityId: number;
@@ -29,12 +31,11 @@ const ContactRow = ({
   onClickBtnDelFriendRequest = () => {},
 }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
-  const [userMap] = useGlobalState("userMap");
-  const [groupMap] = useGlobalState("groupMap");
+  const { data: userData } = useGetUser(entityId);
+  const { data: groupData } = useGetGroup(entityId);
+
   const currentEntity =
-    activeContactType === MenuContactIndex.GROUP_LIST
-      ? groupMap.get(entityId)
-      : userMap.get(entityId);
+    activeContactType === MenuContactIndex.GROUP_LIST ? groupData : userData;
 
   const avatar =
     (currentEntity as User)?.avatarUrl ??

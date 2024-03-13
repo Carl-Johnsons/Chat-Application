@@ -17,11 +17,11 @@ import classNames from "classnames/bind";
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
-import { register as registerUser } from "@/services/auth";
-import { uploadImage } from "@/services/tool";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { InferType } from "yup";
 import ErrorMessage from "@/components/shared/ErrorMessage";
+import { useRegister } from "@/hooks/queries/auth";
+import { useUploadImage } from "@/hooks/queries/tool";
 
 const cx = classNames.bind(style);
 const userSchema = yup
@@ -75,7 +75,9 @@ const RegisterForm = ({ onClickNavigationLink }: Props) => {
   const [previewAvatar, setPreviewAvatar] = useState(
     images.defaultAvatarImg.src
   );
-
+  //hooks
+  const { mutate: registerMutate } = useRegister();
+  const { mutateAsync: uploadImageMutateAsync } = useUploadImage();
   const fileInputRef = useRef(null);
   const onClickEditAvatar = () => {
     if (!fileInputRef.current) {
@@ -91,7 +93,7 @@ const RegisterForm = ({ onClickNavigationLink }: Props) => {
     const url = URL.createObjectURL(avatarFile);
     setPreviewAvatar(url);
     return () => {
-      URL.revokeObjectURL(previewAvatar);
+      URL.revokeObjectURL(url);
     };
   }, [avatarFile]);
 
@@ -105,7 +107,7 @@ const RegisterForm = ({ onClickNavigationLink }: Props) => {
   const onSubmit: SubmitHandler<UserSchema> = async (data) => {
     let updatedData: UserSchema | undefined = undefined;
     if (avatarFile) {
-      const [imgurImage] = await uploadImage(avatarFile);
+      const imgurImage = await uploadImageMutateAsync({ file: avatarFile });
       updatedData = {
         ...data,
         avatarUrl: imgurImage?.data.link ?? images.defaultAvatarImg.src,
@@ -114,12 +116,7 @@ const RegisterForm = ({ onClickNavigationLink }: Props) => {
     if (!updatedData) {
       updatedData = data;
     }
-    const [isRegistered, error] = await registerUser(updatedData);
-    if (isRegistered) {
-      console.log("register successfully");
-    } else {
-      console.log("register failed: " + error);
-    }
+    registerMutate({ user: updatedData });
   };
 
   return (

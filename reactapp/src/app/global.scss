@@ -100,6 +100,9 @@ $color-variables: (
 .text-align-left {
     text-align: left;
 }
+.react-loading-skeleton {
+    line-height: unset !important;
+}
 
 .transition-all-0_2s-ease-in-out {
     transition: all 0.2s ease-in-out;

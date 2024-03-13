@@ -20,21 +20,22 @@ import images from "@/assets";
 import { useGlobalState } from "@/hooks";
 // model
 import { User, Group } from "@/models";
+import { useGetGroup, useGetGroupUserByGroupId } from "@/hooks/queries/group";
+import { useGetUser } from "@/hooks/queries/user";
+
 const cx = classnames.bind(style);
 
 const AsideBody = () => {
   const [activeConversation] = useGlobalState("activeConversation");
   const [messageType] = useGlobalState("messageType");
-  const [userMap] = useGlobalState("userMap");
-  const [groupMap] = useGlobalState("groupMap");
-  const [groupUserMap] = useGlobalState("groupUserMap");
 
   const isGroup = messageType === "Group";
+  const userQuery = useGetUser(activeConversation);
+  const groupQuery = useGetGroup(activeConversation);
+  const groupUserQuery = useGetGroupUserByGroupId(activeConversation);
 
   const currentEntity =
-    messageType === "Individual"
-      ? userMap.get(activeConversation)
-      : groupMap.get(activeConversation);
+    messageType === "Individual" ? userQuery.data : groupQuery.data;
   const avatar =
     (currentEntity as User)?.avatarUrl ??
     (currentEntity as Group)?.groupAvatarUrl ??
@@ -42,7 +43,7 @@ const AsideBody = () => {
   const name =
     (currentEntity as User)?.name ?? (currentEntity as Group)?.groupName;
   const groupLink = (currentEntity as Group)?.groupInviteUrl;
-  const groupUser = isGroup ? groupUserMap.get(activeConversation) : undefined;
+  const groupUser = isGroup ? groupUserQuery.data : undefined;
   return (
     <>
       <div
@@ -175,12 +176,12 @@ const AsideBody = () => {
           <button
             className={cx("fw-medium", "btn")}
             data-bs-toggle="collapse"
-            data-bs-target="#collapseExample"
+            data-bs-target="#groupMemberInfo"
             role="button"
           >
             Thành viên nhóm
           </button>
-          <div className="collapse" id="collapseExample">
+          <div className="collapse show" id="groupMemberInfo">
             <div className={cx("d-flex", "align-items-center", "pt-2")}>
               <div className={cx("icon")}>
                 <FontAwesomeIcon icon={faUserGroup} />

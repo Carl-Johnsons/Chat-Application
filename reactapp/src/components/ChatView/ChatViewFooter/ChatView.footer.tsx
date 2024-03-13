@@ -7,46 +7,42 @@ import AppButton from "@/components/shared/AppButton";
 import {
   signalRDisableNotifyUserTyping,
   signalRNotifyUserTyping,
-  signalRSendGroupMessage,
-  signalRSendIndividualMessage,
   useDebounce,
   useGlobalState,
   useSignalREvents,
-  useSortableArray,
 } from "@/hooks";
 
-import { GroupMessage, IndividualMessage, SenderReceiverArray } from "@/models";
+import { SenderReceiverArray } from "@/models";
 
-import { sendGroupMessage } from "@/services/groupMessage";
-import { sendIndividualMessage } from "@/services/individualMessage";
+import { useGetCurrentUser } from "@/hooks/queries/user";
+import {
+  useSendGroupMessage,
+  useSendIndividualMessage,
+} from "@/hooks/queries/message";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
   const [inputValue, setInputValue] = useState("");
-  const [userId] = useGlobalState("userId");
   const [activeConversation] = useGlobalState("activeConversation");
-  const [messageList, setMessageList] = useGlobalState("messageList");
-  const [lastMessageList, setLastMessageList] =
-    useGlobalState("lastMessageList");
 
   const [messageType] = useGlobalState("messageType");
   const [connection] = useGlobalState("connection");
   // hook
   const invokeAction = useSignalREvents({ connection: connection });
-  const [moveMessageToTop] = useSortableArray<IndividualMessage | GroupMessage>(
-    lastMessageList,
-    setLastMessageList as React.Dispatch<
-      React.SetStateAction<(IndividualMessage | GroupMessage)[]>
-    >
-  );
-
-  const model: SenderReceiverArray = {
-    senderId: userId,
-    receiverId: activeConversation,
-    type: messageType,
-  };
+  const { data: currentUser } = useGetCurrentUser();
+  const { mutate: sendIndividualMessageMutate } = useSendIndividualMessage();
+  const { mutate: sendGroupMessageMutate } = useSendGroupMessage();
 
   const debounceInvokeAction = useDebounce(() => {
+    if (!currentUser) {
+      return;
+    }
+    const model: SenderReceiverArray = {
+      senderId: currentUser.userId,
+      receiverId: activeConversation,
+      type: messageType,
+    };
+
     invokeAction(signalRDisableNotifyUserTyping(model));
   }, 1000);
   // debounce to remove the user typing notification
@@ -55,65 +51,36 @@ const ChatViewFooter = () => {
   }, [debounceInvokeAction, inputValue]);
 
   const fetchSendMessage = async () => {
+    if (!currentUser) {
+      return;
+    }
     // This active conversation may be wrong for the group message. Implement later
     if (messageType == "Individual") {
-      const [data] = await sendIndividualMessage(
-        userId,
-        activeConversation,
-        inputValue
-      );
-      if (!data) {
-        return;
-      }
-
-      setMessageList([...(messageList as IndividualMessage[]), data]);
-      invokeAction(signalRSendIndividualMessage(data));
-      setInputValue("");
-      //Update last message
-      const indexToUpdate = lastMessageList.findIndex((messageObj, index) => {
-        if (messageObj.message.messageType === "Group") {
-          return false;
-        }
-        const im = lastMessageList[index] as IndividualMessage;
-        return (
-          (userId === im.message.senderId &&
-            activeConversation === im.userReceiverId) ||
-          (activeConversation === im.message.senderId &&
-            userId === im.userReceiverId)
-        );
+      sendIndividualMessageMutate({
+        senderId: currentUser.userId,
+        receiverId: activeConversation,
+        messageContent: inputValue,
       });
-      if (indexToUpdate !== -1) {
-        lastMessageList[indexToUpdate] = data;
-        moveMessageToTop(indexToUpdate);
-      }
     }
     if (messageType == "Group") {
-      const [data] = await sendGroupMessage(
-        userId,
-        activeConversation,
-        inputValue
-      );
-      if (!data) {
-        return;
-      }
-      setMessageList([...(messageList as GroupMessage[]), data]);
-      invokeAction(signalRSendGroupMessage(data));
-      setInputValue("");
-      //Update last message
-      const indexToUpdate = lastMessageList.findIndex((messageObj, index) => {
-        if (messageObj.message.messageType === "Individual") {
-          return false;
-        }
-        const gm = lastMessageList[index] as GroupMessage;
-        return activeConversation === gm.groupReceiverId;
+      sendGroupMessageMutate({
+        senderId: currentUser.userId,
+        receiverId: activeConversation,
+        messageContent: inputValue,
       });
-      if (indexToUpdate !== -1) {
-        lastMessageList[indexToUpdate] = data;
-        moveMessageToTop(indexToUpdate);
-      }
     }
+    setInputValue("");
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!currentUser) {
+      return;
+    }
+    const model: SenderReceiverArray = {
+      senderId: currentUser.userId,
+      receiverId: activeConversation,
+      type: messageType,
+    };
+
     setInputValue(e.target.value);
     invokeAction(signalRNotifyUserTyping(model));
   };

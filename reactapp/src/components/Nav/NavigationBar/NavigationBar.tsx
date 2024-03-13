@@ -1,22 +1,17 @@
-import { useEffect } from "react";
 import { Nav } from "react-bootstrap";
 
 import Avatar from "@/components/shared/Avatar";
 import NavItem from "../NavItem";
 //hook
-import {
-  useGlobalState,
-  useLogout,
-  useModal,
-  useScreenSectionNavigator,
-} from "@/hooks";
+import { useGlobalState, useModal, useScreenSectionNavigator } from "@/hooks";
 
 //service
-import { getUserProfile, getUser } from "@/services/user";
-
 import styles from "./NavigationBar.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
+import { useLogout } from "@/hooks/queries/auth";
+import { useGetCurrentUser } from "@/hooks/queries/user";
+import { useCallback } from "react";
 const cx = classNames.bind(styles);
 type NavItem = {
   dataContent: string;
@@ -28,45 +23,20 @@ type NavItem = {
 };
 
 const NavigationBar = () => {
-  const { handleShowModal } = useModal();
   const [activeNav, setActiveNav] = useGlobalState("activeNav");
+
+  const { handleShowModal } = useModal();
   const { handleClickScreenSection } = useScreenSectionNavigator();
-  const [, setUserId] = useGlobalState("userId");
-  const [userId] = useGlobalState("userId");
-  const [userMap, setUserMap] = useGlobalState("userMap");
-  const user = userMap.get(userId);
+  const { data: currentUser } = useGetCurrentUser();
 
-  const logout = useLogout();
-  useEffect(() => {
-    if (userId) {
-      return;
-    }
-    const fetchUserData = async () => {
-      const [user] = await getUserProfile();
-      if (!user) {
-        return;
-      }
-      setUserId(user.userId);
-
-      const [userData] = await getUser(user.userId);
-
-      if (!userData) {
-        return;
-      }
-      //  Create a shallow copy to mutate the map object,
-      // Using set method is not going to mutate the map so the component will not re-render
-      const newUserMap = new Map(userMap);
-      newUserMap.set(user.userId, userData);
-      setUserMap(newUserMap);
-    };
-    fetchUserData();
-  }, [setUserId, setUserMap, userId, userMap]);
+  const { mutate: logoutMutate } = useLogout();
+  const userProfileQuery = useGetCurrentUser();
 
   const items: NavItem[] = [
     {
       dataContent: "info-modal",
       href: "#",
-      image: user?.avatarUrl || images.userIcon.src,
+      image: userProfileQuery.data?.avatarUrl || images.userIcon.src,
       imageAlt: "User Icon",
       navLinkClassName: cx("nav-avatar"),
     },
@@ -91,18 +61,33 @@ const NavigationBar = () => {
     },
   ];
 
-  const handleClick = (linkId: number) => {
-    handleClickScreenSection(true);
-    if (linkId === 0) {
-      handleShowModal({ entityId: userId, modalType: "Personal" });
-      return;
-    }
-    if (linkId === items.length - 1) {
-      logout();
-      return;
-    }
-    setActiveNav(linkId);
-  };
+  const handleClick = useCallback(
+    (linkId: number) => {
+
+      handleClickScreenSection(true);
+      if (linkId === 0) {
+        handleShowModal({
+          entityId: currentUser?.userId,
+          modalType: "Personal",
+        });
+        return;
+      }
+      if (linkId === items.length - 1) {
+        logoutMutate();
+        return;
+      }
+      setActiveNav(linkId);
+    },
+    [
+      currentUser,
+      handleClickScreenSection,
+      handleShowModal,
+      items.length,
+      logoutMutate,
+      setActiveNav,
+    ]
+  );
+
   return (
     <Nav
       className={cx(

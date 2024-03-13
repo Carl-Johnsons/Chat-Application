@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
@@ -6,7 +5,6 @@ import * as yup from "yup";
 import { InferType } from "yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "next/navigation";
 import {
   faArrowRight,
   faLock,
@@ -16,9 +14,8 @@ import AppButton from "@/components/shared/AppButton";
 
 import style from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
-import { login } from "@/services/auth";
-import { useLocalStorage } from "@/hooks";
 import ErrorMessage from "@/components/shared/ErrorMessage";
+import { useLogin } from "@/hooks/queries/auth";
 
 const cx = classNames.bind(style);
 const userSchema = yup
@@ -48,21 +45,13 @@ const LoginForm = ({ onClickNavigationLink }: Props) => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(userSchema) });
 
-  const router = useRouter();
-  const [, setIsAuth] = useLocalStorage("isAuth");
-  const [, setAccessToken] = useLocalStorage("accessToken");
+  const { mutate: loginMutate } = useLogin();
 
   const onSubmit: SubmitHandler<UserSchema> = async ({
     phoneNumber,
     password,
   }) => {
-    const [jwtToken] = await login(phoneNumber, password);
-    if (!jwtToken) {
-      return;
-    }
-    setIsAuth(true);
-    setAccessToken(jwtToken);
-    router.push("/home");
+    loginMutate({ phoneNumber, password });
   };
 
   return (
@@ -81,7 +70,7 @@ const LoginForm = ({ onClickNavigationLink }: Props) => {
       </div>
       <div className={cx("h2", "mt-3")}>Sign In to Zalo</div>
       <div className={cx("text-muted", "mb-4")}>
-        We'll never share your email with anyone else.
+        We&apos;ll never share your email with anyone else.
       </div>
       <InputGroup>
         <InputGroup.Text>
@@ -96,7 +85,7 @@ const LoginForm = ({ onClickNavigationLink }: Props) => {
       <ErrorMessage visible={errors.phoneNumber?.message ? true : false}>
         {errors.phoneNumber?.message}
       </ErrorMessage>
-      <InputGroup >
+      <InputGroup>
         <InputGroup.Text>
           <FontAwesomeIcon icon={faLock} />
         </InputGroup.Text>

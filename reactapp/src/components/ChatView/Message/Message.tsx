@@ -1,11 +1,9 @@
 import moment from "moment";
-import { HTMLProps, useEffect } from "react";
-
-import { useGlobalState } from "@/hooks";
-import { getUser } from "@/services/user";
+import { HTMLProps } from "react";
 
 import style from "./Message.module.scss";
 import classNames from "classnames/bind";
+import { useGetUser } from "@/hooks/queries/user";
 
 const cx = classNames.bind(style);
 interface Props {
@@ -24,25 +22,9 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
   ...htmlProp
 }) => {
   const mergeProp = Object.assign(htmlProp);
-  const [userMap, setUserMap] = useGlobalState("userMap");
   const { userId, content, time } = message;
-  const user = userMap.get(userId);
-  // Map unknown user in the group
-  useEffect(() => {
-    const fetchUserInGroup = async () => {
-      if (user) {
-        return;
-      }
-      const newUserMap = new Map(userMap);
-      const [member] = await getUser(userId);
-      if (!member) {
-        return;
-      }
-      newUserMap.set(member.userId, member);
-      setUserMap(newUserMap);
-    };
-    fetchUserInGroup();
-  }, [setUserMap, user, userId, userMap]);
+
+  const { data } = useGetUser(userId);
 
   return (
     <div
@@ -51,7 +33,7 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
     >
       {showUsername && (
         <div className={cx("user-name", "mb-1")}>
-          {user?.name ?? "Annonymous"}
+          {data?.name ?? "Annonymous"}
         </div>
       )}
       <div className={cx("content", "mb-2")}>{content}</div>

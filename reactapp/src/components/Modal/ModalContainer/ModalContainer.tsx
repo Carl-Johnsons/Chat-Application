@@ -10,16 +10,11 @@ import UpdateAvatarModalContent from "../UpdateAvatarModalContent";
 import CreateGroupModalContent from "../CreateGroupModalContent";
 import ListGroupMemberModalContent from "../ListingGroupMemberModalContent/ListGroupMember.modalContent";
 
-import {
-  signalRSendFriendRequest,
-  useGlobalState,
-  useModal,
-  useSignalREvents,
-} from "@/hooks";
-import { sendFriendRequest } from "@/services/user";
+import { useGlobalState, useModal } from "@/hooks";
 
 import style from "./ModalContainer.module.scss";
 import classNames from "classnames/bind";
+import { useSendFriendRequest } from "@/hooks/queries/user";
 
 const cx = classNames.bind(style);
 
@@ -31,16 +26,13 @@ interface ModalContent {
 
 const ModalContainer = () => {
   // global state
-  const [userId] = useGlobalState("userId");
-  const [userMap] = useGlobalState("userMap");
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
   const [showModal] = useGlobalState("showModal");
   const [activeModal, setActiveModal] = useGlobalState("activeModal");
-  const [connection] = useGlobalState("connection");
   // hook
   const { handleHideModal } = useModal();
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { mutate: sendFriendRequestMutate } = useSendFriendRequest();
   // local state
   // const [modalBodyHeight, setModalBodyHeight] = useState(0);
   const [modalBodyDimension, setModalBodyDimension] = useState({
@@ -59,18 +51,7 @@ const ModalContainer = () => {
   const memberIdRef = useRef<number>();
 
   const handleClickSendFriendRequest = async () => {
-    const currentUser = userMap.get(userId);
-    if (!currentUser) {
-      return;
-    }
-    const [fr, error] = await sendFriendRequest(currentUser, modalEntityId);
-    if (!fr) {
-      console.error(error);
-      return;
-    }
-    //The friendRequest didn't store the sender user
-    fr.sender = currentUser;
-    invokeAction(signalRSendFriendRequest(fr));
+    sendFriendRequestMutate({ receiverId: modalEntityId });
   };
   switch (modalType) {
     case "Personal":
@@ -80,7 +61,7 @@ const ModalContainer = () => {
           ref: profileRef,
           modalContent: (
             <ProfileModalContent
-              modalEntityId={userId}
+              modalEntityId={modalEntityId}
               type="Personal"
               onClickUpdate={() => handleClick(1)}
               onClickEditUserName={() => handleClick(1)}

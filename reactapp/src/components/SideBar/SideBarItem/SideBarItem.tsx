@@ -2,14 +2,14 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 //component
 import Avatar from "@/components/shared/Avatar";
-//hook
-import { useGlobalState } from "@/hooks";
 //model
 import { Message, MessageType } from "@/models";
 
 import style from "./SideBarItem.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
+import { useGetGroup } from "@/hooks/queries/group";
+import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
 
 const cx = classNames.bind(style);
 
@@ -45,10 +45,6 @@ type Variants =
   | GroupConversationVariant;
 
 const SideBarItem = (variant: Variants) => {
-  const [currentUserId] = useGlobalState("userId");
-  const [userMap] = useGlobalState("userMap");
-  const [groupMap] = useGlobalState("groupMap");
-
   const [descriptionContent, setDescriptionContent] = useState("");
   const [timeContent, setTimeContent] = useState("");
 
@@ -73,32 +69,34 @@ const SideBarItem = (variant: Variants) => {
   } else if (isGroupConversation) {
     ({ groupId, isActive, lastMessage, isNewMessage, onClick } = variant);
   }
-
-  const lastMessageSender = userMap.get(lastMessage?.senderId ?? -1);
+  const currentUserQuery = useGetCurrentUser();
+  const userQuery = useGetUser(userId);
+  const groupQuery = useGetGroup(groupId);
+  const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? -1);
+  
   // Description
   useEffect(() => {
     if (!isSearchItem && lastMessage) {
-      if (!lastMessageSender?.name) {
+      if (!lastMessageSenderQuery.data?.name) {
         return;
       }
       const sender =
-        currentUserId === lastMessage.senderId
+        currentUserQuery.data?.userId === lastMessage.senderId
           ? "You: "
           : isGroupConversation
-          ? `${lastMessageSender.name}: `
+          ? `${lastMessageSenderQuery.data?.name}: `
           : "";
       setDescriptionContent(`${sender}${lastMessage.content}`);
     } else {
       setDescriptionContent(phoneNumber && `Phone Number: ${phoneNumber}`);
     }
   }, [
-    currentUserId,
+    currentUserQuery.data,
     isGroupConversation,
     isSearchItem,
     lastMessage,
-    lastMessageSender?.name,
+    lastMessageSenderQuery.data,
     phoneNumber,
-    userMap,
   ]);
   // Time
   useEffect(() => {
@@ -111,15 +109,15 @@ const SideBarItem = (variant: Variants) => {
   }, [lastMessage, lastMessage?.time]);
 
   const entityAvatar = isIndividualConversation
-    ? userMap.get(userId)?.avatarUrl
+    ? userQuery.data?.avatarUrl
     : isGroupConversation
-    ? groupMap.get(groupId)?.groupAvatarUrl
+    ? groupQuery.data?.groupAvatarUrl
     : undefined;
 
   const entityName = isIndividualConversation
-    ? userMap.get(userId)?.name
+    ? userQuery.data?.name
     : isGroupConversation
-    ? groupMap.get(groupId)?.groupName
+    ? groupQuery.data?.groupName
     : searchName;
 
   return (

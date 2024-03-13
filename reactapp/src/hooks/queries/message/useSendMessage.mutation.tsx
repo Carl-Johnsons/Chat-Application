@@ -91,7 +91,7 @@ const useSendMessage = (type: MessageType) => {
       invokeAction(signalRSendIndividualMessage(im));
 
       queryClient.invalidateQueries({
-        queryKey: ["messageList", type.toLowerCase(), receiverId],
+        queryKey: ["messageList", type.toLowerCase(), receiverId, "infinite"],
         exact: true,
       });
       queryClient.invalidateQueries({
@@ -115,7 +115,7 @@ const useSendMessage = (type: MessageType) => {
         invokeAction(signalRSendGroupMessage(gm));
 
         queryClient.invalidateQueries({
-          queryKey: ["messageList", type.toLowerCase(), receiverId],
+          queryKey: ["messageList", type.toLowerCase(), receiverId, "infinite"],
           exact: true,
         });
         queryClient.invalidateQueries({

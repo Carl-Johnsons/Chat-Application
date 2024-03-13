@@ -25,7 +25,7 @@ const useCreateGroup = () => {
     mutationFn: ({ groupWithMemberId }) => createGroup(groupWithMemberId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["groups"],
+        queryKey: ["groupList"],
       });
     },
     onError: (error) => {

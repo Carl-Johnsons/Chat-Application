@@ -4,23 +4,26 @@ import { faCamera, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
-import { useGlobalState, useModal } from "@/hooks";
-import { createGroup } from "@/services/group";
-import { uploadImage } from "@/services/tool";
+import { useModal } from "@/hooks";
 import { Friend, GroupWithMemberId } from "@/models";
 
 import style from "./CreateGroupModalContent.module.scss";
 import classnames from "classnames/bind";
+import { useCreateGroup } from "@/hooks/queries/group";
+import { useUploadImage } from "@/hooks/queries/tool";
+import { useGetCurrentUser, useGetFriendList } from "@/hooks/queries/user";
 
 const cx = classnames.bind(style);
 
 const CreateGroupModalContent = () => {
-  const [userId] = useGlobalState("userId");
-  const [groupMap, setGroupMap] = useGlobalState("groupMap");
   const { handleHideModal } = useModal();
-  const [friendList] = useGlobalState("friendList");
   const [selectedUser, setSelectedUser] = useState<Friend[]>([]);
   const [previewImgURL, setPreviewImgURL] = useState<string>();
+
+  const { data: currentUser } = useGetCurrentUser();
+  const { data: friendList } = useGetFriendList();
+  const { mutate: createGroupMutate } = useCreateGroup();
+  const { mutateAsync: uploadImageMutateAsync } = useUploadImage();
 
   const inputFileRef = useRef(null);
   const [form, setForm] = useState({
@@ -29,10 +32,8 @@ const CreateGroupModalContent = () => {
     searchValue: "",
   });
 
-  console.log(form.avatarFile);
-
   const filterFriendList = useMemo(() => {
-    return friendList.filter((f) =>
+    return (friendList ?? []).filter((f) =>
       f.friendNavigation.name.includes(form.searchValue)
     );
   }, [form.searchValue, friendList]);
@@ -40,7 +41,7 @@ const CreateGroupModalContent = () => {
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
-    inputRefs.current = inputRefs.current.slice(0, friendList.length);
+    inputRefs.current = inputRefs.current.slice(0, friendList?.length);
   }, [friendList]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +54,7 @@ const CreateGroupModalContent = () => {
       return;
     }
 
-    const friend = friendList.find((f) => f.friendId == friendId);
+    const friend = (friendList ?? []).find((f) => f.friendId == friendId);
     if (!friend) {
       return;
     }
@@ -104,23 +105,20 @@ const CreateGroupModalContent = () => {
       return;
     }
     //Upload img to imgur
-    const [imgurImage] = await uploadImage(form.avatarFile);
-
+    if (!currentUser) {
+      return;
+    }
+    const imgurImage = await uploadImageMutateAsync({ file: form.avatarFile });
     const members = selectedUser.map((f) => f.friendId);
     const model: GroupWithMemberId = {
       groupName: form.groupName,
-      groupLeaderId: userId,
+      groupLeaderId: currentUser?.userId ?? -1,
       groupMembers: members,
       groupInviteUrl: "string",
       groupAvatarUrl: imgurImage?.data.link ?? "",
     };
-    const [newGroup] = await createGroup(model);
-    if (!newGroup || !newGroup.groupId) {
-      return;
-    }
-    const newMap = new Map(groupMap);
-    newMap.set(newGroup.groupId, newGroup);
-    setGroupMap(newMap);
+
+    createGroupMutate({ groupWithMemberId: model });
     handleHideModal();
   };
 
@@ -219,13 +217,15 @@ const CreateGroupModalContent = () => {
                   data-friend-id={friend.friendId}
                 />
                 <label htmlFor={index + ""}>
-                  <Avatar
-                    className={cx("me-2")}
-                    avatarClassName={cx("rounded-circle")}
-                    src={friend.friendNavigation.avatarUrl}
-                    alt="user avatar"
-                  />
-                  {friend.friendNavigation.name}
+                  <div className={cx("d-flex", "align-items-center")}>
+                    <Avatar
+                      className={cx("me-2")}
+                      avatarClassName={cx("rounded-circle")}
+                      src={friend.friendNavigation.avatarUrl}
+                      alt="user avatar"
+                    />
+                    <div> {friend.friendNavigation.name}</div>
+                  </div>
                 </label>
               </div>
             );

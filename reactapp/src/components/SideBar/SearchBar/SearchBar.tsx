@@ -4,11 +4,10 @@ import Avatar from "@/components/shared/Avatar";
 
 import { useGlobalState, useModal } from "@/hooks";
 
-import { searchUser } from "@/services/user";
-
 import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
+import useSearchUser from "hooks/queries/user/useSearchUser.query";
 
 const cx = classNames.bind(style);
 
@@ -20,8 +19,6 @@ interface SearchButtonProps {
 const SearchBar = () => {
   const [, setIsSearchBarFocus] = useGlobalState("isSearchBarFocus");
   const [, setSearchResult] = useGlobalState("searchResult");
-  // For caching user
-  const [userMap] = useGlobalState("userMap");
 
   const [inputValue, setInputValue] = useState("");
   const [buttonClass, setButtonClass] = useState(cx("btn-add-friend", "me-1"));
@@ -30,22 +27,13 @@ const SearchBar = () => {
   );
   //hook
   const { handleShowModal } = useModal();
-
+  const { data: searchUserData, isLoading } = useSearchUser(inputValue);
   useEffect(() => {
-    if (inputValue.length != 10) {
-      setSearchResult(null);
+    if (isLoading) {
       return;
     }
-    const fetchUser = async () => {
-      const [user] = await searchUser(inputValue);
-      if (!user) {
-        return;
-      }
-      setSearchResult(user);
-      userMap.set(user.userId, user);
-    };
-    fetchUser();
-  }, [inputValue, setSearchResult, userMap]);
+    setSearchResult(searchUserData ?? null);
+  }, [isLoading, searchUserData, setSearchResult]);
 
   const searchButtons: SearchButtonProps[] = [
     {

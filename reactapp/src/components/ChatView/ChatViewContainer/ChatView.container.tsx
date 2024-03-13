@@ -8,6 +8,7 @@ import classNames from "classnames/bind";
 
 import { memo } from "react";
 import ChatViewBody from "../ChatViewBody";
+import { useGetUser } from "@/hooks/queries/user";
 
 const cx = classNames.bind(style);
 interface Props {
@@ -15,9 +16,10 @@ interface Props {
 }
 
 const ChatViewContainer = ({ className }: Props) => {
-  const [userMap] = useGlobalState("userMap");
   const [userTypingId] = useGlobalState("userTypingId");
-  const userTyping = userMap.get(userTypingId ?? 0);
+  const { data: userTyping } = useGetUser(userTypingId ?? -1, {
+    enabled: !!userTypingId,
+  });
 
   return (
     <div

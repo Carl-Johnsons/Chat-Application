@@ -20,7 +20,7 @@ const useGetGroup = (groupId: number | undefined) => {
     enabled: !!groupId,
     queryFn: () => getGroup(groupId ?? -1),
     initialData: () => {
-      return queryClient.getQueryData(["groups", groupId]);
+      return queryClient.getQueryData<Group | null>(["groups", groupId]);
     },
   });
 };

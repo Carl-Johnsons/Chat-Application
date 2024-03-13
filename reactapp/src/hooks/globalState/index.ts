@@ -1,14 +1,5 @@
 import { HubConnection, HubConnectionState } from "@microsoft/signalr";
-import {
-  Friend,
-  FriendRequest,
-  Group,
-  GroupMessage,
-  IndividualMessage,
-  MessageType,
-  ModalType,
-  User,
-} from "../../models";
+import { MessageType, ModalType, User } from "../../models";
 import { createGlobalState } from "react-hooks-global-state";
 
 const initialState = {
@@ -18,22 +9,11 @@ const initialState = {
   activeNav: 1,
   activeModal: 0,
   modalEntityId: null as unknown as number,
-  userId: null as unknown as number,
   userTypingId: null as unknown as number | null,
   // User
   searchResult: null as unknown as User | null,
-  userMap: new Map<number, User>(),
-  // Friend
-  friendList: null as unknown as Friend[],
-  // FriendRequest
-  friendRequestList: null as unknown as FriendRequest[],
-  // Group
-  groupMap: new Map<number, Group>(),
-  groupUserMap: new Map<number, number[]>(),
   // IndividualMessage | GroupMessage
-  messageList: null as unknown as IndividualMessage[] | GroupMessage[],
   messageType: "Individual" as MessageType,
-  lastMessageList: null as unknown as IndividualMessage[] | GroupMessage[],
   // Boolean
   isLeftShow: true,
   isRightShow: true,

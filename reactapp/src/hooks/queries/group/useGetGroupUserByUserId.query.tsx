@@ -1,6 +1,11 @@
 import { axiosInstance } from "@/utils";
 import { GroupUser } from "@/models";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryKey,
+  UseQueryOptions,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 /**
  * @param {number} userId
@@ -18,10 +23,17 @@ const getGroupUserByUserId = async (
  * @param userId
  * @returns
  */
-const useGetGroupUserByUserId = (userId: number) => {
+const useGetGroupUserByUserId = (
+  userId: number,
+  queryOptions: Omit<
+    UseQueryOptions<GroupUser[] | null, unknown, GroupUser[] | null, QueryKey>,
+    "queryKey" | "queryFn"
+  > = {}
+) => {
   const queryClient = useQueryClient();
 
   return useQuery({
+    ...queryOptions,
     queryKey: ["groupList"],
     enabled: !!userId,
     queryFn: () => getGroupUserByUserId(userId ?? -1),

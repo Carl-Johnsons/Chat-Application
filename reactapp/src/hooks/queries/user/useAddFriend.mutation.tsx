@@ -54,8 +54,8 @@ const useAddFriend = () => {
       }
       // Invert the property to send to other user
       const friend: Friend = {
-        userId: senderId,
-        friendId: currentUser?.userId ?? -1,
+        userId: currentUser?.userId ?? -1,
+        friendId: senderId,
         friendNavigation: sender,
       };
 
@@ -64,9 +64,13 @@ const useAddFriend = () => {
         queryKey: ["friendList"],
         exact: true,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["friendRequestList"],
+        exact: true,
+      });
     },
     onError: (err) => {
-      console.log("Add friend failed: " + err.message);
+      console.error("Add friend failed: " + err.message);
     },
   });
 };

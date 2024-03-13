@@ -5,13 +5,14 @@ import {
 } from "@microsoft/signalr";
 import { useCallback, useEffect, useRef } from "react";
 import { useGlobalState } from "./globalState";
+import { useGetCurrentUser } from "./queries/user";
 
 // Need some best practice or something, current the connection in the App keep re-rendering this hook
 const useSignalRConnection = (hubURL: string) => {
-  const [userId] = useGlobalState("userId");
   const [, setConnectionState] = useGlobalState("connectionState");
 
   const connRef = useRef<HubConnection | null>(null);
+  const { data: currentUser } = useGetCurrentUser();
 
   const startConnection = useCallback(async () => {
     if (!connRef.current) {
@@ -31,12 +32,12 @@ const useSignalRConnection = (hubURL: string) => {
     setConnectionState(connRef.current?.state);
   }, [setConnectionState]);
   useEffect(() => {
-    if (!userId) {
+    if (!currentUser) {
       return;
     }
 
     connRef.current = new HubConnectionBuilder()
-      .withUrl(`${hubURL}?userId=${userId}`)
+      .withUrl(`${hubURL}?userId=${currentUser.userId}`)
       .configureLogging(LogLevel.Information)
       .build();
     console.log("The current state is: " + connRef.current?.state);
@@ -44,7 +45,7 @@ const useSignalRConnection = (hubURL: string) => {
     return () => {
       stopConnection();
     };
-  }, [hubURL, startConnection, stopConnection, userId]);
+  }, [currentUser, hubURL, startConnection, stopConnection]);
 
   return connRef.current;
 };

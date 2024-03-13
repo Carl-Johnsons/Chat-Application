@@ -1,23 +1,15 @@
 import { useEffect } from "react";
 import { useGlobalState } from "../globalState";
 import { HubConnection } from "@microsoft/signalr";
-import { GroupMessage, IndividualMessage } from "@/models";
-import { useSortableArray } from "@/hooks";
+import { GroupMessage } from "@/models";
 import { SignalREvent } from "../../data/constants";
+import { useQueryClient } from "@tanstack/react-query";
 
 const useGroupMessageSubscription = (connection?: HubConnection) => {
-  const [lastMessageList, setLastMessageList] =
-    useGlobalState("lastMessageList");
+  const queryClient = useQueryClient();
   const [activeConversation] = useGlobalState("activeConversation");
-  const [messageList, setMessageList] = useGlobalState("messageList");
   const [messageType] = useGlobalState("messageType");
 
-  const [moveMessageToTop] = useSortableArray<IndividualMessage | GroupMessage>(
-    lastMessageList,
-    setLastMessageList as React.Dispatch<
-      React.SetStateAction<(IndividualMessage | GroupMessage)[]>
-    >
-  );
   useEffect(() => {
     if (!connection) {
       return;
@@ -25,39 +17,25 @@ const useGroupMessageSubscription = (connection?: HubConnection) => {
     connection.on(
       SignalREvent.RECEIVE_GROUP_MESSAGE,
       (groupMessage: GroupMessage) => {
-        if (
-          messageType === "Group" &&
-          activeConversation === groupMessage.groupReceiverId
-        ) {
-          setMessageList([...(messageList as GroupMessage[]), groupMessage]);
-        }
-        //Update last message
-        const indexToUpdate = lastMessageList.findIndex((messageObj, index) => {
-          if (messageObj.message.messageType === "Individual") {
-            return false;
-          }
-          const gm = lastMessageList[index] as GroupMessage;
-          return groupMessage.groupReceiverId === gm.groupReceiverId;
+        queryClient.invalidateQueries({
+          queryKey: [
+            "messageList",
+            "group",
+            groupMessage.groupReceiverId,
+            "infinite",
+          ],
+          exact: true,
         });
-        console.log({ indexToUpdate });
-        if (indexToUpdate !== -1) {
-          lastMessageList[indexToUpdate] = groupMessage;
-          moveMessageToTop(indexToUpdate);
-        }
+        queryClient.invalidateQueries({
+          queryKey: ["lastMessageList"],
+          exact: true,
+        });
       }
     );
     return () => {
       connection.off(SignalREvent.RECEIVE_GROUP_MESSAGE);
     };
-  }, [
-    activeConversation,
-    connection,
-    lastMessageList,
-    messageList,
-    messageType,
-    moveMessageToTop,
-    setMessageList,
-  ]);
+  }, [activeConversation, connection, messageType, queryClient]);
 };
 
 export default useGroupMessageSubscription;

@@ -4,6 +4,8 @@ import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
 import { useGlobalState, useModal } from "@/hooks";
+import { useGetUser } from "@/hooks/queries/user";
+import { useGetGroup, useGetGroupUserByGroupId } from "@/hooks/queries/group";
 
 import { Group, ModalType, User } from "@/models";
 
@@ -15,9 +17,6 @@ const cx = classNames.bind(style);
 
 const ChatViewHeader = () => {
   const [showAside, setShowAside] = useGlobalState("showAside");
-  const [userMap] = useGlobalState("userMap");
-  const [groupMap] = useGlobalState("groupMap");
-  const [groupUserMap] = useGlobalState("groupUserMap");
   const [messageType] = useGlobalState("messageType");
   const [activeConversation] = useGlobalState("activeConversation");
   //Local state
@@ -25,21 +24,29 @@ const ChatViewHeader = () => {
   // hook
   const { handleShowModal } = useModal();
   const isGroup = messageType === "Group";
+  const { data: userData, isLoading: isLoadingUser } =
+    useGetUser(activeConversation);
+  const { data: groupData, isLoading: isLoadingGroup } =
+    useGetGroup(activeConversation);
+  const { data: groupUserData, isLoading: isLoadingGroupUser } =
+    useGetGroupUserByGroupId(activeConversation);
+
+  const isLoading = isLoadingUser || isLoadingGroup || isLoadingGroupUser;
 
   useEffect(() => {
     if (activeConversation === 0) {
       return;
     }
 
-    if (!isGroup && userMap.has(activeConversation)) {
-      setReceiver(userMap.get(activeConversation));
+    if (!isGroup && userData) {
+      setReceiver(userData);
       return;
     }
-    if (isGroup && groupMap.has(activeConversation)) {
-      setReceiver(groupMap.get(activeConversation));
+    if (isGroup && groupData) {
+      setReceiver(groupData);
       return;
     }
-  }, [activeConversation, groupMap, isGroup, userMap]);
+  }, [activeConversation, groupData, isGroup, userData]);
 
   const handleToggleAside = () => setShowAside(!showAside);
   const handleClickAvatar = () => {
@@ -85,8 +92,10 @@ const ChatViewHeader = () => {
           </div>
         </div>
         <div className={cx("user-status")}>
-          {isGroup
-            ? `${groupUserMap.get(activeConversation)?.length} thành viên`
+          {isLoading
+            ? "Loading...."
+            : isGroup
+            ? `${groupUserData?.length} thành viên`
             : isOnline
             ? "Online"
             : "Offline"}

@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import AppButton from "@/components/shared/AppButton";
 import { useGlobalState } from "hooks/globalState";
+import { useGetGroupUserByGroupId } from "@/hooks/queries/group";
+import { useGetUsers } from "@/hooks/queries/user";
 
 import styles from "./ListingGroupMember.modalContent.module.scss";
 import classNames from "classnames/bind";
@@ -15,14 +17,17 @@ interface Props {
 const cx = classNames.bind(styles);
 
 const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
-  const [groupUserMap] = useGlobalState("groupUserMap");
-  const [userMap] = useGlobalState("userMap");
-  const [messageType] = useGlobalState("messageType");
-  const [activeConversation] = useGlobalState("activeConversation");
+  const [modalEntityId] = useGlobalState("modalEntityId");
+  const [modalType] = useGlobalState("modalType");
+  const { data: groupUserData } = useGetGroupUserByGroupId(modalEntityId);
 
   const userIdList =
-    messageType === "Group" ? groupUserMap.get(activeConversation) : [];
-
+    modalType === "Group"
+      ? groupUserData?.flatMap((gu) => gu.userId) ?? []
+      : [];
+  const userListQuery = useGetUsers(userIdList, {
+    enabled: userIdList?.length > 0,
+  });
   return (
     <div className={cx("list-group-member-content", "m-0", "ps-3", "pe-3")}>
       <div className={cx("mt-3", "mb-3")}>
@@ -43,8 +48,8 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
         Danh sách thành viên: &#40;{userIdList?.length}&#41;
       </div>
       <div>
-        {userIdList?.map((userId) => {
-          const user = userMap.get(userId);
+        {userListQuery.map((query) => {
+          const user = query.data;
 
           return (
             <>
@@ -58,7 +63,7 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
                     "pb-2",
                     "w-100"
                   )}
-                  onClick={() => onClickMember(userId)}
+                  onClick={() => onClickMember(user.userId)}
                 >
                   <Avatar
                     src={user.avatarUrl}

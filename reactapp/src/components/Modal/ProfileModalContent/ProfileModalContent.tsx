@@ -1,10 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera, faEllipsis, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faPen } from "@fortawesome/free-solid-svg-icons";
 
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
-
-import { useGlobalState } from "@/hooks";
 
 import { convertISODateToVietnameseFormat } from "@/utils";
 import { Group, User } from "@/models";
@@ -12,6 +10,8 @@ import { Group, User } from "@/models";
 import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
+import { useGetUser, useGetUsers } from "@/hooks/queries/user";
+import { useGetGroup, useGetGroupUserByGroupId } from "@/hooks/queries/group";
 
 const cx = classNames.bind(style);
 
@@ -50,10 +50,6 @@ type Variants =
   | GroupVariant;
 
 const ProfileModalContent = (variant: Variants) => {
-  const [userMap] = useGlobalState("userMap");
-  const [groupMap] = useGlobalState("groupMap");
-  const [groupUserMap] = useGlobalState("groupUserMap");
-
   //Extract variable
   const type = variant.type;
   //Base variable
@@ -85,12 +81,15 @@ const ProfileModalContent = (variant: Variants) => {
   } else {
     ({ onClickMessaging, onClickMoreMemberInfo } = variant);
   }
-  const entity = !isGroup
-    ? userMap.get(modalEntityId)
-    : groupMap.get(modalEntityId);
-
-  const userIdList = isGroup ? groupUserMap.get(modalEntityId) : undefined;
-
+  const { data: userData } = useGetUser(modalEntityId);
+  const { data: groupData } = useGetGroup(modalEntityId);
+  const { data: groupUserData } = useGetGroupUserByGroupId(modalEntityId);
+  const entity = !isGroup ? userData : groupData;
+  const userIdList = isGroup
+    ? groupUserData?.flatMap((gu) => gu.userId)
+    : undefined;
+  const usersQueryData = useGetUsers(userIdList ?? []);
+  
   const name = (entity as User)?.name ?? (entity as Group)?.groupName;
   const gender = (entity as User)?.gender;
   const dob = convertISODateToVietnameseFormat((entity as User)?.dob);
@@ -107,6 +106,7 @@ const ProfileModalContent = (variant: Variants) => {
             className={cx("w-100", "h-100", "object-fit-cover")}
             draggable="false"
             src={background || images.defaultBackgroundImg.src}
+            alt="background"
           />
         </div>
       )}
@@ -236,15 +236,15 @@ const ProfileModalContent = (variant: Variants) => {
           </div>
 
           <div className={cx("member-avatar-container", "d-flex")}>
-            {userIdList?.map((userId, index) => {
+            {usersQueryData?.map((query, index) => {
               if (index >= 4) {
                 return;
               }
-              const member = userMap.get(userId);
+              const member = query.data;
               const avatar = member?.avatarUrl ?? images.userIcon.src;
               return (
                 <Avatar
-                  key={userId}
+                  key={member?.userId}
                   variant="avatar-img-40px"
                   src={avatar}
                   className={cx(

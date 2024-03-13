@@ -1,31 +1,25 @@
 import { HubConnection } from "@microsoft/signalr";
 import { useEffect } from "react";
-import { FriendRequest } from "../../models";
-import { useGlobalState } from "../globalState";
 import { SignalREvent } from "../../data/constants";
+import { useQueryClient } from "@tanstack/react-query";
 
 const useFriendRequestSubscription = (connection?: HubConnection) => {
-  const [friendRequestList, setFriendRequestList] =
-    useGlobalState("friendRequestList");
-  const [userMap] = useGlobalState("userMap");
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!connection) {
       return;
     }
-    connection.on(SignalREvent.RECEIVE_FRIEND_REQUEST, (json: string) => {
-      const fr: FriendRequest = JSON.parse(json);
-      if (!fr) {
-        console.error("Friend request is null");
-        return;
-      }
-      userMap.set(fr.senderId, fr.sender);
-      setFriendRequestList([...friendRequestList, fr]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    connection.on(SignalREvent.RECEIVE_FRIEND_REQUEST, (_json: string) => {
+      queryClient.invalidateQueries({
+        queryKey: ["friendRequestList"],
+      });
     });
 
     return () => {
       connection.off(SignalREvent.RECEIVE_FRIEND_REQUEST);
     };
-  }, [connection, friendRequestList, setFriendRequestList, userMap]);
+  }, [connection, queryClient]);
 };
 
 export default useFriendRequestSubscription;

@@ -1,14 +1,12 @@
 import { useState } from "react";
 
 import AppButton from "@/components/shared/AppButton";
-import { useGlobalState } from "@/hooks";
-import { updateUser } from "@/services/user";
 
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
 
 import { getMaxDayinMonth, formatDateWithSeparator } from "@/utils";
-
+import { useGetCurrentUser, useUpdateUser } from "@/hooks/queries/user";
 
 const cx = className.bind(style);
 
@@ -17,13 +15,12 @@ interface Props {
 }
 
 const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
-  const [userId] = useGlobalState("userId");
-  const [userMap, setUserMap] = useGlobalState("userMap");
-  const user = userMap.get(userId);
+  const { data: currentUser } = useGetCurrentUser();
+  const { mutate: updateUserMutate } = useUpdateUser();
 
-  const [name, setName] = useState(user?.name ?? "");
-  const [gender, setGender] = useState(user?.gender ?? "Nam");
-  const date = new Date(user?.dob ?? "1-1-2024");
+  const [name, setName] = useState(currentUser?.name ?? "");
+  const [gender, setGender] = useState(currentUser?.gender ?? "Nam");
+  const date = new Date(currentUser?.dob ?? "1-1-2024");
 
   const [day, setDay] = useState(date.getDate());
   const [month, setMonth] = useState(date.getMonth() + 1); // Get month (0-11, so +1)
@@ -37,10 +34,10 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const dateLimit: number = getMaxDayinMonth(month, year);
 
   const handleClickUpdate = async () => {
-    if (!user) {
+    if (!currentUser) {
       return;
     }
-    const updatedUser = structuredClone(user);
+    const updatedUser = structuredClone(currentUser);
     //Call API below
     updatedUser.name = name;
     updatedUser.gender = gender;
@@ -49,13 +46,8 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
       "-"
     );
     updatedUser.dob = formatedDob;
-    const [data] = await updateUser(updatedUser);
-    if (data) {
-      const newMap = new Map(userMap);
-      newMap.set(userId, data);
-      setUserMap(newMap);
-      onClickCancel();
-    }
+    updateUserMutate({ user: updatedUser });
+    onClickCancel();
   };
 
   for (let i: number = 1; i <= dateLimit; i++) {

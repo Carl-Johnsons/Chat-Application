@@ -1,20 +1,22 @@
 import { useLocalStorage } from "@/hooks";
-import { redirect } from "next/navigation";
-import { JSXElementConstructor, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { JSX, JSXElementConstructor, useEffect } from "react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RequireAuth = (Component: JSXElementConstructor<any>) => {
-  const requireAuth = (props: object) => {
-    const [isAuth] = useLocalStorage("isAuth");
+  const AuthenticatedComponent = (props: JSX.IntrinsicAttributes) => {
+    const [getAccessToken] = useLocalStorage("accessToken");
+    const router = useRouter();
+
     useEffect(() => {
-      if (!isAuth()) {
-        return redirect("/login");
+      if (!getAccessToken()) {
+        router.push("/login");
       }
-    }, [isAuth]);
+    });
 
     return <Component {...props} />;
   };
-
-  return requireAuth;
+  return AuthenticatedComponent;
 };
 
 export default RequireAuth;

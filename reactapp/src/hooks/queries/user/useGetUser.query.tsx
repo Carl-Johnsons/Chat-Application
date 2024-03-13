@@ -1,6 +1,12 @@
 import { axiosInstance } from "@/utils";
 import { DefaultUser, User } from "@/models";
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryKey,
+  UseQueryOptions,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 /**
  * @param {number} userId
@@ -13,10 +19,17 @@ const getUser = async (userId: number): Promise<User | null> => {
   return user;
 };
 
-const useGetUser = (userId: number) => {
+const useGetUser = (
+  userId: number,
+  queryOptions: Omit<
+    UseQueryOptions<User | null, unknown, User | null, QueryKey>,
+    "queryKey" | "queryFn" | "initialData"
+  > = {}
+) => {
   const queryClient = useQueryClient();
 
   return useQuery({
+    ...queryOptions,
     queryKey: ["users", userId],
     queryFn: () => getUser(userId),
     initialData: () => {
@@ -25,12 +38,19 @@ const useGetUser = (userId: number) => {
   });
 };
 
-const useGetUsers = (userIds: number[]) => {
+const useGetUsers = (
+  userIds: number[],
+  queryOptions: Omit<
+    UseQueryOptions<User | null, unknown, User | null, QueryKey>,
+    "queryKey" | "queryFn" | "initialData"
+  > = {}
+) => {
   const queryClient = useQueryClient();
 
   const queries = useQueries({
     queries: userIds.map((userId) => {
       return {
+        ...queryOptions,
         queryKey: ["users", userId],
         queryFn: () => getUser(userId),
         initialData: () => {
