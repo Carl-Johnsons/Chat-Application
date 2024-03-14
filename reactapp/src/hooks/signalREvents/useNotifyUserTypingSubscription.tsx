@@ -6,6 +6,8 @@ import { useGlobalState } from "../globalState";
 
 const useNotifyUserTypingSubscription = (connection?: HubConnection) => {
   const [, setUserTypingId] = useGlobalState("userTypingId");
+  const [activeConversation] = useGlobalState("activeConversation");
+  const [messageType] = useGlobalState("messageType");
   useEffect(() => {
     if (!connection) {
       return;
@@ -13,13 +15,19 @@ const useNotifyUserTypingSubscription = (connection?: HubConnection) => {
     connection.on(
       SignalREvent.RECEIVE_NOTIFY_USER_TYPING,
       (model: SenderReceiverArray) => {
-        setUserTypingId(model.senderId);
+        if (
+          (activeConversation === model.senderId &&
+            model.type === "Individual") ||
+          (activeConversation === model.receiverId && model.type === "Group")
+        ) {
+          setUserTypingId(model.senderId);
+        }
       }
     );
     return () => {
       connection.off(SignalREvent.RECEIVE_NOTIFY_USER_TYPING);
     };
-  }, [connection, setUserTypingId]);
+  }, [activeConversation, connection, messageType, setUserTypingId]);
 };
 
 export default useNotifyUserTypingSubscription;
