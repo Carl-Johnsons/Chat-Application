@@ -99,6 +99,10 @@ namespace ChatAPI.Controllers
 
                 foreach (var memberId in group.GroupMembers)
                 {
+                    if (memberId == group.GroupLeaderId)
+                    {
+                        continue;
+                    }
                     _groupUserRepository.Add(new GroupUser()
                     {
                         GroupId = group.GroupId,

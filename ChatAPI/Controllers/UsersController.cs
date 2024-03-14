@@ -152,48 +152,24 @@ namespace ChatAPI.Controllers
         {
             if (senderId == null || receiverId == null)
             {
-                return BadRequest("SenderId and ReceiverId cannot be null.");
+                return BadRequest("SenderId and ReceiverId cannot be null");
             }
-            var accessToken = HttpContext?.Request?.Headers?["Authorization"].FirstOrDefault().Split(" ")[1];
             // Check if friendRequest is existed
-            try
+            var frList = _friendRequestRepository.GetByReceiverId((int)receiverId);
+            var publicFrList = mapper.Map<List<FriendRequest>, List<PublicFriendRequestDTO>>(frList);
+            bool hasFriendRequest = false;
+            foreach (var friendRequest in publicFrList)
             {
-                using (var client = new HttpClient())
+                if ((friendRequest.SenderId == (int)senderId && friendRequest.ReceiverId == (int)receiverId)
+                || (friendRequest.SenderId == (int)receiverId && friendRequest.ReceiverId == (int)senderId))
                 {
-                    // Include the authorization token in the headers
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    var getFriendRequestsUrl = $"{BASE_ADDRESS}/api/Users/GetFriendRequestsByReceiverId/{receiverId}";
-                    var response = await client.GetAsync(getFriendRequestsUrl);
-
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return BadRequest("Friend request list of this user is empty! Aborting operation add friend: " + response.StatusCode);
-                    }
-
-                    var responseContent = response.Content.ReadAsStringAsync().Result;
-                    var friendRequestList = JsonConvert.DeserializeObject<List<FriendRequest>>(responseContent);
-
-                    bool hasFriendRequest = false;
-                    foreach (var friendRequest in friendRequestList)
-                    {
-                        if ((friendRequest.SenderId == (int)senderId && friendRequest.ReceiverId == (int)receiverId)
-                        || (friendRequest.SenderId == (int)receiverId && friendRequest.ReceiverId == (int)senderId))
-                        {
-                            hasFriendRequest = true;
-                        }
-                    }
-                    if (!hasFriendRequest)
-                    {
-                        return BadRequest("Friend request does not exist! Aborting operation add friend");
-                    }
+                    hasFriendRequest = true;
                 }
             }
-            catch (Exception ex)
+            if (!hasFriendRequest)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Friend request does not exist! Aborting operation add friend");
             }
-
 
             //Add friend
             if (senderId == null || receiverId == null)
@@ -213,28 +189,8 @@ namespace ChatAPI.Controllers
             }
 
             // After adding the friend, send a request to remove the friend request
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    var removeFriendRequestUrl = $"{BASE_ADDRESS}/api/Users/RemoveFriendRequest/{senderId}/{receiverId}";
-                    var response = await client.DeleteAsync(removeFriendRequestUrl);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return NoContent();
-                    }
-                    else
-                    {
-                        return BadRequest("Failed to remove friend request.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _friendRequestRepository.Delete((int)senderId, (int)receiverId);
+            return StatusCode(StatusCodes.Status201Created);
         }
 
         // PUT api/<UsersController>/5
@@ -259,7 +215,7 @@ namespace ChatAPI.Controllers
                 Dob = publicUser.Dob,
                 Gender = publicUser.Gender,
                 Introduction = publicUser.Introduction,
-                Name= publicUser.Name,
+                Name = publicUser.Name,
                 PhoneNumber = publicUser.PhoneNumber,
 
                 Password = oldUser.Password,
