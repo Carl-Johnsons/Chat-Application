@@ -47,18 +47,12 @@ services:
   chatapi:
     build:
       context: .
-      dockerfile: ./ChatAPI/Dockerfile.prod
+      dockerfile: ./ChatAPI/Dockerfile.dev
     container_name: chat-api
     ports:
       - '7190:80'
-    depends_on:
-      - chatdb
     networks:
       - back-end
-    develop:
-      watch:
-        - path: ./ChatAPI/Controllers
-          action: rebuild
   # SignalR service to enable real-time communication
   chathub:
     build:
@@ -67,8 +61,6 @@ services:
     container_name: chat-hub
     ports:
       - '7234:80'
-    depends_on:
-      - chatdb
     networks:
       - back-end
     develop:
