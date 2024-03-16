@@ -14,9 +14,6 @@ services:
       - back-end
     env_file:
       - .env
-    environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: ${SA_PASSWORD}
     restart: always
     healthcheck:
       test:
@@ -47,12 +44,14 @@ services:
   chatapi:
     build:
       context: .
-      dockerfile: ./ChatAPI/Dockerfile.dev
+      dockerfile: ./ChatAPI/Dockerfile
     container_name: chat-api
     ports:
-      - '7190:80'
+      - '${API__PORT}:80'
     networks:
       - back-end
+    env_file:
+      - .env
   # SignalR service to enable real-time communication
   chathub:
     build:
@@ -60,15 +59,11 @@ services:
       dockerfile: ./ChatService/Dockerfile.prod
     container_name: chat-hub
     ports:
-      - '7234:80'
+      - '${HUB__PORT}:80'
     networks:
       - back-end
-    develop:
-      watch:
-        - path: ./ChatService/Hubs
-          action: rebuild
-        - path: ./ChatService/Models
-          action: rebuild
+    env_file:
+      - .env
 
   reactapp:
     build:
@@ -76,9 +71,11 @@ services:
       dockerfile: Dockerfile.dev
     container_name: react-app
     ports:
-      - '3000:3000'
+      - '${CLIENT__PORT}:3000'
     networks:
       - front-end
+    env_file:
+      - .env
     develop:
       watch:
         - path: ./reactapp/package.json
@@ -86,8 +83,6 @@ services:
         - path: ./reactapp
           target: /app
           action: sync
-        - path: ./reactapp/.env
-          action: sync+restart
 networks:
   back-end:
   front-end:

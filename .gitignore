@@ -400,9 +400,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Appsettings.json
-**/appsettings.json
-
 # certificate and key
 **/public_key.pem
 **/key.pem
