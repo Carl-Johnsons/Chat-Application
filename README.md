@@ -22,22 +22,23 @@ HOST_NAME="localhost"
 API__PORT="7191"
 HUB__PORT="7235"
 CLIENT__PORT="3001"
+DB__PORT="2001"
 # .NET env variable
 ASPNETCORE_ENVIRONMENT="Development"
-Logging__LogLevel__Default="Information"
 Logging__LogLevel__Microsoft.AspNetCore="Warning"
 Logging__LogLevel__Microsoft.AspNetCore.Hosting.Diagnostics="Trace"
-AllowedHosts="*"
+# AllowedHosts="*"
 # Imgur
 Imgur__ClientID="<your imgur client id>"
 Imgur__ClientSecret="<your imgur client secret>"
 # Db
 ACCEPT_EULA="Y"
-SA_PASSWORD="<your secret password>"
-ConnectionString="Server=chat-db;Database=chatApplication;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=true"
+SA_PASSWORD="<your password>"
+ConnectionString="Server=chat-db;Database=chatApplication;User Id=sa;Password='${SA_PASSWORD}';TrustServerCertificate=true"
+ConnectionString__Dev=Server=chat-db;Database=chatApplication;User Id=sa;Password='PejOPjrzzBFkWnU0uJtevbZxEzyMfOWV';TrustServerCertificate=true
 # Client
-NEXT_PUBLIC_BASE_API_URL= "http://${HOST_NAME}:${API__PORT}"
-NEXT_PUBLIC_SIGNALR_URL= "http://${HOST_NAME}:${HUB__PORT}/chatHub"
+NEXT_PUBLIC_BASE_API_URL="http://${HOST_NAME}:${API__PORT}"
+NEXT_PUBLIC_SIGNALR_URL="http://${HOST_NAME}:${HUB__PORT}/chatHub"
 NEXT_PUBLIC_PORT="${CLIENT__PORT}"
 # JWT
 Jwt__Issuer="http://${HOST_NAME}:${CLIENT__PORT}"

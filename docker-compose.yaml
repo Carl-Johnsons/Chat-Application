@@ -9,11 +9,12 @@ services:
     user: root #mssql
     ports:
       # Microsoft SQL Server uses the default port 1433 for all database connections
-      - '1433:1433'
+      - '${DB__PORT}:1433'
     networks:
       - back-end
-    env_file:
-      - .env
+    environment:
+      ACCEPT_EULA: "${ACCEPT_EULA}"
+      SA_PASSWORD: "${SA_PASSWORD}"
     restart: always
     healthcheck:
       test:
@@ -33,8 +34,9 @@ services:
     depends_on:
       chatdb:
         condition: service_healthy
-    env_file:
-      - .env
+    environment:
+      ACCEPT_EULA: "${ACCEPT_EULA}"
+      SA_PASSWORD: "${SA_PASSWORD}"
     # command: >
     #   bash -c '/opt/mssql-tools/bin/sqlcmd -S chatdb -U sa -P ${SA_PASSWORD} -i docker-entrypoint-initdb.d/backup.sql;
     #   echo "All done!";'
@@ -74,8 +76,9 @@ services:
       - '${CLIENT__PORT}:3000'
     networks:
       - front-end
-    env_file:
-      - .env
+    environment:
+      NEXT_PUBLIC_BASE_API_URL: "http://${HOST_NAME}:${API__PORT}"
+      NEXT_PUBLIC_SIGNALR_URL: "http://${HOST_NAME}:${HUB__PORT}/chatHub"
     develop:
       watch:
         - path: ./reactapp/package.json

@@ -404,7 +404,7 @@ FodyWeavers.xsd
 **/public_key.pem
 **/key.pem
 **/certificate.pem
-.env
+**/.env
 # Database bind mount
 chat-sql-data
 data
