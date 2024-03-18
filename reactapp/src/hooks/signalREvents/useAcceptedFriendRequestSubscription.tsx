@@ -15,7 +15,7 @@ const useAcceptedFriendRequestSubscription = (connection?: HubConnection) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (_friend: Friend) => {
         console.log("receive accept friend request");
-        
+
         queryClient.invalidateQueries({
           queryKey: ["friendList"],
           exact: true,

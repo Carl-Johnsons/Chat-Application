@@ -37,15 +37,16 @@ const useAxiosInterceptor = () => {
         if (error?.response?.status == 401 && !prevRequest?._retry) {
           prevRequest._retry = true;
           const newAccessToken = await refreshTokenMutateAsync();
-          console.log({ newAccessToken });
+          console.log("Refreshing toker");
+          
           // Case: Token expired or invalid navigate user back to login page
           if (!newAccessToken) {
-            console.log("nav to login");
             router.push("/login");
             return;
           }
+          console.log({newAccessToken});
+          
           if (prevRequest.headers) {
-            console.log("good to go");
             prevRequest.headers.Authorization = `Bearer ${newAccessToken.token}`;
           }
           return axiosInstance(prevRequest);

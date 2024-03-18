@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json.Serialization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -29,10 +28,8 @@ namespace ChatAPI.Controllers
         public AuthController()
         {
             _userRepository = new UserRepository();
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var jwtSection = config.GetSection("Jwt");
-            Issuer = jwtSection["Issuer"] ?? "";
-            Audience = jwtSection["Audience"] ?? "";
+            Issuer = Environment.GetEnvironmentVariable("Jwt__Issuer") ?? "";
+            Audience = Environment.GetEnvironmentVariable("Jwt__Audience") ?? "";
         }
         [HttpGet("Refresh")]
         public ActionResult<TokenModel> Refresh()

@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/utils";
 import { resetGlobalState, useLocalStorage } from "@/hooks";
 
@@ -13,6 +13,7 @@ const useLogout = () => {
   const router = useRouter();
   const [, , removeAcessToken] = useLocalStorage("accessToken");
   const [, , removeIsAuth] = useLocalStorage("isAuth");
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => logout(),
@@ -21,6 +22,21 @@ const useLogout = () => {
       removeAcessToken();
       removeIsAuth();
       router.push("/login");
+      queryClient.removeQueries({
+        queryKey: ["currentUser"],
+      });
+      queryClient.removeQueries({
+        queryKey: ["friendList"],
+      });
+      queryClient.removeQueries({
+        queryKey: ["friendRequestList"],
+      });
+      queryClient.removeQueries({
+        queryKey: ["conversationList"],
+      });
+      queryClient.removeQueries({
+        queryKey: ["messageList"],
+      });
     },
     onError: (error) => {
       console.error("Failed to log out: " + error);

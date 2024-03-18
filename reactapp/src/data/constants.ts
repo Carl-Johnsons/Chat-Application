@@ -14,8 +14,7 @@ enum MenuContactIndex {
 enum SignalREvent {
   CONNECTED = "Connected",
   DISCONNECTED = "Disconnected",
-  RECEIVE_INDIVIDUAL_MESSAGE = "ReceiveIndividualMessage",
-  RECEIVE_GROUP_MESSAGE = "ReceiveGroupMessage",
+  RECEIVE_MESSAGE = "ReceiveMessage",
   RECEIVE_FRIEND_REQUEST = "ReceiveFriendRequest",
   RECEIVE_ACCEPT_FRIEND_REQUEST = "ReceiveAcceptFriendRequest",
   RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",

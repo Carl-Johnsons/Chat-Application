@@ -1,20 +1,15 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 
 
-var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-IConfigurationSection jwtSection = config.GetSection("Jwt");
-var issuer = jwtSection["Issuer"];
-var audience = jwtSection["Audience"];
-
+var issuer = Environment.GetEnvironmentVariable("Jwt__Issuer");
+var audience = Environment.GetEnvironmentVariable("Jwt__Audience") ;
 var builder = WebApplication.CreateBuilder(args);
 var service = builder.Services;
 
@@ -63,7 +58,7 @@ service.AddControllers();
 service.AddEndpointsApiExplorer();
 service.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "My custom API", Version = "v1" });
+    option.SwaggerDoc("v1", new OpenApiInfo {  Version = "v1" });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -97,10 +92,8 @@ service.AddCors(
             {
                 // The URI must be the exact like this, no trailing "/"
                 // Example: wrong origin: https://localhost:7093/
-                policy.WithOrigins("https://localhost:7093")
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-                policy.WithOrigins(issuer)
+                Console.WriteLine($"Issuer: {issuer}");
+                policy.WithOrigins(issuer??"")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();

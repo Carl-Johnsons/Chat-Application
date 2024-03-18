@@ -1,62 +1,62 @@
-import { memo, useEffect, useState } from "react";
+import { memo } from "react";
 
 import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
 import { useGlobalState, useModal } from "@/hooks";
-import { useGetUser } from "@/hooks/queries/user";
-import { useGetGroup, useGetGroupUserByGroupId } from "@/hooks/queries/group";
 
-import { Group, ModalType, User } from "@/models";
+import { GroupConversation, ModalType } from "@/models";
 
 import style from "./ChatView.header.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
+import {
+  useGetConversation,
+  useGetConversationUsersByConversationId,
+} from "@/hooks/queries/conversation";
+import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import UserStatus from "../UserStatus";
 
 const cx = classNames.bind(style);
 
 const ChatViewHeader = () => {
   const [showAside, setShowAside] = useGlobalState("showAside");
-  const [messageType] = useGlobalState("messageType");
-  const [activeConversation] = useGlobalState("activeConversation");
-  //Local state
-  const [receiver, setReceiver] = useState<User | Group>();
+  const [conversationType] = useGlobalState("conversationType");
+  const [activeConversationId] = useGlobalState("activeConversationId");
   // hook
   const { handleShowModal } = useModal();
-  const isGroup = messageType === "Group";
-  const { data: userData, isLoading: isLoadingUser } =
-    useGetUser(activeConversation);
-  const { data: groupData, isLoading: isLoadingGroup } =
-    useGetGroup(activeConversation);
-  const { data: groupUserData, isLoading: isLoadingGroupUser } =
-    useGetGroupUserByGroupId(activeConversation);
-
-  const isLoading = isLoadingUser || isLoadingGroup || isLoadingGroupUser;
-
-  useEffect(() => {
-    if (activeConversation === 0) {
-      return;
-    }
-
-    if (!isGroup && userData) {
-      setReceiver(userData);
-      return;
-    }
-    if (isGroup && groupData) {
-      setReceiver(groupData);
-      return;
-    }
-  }, [activeConversation, groupData, isGroup, userData]);
+  const isGroup = conversationType === "Group";
 
   const handleToggleAside = () => setShowAside(!showAside);
   const handleClickAvatar = () => {
-    const modalType: ModalType = messageType === "Group" ? "Group" : "Friend";
-    handleShowModal({ entityId: activeConversation, modalType });
+    const modalType: ModalType =
+      conversationType === "Group" ? "Group" : "Friend";
+    handleShowModal({ entityId: activeConversationId, modalType });
   };
+  const { data: currentUserData } = useGetCurrentUser();
+  const { data: conversationUsersData } =
+    useGetConversationUsersByConversationId(activeConversationId);
+  const otherUserId =
+    conversationUsersData &&
+    (conversationUsersData[0].userId == currentUserData?.userId
+      ? conversationUsersData[1].userId
+      : conversationUsersData[0].userId);
+
+  const { data: conversationData } = useGetConversation(
+    { conversationId: activeConversationId },
+    {
+      enabled: isGroup,
+    }
+  );
+  const { data: otherUserData } = useGetUser(otherUserId ?? -1, {
+    enabled: !!otherUserId,
+  });
   const avatar =
-    (receiver as User)?.avatarUrl ?? (receiver as Group)?.groupAvatarUrl;
-  const name = (receiver as User)?.name ?? (receiver as Group)?.groupName;
-  const isOnline = (receiver as User)?.isOnline;
+    (isGroup
+      ? (conversationData as GroupConversation).imageURL
+      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+  const name = otherUserData?.name ?? "";
+
   return (
     <>
       <div
@@ -65,7 +65,7 @@ const ChatViewHeader = () => {
         onClick={handleClickAvatar}
       >
         <Avatar
-          src={receiver ? avatar : images.userIcon.src}
+          src={avatar}
           avatarClassName={cx("rounded-circle")}
           alt="avatar"
         />
@@ -88,18 +88,10 @@ const ChatViewHeader = () => {
               "bottom-0"
             )}
           >
-            {receiver && name}
+            {name}
           </div>
         </div>
-        <div className={cx("user-status")}>
-          {isLoading
-            ? "Loading...."
-            : isGroup
-            ? `${groupUserData?.length} thành viên`
-            : isOnline
-            ? "Online"
-            : "Offline"}
-        </div>
+        <UserStatus type={conversationType} />
       </div>
       <div className={cx("icon-container", "ps")}>
         <AppButton

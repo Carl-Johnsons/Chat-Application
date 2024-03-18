@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from "moment-timezone";
 import { HTMLProps } from "react";
 
 import style from "./Message.module.scss";
@@ -25,8 +25,8 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
   const { userId, content, time } = message;
 
   const { data } = useGetUser(userId);
-  // Z mean zero time offset, removing it for now
-  const formattedTime = moment(new Date(time.replace("Z", ""))).format("HH:mm");
+  const tz = moment.tz.guess();
+  const formattedTime = moment(new Date(time)).tz(tz).format("HH:mm");
   return (
     <div
       className={cx("message", "mb-1", "text-break", sender && "sender")}

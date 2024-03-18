@@ -5,13 +5,14 @@ import { faCamera, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 import { useModal } from "@/hooks";
-import { Friend, GroupWithMemberId } from "@/models";
+import { Friend } from "@/models";
 
 import style from "./CreateGroupModalContent.module.scss";
 import classnames from "classnames/bind";
-import { useCreateGroup } from "@/hooks/queries/group";
 import { useUploadImage } from "@/hooks/queries/tool";
 import { useGetCurrentUser, useGetFriendList } from "@/hooks/queries/user";
+import { useCreateGroupConversation } from "@/hooks/queries/conversation";
+import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 
 const cx = classnames.bind(style);
 
@@ -22,7 +23,8 @@ const CreateGroupModalContent = () => {
 
   const { data: currentUser } = useGetCurrentUser();
   const { data: friendList } = useGetFriendList();
-  const { mutate: createGroupMutate } = useCreateGroup();
+  const { mutate: createGroupConversationMutate } =
+    useCreateGroupConversation();
   const { mutateAsync: uploadImageMutateAsync } = useUploadImage();
 
   const inputFileRef = useRef(null);
@@ -110,15 +112,18 @@ const CreateGroupModalContent = () => {
     }
     const imgurImage = await uploadImageMutateAsync({ file: form.avatarFile });
     const members = selectedUser.map((f) => f.friendId);
-    const model: GroupWithMemberId = {
-      groupName: form.groupName,
-      groupLeaderId: currentUser?.userId ?? -1,
-      groupMembers: members,
-      groupInviteUrl: "string",
-      groupAvatarUrl: imgurImage?.data.link ?? "",
+    // Include the current user too
+    members.push(currentUser.userId);
+
+    const model: GroupConversationWithMembersIdDTO = {
+      name: form.groupName,
+      leaderId: currentUser?.userId ?? -1,
+      membersId: members,
+      inviteUrl: "string",
+      imageURL: imgurImage?.data.link ?? "",
     };
 
-    createGroupMutate({ groupWithMemberId: model });
+    createGroupConversationMutate({ conversationWithMembersId: model });
     handleHideModal();
   };
 

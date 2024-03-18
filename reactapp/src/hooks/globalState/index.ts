@@ -1,19 +1,20 @@
 import { HubConnection, HubConnectionState } from "@microsoft/signalr";
-import { MessageType, ModalType, User } from "../../models";
+import { ConversationType, ModalType, User } from "../../models";
 import { createGlobalState } from "react-hooks-global-state";
 
 const initialState = {
   // Number
-  activeConversation: 0,
+  activeConversationId: 0,
   activeContactType: 0,
   activeNav: 1,
   activeModal: 0,
   modalEntityId: null as unknown as number,
   userTypingId: null as unknown as number | null,
+  userIdsOnlineList: [] as number[],
   // User
   searchResult: null as unknown as User | null,
   // IndividualMessage | GroupMessage
-  messageType: "Individual" as MessageType,
+  conversationType: "Individual" as ConversationType,
   // Boolean
   isLeftShow: true,
   isRightShow: true,

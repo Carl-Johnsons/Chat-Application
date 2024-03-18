@@ -1,12 +1,10 @@
-import { MessageType, User } from ".";
-
 export type Message = {
-  messageId?: number;
+  id: number;
   senderId: number;
+  conversationId: number;
   content: string;
-  time?: string;
-  messageType: MessageType;
-  messageFormat: string;
+  time: string;
+  source: "Client" | "Server";
+  format: "Text" | "Image";
   active: boolean;
-  sender?: User | null;
 };

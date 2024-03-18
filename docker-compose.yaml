@@ -9,13 +9,11 @@ services:
     user: root #mssql
     ports:
       # Microsoft SQL Server uses the default port 1433 for all database connections
-      - '1433:1433'
+      - '${DB__PORT}:1433'
     networks:
       - back-end
-    env_file:
-      - .env
     environment:
-      ACCEPT_EULA: Y
+      ACCEPT_EULA: ${ACCEPT_EULA}
       SA_PASSWORD: ${SA_PASSWORD}
     restart: always
     healthcheck:
@@ -36,8 +34,9 @@ services:
     depends_on:
       chatdb:
         condition: service_healthy
-    env_file:
-      - .env
+    environment:
+      ACCEPT_EULA: ${ACCEPT_EULA}
+      SA_PASSWORD: ${SA_PASSWORD}
     # command: >
     #   bash -c '/opt/mssql-tools/bin/sqlcmd -S chatdb -U sa -P ${SA_PASSWORD} -i docker-entrypoint-initdb.d/backup.sql;
     #   echo "All done!";'
@@ -47,18 +46,14 @@ services:
   chatapi:
     build:
       context: .
-      dockerfile: ./ChatAPI/Dockerfile.prod
+      dockerfile: ./ChatAPI/Dockerfile
     container_name: chat-api
     ports:
-      - '7190:80'
-    depends_on:
-      - chatdb
+      - '${API__PORT}:80'
     networks:
       - back-end
-    develop:
-      watch:
-        - path: ./ChatAPI/Controllers
-          action: rebuild
+    env_file:
+      - .env.development
   # SignalR service to enable real-time communication
   chathub:
     build:
@@ -66,17 +61,11 @@ services:
       dockerfile: ./ChatService/Dockerfile.prod
     container_name: chat-hub
     ports:
-      - '7234:80'
-    depends_on:
-      - chatdb
+      - '${HUB__PORT}:80'
     networks:
       - back-end
-    develop:
-      watch:
-        - path: ./ChatService/Hubs
-          action: rebuild
-        - path: ./ChatService/Models
-          action: rebuild
+    env_file:
+      - .env
 
   reactapp:
     build:
@@ -84,9 +73,11 @@ services:
       dockerfile: Dockerfile.dev
     container_name: react-app
     ports:
-      - '3000:3000'
+      - '${CLIENT__PORT}:3000'
     networks:
       - front-end
+    env_file:
+      - .env.development
     develop:
       watch:
         - path: ./reactapp/package.json
@@ -94,8 +85,6 @@ services:
         - path: ./reactapp
           target: /app
           action: sync
-        - path: ./reactapp/.env
-          action: sync+restart
 networks:
   back-end:
   front-end:

@@ -1,7 +1,7 @@
 const isBrowser = () => typeof window !== "undefined";
 
 const useStorage = (key: string, storageObject: Storage | undefined) => {
-  const getItem: () => any | null = () => {
+  const getItem: () => unknown | null = () => {
     const storedValue = storageObject?.getItem(key);
 
     if (storedValue) {
@@ -9,7 +9,7 @@ const useStorage = (key: string, storageObject: Storage | undefined) => {
     }
     return null;
   };
-  const setItem = (value: any) => {
+  const setItem = (value: unknown) => {
     if (!storageObject) {
       return;
     }

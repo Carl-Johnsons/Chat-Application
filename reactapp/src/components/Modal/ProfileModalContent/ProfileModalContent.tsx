@@ -5,13 +5,16 @@ import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 
 import { convertISODateToVietnameseFormat } from "@/utils";
-import { Group, User } from "@/models";
 
 import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
 import { useGetUser, useGetUsers } from "@/hooks/queries/user";
-import { useGetGroup, useGetGroupUserByGroupId } from "@/hooks/queries/group";
+import {
+  useGetConversation,
+  useGetConversationUsersByConversationId,
+} from "@/hooks/queries/conversation";
+import { GroupConversation } from "@/models";
 
 const cx = classNames.bind(style);
 
@@ -81,22 +84,33 @@ const ProfileModalContent = (variant: Variants) => {
   } else {
     ({ onClickMessaging, onClickMoreMemberInfo } = variant);
   }
-  const { data: userData } = useGetUser(modalEntityId);
-  const { data: groupData } = useGetGroup(modalEntityId);
-  const { data: groupUserData } = useGetGroupUserByGroupId(modalEntityId);
-  const entity = !isGroup ? userData : groupData;
+  const { data: userData } = useGetUser(modalEntityId, {
+    enabled: isPersonal || isFriend || isStranger,
+  });
+  const { data: conversationData } = useGetConversation({
+    conversationId: modalEntityId,
+  });
+
+  const { data: conversationUsersData } =
+    useGetConversationUsersByConversationId(modalEntityId, {
+      enabled: isGroup,
+    });
+
   const userIdList = isGroup
-    ? groupUserData?.flatMap((gu) => gu.userId)
+    ? conversationUsersData?.flatMap((cu) => cu.userId)
     : undefined;
   const usersQueryData = useGetUsers(userIdList ?? []);
-  
-  const name = (entity as User)?.name ?? (entity as Group)?.groupName;
-  const gender = (entity as User)?.gender;
-  const dob = convertISODateToVietnameseFormat((entity as User)?.dob);
-  const phone = (entity as User)?.phoneNumber;
-  const avatar =
-    (entity as User)?.avatarUrl ?? (entity as Group)?.groupAvatarUrl;
-  const background = (entity as User)?.backgroundUrl;
+
+  const name = isGroup
+    ? (conversationData as GroupConversation)?.name
+    : userData?.name;
+  const gender = userData?.gender;
+  const dob = convertISODateToVietnameseFormat(userData?.dob);
+  const phone = userData?.phoneNumber;
+  const avatar = isGroup
+    ? (conversationData as GroupConversation)?.imageURL
+    : userData?.avatarUrl;
+  const background = userData?.backgroundUrl;
 
   return (
     <div className={cx("profile-modal-content", "m-0")}>
