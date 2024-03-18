@@ -17,6 +17,15 @@ openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certifi
 
 ```
 # server
+# =========== Secret ===========
+# Db
+SA_PASSWORD="<your db password>"
+# Imgur
+Imgur__ClientID="<your imgur client id>"
+Imgur__ClientSecret="<your imgur client secret>"
+# =========== Secret ===========
+
+# server
 HOST_NAME="localhost"
 # Ports
 API__PORT="7191"
@@ -27,15 +36,9 @@ DB__PORT="2001"
 ASPNETCORE_ENVIRONMENT="Development"
 Logging__LogLevel__Microsoft.AspNetCore="Warning"
 Logging__LogLevel__Microsoft.AspNetCore.Hosting.Diagnostics="Trace"
-# AllowedHosts="*"
-# Imgur
-Imgur__ClientID="<your imgur client id>"
-Imgur__ClientSecret="<your imgur client secret>"
 # Db
 ACCEPT_EULA="Y"
-SA_PASSWORD="<your password>"
 ConnectionString="Server=chat-db;Database=chatApplication;User Id=sa;Password='${SA_PASSWORD}';TrustServerCertificate=true"
-ConnectionString__Dev=Server=chat-db;Database=chatApplication;User Id=sa;Password='PejOPjrzzBFkWnU0uJtevbZxEzyMfOWV';TrustServerCertificate=true
 # Client
 NEXT_PUBLIC_BASE_API_URL="http://${HOST_NAME}:${API__PORT}"
 NEXT_PUBLIC_SIGNALR_URL="http://${HOST_NAME}:${HUB__PORT}/chatHub"
