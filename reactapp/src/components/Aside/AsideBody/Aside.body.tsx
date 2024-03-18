@@ -19,31 +19,39 @@ import images from "@/assets";
 //hook
 import { useGlobalState } from "@/hooks";
 // model
-import { User, Group } from "@/models";
-import { useGetGroup, useGetGroupUserByGroupId } from "@/hooks/queries/group";
-import { useGetUser } from "@/hooks/queries/user";
+import {
+  useGetConversation,
+  useGetConversationUsersByConversationId,
+} from "@/hooks/queries/conversation";
+import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import { GroupConversation } from "models/GroupConversation";
 
 const cx = classnames.bind(style);
 
 const AsideBody = () => {
-  const [activeConversation] = useGlobalState("activeConversation");
-  const [messageType] = useGlobalState("messageType");
+  const [activeConversationId] = useGlobalState("activeConversationId");
+  const [conversationType] = useGlobalState("conversationType");
 
-  const isGroup = messageType === "Group";
-  const userQuery = useGetUser(activeConversation);
-  const groupQuery = useGetGroup(activeConversation);
-  const groupUserQuery = useGetGroupUserByGroupId(activeConversation);
+  const isGroup = conversationType === "Group";
+  const { data: conversation } = useGetConversation({
+    conversationId: activeConversationId,
+  });
+  const { data: currentUserData } = useGetCurrentUser();
+  const { data: conversationUsersData } =
+    useGetConversationUsersByConversationId(activeConversationId);
+  const otherUserId =
+    conversationUsersData &&
+    (conversationUsersData[0].userId == currentUserData?.userId
+      ? conversationUsersData[1].userId
+      : conversationUsersData[0].userId);
+  const { data: otherUserData } = useGetUser(otherUserId ?? -1, {
+    enabled: !!otherUserId,
+  });
+  const avatar = otherUserData?.avatarUrl ?? images.userIcon.src;
+  const name = otherUserData?.name ?? "";
+  const groupLink = (conversation as GroupConversation)?.inviteUrl ?? "";
+  const conversationUsers = isGroup ? conversationUsersData : undefined;
 
-  const currentEntity =
-    messageType === "Individual" ? userQuery.data : groupQuery.data;
-  const avatar =
-    (currentEntity as User)?.avatarUrl ??
-    (currentEntity as Group)?.groupAvatarUrl ??
-    images.userIcon.src;
-  const name =
-    (currentEntity as User)?.name ?? (currentEntity as Group)?.groupName;
-  const groupLink = (currentEntity as Group)?.groupInviteUrl;
-  const groupUser = isGroup ? groupUserQuery.data : undefined;
   return (
     <>
       <div
@@ -186,7 +194,7 @@ const AsideBody = () => {
               <div className={cx("icon")}>
                 <FontAwesomeIcon icon={faUserGroup} />
               </div>
-              {groupUser?.length} thành viên
+              {conversationUsers?.length} thành viên
             </div>
             <div className={cx("d-flex", "justify-content-between", "pt-2")}>
               <div className={cx("d-flex", "align-items-center")}>

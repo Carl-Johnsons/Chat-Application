@@ -1,10 +1,6 @@
-﻿using BussinessObject.Interfaces;
+﻿using BussinessObject.Constants;
+using BussinessObject.Interfaces;
 using BussinessObject.Models;
-using DataAccess.Repositories;
-using DataAccess.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Net.NetworkInformation;
 
 namespace DataAccess.DAOs
 {
@@ -34,22 +30,33 @@ namespace DataAccess.DAOs
         {
             _ = messageId ?? throw new Exception("Message id is null");
             using var _context = new ChatApplicationContext();
-            return _context.Messages.SingleOrDefault(m => m.MessageId == messageId); ;
+            return _context.Messages.SingleOrDefault(m => m.Id == messageId); ;
         }
-        //This function need more testing to be precise
-        public List<IMessage> GetLastestLastMessageList(int? userId)
+        public List<Message> Get(int? conversationId, int skip)
         {
+            _ = conversationId ?? throw new Exception("Conversation id is null");
             using var _context = new ChatApplicationContext();
-            IIndividualMessageRepository individualMessageRepository = new IndividualMessageRepository();
-            IGroupMessageRepository groupMessageRepository = new GroupMessageRepository();
-            var imList = individualMessageRepository.GetLast(userId);
-            var gmList = groupMessageRepository.GetLastByUserId(userId);
-
-            var lastMessageList = new List<IMessage>();
-            lastMessageList.AddRange(imList);
-            lastMessageList.AddRange(gmList);
-            return lastMessageList.OrderByDescending(m => m.Message.Time).ToList();
+            var messages = _context.Messages
+                .Where(m => m.ConversationId == conversationId)
+                .OrderByDescending(m => m.Id)
+                .Skip(skip * MessageConstant.LIMIT)
+                .Take(MessageConstant.LIMIT)
+                .OrderBy(m => m.Id)
+                .ToList();
+            return messages;
         }
+        public Message? GetLast(int? conversationId)
+        {
+            _ = conversationId ?? throw new Exception("Conversation id is null");
+            using var _context = new ChatApplicationContext();
+            var message = _context.Messages
+                .Where(m => m.ConversationId == conversationId)
+                .OrderByDescending(m => m.Id)
+                .Take(1)
+                .SingleOrDefault();
+            return message;
+        }
+
         public int Add(Message message)
         {
             _ = message ?? throw new Exception("Message is null! Abort adding message operation");
@@ -60,11 +67,12 @@ namespace DataAccess.DAOs
         public int Update(Message updateMessage)
         {
             _ = updateMessage ?? throw new Exception("Update message is null! Abort updating message operation");
-            var oldMessage = Get(updateMessage.MessageId) ?? throw new Exception("Message not found! Abort updating message operation");
+            var oldMessage = Get(updateMessage.Id) ?? throw new Exception("Message not found! Abort updating message operation");
             using var _context = new ChatApplicationContext();
             _context.Entry(oldMessage).CurrentValues.SetValues(updateMessage);
             return _context.SaveChanges();
         }
+
         public int Delete(int? messageId)
         {
             _ = messageId ?? throw new Exception("Update message is null! Abort updating message operation");

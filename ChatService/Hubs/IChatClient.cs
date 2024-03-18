@@ -7,11 +7,11 @@ namespace ChatService.Hubs
     {
         Task Connected(IEnumerable<int>? userIdOnlineList);
         Task Disconnected(int userDisconnectedId);
-        Task ReceiveIndividualMessage(string json);
-        Task ReceiveGroupMessage(GroupMessage gm);
-        Task ReceiveFriendRequest(string json);
+        Task ReceiveMessage(Message message);
+        Task ReceiveFriendRequest(FriendRequest fr);
         Task ReceiveAcceptFriendRequest(Friend f);
-        Task ReceiveNotifyUserTyping(SenderReceiverArrayModel model);
+        Task ReceiveJoinConversation(int conversationId);
+        Task ReceiveNotifyUserTyping(SenderConversationModel model);
         Task ReceiveDisableNotifyUserTyping();
     }
 }

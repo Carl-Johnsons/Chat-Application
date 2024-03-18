@@ -1,33 +1,28 @@
-import moment from "moment";
+import moment from "moment-timezone";
 import { useEffect, useState } from "react";
 //component
 import Avatar from "@/components/shared/Avatar";
 //model
-import { Message, MessageType } from "@/models";
+import { GroupConversation, Message } from "@/models";
 
 import style from "./SideBarItem.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
-import { useGetGroup } from "@/hooks/queries/group";
 import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import {
+  useGetConversation,
+  useGetConversationUsersByConversationId,
+} from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);
 
-type GroupConversationVariant = {
-  type: "groupConversation";
-  groupId: number;
-  lastMessage?: Message;
+type ConversationVariant = {
+  type: "conversation";
+  conversationId: number;
+  lastMessage?: Message | null;
   isActive?: boolean;
   isNewMessage?: boolean;
-  onClick?: (groupId: number, type: MessageType) => void;
-};
-type IndividualConversationVariant = {
-  type: "individualConversation";
-  userId: number;
-  lastMessage?: Message;
-  isActive?: boolean;
-  isNewMessage?: boolean;
-  onClick?: (userId: number, type: MessageType) => void;
+  onClick?: (conversationId: number) => void;
 };
 type SearchItemVariant = {
   type: "searchItem";
@@ -39,41 +34,38 @@ type SearchItemVariant = {
   onClick?: (userId: number) => void;
 };
 
-type Variants =
-  | IndividualConversationVariant
-  | SearchItemVariant
-  | GroupConversationVariant;
+type Variants = ConversationVariant | SearchItemVariant;
 
 const SideBarItem = (variant: Variants) => {
   const [descriptionContent, setDescriptionContent] = useState("");
   const [timeContent, setTimeContent] = useState("");
 
   let userId: number = 0;
-  let groupId: number = 0;
+  let conversationId: number = 0;
   let image: string = images.defaultAvatarImg.src;
-  let lastMessage: Message | undefined;
+  let lastMessage: Message | null | undefined;
   let searchName: string = "";
   let phoneNumber: string = "";
   let isActive: boolean | undefined;
   let isNewMessage: boolean | undefined;
-  let onClick: ((id: number, type: MessageType) => void) | undefined;
+  let onClick: ((id: number) => void) | undefined;
 
-  const isIndividualConversation = variant.type === "individualConversation";
+  const isConversation = variant.type === "conversation";
   const isSearchItem = variant.type === "searchItem";
-  const isGroupConversation = variant.type === "groupConversation";
 
-  if (isIndividualConversation) {
-    ({ userId, isActive, lastMessage, isNewMessage, onClick } = variant);
+  if (isConversation) {
+    ({ conversationId, isActive, lastMessage, isNewMessage, onClick } =
+      variant);
   } else if (isSearchItem) {
     ({ userId, image, searchName, phoneNumber, isActive, onClick } = variant);
-  } else if (isGroupConversation) {
-    ({ groupId, isActive, lastMessage, isNewMessage, onClick } = variant);
   }
-  const currentUserQuery = useGetCurrentUser();
-  const userQuery = useGetUser(userId);
-  const groupQuery = useGetGroup(groupId);
+  const { data: currentUserData } = useGetCurrentUser();
+  const { data: conversationData } = useGetConversation({
+    conversationId,
+  });
   const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? -1);
-  
+  const isGroupConversation = conversationData?.type === "Group";
+
   // Description
   useEffect(() => {
     if (!isSearchItem && lastMessage) {
@@ -81,9 +73,9 @@ const SideBarItem = (variant: Variants) => {
         return;
       }
       const sender =
-        currentUserQuery.data?.userId === lastMessage.senderId
+        currentUserData?.userId === lastMessage.senderId
           ? "You: "
-          : isGroupConversation
+          : conversationData?.type === "Group"
           ? `${lastMessageSenderQuery.data?.name}: `
           : "";
       setDescriptionContent(`${sender}${lastMessage.content}`);
@@ -91,8 +83,8 @@ const SideBarItem = (variant: Variants) => {
       setDescriptionContent(phoneNumber && `Phone Number: ${phoneNumber}`);
     }
   }, [
-    currentUserQuery.data,
-    isGroupConversation,
+    conversationData?.type,
+    currentUserData?.userId,
     isSearchItem,
     lastMessage,
     lastMessageSenderQuery.data,
@@ -104,20 +96,35 @@ const SideBarItem = (variant: Variants) => {
       return;
     }
     const d = new Date(lastMessage.time + "");
-    const formattedDate = moment(d).fromNow(true);
+    const tz = moment.tz.guess();
+    const formattedDate = moment(moment(d).tz(tz).format()).fromNow(true);
     setTimeContent(formattedDate);
   }, [lastMessage, lastMessage?.time]);
 
-  const entityAvatar = isIndividualConversation
-    ? userQuery.data?.avatarUrl
-    : isGroupConversation
-    ? groupQuery.data?.groupAvatarUrl
-    : undefined;
+  const { data: conversationUsersData } =
+    useGetConversationUsersByConversationId(conversationId);
+  const otherUserId =
+    conversationUsersData &&
+    (conversationUsersData[0].userId == currentUserData?.userId
+      ? conversationUsersData[1].userId
+      : conversationUsersData[0].userId);
 
-  const entityName = isIndividualConversation
-    ? userQuery.data?.name
-    : isGroupConversation
-    ? groupQuery.data?.groupName
+  const { data: otherUserData } = useGetUser(otherUserId ?? -1, {
+    enabled: !!otherUserId,
+  });
+
+  const otherUserAvatar = otherUserData?.avatarUrl ?? images.userIcon.src;
+  const otherUserName = otherUserData?.name ?? "";
+  const entityAvatar =
+    (isConversation
+      ? isGroupConversation
+        ? (conversationData as GroupConversation)?.imageURL
+        : otherUserAvatar
+      : image) ?? images.userIcon.src;
+  const entityName = isConversation
+    ? isGroupConversation
+      ? (conversationData as GroupConversation).name
+      : otherUserName
     : searchName;
 
   return (
@@ -135,12 +142,11 @@ const SideBarItem = (variant: Variants) => {
         if (!onClick) {
           return;
         }
-        if (userId) {
-          onClick(userId, "Individual");
-          return;
+        if (isSearchItem && userId) {
+          onClick(userId);
         }
-        if (groupId) {
-          onClick(groupId, "Group");
+        if (conversationId) {
+          onClick(conversationId);
           return;
         }
       }}
@@ -154,7 +160,7 @@ const SideBarItem = (variant: Variants) => {
         )}
       >
         <Avatar
-          src={isSearchItem ? image : entityAvatar ?? ""}
+          src={entityAvatar}
           avatarClassName={cx("rounded-circle")}
           alt="user avatar"
         />

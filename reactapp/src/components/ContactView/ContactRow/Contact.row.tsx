@@ -8,13 +8,15 @@ import {
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 import { useGlobalState } from "@/hooks";
-import { Group, User } from "@/models";
 import { MenuContactIndex } from "data/constants";
 
 import style from "./Contact.row.module.scss";
 import classNames from "classnames/bind";
-import { useGetGroup } from "@/hooks/queries/group";
-import { useGetUser } from "@/hooks/queries/user";
+import { useGetConversation } from "@/hooks/queries/conversation";
+import images from "@/assets";
+import { useGetUser } from "hooks/queries/user/useGetUser.query";
+import { GroupConversation } from "models/GroupConversation";
+import { User } from "@/models";
 const cx = classNames.bind(style);
 interface Props {
   entityId: number;
@@ -31,18 +33,29 @@ const ContactRow = ({
   onClickBtnDelFriendRequest = () => {},
 }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
-  const { data: userData } = useGetUser(entityId);
-  const { data: groupData } = useGetGroup(entityId);
-
-  const currentEntity =
-    activeContactType === MenuContactIndex.GROUP_LIST ? groupData : userData;
-
+  const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
+  
+  const { data: userData } = useGetUser(entityId, {
+    enabled: !isGroup,
+  });
+  const { data: conversationData } = useGetConversation(
+    {
+      conversationId: entityId,
+    },
+    {
+      enabled: isGroup,
+    }
+  );
+  const entityData = isGroup ? conversationData : userData;
   const avatar =
-    (currentEntity as User)?.avatarUrl ??
-    (currentEntity as Group)?.groupAvatarUrl;
-
+    (isGroup
+      ? (entityData as GroupConversation).imageURL
+      : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
   const name =
-    (currentEntity as User)?.name ?? (currentEntity as Group)?.groupName;
+    (isGroup
+      ? (entityData as GroupConversation).name
+      : (entityData as User)?.name) ?? "";
+
   return (
     <div className={cx("contact-row", "d-flex", "justify-content-between")}>
       <div

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,10 +13,8 @@ namespace ChatAPI.Controllers
         [HttpPost("UploadImageImgur")]
         public async Task<IActionResult> UploadAvatar(IFormFile ImageFile)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var imgurSection = config.GetSection("Imgur");
-            var clientId = imgurSection["ClientID"];
-            var clientSecret = imgurSection["ClientSecret"];
+            var clientId = Environment.GetEnvironmentVariable("Imgur__ClientID");
+            var clientSecret = Environment.GetEnvironmentVariable("Imgur__ClientSecret");
             try
             {
                 if (ImageFile == null || ImageFile.Length == 0)

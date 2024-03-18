@@ -3,12 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import AppButton from "@/components/shared/AppButton";
 import { useGlobalState } from "hooks/globalState";
-import { useGetGroupUserByGroupId } from "@/hooks/queries/group";
 import { useGetUsers } from "@/hooks/queries/user";
 
 import styles from "./ListingGroupMember.modalContent.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
+import { useGetConversationUsersByConversationId } from "@/hooks/queries/conversation";
 
 interface Props {
   onClickMember?: (memberId: number) => void;
@@ -19,11 +19,12 @@ const cx = classNames.bind(styles);
 const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
-  const { data: groupUserData } = useGetGroupUserByGroupId(modalEntityId);
+  const { data: conversationData } =
+    useGetConversationUsersByConversationId(modalEntityId);
 
   const userIdList =
     modalType === "Group"
-      ? groupUserData?.flatMap((gu) => gu.userId) ?? []
+      ? conversationData?.flatMap((cu) => cu.userId) ?? []
       : [];
   const userListQuery = useGetUsers(userIdList, {
     enabled: userIdList?.length > 0,

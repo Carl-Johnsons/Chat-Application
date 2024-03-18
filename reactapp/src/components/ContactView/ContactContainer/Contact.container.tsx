@@ -13,12 +13,11 @@ import {
   useAddFriend,
   useDeleteFriend,
   useDeleteFriendRequest,
-  useGetCurrentUser,
   useGetFriendList,
   useGetFriendRequestList,
 } from "@/hooks/queries/user";
-import { useGetGroupUserByUserId } from "hooks/queries/group/useGetGroupUserByUserId.query";
 import { ModalType } from "models/ModalType";
+import { useGetConversationUsers } from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);
 
@@ -28,14 +27,8 @@ interface Props {
 
 const ContactContainer = ({ className }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
-  const { data: currentUser } = useGetCurrentUser();
   const { data: friendList } = useGetFriendList();
-  const { data: groupList } = useGetGroupUserByUserId(
-    currentUser?.userId ?? -1,
-    {
-      enabled: !!currentUser?.userId,
-    }
-  );
+  const { data: conversationUsers } = useGetConversationUsers();
   const { data: friendRequestList } = useGetFriendRequestList();
 
   // hooks
@@ -85,18 +78,20 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {groupList &&
+        {conversationUsers &&
           activeContactType === MenuContactIndex.GROUP_LIST &&
-          groupList.map((gu) => {
-            return (
-              <ContactRow
-                key={gu.groupId}
-                entityId={gu.groupId}
-                onClickBtnDetail={() =>
-                  handleClickBtnDetail(gu.groupId, "Group")
-                }
-              />
-            );
+          conversationUsers.map((cu) => {
+            if (cu?.conversation?.type === "Group") {
+              return (
+                <ContactRow
+                  key={cu.conversationId}
+                  entityId={cu.conversationId}
+                  onClickBtnDetail={() =>
+                    handleClickBtnDetail(cu.conversationId, "Group")
+                  }
+                />
+              );
+            }
           })}
         {friendRequestList &&
           activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&

@@ -22,6 +22,57 @@ namespace BussinessObject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BussinessObject.Models.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Created_At");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Conversation");
+
+                    b.HasDiscriminator<string>("Type").HasValue("Individual");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("BussinessObject.Models.ConversationUser", b =>
+                {
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int")
+                        .HasColumnName("Conversation_Id");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("User_Id");
+
+                    b.Property<DateTime?>("ReadTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ConversationId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ConversationUser");
+                });
+
             modelBuilder.Entity("BussinessObject.Models.Friend", b =>
                 {
                     b.Property<int>("UserId")
@@ -67,140 +118,14 @@ namespace BussinessObject.Migrations
                     b.ToTable("FriendRequest");
                 });
 
-            modelBuilder.Entity("BussinessObject.Models.Group", b =>
-                {
-                    b.Property<int>("GroupId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Group_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GroupId"));
-
-                    b.Property<string>("GroupAvatarUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Group_Avatar_URL");
-
-                    b.Property<string>("GroupInviteUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Group_Invite_URL");
-
-                    b.Property<string>("GroupName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("Group_Name");
-
-                    b.HasKey("GroupId");
-
-                    b.ToTable("Group");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.GroupBlock", b =>
-                {
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int")
-                        .HasColumnName("Group_ID");
-
-                    b.Property<int>("BlockedUserId")
-                        .HasColumnType("int")
-                        .HasColumnName("Blocked_User_ID");
-
-                    b.HasKey("GroupId", "BlockedUserId");
-
-                    b.HasIndex("BlockedUserId");
-
-                    b.ToTable("GroupBlock");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.GroupMessage", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int")
-                        .HasColumnName("Message_ID");
-
-                    b.Property<int>("GroupReceiverId")
-                        .HasColumnType("int")
-                        .HasColumnName("Group_Receiver_ID");
-
-                    b.HasKey("MessageId", "GroupReceiverId");
-
-                    b.HasIndex("GroupReceiverId");
-
-                    b.ToTable("GroupMessage");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.GroupUser", b =>
-                {
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int")
-                        .HasColumnName("Group_ID");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("User_ID");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Role");
-
-                    b.HasKey("GroupId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("GroupUser");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.ImageMessage", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int")
-                        .HasColumnName("Message_ID");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Image_URL");
-
-                    b.HasKey("MessageId");
-
-                    b.ToTable("ImageMessage");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.IndividualMessage", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int")
-                        .HasColumnName("Message_ID");
-
-                    b.Property<bool>("Read")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Status")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Status");
-
-                    b.Property<int>("UserReceiverId")
-                        .HasColumnType("int")
-                        .HasColumnName("User_Receiver_ID");
-
-                    b.HasKey("MessageId");
-
-                    b.HasIndex("UserReceiverId");
-
-                    b.ToTable("IndividualMessage");
-                });
-
             modelBuilder.Entity("BussinessObject.Models.Message", b =>
                 {
-                    b.Property<int>("MessageId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Message_ID");
+                        .HasColumnName("Id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool?>("Active")
                         .ValueGeneratedOnAdd()
@@ -211,27 +136,34 @@ namespace BussinessObject.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MessageFormat")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Message_Format");
-
-                    b.Property<string>("MessageType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Message_Type");
-
-                    b.Property<int>("SenderId")
+                    b.Property<int>("ConversationId")
                         .HasColumnType("int")
-                        .HasColumnName("Sender_ID");
+                        .HasColumnName("Conversation_Id");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Format");
+
+                    b.Property<int?>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("int")
+                        .HasColumnName("Sender_Id");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Source");
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime2")
                         .HasColumnName("Time");
 
-                    b.HasKey("MessageId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
 
                     b.HasIndex("SenderId");
 
@@ -311,21 +243,47 @@ namespace BussinessObject.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("BussinessObject.Models.UserBlock", b =>
+            modelBuilder.Entity("BussinessObject.Models.GroupConversation", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("User_ID");
+                    b.HasBaseType("BussinessObject.Models.Conversation");
 
-                    b.Property<int>("BlockedUserId")
-                        .HasColumnType("int")
-                        .HasColumnName("Blocked_User_ID");
+                    b.Property<string>("ImageURL")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Image_URL");
 
-                    b.HasKey("UserId", "BlockedUserId");
+                    b.Property<string>("InviteURL")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Invite_URL");
 
-                    b.HasIndex("BlockedUserId");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Name");
 
-                    b.ToTable("UserBlock");
+                    b.ToTable("Conversation");
+
+                    b.HasDiscriminator().HasValue("Group");
+                });
+
+            modelBuilder.Entity("BussinessObject.Models.ConversationUser", b =>
+                {
+                    b.HasOne("BussinessObject.Models.Conversation", "Conversation")
+                        .WithMany()
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__ConversationUser__Conversation");
+
+                    b.HasOne("BussinessObject.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__ConversationUser__User");
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BussinessObject.Models.Friend", b =>
@@ -366,129 +324,23 @@ namespace BussinessObject.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("BussinessObject.Models.GroupBlock", b =>
-                {
-                    b.HasOne("BussinessObject.Models.User", "BlockedUser")
-                        .WithMany()
-                        .HasForeignKey("BlockedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__GroupBloc__Block__33D4B598");
-
-                    b.HasOne("BussinessObject.Models.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__GroupBloc__Group__32E0915F");
-
-                    b.Navigation("BlockedUser");
-
-                    b.Navigation("Group");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.GroupMessage", b =>
-                {
-                    b.HasOne("BussinessObject.Models.Group", "GroupReceiver")
-                        .WithMany()
-                        .HasForeignKey("GroupReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__GroupMess__Group__3D5E1FD2");
-
-                    b.HasOne("BussinessObject.Models.Message", "Message")
-                        .WithMany()
-                        .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__GroupMess__Messa__3C69FB99");
-
-                    b.Navigation("GroupReceiver");
-
-                    b.Navigation("Message");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.GroupUser", b =>
-                {
-                    b.HasOne("BussinessObject.Models.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__GroupUser__User");
-
-                    b.HasOne("BussinessObject.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__GroupUser__Group");
-
-                    b.Navigation("Group");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.ImageMessage", b =>
-                {
-                    b.HasOne("BussinessObject.Models.Message", "Message")
-                        .WithMany()
-                        .HasForeignKey("MessageId")
-                        .IsRequired()
-                        .HasConstraintName("FK__ImageMess__Messa__3F466844");
-
-                    b.Navigation("Message");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.IndividualMessage", b =>
-                {
-                    b.HasOne("BussinessObject.Models.Message", "Message")
-                        .WithMany()
-                        .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__Individua__Messa__398D8EEE");
-
-                    b.HasOne("BussinessObject.Models.User", "UserReceiver")
-                        .WithMany()
-                        .HasForeignKey("UserReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__Individua__User___3A81B327");
-
-                    b.Navigation("Message");
-
-                    b.Navigation("UserReceiver");
-                });
-
             modelBuilder.Entity("BussinessObject.Models.Message", b =>
                 {
+                    b.HasOne("BussinessObject.Models.Conversation", "Conversation")
+                        .WithMany()
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BussinessObject.Models.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
                         .IsRequired()
                         .HasConstraintName("FK__Message__Sender___37A5467C");
 
+                    b.Navigation("Conversation");
+
                     b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("BussinessObject.Models.UserBlock", b =>
-                {
-                    b.HasOne("BussinessObject.Models.User", "BlockedUser")
-                        .WithMany()
-                        .HasForeignKey("BlockedUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK__UserBlock__Block__2D27B809");
-
-                    b.HasOne("BussinessObject.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK__UserBlock__User___2C3393D0");
-
-                    b.Navigation("BlockedUser");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

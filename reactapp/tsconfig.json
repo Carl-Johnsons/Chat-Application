@@ -30,6 +30,7 @@
       "@/hooks": ["hooks/index"],
       "@/hooks/*": ["hooks/*/index"],
       "@/models": ["models/index"],
+      "@/models/DTOs": ["models/DTOs/index"],
       "@/assets": ["assets/index"],
       "@/services/*": ["services/*/index"],
       "@/utils": ["utils/index"]

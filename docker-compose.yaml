@@ -13,8 +13,8 @@ services:
     networks:
       - back-end
     environment:
-      ACCEPT_EULA: "${ACCEPT_EULA}"
-      SA_PASSWORD: "${SA_PASSWORD}"
+      ACCEPT_EULA: ${ACCEPT_EULA}
+      SA_PASSWORD: ${SA_PASSWORD}
     restart: always
     healthcheck:
       test:
@@ -35,8 +35,8 @@ services:
       chatdb:
         condition: service_healthy
     environment:
-      ACCEPT_EULA: "${ACCEPT_EULA}"
-      SA_PASSWORD: "${SA_PASSWORD}"
+      ACCEPT_EULA: ${ACCEPT_EULA}
+      SA_PASSWORD: ${SA_PASSWORD}
     # command: >
     #   bash -c '/opt/mssql-tools/bin/sqlcmd -S chatdb -U sa -P ${SA_PASSWORD} -i docker-entrypoint-initdb.d/backup.sql;
     #   echo "All done!";'
@@ -53,7 +53,7 @@ services:
     networks:
       - back-end
     env_file:
-      - .env
+      - .env.development
   # SignalR service to enable real-time communication
   chathub:
     build:
@@ -76,9 +76,8 @@ services:
       - '${CLIENT__PORT}:3000'
     networks:
       - front-end
-    environment:
-      NEXT_PUBLIC_BASE_API_URL: "http://${HOST_NAME}:${API__PORT}"
-      NEXT_PUBLIC_SIGNALR_URL: "http://${HOST_NAME}:${HUB__PORT}/chatHub"
+    env_file:
+      - .env.development
     develop:
       watch:
         - path: ./reactapp/package.json

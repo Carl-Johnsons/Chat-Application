@@ -2,92 +2,84 @@ import { useCallback, useState } from "react";
 
 import SideBarItem from "../../SideBarItem";
 import { useGlobalState, useScreenSectionNavigator } from "@/hooks";
-import { GroupMessage, IndividualMessage, MessageType } from "@/models";
+import { ConversationType } from "@/models";
 import {
-  useGetLastMessageList,
-  useGetMessageList,
+  useGetInfiniteMessageList,
+  useGetLastMessages,
 } from "@/hooks/queries/message";
-import { useGetCurrentUser } from "@/hooks/queries/user";
+import {
+  useGetConversationUsers,
+  useGetConversations,
+} from "@/hooks/queries/conversation";
 
 const ConversationContent = () => {
-  const [messageType, setMessageType] = useGlobalState("messageType");
-  const [activeConversation, setActiveConversation] =
-    useGlobalState("activeConversation");
+  const [, setConversationType] = useGlobalState("conversationType");
+  const [activeConversationId, setActiveConversationId] = useGlobalState(
+    "activeConversationId"
+  );
 
   const { handleClickScreenSection } = useScreenSectionNavigator();
 
   const [enableMessageListQuery, setEnableMessageListQuery] = useState(false);
-  const { data: currentUser } = useGetCurrentUser();
-  const messageListQuery = useGetMessageList(
-    activeConversation,
-    messageType,
-    enableMessageListQuery
-  );
+  const messageListQuery = useGetInfiniteMessageList(activeConversationId, {
+    enabled: enableMessageListQuery,
+  });
+  const { data: conversationUsersData } = useGetConversationUsers();
+  const conversationsId =
+    conversationUsersData?.flatMap((cu) => cu.conversationId) ?? [];
+  const conversationQueries = useGetConversations(conversationsId, {
+    enabled: conversationsId.length > 0,
+  });
+  const lastMessageQueries = useGetLastMessages(conversationsId, {
+    enabled: conversationsId.length > 0,
+  });
+
   const handleClickConversation = useCallback(
-    (receiverId: number, type: MessageType) => {
+    (conversationId: number, type: ConversationType) => {
       handleClickScreenSection(false);
-      setActiveConversation(receiverId);
-      setMessageType(type);
+      setActiveConversationId(conversationId);
+      setConversationType(type);
       setEnableMessageListQuery(true);
       messageListQuery.refetch();
     },
     [
       handleClickScreenSection,
       messageListQuery,
-      setActiveConversation,
-      setMessageType,
+      setActiveConversationId,
+      setConversationType,
     ]
   );
-
-  const lastMessageListQuery = useGetLastMessageList();
-
   // useEffect(() => {
-  //   if (!friendList || friendList.length === 0 || activeConversation !== 0) {
+  //   if (!friendList || friendList.length === 0 || activeConversationId !== 0) {
   //     return;
   //   }
   //   //Initial with the first friend in the list
   //   handleClickConversation(friendList[0].friendNavigation.userId);
-  // }, [friendList, handleClickConversation, activeConversation]);
+  // }, [friendList, handleClickConversation, activeConversationId]);
   return (
     <>
-      {lastMessageListQuery.data &&
-        (lastMessageListQuery.data ?? []).map((m) => {
-          if (!currentUser) {
+      {conversationQueries &&
+        (conversationQueries ?? []).map((query, index) => {
+          if (query.isLoading) {
             return;
           }
-          if (m.message.messageType === "Group") {
-            const { groupReceiverId, message } = m as GroupMessage;
+          const conversation = query.data;
+          const lastMessage = lastMessageQueries[index].data ?? undefined;
 
-            return (
-              <SideBarItem
-                key={message.messageId}
-                type="groupConversation"
-                lastMessage={message}
-                groupId={groupReceiverId}
-                onClick={handleClickConversation}
-                isActive={
-                  activeConversation === groupReceiverId &&
-                  messageType == "Group"
-                }
-              />
-            );
+          if (!conversation) {
+            return;
           }
-          const { userReceiverId, message } = m as IndividualMessage;
-          const otherUserId =
-            userReceiverId === currentUser.userId
-              ? message.senderId
-              : userReceiverId;
+
           return (
             <SideBarItem
-              key={message.messageId}
-              type="individualConversation"
-              userId={otherUserId}
-              lastMessage={message}
-              onClick={handleClickConversation}
-              isActive={
-                activeConversation === otherUserId &&
-                messageType == "Individual"
+              key={conversation.id}
+              type="conversation"
+              lastMessage={lastMessage}
+              conversationId={conversation.id ?? -1}
+              onClick={(conversationId) =>
+                handleClickConversation(conversationId, conversation.type)
               }
+              isActive={activeConversationId === conversation.id}
             />
           );
         })}

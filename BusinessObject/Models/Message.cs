@@ -5,32 +5,34 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BussinessObject.Models;
 [Table("Message")]
-[PrimaryKey(nameof(MessageId))]
+[PrimaryKey(nameof(Id))]
 
 public partial class Message
 {
-    [Column("Message_ID")]
-    public int MessageId { get; set; }
+    [Column("Id")]
+    public int Id { get; set; }
 
-    [Column("Sender_ID")]
-    public int SenderId { get; set; }
-
+    [Column("Sender_Id")]
+    public int? SenderId { get; set; } // This props is null if the message come from the system
+    [Column("Conversation_Id")]
+    public int ConversationId { get; set; } // This props is the receiver
     public string? Content { get; set; }
 
     [Column("Time")]
     [DataType(DataType.DateTime)]
     public DateTime Time { get; set; }
 
-    [Column("Message_Type")]
+    [Column("Source")]
     [MaxLength(20)]
-    public string MessageType { get; set; } = null!;
+    public string Source { get; set; } = null!;
 
-    [Column("Message_Format")]
+    [Column("Format")]
     [MaxLength(20)]
-    public string MessageFormat { get; set; } = null!;
+    public string Format { get; set; } = null!;
 
     [Column("Active")]
     public bool? Active { get; set; }
 
     public virtual User Sender { get; set; } = null!;
+    public virtual Conversation Conversation { get; set; } = null!;
 }

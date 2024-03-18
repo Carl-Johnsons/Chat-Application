@@ -4,20 +4,19 @@ import { useEffect, useRef } from "react";
 import {
   Friend,
   FriendRequest,
-  GroupMessage,
-  IndividualMessage,
-  SenderReceiverArray,
+  Message,
+  SenderConversationModel,
 } from "@/models";
 
 import { useGlobalState } from "../globalState";
-import useIndividualMessageSubscription from "./useIndividualMessageSubscription";
+import useMessageSubscription from "./useMessageSubscription";
 import useFriendRequestSubscription from "./useFriendRequestSubscription";
 import useConnectedSubscription from "./useConnectedSubscription";
 import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
 import useDisableNotifyUserTypingSubscription from "./useDisableNotifyUserTypingSubscription";
 import useAcceptedFriendRequestSubscription from "./useAcceptedFriendRequestSubscription";
 import useDisconnectedSubscription from "./useDisconnectedSubscription";
-import useGroupMessageSubscription from "./useGroupMessageSubscription";
+import useJoinConversationSubscription from "./useJoinConversationSubscription";
 
 interface SignalREvent {
   name: string;
@@ -25,7 +24,7 @@ interface SignalREvent {
 }
 interface InvokeSignalREvent {
   name: string;
-  args: object[];
+  args: unknown[];
 }
 interface useSignalREventsProps {
   connection?: HubConnection;
@@ -41,8 +40,8 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
   useDisableNotifyUserTypingSubscription(connection);
   useDisconnectedSubscription(connection);
   useFriendRequestSubscription(connection);
-  useIndividualMessageSubscription(connection);
-  useGroupMessageSubscription(connection);
+  useJoinConversationSubscription(connection);
+  useMessageSubscription(connection);
   useNotifyUserTypingSubscription(connection);
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
@@ -75,16 +74,10 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
   return invokeActionRef.current;
 };
 
-export function signalRSendIndividualMessage(im: IndividualMessage) {
+export function signalRSendMessage(m: Message) {
   return {
-    name: "SendIndividualMessage",
-    args: [im],
-  };
-}
-export function signalRSendGroupMessage(gm: GroupMessage) {
-  return {
-    name: "SendGroupMessage",
-    args: [gm],
+    name: "SendMessage",
+    args: [m],
   };
 }
 
@@ -101,19 +94,28 @@ export function signalRSendAcceptFriendRequest(f: Friend) {
   };
 }
 export function signalRNotifyUserTyping(
-  senderReceiverArray: SenderReceiverArray
+  senderConversationModel: SenderConversationModel
 ) {
   return {
     name: "NotifyUserTyping",
-    args: [senderReceiverArray],
+    args: [senderConversationModel],
   };
 }
 export function signalRDisableNotifyUserTyping(
-  senderReceiverArray: SenderReceiverArray
+  senderConversationModel: SenderConversationModel
 ) {
   return {
     name: "DisableNotifyUserTyping",
-    args: [senderReceiverArray],
+    args: [senderConversationModel],
+  };
+}
+export function signalRJoinConversation(
+  userId: number,
+  conversationId: number
+) {
+  return {
+    name: "JoinConversation",
+    args: [userId, conversationId],
   };
 }
 export { useSignalREvents };

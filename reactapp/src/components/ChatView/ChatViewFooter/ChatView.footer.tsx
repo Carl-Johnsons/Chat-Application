@@ -12,35 +12,27 @@ import {
   useSignalREvents,
 } from "@/hooks";
 
-import { SenderReceiverArray } from "@/models";
-
 import { useGetCurrentUser } from "@/hooks/queries/user";
-import {
-  useSendGroupMessage,
-  useSendIndividualMessage,
-} from "@/hooks/queries/message";
+import { useSendMessage } from "@/hooks/queries/message";
+import { SenderConversationModel } from "@/models";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
   const [inputValue, setInputValue] = useState("");
-  const [activeConversation] = useGlobalState("activeConversation");
-
-  const [messageType] = useGlobalState("messageType");
+  const [activeConversationId] = useGlobalState("activeConversationId");
   const [connection] = useGlobalState("connection");
   // hook
   const invokeAction = useSignalREvents({ connection: connection });
   const { data: currentUser } = useGetCurrentUser();
-  const { mutate: sendIndividualMessageMutate } = useSendIndividualMessage();
-  const { mutate: sendGroupMessageMutate } = useSendGroupMessage();
+  const { mutate: sendMessageMutate } = useSendMessage();
 
   const debounceInvokeAction = useDebounce(() => {
     if (!currentUser) {
       return;
     }
-    const model: SenderReceiverArray = {
+    const model: SenderConversationModel = {
       senderId: currentUser.userId,
-      receiverId: activeConversation,
-      type: messageType,
+      conversationId: activeConversationId,
     };
 
     invokeAction(signalRDisableNotifyUserTyping(model));
@@ -54,31 +46,20 @@ const ChatViewFooter = () => {
     if (!currentUser) {
       return;
     }
-    // This active conversation may be wrong for the group message. Implement later
-    if (messageType == "Individual") {
-      sendIndividualMessageMutate({
-        senderId: currentUser.userId,
-        receiverId: activeConversation,
-        messageContent: inputValue,
-      });
-    }
-    if (messageType == "Group") {
-      sendGroupMessageMutate({
-        senderId: currentUser.userId,
-        receiverId: activeConversation,
-        messageContent: inputValue,
-      });
-    }
+    sendMessageMutate({
+      senderId: currentUser.userId,
+      conversationId: activeConversationId,
+      messageContent: inputValue,
+    });
     setInputValue("");
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!currentUser) {
       return;
     }
-    const model: SenderReceiverArray = {
+    const model: SenderConversationModel = {
       senderId: currentUser.userId,
-      receiverId: activeConversation,
-      type: messageType,
+      conversationId: activeConversationId,
     };
 
     setInputValue(e.target.value);

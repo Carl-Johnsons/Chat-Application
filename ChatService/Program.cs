@@ -1,8 +1,6 @@
 using ChatService.Hubs;
 var builder = WebApplication.CreateBuilder(args);
-var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-IConfigurationSection clientPortSection = config.GetSection("ClientPort");
-var defaultClientPort = clientPortSection["Default"];
+var defaultClientPort = Environment.GetEnvironmentVariable("CLIENT__PORT");
 builder.Services.AddSignalR();
 
 //Add CORS to allow request API on different port

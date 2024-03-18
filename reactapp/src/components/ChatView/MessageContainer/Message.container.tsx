@@ -3,31 +3,30 @@ import style from "./Message.container.module.scss";
 import Avatar from "@/components/shared/Avatar";
 
 import classNames from "classnames/bind";
-import { MessageType } from "models/MessageType";
-import { useGetUser } from "hooks/queries/user/useGetUser.query";
-import { IndividualMessage } from "models/IndividualMessage";
-import { GroupMessage } from "models/GroupMessage";
+
+import { useGetUser } from "@/hooks/queries/user";
+import { ConversationType, Message as MessageModel } from "@/models";
 import Message from "../Message";
 
 const cx = classNames.bind(style);
 
 interface Props {
   isSender: boolean;
-  messageType: MessageType;
+  conversationType: ConversationType;
   userId: number;
-  messageList: IndividualMessage[] | GroupMessage[];
+  messageList: MessageModel[];
 }
 
 const MessageContainer = ({
   isSender,
-  messageType,
+  conversationType,
   userId,
   messageList,
 }: Props) => {
   const user = useGetUser(userId);
   return (
     <div className={cx("d-flex", "mb-3", isSender && "sender")}>
-      {!isSender && messageType === "Group" && user.data?.avatarUrl && (
+      {!isSender && conversationType === "Group" && user.data?.avatarUrl && (
         <Avatar
           className={cx("me-2")}
           avatarClassName={cx("rounded-circle")}
@@ -47,15 +46,15 @@ const MessageContainer = ({
         {messageList.map((m, index) => {
           return (
             <Message
-              key={m.messageId}
+              key={m.id}
               message={{
-                userId: m.message.senderId,
-                content: m.message.content,
-                time: m.message.time ?? "",
+                userId: m.senderId,
+                content: m.content,
+                time: m.time ?? "",
               }}
               sender={isSender}
               showUsername={index === 0}
-              id={`message_${m.message.messageId}`}
+              id={`message_${m.id}`}
             />
           );
         })}

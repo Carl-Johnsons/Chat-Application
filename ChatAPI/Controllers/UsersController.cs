@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Http.Headers;
 using DataAccess.Repositories.Interfaces;
 using AutoMapper;
 using BussinessObject.DTO;
@@ -19,10 +18,11 @@ namespace ChatAPI.Controllers
     [Authorize] // using built in ASP.NET filter
     public class UsersController : ControllerBase
     {
+        private static readonly HttpClient _client = new();
         private readonly IUserRepository _userRepository;
         private readonly IFriendRepository _friendRepository;
         private readonly IFriendRequestRepository _friendRequestRepository;
-        private readonly string BASE_ADDRESS = "https://localhost:7190";
+        private readonly IConversationUsersRepository _conversationUserRepository;
         private UserClaim? CurrentUserClaim => GetCurrentUserClaim();
 
         private readonly MapperConfiguration mapperConfig;
@@ -31,6 +31,7 @@ namespace ChatAPI.Controllers
         {
             _userRepository = new UserRepository();
             _friendRepository = new FriendRepository();
+            _conversationUserRepository = new ConversationUsersRepository();
             _friendRequestRepository = new FriendRequestRepository();
 
             mapperConfig = new MapperConfiguration(cfg =>
@@ -152,45 +153,67 @@ namespace ChatAPI.Controllers
         {
             if (senderId == null || receiverId == null)
             {
-                return BadRequest("SenderId and ReceiverId cannot be null");
+                return BadRequest("SenderId and ReceiverId cannot be null!");
             }
-            // Check if friendRequest is existed
-            var frList = _friendRequestRepository.GetByReceiverId((int)receiverId);
-            var publicFrList = mapper.Map<List<FriendRequest>, List<PublicFriendRequestDTO>>(frList);
-            bool hasFriendRequest = false;
-            foreach (var friendRequest in publicFrList)
+            try
             {
-                if ((friendRequest.SenderId == (int)senderId && friendRequest.ReceiverId == (int)receiverId)
-                || (friendRequest.SenderId == (int)receiverId && friendRequest.ReceiverId == (int)senderId))
+                // Check if friendRequest is existed
+                var frList = _friendRequestRepository.GetByReceiverId((int)receiverId);
+                var publicFrList = mapper.Map<List<FriendRequest>, List<PublicFriendRequestDTO>>(frList);
+                bool hasFriendRequest = false;
+                foreach (var friendRequest in publicFrList)
                 {
-                    hasFriendRequest = true;
+                    if ((friendRequest.SenderId == (int)senderId && friendRequest.ReceiverId == (int)receiverId)
+                    || (friendRequest.SenderId == (int)receiverId && friendRequest.ReceiverId == (int)senderId))
+                    {
+                        hasFriendRequest = true;
+                    }
                 }
+                if (!hasFriendRequest)
+                {
+                    return BadRequest("Friend request does not exist! Aborting operation add friend");
+                }
+
+                //Add friend
+                if (senderId == null || receiverId == null)
+                {
+                    return NotFound();
+                }
+                Friend friend = new()
+                {
+                    UserId = (int)senderId,
+                    FriendId = (int)receiverId
+                };
+
+                int affectedRow = _friendRepository.Add(friend);
+                if (affectedRow == 0)
+                {
+                    return NotFound();
+                }
+
+                // After adding the friend, send a request to remove the friend request
+                _friendRequestRepository.Delete((int)senderId, (int)receiverId);
+                //Check if existed conversation
+                var isExistedConversation = await GlobalService.ConversationService.IsExistIndividualConversation((int)senderId, (int)receiverId);
+                if (!isExistedConversation)
+                {
+                    return StatusCode(StatusCodes.Status201Created, "2 users already have an existed conversation. Aborting creating a new one");
+                }
+                var conversation = await GlobalService.ConversationService.CreateConversation(new ConversationWithMembersId()
+                {
+                    Type = "Individual",
+                    MembersId = new List<int>() {
+                        (int)senderId,(int)receiverId
+                    }
+                });
+
+                return StatusCode(StatusCodes.Status201Created, conversation);
             }
-            if (!hasFriendRequest)
+            catch (Exception ex)
             {
-                return BadRequest("Friend request does not exist! Aborting operation add friend");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
 
-            //Add friend
-            if (senderId == null || receiverId == null)
-            {
-                return NotFound();
-            }
-            Friend friend = new Friend()
-            {
-                UserId = (int)senderId,
-                FriendId = (int)receiverId
-            };
-
-            int affectedRow = _friendRepository.Add(friend);
-            if (affectedRow == 0)
-            {
-                return NotFound();
-            }
-
-            // After adding the friend, send a request to remove the friend request
-            _friendRequestRepository.Delete((int)senderId, (int)receiverId);
-            return StatusCode(StatusCodes.Status201Created);
         }
 
         // PUT api/<UsersController>/5

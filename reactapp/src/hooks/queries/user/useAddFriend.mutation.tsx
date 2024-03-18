@@ -2,11 +2,12 @@ import { axiosInstance } from "@/utils";
 import { useGetCurrentUser, useGetUser } from ".";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  signalRJoinConversation,
   signalRSendAcceptFriendRequest,
   useGlobalState,
   useSignalREvents,
 } from "@/hooks";
-import { Friend } from "@/models";
+import { ConversationWithMembersId, Friend } from "@/models";
 import { useState } from "react";
 
 /**
@@ -20,12 +21,12 @@ import { useState } from "react";
 const addFriend = async (
   senderId: number,
   receiverId: number
-): Promise<boolean | null> => {
+): Promise<ConversationWithMembersId | null> => {
   // Sender is the one who send the request not the current user
   // The current user is the one who accept the friend request
   const url = "/api/Users/AddFriend/" + senderId + "/" + receiverId;
   const response = await axiosInstance.post(url);
-  return response.status === 201;
+  return response.data;
 };
 
 const useAddFriend = () => {
@@ -37,7 +38,7 @@ const useAddFriend = () => {
   const queryClient = useQueryClient();
   const invokeAction = useSignalREvents({ connection: connection });
   return useMutation<
-    boolean | null,
+    ConversationWithMembersId | null,
     Error,
     {
       senderId: number;
@@ -48,7 +49,7 @@ const useAddFriend = () => {
       setsenderId(senderId);
       return addFriend(senderId, currentUser?.userId ?? -1);
     },
-    onSuccess: (_, { senderId }) => {
+    onSuccess: (conversation, { senderId }) => {
       if (!sender) {
         return;
       }
@@ -60,6 +61,14 @@ const useAddFriend = () => {
       };
 
       invokeAction(signalRSendAcceptFriendRequest(friend));
+      conversation?.membersId.forEach((memberId) => {
+        invokeAction(signalRJoinConversation(memberId, conversation.id));
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["conversationList"],
+        exact: true,
+      });
       queryClient.invalidateQueries({
         queryKey: ["friendList"],
         exact: true,

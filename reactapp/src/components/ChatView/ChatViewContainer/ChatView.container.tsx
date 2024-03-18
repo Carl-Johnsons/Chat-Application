@@ -17,7 +17,7 @@ interface Props {
 
 const ChatViewContainer = ({ className }: Props) => {
   const [userTypingId] = useGlobalState("userTypingId");
-  const { data: userTyping } = useGetUser(userTypingId ?? -1, {
+  const { data: userTyping, isLoading } = useGetUser(userTypingId ?? -1, {
     enabled: !!userTypingId,
   });
 
@@ -45,7 +45,7 @@ const ChatViewContainer = ({ className }: Props) => {
         <ChatViewBody
           className={cx("message-container", "overflow-y-scroll")}
         />
-        {userTyping && (
+        {userTypingId && userTyping && !isLoading && (
           <div className={cx("user-input-notification")}>
             User {userTyping.name} is typing ...
           </div>

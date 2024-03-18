@@ -10,10 +10,6 @@ namespace DataAccess.Utils
         {
             _ = messageId ?? throw new ArgumentNullException(nameof(messageId));
         }
-        public void EnsureGroupMessageNotNull([NotNull] GroupMessage? groupMessage)
-        {
-            _ = groupMessage ?? throw new ArgumentNullException(nameof(groupMessage));
-        }
         // ====================== Check not exist ==================
         // ====================== Check exist  =====================
         // ====================== Check valid ======================

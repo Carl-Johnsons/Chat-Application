@@ -1,131 +1,76 @@
 import { axiosInstance } from "@/utils";
-import { GroupMessage, IndividualMessage, MessageType } from "@/models";
+import { Message } from "@/models";
 import {
   InfiniteData,
-  UseInfiniteQueryResult,
+  UndefinedInitialDataInfiniteOptions,
   useInfiniteQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
-import { useGetCurrentUser } from "../user";
 
-interface GroupProps {
-  groupId: number;
-  skipBatch: number;
-}
-interface IndividualProps {
-  senderId: number;
-  receiverId: number;
+interface FetchProps {
+  conversationId: number;
   skipBatch: number;
 }
 
-interface Props {
-  entityId: number;
-  type: MessageType;
-  enabled?: boolean;
-}
-
-const getNextGroupMessageList = async ({
-  groupId,
+const getMessageList = async ({
+  conversationId,
   skipBatch,
-}: GroupProps): Promise<GroupMessage[] | null> => {
-  const url = `/api/Messages/group/${groupId}/skip/${skipBatch}`;
+}: FetchProps): Promise<Message[] | null> => {
+  const url = `/api/Messages/Conversation/${conversationId}?skip=${skipBatch}`;
   const response = await axiosInstance.get(url);
   return response.data;
 };
 
-const getNextIndividualMessageList = async ({
-  senderId,
-  receiverId,
-  skipBatch,
-}: IndividualProps): Promise<IndividualMessage[] | null> => {
-  const url = `/api/Messages/individual/${senderId}/${receiverId}/skip/${skipBatch}`;
-  const response = await axiosInstance.get(url);
-  return response.data;
-};
+const useGetInfiniteMessageList = (
+  conversationId: number,
+  queryOptions: Omit<
+    UndefinedInitialDataInfiniteOptions<
+      {
+        data: Message[];
+        nextPage: number;
+      },
+      Error,
+      InfiniteData<{
+        data: Message[];
+        nextPage: number;
+      }>,
+      unknown[],
+      number
+    >,
+    | "queryKey"
+    | "queryFn"
+    | "initialPageParam"
+    | "getNextPageParam"
+    | "initialData"
+  > = {}
+) => {
+  const queryClient = useQueryClient();
 
-const useGetInfiniteMessageList = ({
-  entityId,
-  type,
-  enabled = true,
-}: Props) => {
-  const { data: currentUser } = useGetCurrentUser();
-
-  const infiniteIMListQuery = useInfiniteQuery({
-    queryKey: ["messageList", "individual", entityId, "infinite"],
-    enabled: !!currentUser && enabled,
+  const infiniteMessageListQuery = useInfiniteQuery({
+    ...queryOptions,
+    queryKey: ["messageList", "conversation", conversationId, "infinite"],
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
-      const imList = await getNextIndividualMessageList({
-        senderId: currentUser?.userId ?? -1,
-        receiverId: entityId,
+      const ml = await getMessageList({
+        conversationId,
         skipBatch: pageParam,
       });
       return {
-        data: imList ?? [],
+        data: ml ?? [],
         nextPage: pageParam + 1,
       };
     },
     getNextPageParam: (prev) => {
       return prev.data.length === 0 ? undefined : prev.nextPage;
     },
-  });
-
-  const infiniteGMListQuery = useInfiniteQuery({
-    queryKey: ["messageList", "group", entityId, "infinite"],
-    enabled: enabled,
-    initialPageParam: 0,
-    queryFn: async ({ pageParam = 0 }) => {
-      const gmList = await getNextGroupMessageList({
-        groupId: entityId,
-        skipBatch: pageParam,
-      });
-      return {
-        data: gmList ?? [],
-        nextPage: pageParam + 1,
-      };
-    },
-    getNextPageParam: (prev) => {
-      return prev.data.length === 0 ? undefined : prev.nextPage;
+    initialData: () => {
+      return queryClient.getQueryData<
+        InfiniteData<{ data: Message[]; nextPage: number }, number>
+      >(["messageList", "conversation", conversationId, "infinite"]);
     },
   });
 
-  switch (type) {
-    case "Individual":
-      return infiniteIMListQuery;
-    default:
-      return infiniteGMListQuery;
-  }
+  return infiniteMessageListQuery;
 };
 
-const useGetInfiniteIMList = (entityId: number, enabled?: boolean) =>
-  useGetInfiniteMessageList({
-    entityId,
-    type: "Individual",
-    enabled,
-  }) as UseInfiniteQueryResult<
-    InfiniteData<
-      {
-        data: IndividualMessage[];
-        nextPage: number;
-      },
-      unknown
-    >,
-    Error
-  >;
-
-const useGetInfiniteGMList = (entityId: number, enabled?: boolean) =>
-  useGetInfiniteMessageList({
-    entityId,
-    type: "Group",
-    enabled,
-  }) as UseInfiniteQueryResult<
-    InfiniteData<
-      {
-        data: GroupMessage[];
-        nextPage: number;
-      },
-      unknown
-    >,
-    Error
-  >;
-
-export { useGetInfiniteIMList, useGetInfiniteGMList };
+export { useGetInfiniteMessageList };
