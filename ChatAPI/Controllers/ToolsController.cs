@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BussinessObject.DTO;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,14 +16,20 @@ namespace ChatAPI.Controllers
         [HttpPost("UploadImageImgur")]
         public async Task<IActionResult> UploadAvatar(IFormFile ImageFile)
         {
-            var clientId = Environment.GetEnvironmentVariable("Imgur__ClientID");
-            var clientSecret = Environment.GetEnvironmentVariable("Imgur__ClientSecret");
             try
             {
                 if (ImageFile == null || ImageFile.Length == 0)
                 {
                     return BadRequest("File object is null");
                 }
+                var accessToken = Environment.GetEnvironmentVariable("Imgur__AccessToken");
+                var accessTokenExpireIn = int.Parse(Environment.GetEnvironmentVariable("Imgur__AccessTokenExpiresIn") ?? "0");
+                if (DateTime.Now.AddMilliseconds(accessTokenExpireIn) < DateTime.Now)
+                {
+                    var imgurToken = await GetImgurToken();
+                    accessToken = imgurToken?.AccessToken;
+                }
+
                 using var httpClient = new HttpClient();
                 using var form = new MultipartFormDataContent();
                 using var stream = new MemoryStream();
@@ -28,19 +37,53 @@ namespace ChatAPI.Controllers
                 await ImageFile.CopyToAsync(stream);
                 byte[] fileBytes = stream.ToArray();
                 form.Add(new ByteArrayContent(fileBytes, 0, fileBytes.Length), "image", "image.png");
-
-                //Authorization: Client-ID YOUR_CLIENT_ID
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", clientId);
+                
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var img_response = await httpClient.PostAsync("https://api.imgur.com/3/upload", form);
                 img_response.EnsureSuccessStatusCode();
                 var responseContent = await img_response.Content.ReadAsStringAsync();
 
-                return Content(responseContent, "application/json"); 
+                return Content(responseContent, "application/json");
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
+        }
+
+        private async Task<ImgurToken?> GetImgurToken()
+        {
+            try
+            {
+                using HttpClient httpClient = new HttpClient();
+                var clientId = Environment.GetEnvironmentVariable("Imgur__ClientID");
+                var clientSecret = Environment.GetEnvironmentVariable("Imgur__ClientSecret");
+                var refreshToken = Environment.GetEnvironmentVariable("Imgur__RefreshToken");
+                var grantType = "refresh_token";
+                var bodyContent = new ImgurTokenInputDTO()
+                {
+                    ClientId = clientId ?? "",
+                    ClientSecret = clientSecret ?? "",
+                    RefreshToken = refreshToken ?? "",
+                    GrantType = grantType
+                };
+                var json = JsonConvert.SerializeObject(bodyContent);
+                var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var tokenResponse = await httpClient.PostAsync("https://api.imgur.com/oauth2/token", stringContent);
+                var tokenResponseContent = await tokenResponse.Content.ReadAsStringAsync();
+                var imgurToken = JsonConvert.DeserializeObject<ImgurToken>(tokenResponseContent);
+                if (imgurToken != null)
+                {
+                    Environment.SetEnvironmentVariable("Imgur__AccessToken", imgurToken.AccessToken.ToString());
+                    Environment.SetEnvironmentVariable("Imgur__AccessTokenExpiresIn", imgurToken.ExpiresIn.ToString());
+                    return imgurToken;
+                }
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync("Fail to get imgur token: " + ex.Message);
+            }
+            return null;
         }
     }
 }
