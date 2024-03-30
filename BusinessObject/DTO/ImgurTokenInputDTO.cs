@@ -1,17 +1,18 @@
 ﻿
-using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
 
 namespace BussinessObject.DTO
 {
     public class ImgurTokenInputDTO
     {
-        [JsonPropertyName("refresh_token")]
+        [JsonProperty("refresh_token")]
         public string RefreshToken { get; set; } = null!;
-        [JsonPropertyName("client_id")]
+        [JsonProperty("client_id")]
         public string ClientId { get; set; } = null!;
-        [JsonPropertyName("client_secret")]
+        [JsonProperty("client_secret")]
         public string ClientSecret { get; set; } = null!;
-        [JsonPropertyName("grant_type")]
+        [JsonProperty("grant_type")]
         public string GrantType { get; set; } = null!;
     }
 }

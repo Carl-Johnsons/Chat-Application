@@ -1,6 +1,7 @@
 ﻿using BussinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Sprache;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -22,13 +23,16 @@ namespace ChatAPI.Controllers
                 {
                     return BadRequest("File object is null");
                 }
-                var accessToken = Environment.GetEnvironmentVariable("Imgur__AccessToken");
-                var accessTokenExpireIn = int.Parse(Environment.GetEnvironmentVariable("Imgur__AccessTokenExpiresIn") ?? "0");
-                if (DateTime.Now.AddMilliseconds(accessTokenExpireIn) < DateTime.Now)
-                {
+                string? accessToken = Environment.GetEnvironmentVariable("Imgur__AccessToken");
+                int accessTokenExpireIn;
+                if (!int.TryParse(Environment.GetEnvironmentVariable("Imgur__AccessTokenExpiresIn"), out accessTokenExpireIn)) {
                     var imgurToken = await GetImgurToken();
                     accessToken = imgurToken?.AccessToken;
-                }
+                    if (string.IsNullOrEmpty(accessToken)) {
+                        throw new Exception("access token is empty");
+                    }
+                };
+
 
                 using var httpClient = new HttpClient();
                 using var form = new MultipartFormDataContent();
@@ -37,7 +41,7 @@ namespace ChatAPI.Controllers
                 await ImageFile.CopyToAsync(stream);
                 byte[] fileBytes = stream.ToArray();
                 form.Add(new ByteArrayContent(fileBytes, 0, fileBytes.Length), "image", "image.png");
-                
+
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var img_response = await httpClient.PostAsync("https://api.imgur.com/3/upload", form);
                 img_response.EnsureSuccessStatusCode();
@@ -70,6 +74,7 @@ namespace ChatAPI.Controllers
                 var json = JsonConvert.SerializeObject(bodyContent);
                 var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
                 var tokenResponse = await httpClient.PostAsync("https://api.imgur.com/oauth2/token", stringContent);
+                tokenResponse.EnsureSuccessStatusCode();
                 var tokenResponseContent = await tokenResponse.Content.ReadAsStringAsync();
                 var imgurToken = JsonConvert.DeserializeObject<ImgurToken>(tokenResponseContent);
                 if (imgurToken != null)
