@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>43be2842-1ad5-49f6-97b0-4e1fc0560cfd</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..</DockerfileContext>
+		<DockerfileRunArguments>--env-file "./.env.development" --network "chat-application_back-end" -e ASPNETCORE_URLS="http://+:80"</DockerfileRunArguments>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
+		<PackageReference Include="DotNetEnv" Version="3.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.5.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.0" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\AuthService.Core\AuthService.Core.csproj" />
+	  <ProjectReference Include="..\AuthService.Infrastructure\AuthService.Infrastructure.csproj" />
+	</ItemGroup>
+
+</Project>
