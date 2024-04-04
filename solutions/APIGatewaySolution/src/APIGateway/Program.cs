@@ -6,10 +6,10 @@ builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange
 var service = builder.Services;
 
 service.AddOcelot(builder.Configuration);
+service.AddSignalR();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
 app.MapControllers();
 
 await app.UseOcelot();

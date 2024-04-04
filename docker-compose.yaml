@@ -60,6 +60,9 @@ services:
     container_name: auth-service
     ports:
       - '5001:80'
+    depends_on:
+      chatdb:
+        condition: service_healthy
     networks:
       - back-end
     env_file:
@@ -69,9 +72,6 @@ services:
     build:
       context: ./solutions/UploadFileSolution
       dockerfile: ./src/UploadFileService.API/Dockerfile
-    depends_on:
-      chatdb:
-        condition: service_healthy
     container_name: upload-service
     ports:
       - '5002:80'
@@ -92,17 +92,19 @@ services:
 #     env_file:
 #       - .env.development
 #   # SignalR service to enable real-time communication
-#   chathub:
-#     build:
-#       context: .
-#       dockerfile: ./ChatService/Dockerfile.prod
-#     container_name: chat-hub
-#     ports:
-#       - '${HUB__PORT}:80'
-#     networks:
-#       - back-end
-#     env_file:
-#       - .env
+
+  websocket:
+    build:
+      context: ./solutions/MessageBrokerSolution
+      dockerfile: ./src/ChatHub/Dockerfile
+    container_name: chat-hub
+    ports:
+      - '5003:80'
+    networks:
+      - back-end
+      - front-end
+    env_file:
+      - ./solutions/MessageBrokerSolution/src/ChatHub/.env
 
 #   reactapp:
 #     build:
