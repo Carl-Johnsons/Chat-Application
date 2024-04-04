@@ -42,49 +42,86 @@ services:
     #   echo "All done!";'
     networks:
       - back-end
-
-  chatapi:
-    build:
-      context: .
-      dockerfile: ./ChatAPI/Dockerfile
-    container_name: chat-api
+  api-gateway:
+    build: 
+      context: ./solutions/APIGatewaySolution
+      dockerfile: ./src/APIGateway/Dockerfile
     ports:
-      - '${API__PORT}:80'
+      - '5000:80'
     networks:
       - back-end
     env_file:
-      - .env.development
-  # SignalR service to enable real-time communication
-  chathub:
+      - ./solutions/APIGatewaySolution/src/APIGateway/.env
+
+  auth-api:
     build:
-      context: .
-      dockerfile: ./ChatService/Dockerfile.prod
-    container_name: chat-hub
+      context: ./solutions/AuthSolution
+      dockerfile: ./src/AuthService.API/Dockerfile
+    container_name: auth-service
     ports:
-      - '${HUB__PORT}:80'
+      - '5001:80'
     networks:
       - back-end
     env_file:
-      - .env
+      - ./solutions/AuthSolution/src/AuthService.API/.env
 
-  reactapp:
+  upload-api:
     build:
-      context: ./reactapp
-      dockerfile: Dockerfile.dev
-    container_name: react-app
+      context: ./solutions/UploadFileSolution
+      dockerfile: ./src/UploadFileService.API/Dockerfile
+    depends_on:
+      chatdb:
+        condition: service_healthy
+    container_name: upload-service
     ports:
-      - '${CLIENT__PORT}:3000'
+      - '5002:80'
     networks:
-      - front-end
+      - back-end
     env_file:
-      - .env.development
-    develop:
-      watch:
-        - path: ./reactapp/package.json
-          action: rebuild
-        - path: ./reactapp
-          target: /app
-          action: sync
+      - ./solutions/UploadFileSolution/src/UploadFileService.API/.env
+
+#   chatapi:
+#     build:
+#       context: .
+#       dockerfile: ./ChatAPI/Dockerfile
+#     container_name: chat-api
+#     ports:
+#       - '${API__PORT}:80'
+#     networks:
+#       - back-end
+#     env_file:
+#       - .env.development
+#   # SignalR service to enable real-time communication
+#   chathub:
+#     build:
+#       context: .
+#       dockerfile: ./ChatService/Dockerfile.prod
+#     container_name: chat-hub
+#     ports:
+#       - '${HUB__PORT}:80'
+#     networks:
+#       - back-end
+#     env_file:
+#       - .env
+
+#   reactapp:
+#     build:
+#       context: ./reactapp
+#       dockerfile: Dockerfile.dev
+#     container_name: react-app
+#     ports:
+#       - '${CLIENT__PORT}:3000'
+#     networks:
+#       - front-end
+#     env_file:
+#       - .env.development
+#     develop:
+#       watch:
+#         - path: ./reactapp/package.json
+#           action: rebuild
+#         - path: ./reactapp
+#           target: /app
+#           action: sync
 networks:
   back-end:
   front-end:

@@ -25,6 +25,7 @@ namespace ChatAPI.Controllers
                 }
                 string? accessToken = Environment.GetEnvironmentVariable("Imgur__AccessToken");
                 int accessTokenExpireIn;
+                // Add validating access token later
                 if (!int.TryParse(Environment.GetEnvironmentVariable("Imgur__AccessTokenExpiresIn"), out accessTokenExpireIn)) {
                     var imgurToken = await GetImgurToken();
                     accessToken = imgurToken?.AccessToken;
