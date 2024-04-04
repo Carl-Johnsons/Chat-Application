@@ -95,7 +95,7 @@ services:
 
   websocket:
     build:
-      context: ./solutions/MessageBrokerSolution
+      context: ./solutions/ChatHubSolution
       dockerfile: ./src/ChatHub/Dockerfile
     container_name: chat-hub
     ports:
@@ -104,8 +104,22 @@ services:
       - back-end
       - front-end
     env_file:
-      - ./solutions/MessageBrokerSolution/src/ChatHub/.env
-
+      - ./solutions/ChatHubSolution/src/ChatHub/.env
+      
+  # rabbitmq: # login guest:guest
+  #     image: rabbitmq:3-management
+  #     hostname: "rabbitmq"
+  #     container_name: service-bus
+  #     labels:
+  #       NAME: "rabbitmq"
+  #     ports:
+  #     - "4369:4369"
+  #     - "5671:5671"
+  #     - "5672:5672"
+  #     - "25672:25672"
+  #     - "15671:15671"
+  #     - "15672:15672"
+      
 #   reactapp:
 #     build:
 #       context: ./reactapp

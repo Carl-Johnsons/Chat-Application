@@ -7,9 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B17F4481-93E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7E7DD171-FBEC-4288-BF87-712FA52EDEE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatHub", "src\ChatHub\ChatHub.csproj", "{07837E22-A8E3-462C-8B5B-9E5399DB8835}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBus", "src\ServiceBus\ServiceBus.csproj", "{70669C7C-FC0F-4E05-B0C4-5A4792DE58D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatHub", "src\ChatHub\ChatHub.csproj", "{07837E22-A8E3-462C-8B5B-9E5399DB8835}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,17 +19,12 @@ Global
 		{07837E22-A8E3-462C-8B5B-9E5399DB8835}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07837E22-A8E3-462C-8B5B-9E5399DB8835}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07837E22-A8E3-462C-8B5B-9E5399DB8835}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70669C7C-FC0F-4E05-B0C4-5A4792DE58D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70669C7C-FC0F-4E05-B0C4-5A4792DE58D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70669C7C-FC0F-4E05-B0C4-5A4792DE58D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70669C7C-FC0F-4E05-B0C4-5A4792DE58D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{07837E22-A8E3-462C-8B5B-9E5399DB8835} = {B17F4481-93E9-464C-BF5B-93880DD1123C}
-		{70669C7C-FC0F-4E05-B0C4-5A4792DE58D5} = {B17F4481-93E9-464C-BF5B-93880DD1123C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68B3B09C-71B5-469C-8C99-BCD58E0D1AAD}
