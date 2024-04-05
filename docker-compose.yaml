@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  chatdb:
+  sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: chat-db
+    container_name: sqlserver
     volumes:
-      - ./chat-sql-data:/var/opt/mssql/data # bind mount
+      - ./data/db:/var/opt/mssql/data # bind mount
     user: root #mssql
     ports:
       # Microsoft SQL Server uses the default port 1433 for all database connections
@@ -27,23 +27,23 @@ services:
       start_period: 10s
       timeout: 3s
 
-  chatdb.configurator:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    volumes:
-      - ./data:/docker-entrypoint-initdb.d
+  sql-server.configurator:
+    build: 
+      context: ./data
+      dockerfile: Dockerfile
     depends_on:
-      chatdb:
+      sql-server:
         condition: service_healthy
     environment:
       ACCEPT_EULA: ${ACCEPT_EULA}
       SA_PASSWORD: ${SA_PASSWORD}
-    # command: >
-    #   bash -c '/opt/mssql-tools/bin/sqlcmd -S chatdb -U sa -P ${SA_PASSWORD} -i docker-entrypoint-initdb.d/backup.sql;
-    #   echo "All done!";'
+      IndentityDB: ${IndentityDB}
+      MessageDB: ${MessageDB}
     networks:
       - back-end
+
   api-gateway:
-    build: 
+    build:
       context: ./solutions/APIGatewaySolution
       dockerfile: ./src/APIGateway/Dockerfile
     ports:
@@ -61,7 +61,7 @@ services:
     ports:
       - '5001:80'
     depends_on:
-      chatdb:
+      sql-server:
         condition: service_healthy
     networks:
       - back-end
@@ -80,18 +80,18 @@ services:
     env_file:
       - ./solutions/UploadFileSolution/src/UploadFileService.API/.env
 
-#   chatapi:
-#     build:
-#       context: .
-#       dockerfile: ./ChatAPI/Dockerfile
-#     container_name: chat-api
-#     ports:
-#       - '${API__PORT}:80'
-#     networks:
-#       - back-end
-#     env_file:
-#       - .env.development
-#   # SignalR service to enable real-time communication
+  #   chatapi:
+  #     build:
+  #       context: .
+  #       dockerfile: ./ChatAPI/Dockerfile
+  #     container_name: chat-api
+  #     ports:
+  #       - '${API__PORT}:80'
+  #     networks:
+  #       - back-end
+  #     env_file:
+  #       - .env.development
+  #   # SignalR service to enable real-time communication
 
   websocket:
     build:
@@ -105,7 +105,6 @@ services:
       - front-end
     env_file:
       - ./solutions/ChatHubSolution/src/ChatHub/.env
-      
   # rabbitmq: # login guest:guest
   #     image: rabbitmq:3-management
   #     hostname: "rabbitmq"
@@ -119,25 +118,25 @@ services:
   #     - "25672:25672"
   #     - "15671:15671"
   #     - "15672:15672"
-      
-#   reactapp:
-#     build:
-#       context: ./reactapp
-#       dockerfile: Dockerfile.dev
-#     container_name: react-app
-#     ports:
-#       - '${CLIENT__PORT}:3000'
-#     networks:
-#       - front-end
-#     env_file:
-#       - .env.development
-#     develop:
-#       watch:
-#         - path: ./reactapp/package.json
-#           action: rebuild
-#         - path: ./reactapp
-#           target: /app
-#           action: sync
+
+  #   reactapp:
+  #     build:
+  #       context: ./reactapp
+  #       dockerfile: Dockerfile.dev
+  #     container_name: react-app
+  #     ports:
+  #       - '${CLIENT__PORT}:3000'
+  #     networks:
+  #       - front-end
+  #     env_file:
+  #       - .env.development
+  #     develop:
+  #       watch:
+  #         - path: ./reactapp/package.json
+  #           action: rebuild
+  #         - path: ./reactapp
+  #           target: /app
+  #           action: sync
 networks:
   back-end:
   front-end:

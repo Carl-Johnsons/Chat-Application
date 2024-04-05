@@ -408,4 +408,5 @@ FodyWeavers.xsd
 **/*.env.*
 # Database bind mount
 chat-sql-data
-data
+data/db
+**/Migrations
