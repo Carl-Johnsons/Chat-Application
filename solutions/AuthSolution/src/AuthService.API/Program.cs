@@ -95,8 +95,6 @@ app.UseAuthentication();
 
 app.UseAuthorization(); // Can use [Authorize] middleware
 
-app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

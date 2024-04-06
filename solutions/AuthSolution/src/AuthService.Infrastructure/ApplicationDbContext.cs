@@ -15,10 +15,14 @@ public class ApplicationDbContext : DbContext
     public virtual DbSet<Token> Tokens { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
-        Console.WriteLine(connectionString);
-        optionsBuilder.UseSqlServer(connectionString);
+        DotNetEnv.Env.Load();
 
+        var server = DotNetEnv.Env.GetString("SERVER", "Not found");
+        var db = DotNetEnv.Env.GetString("DB", "Not found");
+        var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found");
+
+        var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
+        optionsBuilder.UseSqlServer(connectionString);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
