@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using ConversationService.API.Repositories;
+﻿using ConversationService.API.Repositories;
 using ConversationService.Core.DTOs;
 using ConversationService.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -153,8 +152,10 @@ public partial class UserController : ControllerBase
         }
         if (receiverId == null)
         {
-            return BadRequest("SenderId and ReceiverId cannot be null!");
+            return BadRequest("ReceiverId cannot be null!");
         }
+
+
         try
         {
             // Check if friendRequest is existed
@@ -198,7 +199,7 @@ public partial class UserController : ControllerBase
             {
                 Type = "Individual",
                 MembersId = new List<int>() {
-                        (int)senderId,(int)receiverId
+                        senderId,(int)receiverId
                     }
             });
 

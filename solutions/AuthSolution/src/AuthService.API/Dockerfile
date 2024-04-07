@@ -4,17 +4,17 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
+EXPOSE 433
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/AuthService.API/AuthService.API.csproj", "AuthService.API/"]
-COPY ["src/AuthService.Core/AuthService.Core.csproj", "AuthService.Core/"]
-COPY ["src/AuthService.Infrastructure/AuthService.Infrastructure.csproj", "AuthService.Infrastructure/"]
-RUN dotnet restore "./AuthService.API/AuthService.API.csproj"
+COPY ["src/AuthService.API/AuthService.API.csproj", "src/AuthService.API/"]
+COPY ["src/AuthService.Core/AuthService.Core.csproj", "src/AuthService.Core/"]
+COPY ["src/AuthService.Infrastructure/AuthService.Infrastructure.csproj", "src/AuthService.Infrastructure/"]
+RUN dotnet restore "./src/AuthService.API/AuthService.API.csproj"
 COPY . .
-WORKDIR "/src/AuthService.API"
+WORKDIR "/src/src/AuthService.API"
 RUN dotnet build "./AuthService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
@@ -8,10 +7,15 @@ using System.Security.Cryptography.X509Certificates;
 var issuer = Environment.GetEnvironmentVariable("Jwt__Issuer");
 var audience = Environment.GetEnvironmentVariable("Jwt__Audience");
 var builder = WebApplication.CreateBuilder(args);
-var service = builder.Services;
-
+var services = builder.Services;
 
 // Add services to the container.
+// Add mediatR
+services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+});
+
 //Reference: https://blog.devgenius.io/jwt-authentication-in-asp-net-core-e67dca9ae3e8
 /*
  * Configure validation of JWT signed with a private asymmetric key.
@@ -19,7 +23,7 @@ var service = builder.Services;
  * We'll use a public key to validate if the token was signed
  * with the corresponding private key.
  */
-service.AddSingleton<RsaSecurityKey>(provider =>
+services.AddSingleton<RsaSecurityKey>(provider =>
 {
     // It's required to register the RSA key with depedency injection.
     // If you don't do this, the RSA instance will be prematurely disposed.
@@ -31,10 +35,10 @@ service.AddSingleton<RsaSecurityKey>(provider =>
     return new RsaSecurityKey(rsaPublicKey);
 });
 
-service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        SecurityKey rsa = service.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
+        SecurityKey rsa = services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
         options.IncludeErrorDetails = true; // <- great for debugging
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -50,10 +54,10 @@ service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-service.AddControllers();
+services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-service.AddEndpointsApiExplorer();
-service.AddSwaggerGen(option =>
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Version = "v1" });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

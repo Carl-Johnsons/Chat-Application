@@ -80,20 +80,6 @@ services:
     env_file:
       - ./solutions/UploadFileSolution/src/UploadFileService.API/.env
 
-
-  #   chatapi:
-  #     build:
-  #       context: .
-  #       dockerfile: ./ChatAPI/Dockerfile
-  #     container_name: chat-api
-  #     ports:
-  #       - '${API__PORT}:80'
-  #     networks:
-  #       - back-end
-  #     env_file:
-  #       - .env.development
-  #   # SignalR service to enable real-time communication
-
   websocket:
     build:
       context: ./solutions/ChatHubSolution
