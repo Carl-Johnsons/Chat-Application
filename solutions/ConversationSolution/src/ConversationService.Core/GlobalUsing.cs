@@ -1,1 +1,1 @@
-﻿global using ConversationService.Core;
+﻿global using ConversationService.Core.Entities;

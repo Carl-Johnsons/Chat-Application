@@ -2,9 +2,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-using ConversationService.Core.Entities;
+using MediatR;
 using ConversationService.Core.DTOs;
-using ConversationService.API.Repositories;
+using ConversationService.Core.Entities;
+
 
 namespace ChatAPI.Controllers;
 
@@ -13,30 +14,29 @@ namespace ChatAPI.Controllers;
 //[Authorize]
 public partial class ConversationController : ControllerBase
 {
-    private ConversationRepository _conversationRepository;
-    private ConversationUsersRepository _conversationUsersRepository;
-    public ConversationController()
-    {
-        _conversationRepository = new ConversationRepository();
-        _conversationUsersRepository = new ConversationUsersRepository();
+    private readonly IMediator _mediator;
+    public ConversationController(IMediator mediator) {
+        _mediator = mediator;
     }
 
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        var conversations = _conversationRepository.Get();
+        var conversations = await _mediator.Send(new GetAllConversationsQuery());
         return Ok(conversations);
     }
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var conversation = _conversationRepository.Get(id);
+        var conversation = await _mediator.Send(new GetConversationQuery(id));
         return Ok(conversation);
     }
     [HttpGet("User/{userId}")]
-    public IActionResult GetConversationListByUserId(int userId)
+    public async Task<IActionResult> GetConversationListByUserId(int userId)
     {
-        var cuList = _conversationUsersRepository.GetByUserId(userId);
+        var query = new GetConversationListByUserIdQuery(userId);
+        var cuList = await _mediator.Send(query);
+
         // base serialization make derived class return to base class, so using alternative way
         var jsonSettings = new JsonSerializerSettings
         {
@@ -51,45 +51,50 @@ public partial class ConversationController : ControllerBase
         return Content(json, "application/json");
     }
     [HttpGet("Member/{conversationId}")]
-    public IActionResult GetMemberListByConversationId(int conversationId)
+    public async Task<IActionResult> GetMemberListByConversationId(int conversationId)
     {
-        var cuList = _conversationUsersRepository.GetByConversationId(conversationId);
+        var query = new GetMemberListByConversationIdQuery(conversationId);
+        var cuList = await _mediator.Send(query);
         return Ok(cuList);
     }
 
     [HttpPost]
-    public IActionResult CreateIndividualConversation([FromBody] ConversationWithMembersId conversationWithMembersId)
+    public async Task<IActionResult> CreateIndividualConversation([FromBody] ConversationWithMembersId conversationWithMembersId)
     {
-        _conversationRepository.AddConversationWithMemberId(conversationWithMembersId);
+        var command = new CreateIndividualConversationCommand(conversationWithMembersId);
+        await _mediator.Send(command);
         return CreatedAtAction(nameof(Get), new
         {
             id = conversationWithMembersId.Id
         }, conversationWithMembersId);
     }
     [HttpPost("Group")]
-    public IActionResult CreateGroupConversation([FromBody] GroupConversationWithMembersId conversationWithMembersId)
+    public async Task<IActionResult> CreateGroupConversation([FromBody] GroupConversationWithMembersId conversationWithMembersId)
     {
         if (conversationWithMembersId.MembersId == null || (conversationWithMembersId.MembersId != null && conversationWithMembersId.MembersId.Count <= 2))
         {
             return StatusCode(StatusCodes.Status406NotAcceptable, "Can't create a group less than 3 members");
         }
-        _conversationRepository.AddConversationWithMemberId(conversationWithMembersId);
+        var command = new CreateGroupConversationCommand(conversationWithMembersId);
+        await _mediator.Send(command);
         return CreatedAtAction(nameof(Get), new
         {
             id = conversationWithMembersId.Id
         }, conversationWithMembersId);
     }
     [HttpPut]
-    public IActionResult Update([FromBody] Conversation conversation)
+    public async Task<IActionResult> Update([FromBody] Conversation conversation)
     {
-        _conversationRepository.Update(conversation);
+        var command = new UpdateConversationCommand(conversation);
+        await _mediator.Send(command);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        _conversationRepository.Delete(id);
+        var command = new DeleteConversationCommand(id);
+        await _mediator.Send(command);
         return NoContent();
     }
 }

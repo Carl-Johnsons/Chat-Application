@@ -1,0 +1,9 @@
+﻿global using ConversationService.API.CQRS.ConversationCQRS.Commands.CreateGroupConversation;
+global using ConversationService.API.CQRS.ConversationCQRS.Commands.CreateIndividualConversation;
+global using ConversationService.API.CQRS.ConversationCQRS.Commands.DeleteConversation;
+global using ConversationService.API.CQRS.ConversationCQRS.Commands.UpdateConversation;
+
+global using ConversationService.API.CQRS.ConversationCQRS.Queries.GetAllConversations;
+global using ConversationService.API.CQRS.ConversationCQRS.Queries.GetConversation;
+global using ConversationService.API.CQRS.ConversationCQRS.Queries.GetConversationListByUserId;
+global using ConversationService.API.CQRS.ConversationCQRS.Queries.GetMemberListByConversationId;

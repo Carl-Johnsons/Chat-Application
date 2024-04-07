@@ -1,6 +1,8 @@
-﻿using ConversationService.API.Repositories;
-using ConversationService.Core.DTOs;
+﻿using ConversationService.Core.DTOs;
 using ConversationService.Core.Entities;
+using MediatR;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -12,20 +14,14 @@ namespace ConversationService.API.Controllers;
 public partial class UserController : ControllerBase
 {
     //private static readonly HttpClient _client = new();
-    private readonly FriendRepository _friendRepo;
-    private readonly FriendRequestRepository _friendRequestRepo;
-    private readonly ConversationRepository _conversationRepo;
-    private readonly ConversationUsersRepository _conversationUserRepo;
+    private readonly IMediator _mediator;
     private UserClaim? CurrentUserClaim => GetCurrentUserClaim();
 
     //private readonly MapperConfiguration mapperConfig;
     //private readonly Mapper mapper;
-    public UserController()
+    public UserController(IMediator mediator)
     {
-        _friendRepo = new FriendRepository();
-        _conversationRepo = new ConversationRepository();
-        _conversationUserRepo = new ConversationUsersRepository();
-        _friendRequestRepo = new FriendRequestRepository();
+        _mediator = mediator;
 
         //mapperConfig = new MapperConfiguration(cfg =>
         //{
@@ -131,136 +127,56 @@ public partial class UserController : ControllerBase
     //    _userRepository.Delete(id);
     //    return NoContent();
     //}
-
     [HttpGet("Friend")]
     public IActionResult GetFriend()
     {
-        if (CurrentUserClaim == null)
-        {
-            return Unauthorized();
-        }
-        var fList = _friendRepo.GetByUserId(CurrentUserClaim.UserId);
+        var query = new GetFriendsQuery(CurrentUserClaim.UserId);
+        var fList = _mediator.Send(query);
         return Ok(fList);
     }
 
     [HttpPost("Friend/{receiverId}")]
     public async Task<IActionResult> AddFriend(int? receiverId)
     {
-        if (CurrentUserClaim == null)
-        {
-            return Unauthorized();
-        }
-        if (receiverId == null)
-        {
-            return BadRequest("ReceiverId cannot be null!");
-        }
-
-
-        try
-        {
-            // Check if friendRequest is existed
-            var senderId = CurrentUserClaim.UserId;
-            var frList = _friendRequestRepo.GetByReceiverId((int)receiverId);
-            bool hasFriendRequest = false;
-            foreach (var friendRequest in frList)
-            {
-                if ((friendRequest.SenderId == (int)senderId && friendRequest.ReceiverId == (int)receiverId)
-                || (friendRequest.SenderId == (int)receiverId && friendRequest.ReceiverId == (int)senderId))
-                {
-                    hasFriendRequest = true;
-                }
-            }
-            if (!hasFriendRequest)
-            {
-                return BadRequest("Friend request does not exist! Aborting operation add friend");
-            }
-
-            Friend friend = new()
-            {
-                UserId = senderId,
-                FriendId = (int)receiverId
-            };
-
-            int affectedRow = _friendRepo.Add(friend);
-            if (affectedRow == 0)
-            {
-                return NotFound();
-            }
-
-            // After adding the friend, send a request to remove the friend request
-            _friendRequestRepo.Delete(senderId, (int)receiverId);
-            //Check if existed conversation
-            var cu = _conversationUserRepo.GetIndividualConversation((int)senderId, (int)receiverId);
-            if (cu != null)
-            {
-                return StatusCode(StatusCodes.Status201Created, "2 users already have an existed conversation. Aborting creating a new one");
-            }
-            var conversation = _conversationRepo.AddConversationWithMemberId(new ConversationWithMembersId()
-            {
-                Type = "Individual",
-                MembersId = new List<int>() {
-                        senderId,(int)receiverId
-                    }
-            });
-
-            return StatusCode(StatusCodes.Status201Created, conversation);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        var command = new AddFriendCommand(CurrentUserClaim, receiverId);
+        var conversation = await _mediator.Send(command);
+        return StatusCode(StatusCodes.Status201Created, conversation);
     }
 
     [HttpDelete("Friend/{friendId}")]
-    public IActionResult RemoveFriend(int friendId)
+    public async Task<IActionResult> RemoveFriend(int friendId)
     {
-        if (CurrentUserClaim == null)
-        {
-            return Unauthorized();
-        }
-        _friendRepo.Delete(CurrentUserClaim.UserId, friendId);
+        var command = new DeleteFriendCommand(CurrentUserClaim, friendId);
+        await _mediator.Send(command);
         return NoContent();
     }
     [HttpGet("FriendRequests/Receiver/{receiverId}")]
-    public IActionResult GetFriendRequestsByReceiverId(int receiverId)
+    public async Task<IActionResult> GetFriendRequestsByReceiverId(int receiverId)
     {
-        var frList = _friendRequestRepo.GetByReceiverId(receiverId);
+        var query = new GetFriendRequestsByReceiverIdQuery(receiverId);
+        var frList = await _mediator.Send(query);
         return Ok(frList);
     }
 
     [HttpGet("FriendRequests/Sender/{senderId}")]
-    public IActionResult GetFriendRequestsBySenderId(int senderId)
+    public async Task<IActionResult> GetFriendRequestsBySenderId(int senderId)
     {
-        var frList = _friendRequestRepo.GetBySenderId(senderId);
+        var query = new GetFriendRequestsBySenderIdQuery(senderId);
+        var frList = await _mediator.Send(query);
         return Ok(frList);
     }
     [HttpPost("FriendRequest")]
-    public IActionResult SendFriendRequest([FromBody] FriendRequest friendRequest)
+    public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequest friendRequest)
     {
-        friendRequest.Status = "Status";
-        friendRequest.Date = DateTime.Now;
-        try
-        {
-            int affectedRow = _friendRequestRepo.Add(friendRequest);
-            if (affectedRow == 0)
-            {
-                return NotFound("Can't send friend request");
-            }
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var command = new SendFriendRequestCommand(friendRequest);
+        await _mediator.Send(command);
         return CreatedAtAction("GetFriendRequestsByReceiverId", new { friendRequest.ReceiverId }, friendRequest);
     }
     [HttpDelete("FriendRequest/{senderId}")]
-    public IActionResult RemoveFriendRequest(int senderId)
+    public async Task<IActionResult> DeleteFriendRequest(int senderId)
     {
-        if (CurrentUserClaim == null)
-        {
-            return Unauthorized();
-        }
-        _friendRequestRepo.Delete(senderId, CurrentUserClaim.UserId);
+        var command = new DeleteFriendRequestCommand(senderId, CurrentUserClaim);
+        await _mediator.Send(command);
         return NoContent();
     }
 }

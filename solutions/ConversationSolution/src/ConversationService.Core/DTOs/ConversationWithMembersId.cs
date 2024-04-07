@@ -1,4 +1,4 @@
-﻿using ConversationService.Core.Entities;
+﻿
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 

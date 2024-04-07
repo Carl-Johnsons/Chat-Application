@@ -1,4 +1,5 @@
-﻿using ConversationService.Core.Entities;
+﻿
+using ConversationService.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Infrastructure;

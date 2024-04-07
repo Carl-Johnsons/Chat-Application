@@ -1,6 +1,5 @@
-﻿using ConversationService.API.Repositories;
-using ConversationService.Core.Constants;
-using ConversationService.Core.Entities;
+﻿using ConversationService.Core.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConversationService.API.Controllers;
@@ -10,81 +9,47 @@ namespace ConversationService.API.Controllers;
 //[Authorize]
 public partial class MessageController : ControllerBase
 {
-    private readonly MessageRepository messageRepository;
-    public MessageController()
+    private readonly IMediator _mediator;
+    public MessageController(IMediator mediator)
     {
-        messageRepository = new MessageRepository();
+        _mediator = mediator;
     }
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        var messages = messageRepository.Get();
-        if (messages == null)
-        {
-            return NotFound();
-        }
+        var messages = await _mediator.Send(new GetAllMessagesQuery());
         return Ok(messages);
     }
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var message = messageRepository.Get(id);
-        if (message == null)
-        {
-            return NotFound();
-        }
+        var message = await _mediator.Send(new GetMessageQuery(id));
         return Ok(message);
     }
     //GET api/Messages/Conversation/1?skip=1
     [HttpGet("Conversation/{id}")]
-    public IActionResult GetByConversationId(int id, int? skip)
+    public async Task<IActionResult> GetByConversationId(int id, int? skip)
     {
         if (skip == null)
         {
             skip = 0;
         }
-        var messages = messageRepository.Get(id, (int)skip);
-        if (messages == null)
-        {
-            return NotFound();
-        }
+        var messages = await _mediator.Send(new GetMessagesByConversationIdQuery(id, (int)skip));
         return Ok(messages);
     }
     [HttpGet("Conversation/{conversationId}/last")]
-    public IActionResult GetLast(int? conversationId)
+    public async Task<IActionResult> GetLast(int conversationId)
     {
-        var m = messageRepository.GetLast(conversationId);
+        var m = await _mediator.Send(new GetLastMessageQuery(conversationId));
         return Ok(m);
     }
     [HttpPost]
-    public IActionResult SendClientMessage([FromBody] Message message)
+    public async Task<IActionResult> SendClientMessage([FromBody] Message message)
     {
-        message.Time = DateTime.Now;
-        message.Source = MessageConstant.Source.CLIENT;
-        message.Active = true;
-
-        messageRepository.AddMessage(message);
+        await _mediator.Send(new SendClientMessageCommand(message));
         return CreatedAtAction(nameof(Get), new
         {
             id = message.Id
         }, message);
-    }
-
-    [HttpDelete("{id}")]
-    public IActionResult DeleteMessage(int id)
-    {
-        try
-        {
-            int result = messageRepository.DeleteMessage(id);
-            if (result < 1)
-            {
-                return BadRequest("Operation delete message failed");
-            }
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 }
