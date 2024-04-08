@@ -3,14 +3,9 @@ using System.Security.Claims;
 
 using MediatR;
 using AuthService.Core.Entities;
-using AuthService.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using AuthService.API.Utils;
-using AuthService.API.Commands.Login;
 using AuthService.Core.DTOs;
-using AuthService.API.Commands.Refresh;
-using AuthService.API.Commands.Register;
-using AuthService.API.Queries.GetCurrentUser;
 
 namespace AuthService.API.Controllers;
 

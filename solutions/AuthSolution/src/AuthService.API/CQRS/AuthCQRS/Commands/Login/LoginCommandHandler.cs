@@ -4,20 +4,23 @@ using AuthService.Core.Entities;
 using AuthService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using AuthService.Core.DTOs;
+using AuthService.Infrastructure.Repositories;
 
-namespace AuthService.API.Commands.Login;
+namespace AuthService.API.CQRS.AuthCQRS.Commands.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, TokenResponse>
+public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, TokenResponse>
 {
     private readonly ApplicationDbContext _context = new();
+    private readonly UserRepository _userRepository = new();
+    private readonly AccountRepository _accountRepository = new();
     public async Task<TokenResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
+        string phoneNumber = request.LoginDTO.PhoneNumber;
+        string password = request.LoginDTO.Password;
+
         Account? account;
         User? user;
-        account = _context.Accounts
-                          .Where(acc => acc.PhoneNumber == request.LoginDTO.PhoneNumber
-                                && acc.Password == request.LoginDTO.Password)
-                          .SingleOrDefault();
+        account = _accountRepository.Get(phoneNumber, password);
         if (account == null)
         {
             throw new Exception("Account not found");
@@ -38,7 +41,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, TokenResponse>
         user.Account.Token.RefreshTokenCreated = refreshToken.TokenCreatedAt;
         user.Account.Token.RefreshTokenExpired = refreshToken.TokenExpiredAt;
 
-        _context.Users.Update(user);
+        _userRepository.Update(user);
         await _context.SaveChangesAsync(cancellationToken);
 
         return new TokenResponse()

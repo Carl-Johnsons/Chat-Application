@@ -4,9 +4,9 @@ using AuthService.Core.Entities;
 using AuthService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthService.API.Commands.Refresh;
+namespace AuthService.API.CQRS.AuthCQRS.Commands.Refresh;
 
-public class RefreshCommandHandler : IRequestHandler<RefreshCommand, string?>
+public sealed class RefreshCommandHandler : IRequestHandler<RefreshCommand, string?>
 {
     private readonly ApplicationDbContext _context = new();
     public Task<string?> Handle(RefreshCommand request, CancellationToken cancellationToken)
