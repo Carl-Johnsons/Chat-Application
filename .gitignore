@@ -410,3 +410,7 @@ FodyWeavers.xsd
 chat-sql-data
 data/db
 **/Migrations
+# appsettings
+**appsettings.*
+# IndentityServer4
+**/tempkey.jwk
