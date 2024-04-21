@@ -1,45 +1,21 @@
-﻿using ConversationService.Core.Constants;
-using ConversationService.Core.Entities;
+﻿namespace ConversationService.Infrastructure.Persistence.Repositories;
 
-namespace ConversationService.Infrastructure.DAO;
-
-public class ConversationUserDAO
+internal sealed class ConversationUsersRepository : BaseRepository<ConversationUser>
 {
-    private static ConversationUserDAO? instance = null;
-    private static readonly object instanceLock = new ();
-
-    private ConversationUserDAO() { }
-
-    public static ConversationUserDAO Instance
+    public ConversationUsersRepository(ApplicationDbContext context) : base(context)
     {
-        get
-        {
-            lock (instanceLock)
-            {
-                instance ??= new ConversationUserDAO();
-                return instance;
-            }
-        }
-    }
-    public List<ConversationUser> Get()
-    {
-        using var _context = new ApplicationDbContext();
-        return [.. _context.ConversationUsers];
     }
     public ConversationUser? Get(int conversationId, int userId)
     {
-        using var _context = new ApplicationDbContext();
         return _context.ConversationUsers
-                       .SingleOrDefault(cu => cu.ConversationId == conversationId && cu.UserId == userId);
+                         .SingleOrDefault(cu => cu.ConversationId == conversationId && cu.UserId == userId);
     }
     public List<ConversationUser> GetByConversationId(int conversationId)
     {
-        using var _context = new ApplicationDbContext();
         return [.. _context.ConversationUsers.Where(cu => cu.ConversationId == conversationId)];
     }
     public List<ConversationUser> GetByUserId(int userId)
     {
-        using var _context = new ApplicationDbContext();
         var conversationUsers = _context.ConversationUsers
                         .Where(cu => cu.UserId == userId)
                         .ToList();
@@ -79,21 +55,6 @@ public class ConversationUserDAO
             }
         }
         return null;
-    }
-    public void Add(ConversationUser conversationUser)
-    {
-        using var _context = new ApplicationDbContext();
-        _context.ConversationUsers.Add(conversationUser);
-        _context.SaveChanges();
-    }
-    public void Delete(int conversationId, int userId)
-    {
-        using var _context = new ApplicationDbContext();
-        var conversationUser = Get(conversationId, userId);
-        if (conversationUser != null)
-        {
-            _context.ConversationUsers.Remove(conversationUser);
-            _context.SaveChanges();
-        };
+
     }
 }
