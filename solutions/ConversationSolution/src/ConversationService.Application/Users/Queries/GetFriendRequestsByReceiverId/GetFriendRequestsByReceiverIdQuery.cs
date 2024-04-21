@@ -1,13 +1,3 @@
-﻿using ConversationService.Domain.Entities;
-using MediatR;
+﻿namespace ConversationService.Application.Users.Queries.GetFriendRequestsByReceiverId;
 
-namespace ConversationService.Application.Users.Queries.GetFriendRequestsByReceiverId;
-
-public class GetFriendRequestsByReceiverIdQuery : IRequest<List<FriendRequest>>
-{
-    public int ReceiverId { get; set; }
-    public GetFriendRequestsByReceiverIdQuery(int receiverId)
-    {
-        ReceiverId = receiverId;
-    }
-}
+public record GetFriendRequestsByReceiverIdQuery(int ReceiverId) : IRequest<List<FriendRequest>>;

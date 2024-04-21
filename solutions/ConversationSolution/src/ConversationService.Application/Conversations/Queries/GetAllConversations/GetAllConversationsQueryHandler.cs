@@ -2,9 +2,15 @@
 
 public class GetAllConversationsQueryHandler : IRequestHandler<GetAllConversationsQuery, List<Conversation>>
 {
-    private readonly ConversationRepository _conversationRepository = new();
+    private readonly IConversationRepository _conversationRepository;
+
+    public GetAllConversationsQueryHandler(IConversationRepository conversationRepository)
+    {
+        _conversationRepository = conversationRepository;
+    }
+
     public Task<List<Conversation>> Handle(GetAllConversationsQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(_conversationRepository.Get());
+        return _conversationRepository.GetAsync();
     }
 }

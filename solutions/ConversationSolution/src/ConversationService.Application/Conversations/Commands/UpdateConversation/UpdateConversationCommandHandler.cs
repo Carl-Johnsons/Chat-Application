@@ -2,11 +2,18 @@
 
 public class UpdateConversationCommandHandler : IRequestHandler<UpdateConversationCommand>
 {
-    private readonly ConversationRepository _conversationRepository = new();
-    public Task Handle(UpdateConversationCommand request, CancellationToken cancellationToken)
+    private readonly IConversationRepository _conversationRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public UpdateConversationCommandHandler(IConversationRepository conversationRepository, IUnitOfWork unitOfWork)
+    {
+        _conversationRepository = conversationRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task Handle(UpdateConversationCommand request, CancellationToken cancellationToken)
     {
         var conversationToUpdate = request.Conversation;
         _conversationRepository.Update(conversationToUpdate);
-        return Task.CompletedTask;
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
     }
 }

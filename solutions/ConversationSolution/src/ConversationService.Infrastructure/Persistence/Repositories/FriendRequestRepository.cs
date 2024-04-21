@@ -1,27 +1,23 @@
 ﻿namespace ConversationService.Infrastructure.Persistence.Repositories;
 
-internal sealed class FriendRequestRepository : BaseRepository<FriendRequest>
+internal sealed class FriendRequestRepository : BaseRepository<FriendRequest>, IFriendRequestRepository
 {
     public FriendRequestRepository(ApplicationDbContext context) : base(context)
     {
     }
 
-    public List<FriendRequest> GetByReceiverId(int? receiverId)
+    public Task<List<FriendRequest>> GetByReceiverIdAsync(int receiverId)
     {
-        _ = receiverId ?? throw new Exception("Receiver Id is null");
-        return [.. _context.FriendRequests.Where(fr => fr.ReceiverId == receiverId)];
+        return _context.FriendRequests.Where(fr => fr.ReceiverId == receiverId).ToListAsync();
     }
-    public List<FriendRequest> GetBySenderId(int? senderId)
+    public Task<List<FriendRequest>> GetBySenderIdAsync(int senderId)
     {
-        _ = senderId ?? throw new Exception("Sender Id is null");
-        return [.. _context.FriendRequests.Where(fr => fr.SenderId == senderId)];
+        return _context.FriendRequests.Where(fr => fr.SenderId == senderId).ToListAsync();
     }
-    public FriendRequest? GetBySenderIdAndReceiverId(int? senderId, int? receiverId)
+    public Task<FriendRequest?> GetBySenderIdAndReceiverIdAsync(int? senderId, int? receiverId)
     {
-        _ = senderId ?? throw new Exception("Sender Id is null");
-        _ = receiverId ?? throw new Exception("Receiver Id is null");
         return _context.FriendRequests
-                .FirstOrDefault(fr => fr.SenderId == senderId
-                            && fr.ReceiverId == receiverId);
+                .SingleOrDefaultAsync(fr => fr.SenderId == senderId
+                                    && fr.ReceiverId == receiverId);
     }
 }

@@ -1,12 +1,15 @@
 
-using System.Reflection;
+using ConversationService.Application;
+using ConversationService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
-services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+services.AddApplicationServices();
+services.AddInfrastructureServices(builder.Configuration);
 
 services.AddControllers();
+
 
 services.AddEndpointsApiExplorer();
 var app = builder.Build();

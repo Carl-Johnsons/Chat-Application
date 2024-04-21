@@ -2,7 +2,13 @@
 
 public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConversationListByUserIdQuery, List<ConversationUser>>
 {
-    private readonly ConversationUsersRepository _conversationUsersRepository = new();
+    private readonly IConversationUsersRepository _conversationUsersRepository;
+
+    public GetConversationListByUserIdQueryHandler(IConversationUsersRepository conversationUsersRepository)
+    {
+        _conversationUsersRepository = conversationUsersRepository;
+    }
+
     public Task<List<ConversationUser>> Handle(GetConversationListByUserIdQuery request, CancellationToken cancellationToken)
     {
         var userId = request.UserId;

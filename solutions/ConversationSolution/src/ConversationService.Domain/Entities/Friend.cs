@@ -4,7 +4,7 @@ namespace ConversationService.Domain.Entities;
 
 [Table("Friend")]
 [PrimaryKey(nameof(UserId), nameof(FriendId))]
-public partial class Friend
+public partial class Friend : BaseEntity
 {
     [Column("User_Id")]
     public int UserId { get; set; }

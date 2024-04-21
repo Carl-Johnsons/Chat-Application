@@ -4,10 +4,8 @@ namespace ConversationService.Domain.Entities;
 
 [Table("Conversation")]
 [PrimaryKey(nameof(Id))]
-public class Conversation
+public class Conversation : BaseEntity
 {
-    [Column("Id")]
-    public int Id { get; set; }
     [Column("Type")]
     public string Type { get; set; } = null!;
     [Column("Created_At")]

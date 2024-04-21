@@ -1,18 +1,18 @@
 ﻿namespace ConversationService.Infrastructure.Persistence.Repositories;
 
-internal sealed class ConversationUsersRepository : BaseRepository<ConversationUser>
+internal sealed class ConversationUsersRepository : BaseRepository<ConversationUser>, IConversationUsersRepository
 {
     public ConversationUsersRepository(ApplicationDbContext context) : base(context)
     {
     }
-    public ConversationUser? Get(int conversationId, int userId)
+    public Task<ConversationUser?> GetAsync(int conversationId, int userId)
     {
         return _context.ConversationUsers
-                         .SingleOrDefault(cu => cu.ConversationId == conversationId && cu.UserId == userId);
+                         .SingleOrDefaultAsync(cu => cu.ConversationId == conversationId && cu.UserId == userId);
     }
-    public List<ConversationUser> GetByConversationId(int conversationId)
+    public Task<List<ConversationUser>> GetByConversationIdAsync(int conversationId)
     {
-        return [.. _context.ConversationUsers.Where(cu => cu.ConversationId == conversationId)];
+        return _context.ConversationUsers.Where(cu => cu.ConversationId == conversationId).ToListAsync();
     }
     public List<ConversationUser> GetByUserId(int userId)
     {

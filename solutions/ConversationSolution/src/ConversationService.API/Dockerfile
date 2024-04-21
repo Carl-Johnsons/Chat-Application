@@ -10,7 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/ConversationService.API/ConversationService.API.csproj", "src/ConversationService.API/"]
-COPY ["src/ConversationService.Core/ConversationService.Core.csproj", "src/ConversationService.Core/"]
+COPY ["src/ConversationService.Application/ConversationService.Application.csproj", "src/ConversationService.Application/"]
+COPY ["src/ConversationService.Domain/ConversationService.Domain.csproj", "src/ConversationService.Domain/"]
 COPY ["src/ConversationService.Infrastructure/ConversationService.Infrastructure.csproj", "src/ConversationService.Infrastructure/"]
 RUN dotnet restore "./src/ConversationService.API/ConversationService.API.csproj"
 COPY . .

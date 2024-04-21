@@ -2,9 +2,15 @@
 
 public class GetConversationQueryHandlercs : IRequestHandler<GetConversationQuery, Conversation?>
 {
-    private readonly ConversationRepository _conversationRepository = new();
+    private readonly IConversationRepository _conversationRepository;
+
+    public GetConversationQueryHandlercs(IConversationRepository conversationRepository)
+    {
+        _conversationRepository = conversationRepository;
+    }
+
     public Task<Conversation?> Handle(GetConversationQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(_conversationRepository.Get(request.ConversationId));
+        return _conversationRepository.GetByIdAsync(request.ConversationId);
     }
 }

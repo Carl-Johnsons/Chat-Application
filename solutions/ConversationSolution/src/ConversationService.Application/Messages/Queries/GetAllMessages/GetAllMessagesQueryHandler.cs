@@ -1,14 +1,16 @@
-﻿using ConversationService.Infrastructure.Repositories;
-using MediatR;
-using ConversationService.Domain.Entities;
-
-namespace ConversationService.Application.Messages.Queries.GetAllMessages;
+﻿namespace ConversationService.Application.Messages.Queries.GetAllMessages;
 
 public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, List<Message>>
 {
-    private readonly MessageRepository _messageRepository = new();
+    private readonly IMessageRepository _messageRepository;
+
+    public GetAllMessagesQueryHandler(IMessageRepository messageRepository)
+    {
+        _messageRepository = messageRepository;
+    }
+
     public Task<List<Message>> Handle(GetAllMessagesQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(_messageRepository.Get());
+        return _messageRepository.GetAsync();
     }
 }

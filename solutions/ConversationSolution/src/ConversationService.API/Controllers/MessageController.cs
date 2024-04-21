@@ -1,4 +1,9 @@
-﻿using ConversationService.Core.Entities;
+﻿using ConversationService.Application.Messages.Commands.SendClientMessage;
+using ConversationService.Application.Messages.Queries.GetAllMessages;
+using ConversationService.Application.Messages.Queries.GetLastMessage;
+using ConversationService.Application.Messages.Queries.GetMessage;
+using ConversationService.Application.Messages.Queries.GetMessagesByConversationId;
+using ConversationService.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,23 +12,21 @@ namespace ConversationService.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 //[Authorize]
-public partial class MessageController : ControllerBase
+public partial class MessageController : ApiControllerBase
 {
-    private readonly IMediator _mediator;
-    public MessageController(IMediator mediator)
+    public MessageController(ISender sender) : base(sender)
     {
-        _mediator = mediator;
     }
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var messages = await _mediator.Send(new GetAllMessagesQuery());
+        var messages = await _sender.Send(new GetAllMessagesQuery());
         return Ok(messages);
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var message = await _mediator.Send(new GetMessageQuery(id));
+        var message = await _sender.Send(new GetMessageQuery(id));
         return Ok(message);
     }
     //GET api/Messages/Conversation/1?skip=1
@@ -34,19 +37,19 @@ public partial class MessageController : ControllerBase
         {
             skip = 0;
         }
-        var messages = await _mediator.Send(new GetMessagesByConversationIdQuery(id, (int)skip));
+        var messages = await _sender.Send(new GetMessagesByConversationIdQuery(id, (int)skip));
         return Ok(messages);
     }
     [HttpGet("Conversation/{conversationId}/last")]
     public async Task<IActionResult> GetLast(int conversationId)
     {
-        var m = await _mediator.Send(new GetLastMessageQuery(conversationId));
+        var m = await _sender.Send(new GetLastMessageQuery(conversationId));
         return Ok(m);
     }
     [HttpPost]
     public async Task<IActionResult> SendClientMessage([FromBody] Message message)
     {
-        await _mediator.Send(new SendClientMessageCommand(message));
+        await _sender.Send(new SendClientMessageCommand(message));
         return CreatedAtAction(nameof(Get), new
         {
             id = message.Id

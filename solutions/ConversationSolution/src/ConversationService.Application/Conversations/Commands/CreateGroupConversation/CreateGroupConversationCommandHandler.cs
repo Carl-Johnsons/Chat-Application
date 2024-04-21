@@ -2,9 +2,18 @@
 
 public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroupConversationCommand>
 {
-    private readonly ConversationRepository _conversationRepository = new();
-    private readonly ConversationUsersRepository _conversationUserRepository = new();
-    Task IRequestHandler<CreateGroupConversationCommand>.Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
+    private readonly IConversationRepository _conversationRepository;
+    private readonly IConversationUsersRepository _conversationUserRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateGroupConversationCommandHandler(IConversationRepository conversationRepository, IConversationUsersRepository conversationUserRepository, IUnitOfWork unitOfWork)
+    {
+        _conversationRepository = conversationRepository;
+        _conversationUserRepository = conversationUserRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    async Task IRequestHandler<CreateGroupConversationCommand>.Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
     {
         var conversationWithMembersId = request.ConversationWithMembersId;
 
@@ -36,7 +45,6 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
                 });
             }
         }
-
-        return Task.CompletedTask;
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
     }
 }

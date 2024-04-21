@@ -1,8 +1,14 @@
-﻿using ConversationService.Core.DTOs;
-using ConversationService.Core.Entities;
+﻿using ConversationService.Application.Users.Commands.AddFriend;
+using ConversationService.Application.Users.Commands.DeleteFriend;
+using ConversationService.Application.Users.Commands.DeleteFriendRequest;
+using ConversationService.Application.Users.Commands.SendFriendRequest;
+using ConversationService.Application.Users.Queries.GetFriendRequestBySenderId;
+using ConversationService.Application.Users.Queries.GetFriendRequestsByReceiverId;
+using ConversationService.Application.Users.Queries.GetFriends;
+using ConversationService.Domain.DTOs;
+using ConversationService.Domain.Entities;
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -11,17 +17,15 @@ namespace ConversationService.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 //[Authorize]
-public partial class UserController : ControllerBase
+public partial class UserController : ApiControllerBase
 {
     //private static readonly HttpClient _client = new();
-    private readonly IMediator _mediator;
     private UserClaim? CurrentUserClaim => GetCurrentUserClaim();
 
     //private readonly MapperConfiguration mapperConfig;
     //private readonly Mapper mapper;
-    public UserController(IMediator mediator)
+    public UserController(ISender sender) : base(sender)
     {
-        _mediator = mediator;
 
         //mapperConfig = new MapperConfiguration(cfg =>
         //{
@@ -131,7 +135,7 @@ public partial class UserController : ControllerBase
     public IActionResult GetFriend()
     {
         var query = new GetFriendsQuery(CurrentUserClaim.UserId);
-        var fList = _mediator.Send(query);
+        var fList = _sender.Send(query);
         return Ok(fList);
     }
 
@@ -139,7 +143,7 @@ public partial class UserController : ControllerBase
     public async Task<IActionResult> AddFriend(int? receiverId)
     {
         var command = new AddFriendCommand(CurrentUserClaim, receiverId);
-        var conversation = await _mediator.Send(command);
+        var conversation = await _sender.Send(command);
         return StatusCode(StatusCodes.Status201Created, conversation);
     }
 
@@ -147,14 +151,14 @@ public partial class UserController : ControllerBase
     public async Task<IActionResult> RemoveFriend(int friendId)
     {
         var command = new DeleteFriendCommand(CurrentUserClaim, friendId);
-        await _mediator.Send(command);
+        await _sender.Send(command);
         return NoContent();
     }
     [HttpGet("FriendRequests/Receiver/{receiverId}")]
     public async Task<IActionResult> GetFriendRequestsByReceiverId(int receiverId)
     {
         var query = new GetFriendRequestsByReceiverIdQuery(receiverId);
-        var frList = await _mediator.Send(query);
+        var frList = await _sender.Send(query);
         return Ok(frList);
     }
 
@@ -162,21 +166,21 @@ public partial class UserController : ControllerBase
     public async Task<IActionResult> GetFriendRequestsBySenderId(int senderId)
     {
         var query = new GetFriendRequestsBySenderIdQuery(senderId);
-        var frList = await _mediator.Send(query);
+        var frList = await _sender.Send(query);
         return Ok(frList);
     }
     [HttpPost("FriendRequest")]
     public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequest friendRequest)
     {
         var command = new SendFriendRequestCommand(friendRequest);
-        await _mediator.Send(command);
+        await _sender.Send(command);
         return CreatedAtAction("GetFriendRequestsByReceiverId", new { friendRequest.ReceiverId }, friendRequest);
     }
     [HttpDelete("FriendRequest/{senderId}")]
     public async Task<IActionResult> DeleteFriendRequest(int senderId)
     {
         var command = new DeleteFriendRequestCommand(senderId, CurrentUserClaim);
-        await _mediator.Send(command);
+        await _sender.Send(command);
         return NoContent();
     }
 }

@@ -1,9 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace ConversationService.Infrastructure.Persistence.Repositories;
 
-namespace ConversationService.Infrastructure.Persistence.Repositories;
-
-internal abstract class BaseRepository<TEntity>
-    where TEntity : BaseEntity
+internal abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
 {
     protected readonly ApplicationDbContext _context;
 

@@ -1,15 +1,16 @@
-﻿using ConversationService.Infrastructure.Repositories;
-using MediatR;
-using ConversationService.Domain.Entities;
-
-namespace ConversationService.Application.Messages.Queries.GetLastMessage;
+﻿namespace ConversationService.Application.Messages.Queries.GetLastMessage;
 
 public class GetLastMessageQueryHandler : IRequestHandler<GetLastMessageQuery, Message?>
 {
-    private readonly MessageRepository _messageRepository = new();
+    private readonly IMessageRepository _messageRepository;
+
+    public GetLastMessageQueryHandler(IMessageRepository messageRepository)
+    {
+        _messageRepository = messageRepository;
+    }
 
     public Task<Message?> Handle(GetLastMessageQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(_messageRepository.GetLast(request.ConversationId));
+        return _messageRepository.GetLastAsync(request.ConversationId);
     }
 }

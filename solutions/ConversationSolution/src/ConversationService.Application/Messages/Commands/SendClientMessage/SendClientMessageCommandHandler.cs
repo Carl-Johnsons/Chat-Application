@@ -1,21 +1,24 @@
-﻿using ConversationService.Infrastructure.Repositories;
-using ConversationService.Core.Constants;
-using MediatR;
-
-namespace ConversationService.Application.Messages.Commands.SendClientMessage;
+﻿namespace ConversationService.Application.Messages.Commands.SendClientMessage;
 
 public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessageCommand>
 {
-    private readonly MessageRepository _messageRepository = new();
+    private readonly IMessageRepository _messageRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public Task Handle(SendClientMessageCommand request, CancellationToken cancellationToken)
+    public SendClientMessageCommandHandler(IMessageRepository messageRepository, IUnitOfWork unitOfWork)
+    {
+        _messageRepository = messageRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task Handle(SendClientMessageCommand request, CancellationToken cancellationToken)
     {
         var message = request.Message;
         message.Time = DateTime.Now;
         message.Source = MessageConstant.Source.CLIENT;
         message.Active = true;
 
-        _messageRepository.AddMessage(message);
-        return Task.CompletedTask;
+        _messageRepository.Add(message);
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
     }
 }

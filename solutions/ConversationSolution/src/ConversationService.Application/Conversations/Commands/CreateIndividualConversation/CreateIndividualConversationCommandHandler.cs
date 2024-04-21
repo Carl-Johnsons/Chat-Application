@@ -2,10 +2,19 @@
 
 public class CreateIndividualConversationCommandHandler : IRequestHandler<CreateIndividualConversationCommand>
 {
-    private readonly ConversationRepository _conversationRepository = new();
-    private readonly ConversationUsersRepository _conversationUserRepository = new();
+    private readonly IConversationRepository _conversationRepository;
+    private readonly IConversationUsersRepository _conversationUserRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public Task Handle(CreateIndividualConversationCommand request, CancellationToken cancellationToken)
+
+    public CreateIndividualConversationCommandHandler(IConversationRepository conversationRepository, IConversationUsersRepository conversationUserRepository, IUnitOfWork unitOfWork)
+    {
+        _conversationRepository = conversationRepository;
+        _conversationUserRepository = conversationUserRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task Handle(CreateIndividualConversationCommand request, CancellationToken cancellationToken)
     {
         var conversationWithMembersId = request.ConversationWithMembersId;
 
@@ -38,6 +47,6 @@ public class CreateIndividualConversationCommandHandler : IRequestHandler<Create
             }
         }
 
-        return Task.CompletedTask;
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
     }
 }

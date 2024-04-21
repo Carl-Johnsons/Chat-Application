@@ -2,10 +2,22 @@
 
 public class DeleteConversationCommandHandler : IRequestHandler<DeleteConversationCommand>
 {
-    private readonly ConversationRepository _conversationRepository = new();
-    public Task Handle(DeleteConversationCommand request, CancellationToken cancellationToken)
+    private readonly IConversationRepository _conversationRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public DeleteConversationCommandHandler(IConversationRepository conversationRepository, IUnitOfWork unitOfWork)
     {
-        _conversationRepository.Delete(request.ConversationId);
-        return Task.CompletedTask;
+        _conversationRepository = conversationRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task Handle(DeleteConversationCommand request, CancellationToken cancellationToken)
+    {
+        var conversation = await _conversationRepository.GetByIdAsync(request.ConversationId);
+        if (conversation != null)
+        {
+            _conversationRepository.Remove(conversation);
+        }
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
     }
 }

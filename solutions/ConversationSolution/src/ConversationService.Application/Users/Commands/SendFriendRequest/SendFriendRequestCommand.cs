@@ -1,13 +1,3 @@
-﻿using ConversationService.Domain.Entities;
-using MediatR;
+﻿namespace ConversationService.Application.Users.Commands.SendFriendRequest;
 
-namespace ConversationService.Application.Users.Commands.SendFriendRequest;
-
-public class SendFriendRequestCommand : IRequest
-{
-    public FriendRequest FriendRequest { get; set; }
-    public SendFriendRequestCommand(FriendRequest friendRequest)
-    {
-        FriendRequest = friendRequest;
-    }
-}
+public record SendFriendRequestCommand(FriendRequest FriendRequest) : IRequest;

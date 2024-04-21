@@ -1,19 +1,20 @@
-﻿using MediatR;
-using ConversationService.Infrastructure.Repositories;
-using ConversationService.Core.DTOs;
-using ConversationService.Domain.Entities;
-
-namespace ConversationService.Application.Users.Commands.AddFriend;
+﻿namespace ConversationService.Application.Users.Commands.AddFriend;
 
 public class AddFriendCommandHandler : IRequestHandler<AddFriendCommand, Conversation>
 {
     private readonly IMediator _mediator;
-    private readonly FriendRepository _friendRepo = new();
-    private readonly FriendRequestRepository _friendRequestRepo = new();
-    private readonly ConversationUsersRepository _conversationUserRepo = new();
-    public AddFriendCommandHandler(IMediator mediator)
+    private readonly IFriendRepository _friendRepo;
+    private readonly IFriendRequestRepository _friendRequestRepo;
+    private readonly IConversationUsersRepository _conversationUserRepo;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public AddFriendCommandHandler(IMediator mediator, IFriendRepository friendRepo, IFriendRequestRepository friendRequestRepo, IConversationUsersRepository conversationUserRepo, IUnitOfWork unitOfWork)
     {
         _mediator = mediator;
+        _friendRepo = friendRepo;
+        _friendRequestRepo = friendRequestRepo;
+        _conversationUserRepo = conversationUserRepo;
+        _unitOfWork = unitOfWork;
     }
     public async Task<Conversation> Handle(AddFriendCommand request, CancellationToken cancellationToken)
     {
@@ -25,12 +26,12 @@ public class AddFriendCommandHandler : IRequestHandler<AddFriendCommand, Convers
         }
         // Check if friendRequest is existed
         var senderId = currentUserClaim.UserId;
-        var frList = _friendRequestRepo.GetByReceiverId((int)receiverId);
+        var frList = await _friendRequestRepo.GetByReceiverIdAsync((int)receiverId);
         bool hasFriendRequest = false;
-        foreach (var friendRequest in frList)
+        foreach (var fr in frList)
         {
-            if (friendRequest.SenderId == senderId && friendRequest.ReceiverId == (int)receiverId
-            || friendRequest.SenderId == (int)receiverId && friendRequest.ReceiverId == senderId)
+            if (fr.SenderId == senderId && fr.ReceiverId == (int)receiverId
+            || fr.SenderId == (int)receiverId && fr.ReceiverId == senderId)
             {
                 hasFriendRequest = true;
             }
@@ -49,7 +50,11 @@ public class AddFriendCommandHandler : IRequestHandler<AddFriendCommand, Convers
         _friendRepo.Add(friend);
 
         // After adding the friend, send a request to remove the friend request
-        _friendRequestRepo.Delete(senderId, (int)receiverId);
+        var friendRequest = await _friendRequestRepo.GetBySenderIdAndReceiverIdAsync(senderId, (int)receiverId);
+        if (friendRequest != null)
+        {
+            _friendRequestRepo.Remove(friendRequest);
+        }
         //Check if existed conversation
         var cu = _conversationUserRepo.GetIndividualConversation(senderId, (int)receiverId);
         if (cu != null)
@@ -62,6 +67,7 @@ public class AddFriendCommandHandler : IRequestHandler<AddFriendCommand, Convers
             MembersId = [senderId, (int)receiverId]
         };
         await _mediator.Send(conversation, cancellationToken);
+        await _unitOfWork.SaveChangeAsync();
         return conversation;
     }
 }

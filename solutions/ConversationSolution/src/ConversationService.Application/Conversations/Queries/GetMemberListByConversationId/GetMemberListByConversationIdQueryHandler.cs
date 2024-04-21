@@ -1,16 +1,17 @@
-﻿using ConversationService.Infrastructure.Repositories;
-using MediatR;
-using ConversationService.Domain.Entities;
-
-namespace ConversationService.Application.Conversations.Queries.GetMemberListByConversationId;
+﻿namespace ConversationService.Application.Conversations.Queries.GetMemberListByConversationId;
 
 public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemberListByConversationIdQuery, List<ConversationUser>>
 {
-    private readonly ConversationUsersRepository _conversationUsersRepository = new();
+    private readonly IConversationUsersRepository _conversationUsersRepository;
+
+    public GetMemberListByConversationIdQueryHandler(IConversationUsersRepository conversationUsersRepository)
+    {
+        _conversationUsersRepository = conversationUsersRepository;
+    }
+
     public Task<List<ConversationUser>> Handle(GetMemberListByConversationIdQuery request, CancellationToken cancellationToken)
     {
         var conversationId = request.ConversationId;
-        var cuList = _conversationUsersRepository.GetByConversationId(conversationId);
-        return Task.FromResult(cuList);
+        return _conversationUsersRepository.GetByConversationIdAsync(conversationId);
     }
 }

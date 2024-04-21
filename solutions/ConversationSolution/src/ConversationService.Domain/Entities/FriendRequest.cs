@@ -6,7 +6,7 @@ namespace ConversationService.Domain.Entities;
 [Table("FriendRequest")]
 [PrimaryKey(nameof(SenderId), nameof(ReceiverId))]
 
-public partial class FriendRequest
+public partial class FriendRequest : BaseEntity
 {
     [Column("Sender_Id")]
     public int SenderId { get; set; }

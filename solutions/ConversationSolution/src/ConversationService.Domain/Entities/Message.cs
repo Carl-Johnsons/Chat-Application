@@ -5,11 +5,8 @@ namespace ConversationService.Domain.Entities;
 
 [Table("Message")]
 [PrimaryKey(nameof(Id))]
-public partial class Message
+public partial class Message : BaseEntity
 {
-    [Column("Id")]
-    public int Id { get; set; }
-
     [Column("Sender_Id")]
     public int? SenderId { get; set; } // This props is null if the message come from the system
     [Column("Conversation_Id")]

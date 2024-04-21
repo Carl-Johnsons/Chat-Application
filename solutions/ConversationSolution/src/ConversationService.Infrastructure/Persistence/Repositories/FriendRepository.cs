@@ -1,37 +1,32 @@
 ﻿namespace ConversationService.Infrastructure.Persistence.Repositories;
 
-internal sealed class FriendRepository : BaseRepository<Friend>
+internal sealed class FriendRepository : BaseRepository<Friend>, IFriendRepository
 {
     public FriendRepository(ApplicationDbContext context) : base(context)
     {
     }
 
-    public List<Friend> GetByUserId(int userId)
+    public Task<List<Friend>> GetByUserIdAsync(int userId)
     {
-        return [.. _context.Friends
+        return _context.Friends
             .Where(f => f.UserId == userId || f.FriendId == userId)
             .Select(f => new Friend
             {
                 FriendId = f.FriendId,
                 UserId = f.UserId,
                 //FriendNavigation = f.UserId == userId ? f.FriendNavigation : f.User
-            })];
+            }).ToListAsync();
     }
-    public List<Friend> GetByFriendId(int friendId)
+    public Task<List<Friend>> GetByFriendIdAsync(int friendId)
     {
-        return [.. _context.Friends.Where(f => f.UserId == friendId || f.FriendId == friendId)];
+        return _context.Friends.Where(f => f.UserId == friendId || f.FriendId == friendId).ToListAsync();
     }
     public Friend? GetFriendsByUserIdOrFriendId(int userId, int friendId)
     {
         return _context.Friends.FirstOrDefault(
               f =>
-              f.UserId == userId && f.FriendId == friendId
-              || f.UserId == friendId && f.FriendId == userId
+                  f.UserId == userId && f.FriendId == friendId
+                  || f.UserId == friendId && f.FriendId == userId
               );
-    }
-    public void Remove(int userId, int friendId)
-    {
-        Friend? friendToRemove = GetFriendsByUserIdOrFriendId(userId, friendId) ?? throw new Exception("Friend not found! Aborting delete operation");
-        _context.Friends.Remove(friendToRemove);
     }
 }

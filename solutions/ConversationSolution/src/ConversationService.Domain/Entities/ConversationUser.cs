@@ -6,7 +6,7 @@ namespace ConversationService.Domain.Entities;
 [Table("ConversationUser")]
 [PrimaryKey(nameof(ConversationId), nameof(UserId))]
 
-public class ConversationUser
+public class ConversationUser : BaseEntity
 {
     [Column("Conversation_Id")]
     public int ConversationId { get; set; }
