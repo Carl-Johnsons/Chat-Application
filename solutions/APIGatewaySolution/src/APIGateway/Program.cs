@@ -1,18 +1,36 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: false);
-var service = builder.Services;
+var builder = new WebHostBuilder();
+builder.UseKestrel()
+       .UseContentRoot(Directory.GetCurrentDirectory())
+       .ConfigureAppConfiguration((hostingContext, config) =>
+       {
+           var env = hostingContext.HostingEnvironment;
+           config.
+               SetBasePath(env.ContentRootPath)
+               .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+               .AddOcelot("Config", env)
+               .AddEnvironmentVariables();
+       });
 
-service.AddOcelot(builder.Configuration);
-service.AddSignalR();
+// Configure service
+builder.ConfigureServices(services =>
+{
+    services.AddOcelot();
+    services.AddAuthentication()
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = "http://identity-api";
+            });
+    services.AddSignalR();
+});
 
-var app = builder.Build();
+// Start
+builder.Configure(app =>
+{
+    app.UseOcelot().Wait();
 
-app.MapControllers();
-
-await app.UseOcelot();
-
-
-app.Run();
+})
+.Build()
+.Run();
