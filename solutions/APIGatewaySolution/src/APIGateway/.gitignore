@@ -1,4 +1,0 @@
-# ignore the build version
-ocelot.json
-# Keep all file in Config folder
-!Config/*

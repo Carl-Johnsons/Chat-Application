@@ -409,3 +409,8 @@ FodyWeavers.xsd
 # Database bind mount
 chat-sql-data
 data
+
+# ignore the ocelot.json build version
+/src/APIGateway/ocelot.json
+# Keep all file in Config folder
+!/src/APIGateway/Config/*
