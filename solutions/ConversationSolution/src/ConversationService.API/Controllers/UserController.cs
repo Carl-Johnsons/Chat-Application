@@ -8,7 +8,7 @@ using ConversationService.Application.Users.Queries.GetFriends;
 using ConversationService.Domain.DTOs;
 using ConversationService.Domain.Entities;
 using MediatR;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -16,7 +16,7 @@ namespace ConversationService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public partial class UserController : ApiControllerBase
 {
     //private static readonly HttpClient _client = new();
@@ -36,12 +36,12 @@ public partial class UserController : ApiControllerBase
     }
     private UserClaim? GetCurrentUserClaim()
     {
-        var indentity = HttpContext.User.Identity as ClaimsIdentity;
-        if (indentity == null)
+        var inentity = HttpContext.User.Identity as ClaimsIdentity;
+        if (inentity == null)
         {
             return null;
         }
-        var userClaims = indentity.Claims;
+        var userClaims = inentity.Claims;
         return new UserClaim
         {
             UserId = int.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value),

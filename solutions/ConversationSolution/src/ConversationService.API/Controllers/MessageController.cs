@@ -5,13 +5,14 @@ using ConversationService.Application.Messages.Queries.GetMessage;
 using ConversationService.Application.Messages.Queries.GetMessagesByConversationId;
 using ConversationService.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConversationService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public partial class MessageController : ApiControllerBase
 {
     public MessageController(ISender sender) : base(sender)

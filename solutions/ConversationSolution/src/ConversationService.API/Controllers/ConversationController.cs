@@ -14,12 +14,13 @@ using ConversationService.Application.Conversations.Commands.DeleteConversation;
 using ConversationService.Domain.Entities;
 using ConversationService.Domain.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public partial class ConversationController : ApiControllerBase
 {
     public ConversationController(ISender sender) : base(sender)
