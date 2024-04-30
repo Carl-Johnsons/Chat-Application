@@ -9,7 +9,10 @@
       ],
       "DownstreamPathTemplate": "/api/Upload/{everything}",
       "DownstreamScheme": "http",
-      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
       "UpstreamPathTemplate": "/api/Upload/{everything}"
     }
   ]
