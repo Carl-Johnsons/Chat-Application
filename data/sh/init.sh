@@ -4,15 +4,15 @@ username="sa"
 password="$SA_PASSWORD" 
 script_file="create_database.sql"
 
-indentityDB="$IndentityDB"
+identityDB="$IdentityDB"
 messageDB="$MessageDB"
 
 # Create SQL script file
 cat <<EOF >$script_file
 USE master;
-IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = '$indentityDB')
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = '$identityDB')
 BEGIN
-    CREATE DATABASE $indentityDB;
+    CREATE DATABASE $identityDB;
 END
 IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = '$messageDB')
 BEGIN
@@ -23,7 +23,7 @@ EOF
 /opt/mssql-tools/bin/sqlcmd -S $server -U $username -P $password -i $script_file
 # Check if the command was successful
 if [ $? -eq 0 ]; then
-    echo "Database creation '$indentityDB', '$messageDB' script executed successfully!"
+    echo "Database creation '$identityDB', '$messageDB' script executed successfully!"
 else
     echo "Error executing database creation script"
 fi

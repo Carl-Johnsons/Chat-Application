@@ -37,7 +37,7 @@ services:
     environment:
       ACCEPT_EULA: ${ACCEPT_EULA}
       SA_PASSWORD: ${SA_PASSWORD}
-      IndentityDB: ${IndentityDB}
+      IdentityDB: ${IdentityDB}
       MessageDB: ${MessageDB}
     networks:
       - back-end
@@ -53,11 +53,26 @@ services:
     env_file:
       - ./solutions/APIGatewaySolution/src/APIGateway/.env
 
-  auth-api:
+  # auth-api:
+  #   build:
+  #     context: ./solutions/AuthSolution
+  #     dockerfile: ./src/AuthService.API/Dockerfile
+  #   container_name: auth-service
+  #   ports:
+  #     - '5001:80'
+  #   depends_on:
+  #     sql-server:
+  #       condition: service_healthy
+  #   networks:
+  #     - back-end
+  #   env_file:
+  #     - ./solutions/AuthSolution/src/AuthService.API/.env
+
+  identity-api:
     build:
-      context: ./solutions/AuthSolution
-      dockerfile: ./src/AuthService.API/Dockerfile
-    container_name: auth-service
+      context: ./solutions/IdentitySolution
+      dockerfile: ./src/IdentityService/Dockerfile
+    container_name: identity-service
     ports:
       - '5001:80'
     depends_on:
@@ -66,7 +81,7 @@ services:
     networks:
       - back-end
     env_file:
-      - ./solutions/AuthSolution/src/AuthService.API/.env
+      - ./solutions/IdentitySolution/src/IdentityService/.env
 
   upload-api:
     build:

@@ -412,5 +412,5 @@ data/db
 **/Migrations
 # appsettings
 **appsettings.*
-# IndentityServer4
+# IdentityServer4
 **/tempkey.jwk
