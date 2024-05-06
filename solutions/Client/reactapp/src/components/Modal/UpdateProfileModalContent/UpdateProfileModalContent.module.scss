@@ -1,0 +1,21 @@
+.update-profile-modal-content {
+    width: 384px;
+    box-sizing: border-box;
+    > * {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+.user-name {
+    label {
+        font-size: 14px;
+    }
+}
+
+.personal-information-container {
+    margin-bottom: 114px;
+    .personal-information-row {
+        display: flex;
+        justify-content: space-between;
+    }
+}

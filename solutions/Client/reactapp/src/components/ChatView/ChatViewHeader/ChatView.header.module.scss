@@ -1,0 +1,22 @@
+.avatar-container {
+    margin-right: 14px;
+}
+.conversation-info {
+    .user-name-container {
+        height: 24px;
+        .user-name {
+            font-size: 18px;
+            font-weight: 500;
+        }
+    }
+
+}
+.icon-container {
+    .icon-btn {
+        width: 30px;
+        height: 30px;
+        &.active {
+            background-color: var(--light-blue);
+        }
+    }
+}

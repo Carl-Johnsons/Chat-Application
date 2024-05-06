@@ -1,0 +1,12 @@
+.nav-link {
+    padding: 10px 0px;
+    border: none !important;
+    transition: background-color 0.1s ease-in-out;
+    &:hover {
+        border: none !important;
+        background-color: #0082e5 !important;
+    }
+    &.active {
+        background-color: #006edc !important;
+    }
+}

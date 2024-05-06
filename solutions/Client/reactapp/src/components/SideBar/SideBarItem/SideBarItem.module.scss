@@ -1,0 +1,44 @@
+.side-bar-item {
+    height: 4rem;
+    transition: background-color 0.15s ease-in-out;
+    padding-left: 20px;
+    background-color: var(--light-gray2);
+
+    &:hover {
+        background-color: var(--light-blue-hover-2);
+    }
+    &.active {
+        background-color: var(--light-blue);
+    }
+    .item-description {
+        .item-name-container {
+            font-size: 16px;
+            width: 80%;
+            height: 24px;
+        }
+        .description-container {
+            font-size: 14px;
+            width: 80%;
+            height: 20px;
+            .description {
+                color: #788ba4;
+            }
+        }
+    }
+    .time {
+        color: #788ba4;
+        font-size: 12px;
+    }
+    &.new-message {
+        & .red-dot {
+            background-color: #c31818;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            transform: translate(-100%, -80%);
+        }
+        .description-container {
+            color: black;
+        }
+    }
+}

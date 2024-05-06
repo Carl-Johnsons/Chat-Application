@@ -1,0 +1,29 @@
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+}
+.functional-btn {
+    width: 30px;
+    height: 30px;
+    svg {
+        width: 15px;
+        height: 15px;
+    }
+}
+.user-info-container {
+    border-bottom: 1px solid var(--border-color);
+    .functional-btn-container {
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 12px;
+        .btn-container {
+            width: 70px;
+        }
+    }
+    .name {
+        font-size: larger;
+    }
+}

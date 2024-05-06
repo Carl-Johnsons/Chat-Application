@@ -1,0 +1,11 @@
+# Development image, copy all file build from above and run next.js
+FROM node:21-alpine3.18
+# Run as a non-privileged user
+RUN addgroup -g 1001 -S app && adduser -u 1001 -S app  -G app 
+USER app
+
+WORKDIR /app
+COPY --chown=app:app package.json package-lock.json* ./
+RUN npm i
+COPY --chown=app:app . .
+CMD [ "npm", "run", "dev" ]

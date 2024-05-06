@@ -1,0 +1,10 @@
+.err-msg {
+    color: red;
+}
+.err-msg.visible {
+    opacity: 1;
+}
+
+.err-msg.invisible {
+    opacity: 0;
+}
