@@ -45,15 +45,11 @@ namespace IdentityServer
 
                 var host = CreateHostBuilder(args).Build();
 
-                if (seed)
-                {
-                    Log.Information("Seeding database...");
-                    var config = host.Services.GetRequiredService<IConfiguration>();
-                    var connectionString = Config.GetConnectionString();
-                    SeedData.EnsureSeedData(connectionString);
-                    Log.Information("Done seeding database.");
-                    return 0;
-                }
+                Log.Information("Seeding database...");
+                var config = host.Services.GetRequiredService<IConfiguration>();
+                var connectionString = Config.GetConnectionString();
+                SeedData.EnsureSeedData(connectionString);
+                Log.Information("Done seeding database.");
 
                 Log.Information("Starting host...");
                 host.Run();

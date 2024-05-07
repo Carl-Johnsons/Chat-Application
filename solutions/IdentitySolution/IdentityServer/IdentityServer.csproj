@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\20240507182912_InitApplicationUser.cs" />
+    <Compile Remove="Data\20240507182912_InitApplicationUser.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.0.0" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.0.0" />
 
