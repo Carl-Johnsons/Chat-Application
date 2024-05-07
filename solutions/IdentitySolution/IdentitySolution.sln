@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B818B312-D508-408C-AD73-5AEE03155C31}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8DD18E5D-9D0F-4D7C-9397-D66B619B1E9D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService", "src\IdentityService\IdentityService.csproj", "{62A89B06-FDAD-43D3-A509-C4DB37F7C414}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "IdentityServer\IdentityServer.csproj", "{F7ED669A-9919-49C0-984C-BB53441F05C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{62A89B06-FDAD-43D3-A509-C4DB37F7C414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62A89B06-FDAD-43D3-A509-C4DB37F7C414}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62A89B06-FDAD-43D3-A509-C4DB37F7C414}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62A89B06-FDAD-43D3-A509-C4DB37F7C414}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7ED669A-9919-49C0-984C-BB53441F05C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7ED669A-9919-49C0-984C-BB53441F05C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7ED669A-9919-49C0-984C-BB53441F05C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7ED669A-9919-49C0-984C-BB53441F05C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{62A89B06-FDAD-43D3-A509-C4DB37F7C414} = {B818B312-D508-408C-AD73-5AEE03155C31}
-	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B9EB2A4F-ED7C-4B45-A02E-23A4F452F922}
+		SolutionGuid = {DEFE12DC-3B9E-435C-95B9-5B998CA87168}
 	EndGlobalSection
 EndGlobal
