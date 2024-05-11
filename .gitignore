@@ -414,3 +414,7 @@ data/db
 **appsettings.*
 # IdentityServer4
 **/tempkey.jwk
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
