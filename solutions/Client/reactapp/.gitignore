@@ -30,3 +30,7 @@ dist-ssr
 .next
 next-env.d.ts
 dist
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

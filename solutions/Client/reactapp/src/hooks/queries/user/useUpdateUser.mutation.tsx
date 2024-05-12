@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
  * @returns
  */
 export const updateUser = async (user: User): Promise<User | null> => {
-  const url = "/api/Users/" + user.userId;
+  const url = "http://localhost:5001/api/users";
   const response = await axiosInstance.put(url, user);
   return response.data;
 };
@@ -22,7 +22,7 @@ const useUpdateUser = () => {
         exact: true,
       });
       queryClient.invalidateQueries({
-        queryKey: ["users", data?.userId],
+        queryKey: ["users", data?.sub],
         exact: true,
       });
       console.log("Update user successfully!");

@@ -18,7 +18,7 @@ const useModal = () => {
   const handleShowModal = useCallback(
     ({ entityId, modalType }: ModalProps) => {
       let type: ModalType;
-      if (currentUser?.userId === entityId) {
+      if (currentUser?.sub === entityId) {
         type = "Personal";
       } else {
         const friend = (friendList ?? []).filter(
@@ -30,13 +30,7 @@ const useModal = () => {
       setModalType(modalType ?? type);
       setShowModal(true);
     },
-    [
-      currentUser?.userId,
-      friendList,
-      setModalEntityId,
-      setModalType,
-      setShowModal,
-    ]
+    [currentUser?.sub, friendList, setModalEntityId, setModalType, setShowModal]
   );
   const handleHideModal = () => {
     setActiveModal(0);

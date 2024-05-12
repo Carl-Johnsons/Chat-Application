@@ -9,7 +9,11 @@ import { convertISODateToVietnameseFormat } from "@/utils";
 import style from "./ProfileModalContent.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
-import { useGetUser, useGetUsers } from "@/hooks/queries/user";
+import {
+  useGetCurrentUser,
+  useGetUser,
+  useGetUsers,
+} from "@/hooks/queries/user";
 import {
   useGetConversation,
   useGetConversationUsersByConversationId,
@@ -84,8 +88,9 @@ const ProfileModalContent = (variant: Variants) => {
   } else {
     ({ onClickMessaging, onClickMoreMemberInfo } = variant);
   }
-  const { data: userData } = useGetUser(modalEntityId, {
-    enabled: isPersonal || isFriend || isStranger,
+  const { data: currentUserData } = useGetCurrentUser({ enabled: isPersonal });
+  const { data: otherUserData } = useGetUser(modalEntityId, {
+    enabled: isFriend || isStranger,
   });
   const { data: conversationData } = useGetConversation({
     conversationId: modalEntityId,
@@ -95,6 +100,8 @@ const ProfileModalContent = (variant: Variants) => {
     useGetConversationUsersByConversationId(modalEntityId, {
       enabled: isGroup,
     });
+
+  const userData = isPersonal ? currentUserData : otherUserData;
 
   const userIdList = isGroup
     ? conversationUsersData?.flatMap((cu) => cu.userId)
@@ -258,7 +265,7 @@ const ProfileModalContent = (variant: Variants) => {
               const avatar = member?.avatarUrl ?? images.userIcon.src;
               return (
                 <Avatar
-                  key={member?.userId}
+                  key={member?.sub}
                   variant="avatar-img-40px"
                   src={avatar}
                   className={cx(

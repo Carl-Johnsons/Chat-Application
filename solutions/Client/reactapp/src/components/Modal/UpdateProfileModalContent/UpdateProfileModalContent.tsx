@@ -19,7 +19,13 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const { mutate: updateUserMutate } = useUpdateUser();
 
   const [name, setName] = useState(currentUser?.name ?? "");
-  const [gender, setGender] = useState(currentUser?.gender ?? "Nam");
+  const [gender, setGender] = useState(() => {
+    const g = currentUser?.gender;
+    if (!g || g === "Male") {
+      return "Male";
+    }
+    return "Nữ";
+  });
   const date = new Date(currentUser?.dob ?? "1-1-2024");
 
   const [day, setDay] = useState(date.getDate());

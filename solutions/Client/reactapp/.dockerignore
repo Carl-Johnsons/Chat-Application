@@ -1,3 +1,7 @@
 .next
 obj/**
 node_modules/**
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

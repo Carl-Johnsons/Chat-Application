@@ -16,7 +16,6 @@ import ContactContainer from "@/components/ContactView/ContactContainer";
 import ModalContainer from "@/components/Modal/ModalContainer";
 import NavigationBar from "@/components/Nav/NavigationBar";
 import SidebarContent from "@/components/SideBar/SidebarContent";
-import RequireAuth from "@/components/Auth/RequireAuth";
 
 const cx = classNames.bind(styles);
 
@@ -74,4 +73,4 @@ const Home = () => {
   );
 };
 
-export default RequireAuth(Home);
+export default Home;

@@ -55,7 +55,7 @@ const NavigationBar = () => {
     },
     {
       dataContent: "log-out",
-      href: "#",
+      href: "/logout",
       image: images.logOutIcon.src,
       imageAlt: "Log out icon",
     },
@@ -67,7 +67,7 @@ const NavigationBar = () => {
       handleClickScreenSection(true);
       if (linkId === 0) {
         handleShowModal({
-          entityId: currentUser?.userId,
+          entityId: currentUser?.sub,
           modalType: "Personal",
         });
         return;

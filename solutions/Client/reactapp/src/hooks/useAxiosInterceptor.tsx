@@ -29,6 +29,7 @@ const useAxiosInterceptor = () => {
         return Promise.reject(error);
       }
     );
+
     const responseInterceptor = axiosInstance.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
@@ -38,14 +39,14 @@ const useAxiosInterceptor = () => {
           prevRequest._retry = true;
           const newAccessToken = await refreshTokenMutateAsync();
           console.log("Refreshing toker");
-          
+
           // Case: Token expired or invalid navigate user back to login page
           if (!newAccessToken) {
             router.push("/login");
             return;
           }
-          console.log({newAccessToken});
-          
+          console.log({ newAccessToken });
+
           if (prevRequest.headers) {
             prevRequest.headers.Authorization = `Bearer ${newAccessToken.token}`;
           }
