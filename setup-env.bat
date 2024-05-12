@@ -7,7 +7,7 @@ cd .\solutions\APIGatewaySolution\src\APIGateway &&^
 npx dotenv-vault@latest pull &&^
 cd "%project_root%" &&^
 echo Pulling identity service env file .... &&^
-cd .\solutions\IdentitySolution\IdentityServer &&^
+cd .\solutions\IdentitySolution\DuendeIdentityServer &&^
 npx dotenv-vault@latest pull &&^
 cd "%project_root%" &&^
 echo Pulling conversation service env file .... &&^
