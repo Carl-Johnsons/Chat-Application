@@ -2,7 +2,7 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Services;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.Models;
-using DuendeIdentityServer.Quickstart.Profile;
+using DuendeIdentityServer.Pages.Profile;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;

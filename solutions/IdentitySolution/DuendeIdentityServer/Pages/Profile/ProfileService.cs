@@ -6,7 +6,7 @@ using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace DuendeIdentityServer.Quickstart.Profile;
+namespace DuendeIdentityServer.Pages.Profile;
 
 public class ProfileService : IProfileService
 {
@@ -23,6 +23,10 @@ public class ProfileService : IProfileService
     {
         var sub = context.Subject.GetSubjectId();
         var user = await _userManager.FindByIdAsync(sub);
+        if (user == null)
+        {
+            return;
+        }
         var principal = await _claimFactory.CreateAsync(user);
 
         var claims = principal.Claims.ToList();
@@ -45,7 +49,7 @@ public class ProfileService : IProfileService
         //claims.Add(new Claim("introduction", user.Introduction));
         //claims.Add(new Claim("active", user?.Active.ToString())); // claim only accept string value
         // Return the claim to client
-        context.IssuedClaims = claims.ToList();
+        context.IssuedClaims = [.. claims];
     }
     private void RemoveClaim(List<Claim> claims, string claimName)
     {

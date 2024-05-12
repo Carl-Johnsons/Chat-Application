@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace DuendeIdentityServer.Pages.Logout
+namespace DuendeIdentityServer.Pages.Account.Logout
 {
     [SecurityHeaders]
     [AllowAnonymous]

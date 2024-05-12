@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Reflection;
 
-namespace DuendeIdentityServer.Pages.Home
+namespace DuendeIdentityServer.Pages
 {
     [AllowAnonymous]
     public class Index : PageModel
