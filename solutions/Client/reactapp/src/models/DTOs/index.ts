@@ -1,2 +1,3 @@
-export type { MessageDTO } from "./MessageDTO";
-export type { GroupConversationWithMembersIdDTO } from "./GroupConversationWithMembersIdDTO";
+export * from "./FriendRequest.response.dto";
+export * from "./GroupConversationWithMembersIdDTO";
+export * from "./MessageDTO";

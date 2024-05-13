@@ -12,18 +12,18 @@ import { MenuContactIndex } from "data/constants";
 
 import style from "./Contact.row.module.scss";
 import classNames from "classnames/bind";
-import { useGetConversation } from "@/hooks/queries/conversation";
 import images from "@/assets";
-import { useGetUser } from "hooks/queries/user/useGetUser.query";
-import { GroupConversation } from "models/GroupConversation";
 import { User } from "@/models";
+import { useGetUser } from "@/hooks/queries/user";
+import { useGetConversation } from "@/hooks/queries/conversation";
+
 const cx = classNames.bind(style);
 interface Props {
-  entityId: number;
-  onClickBtnAcceptFriendRequest?: (userId: number) => void;
-  onClickBtnDetail?: (userId: number) => void;
-  onClickBtnDelFriend?: (userId: number) => void;
-  onClickBtnDelFriendRequest?: (userId: number) => void;
+  entityId: string;
+  onClickBtnAcceptFriendRequest?: (userId: string) => void;
+  onClickBtnDetail?: (userId: string) => void;
+  onClickBtnDelFriend?: (userId: string) => void;
+  onClickBtnDelFriendRequest?: (userId: string) => void;
 }
 const ContactRow = ({
   entityId,
@@ -33,28 +33,36 @@ const ContactRow = ({
   onClickBtnDelFriendRequest = () => {},
 }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
-  const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
-  
+  // const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
+
   const { data: userData } = useGetUser(entityId, {
-    enabled: !isGroup,
   });
-  const { data: conversationData } = useGetConversation(
-    {
-      conversationId: entityId,
-    },
-    {
-      enabled: isGroup,
-    }
-  );
-  const entityData = isGroup ? conversationData : userData;
-  const avatar =
-    (isGroup
-      ? (entityData as GroupConversation).imageURL
-      : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
-  const name =
-    (isGroup
-      ? (entityData as GroupConversation).name
-      : (entityData as User)?.name) ?? "";
+  // const { data: conversationData } = useGetConversation(
+  //   {
+  //     conversationId: entityId,
+  //   },
+  //   {
+  //     enabled: isGroup,
+  //   }
+  // );
+
+  const entityData = userData;
+  console.log({ entityData });
+
+  const avatar = (entityData as User)?.avatarUrl ?? images.userIcon.src;
+  const name = (entityData as User)?.name ?? "";
+
+  // const entityData = isGroup ? conversationData : userData;
+  // console.log({ entityData });
+
+  // const avatar =
+  //   (isGroup
+  //     ? (entityData as GroupConversation).imageURL
+  //     : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
+  // const name =
+  //   (isGroup
+  //     ? (entityData as GroupConversation).name
+  //     : (entityData as User)?.name) ?? "";
 
   return (
     <div className={cx("contact-row", "d-flex", "justify-content-between")}>

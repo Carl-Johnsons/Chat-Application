@@ -3,8 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGetCurrentUser } from ".";
 
 export const deleteFriend = async (
-  userId: number,
-  friendId: number
+  userId: string,
+  friendId: string
 ): Promise<boolean | null> => {
   const url = "/api/Users/RemoveFriend/" + userId + "/" + friendId;
   const response = await axiosInstance.delete(url);
@@ -18,12 +18,11 @@ const useDeleteFriend = () => {
     boolean | null,
     Error,
     {
-      friendId: number;
+      friendId: string;
     },
     unknown
   >({
-    mutationFn: ({ friendId }) =>
-      deleteFriend(currentUser?.userId ?? -1, friendId),
+    mutationFn: ({ friendId }) => deleteFriend(currentUser?.id ?? "", friendId),
     onSuccess: () => {
       console.log("delete friend successfully");
 

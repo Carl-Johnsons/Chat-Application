@@ -2,22 +2,27 @@ import { axiosInstance } from "@/utils";
 import { User } from "@/models";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-const searchUser = async (phoneNumber: string): Promise<User | null> => {
-  const url = "/api/Users/Search/" + phoneNumber;
-  const response = await axiosInstance.get(url);
+const searchUser = async (searchValue: string): Promise<User[] | null> => {
+  const params = {
+    value: searchValue,
+  };
+  const url = "http://localhost:5001/api/users/search";
+  const response = await axiosInstance.get(url, {
+    params,
+  });
   return response.data;
 };
 
-const useSearchUser = (phoneNumber: string) => {
+const useSearchUser = (searchValue: string) => {
   const queryClient = useQueryClient();
   return useQuery({
-    queryKey: ["users", "search", phoneNumber],
-    queryFn: () => searchUser(phoneNumber),
+    queryKey: ["users", "search", searchValue],
+    queryFn: () => searchUser(searchValue),
     initialData: () => {
-      return queryClient.getQueryData<User | null>([
+      return queryClient.getQueryData<User[] | null>([
         "users",
         "search",
-        phoneNumber,
+        searchValue,
       ]);
     },
   });

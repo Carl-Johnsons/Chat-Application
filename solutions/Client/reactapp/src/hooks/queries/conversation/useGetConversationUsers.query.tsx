@@ -4,10 +4,10 @@ import { useGetCurrentUser } from "../user";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 interface FetchPropsByUserId {
-  userId: number | undefined;
+  userId: string | undefined;
 }
 interface FetchPropsByConversationId {
-  conversationId: number | undefined;
+  conversationId: string | undefined;
 }
 
 const getConversationUserByUserId = async ({
@@ -47,12 +47,12 @@ const useGetConversationUsers = (
     ...queryOptions,
     queryKey: ["conversationList"],
     enabled: !!currentUser,
-    queryFn: () => getConversationUserByUserId({ userId: currentUser?.userId }),
+    queryFn: () => getConversationUserByUserId({ userId: currentUser?.id }),
   });
 };
 
 const useGetConversationUsersByConversationId = (
-  conversationId: number,
+  conversationId: string,
   queryOptions: Omit<
     UseQueryOptions<
       ConversationUser[] | null,

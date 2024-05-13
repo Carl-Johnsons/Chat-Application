@@ -8,7 +8,7 @@ import { useGetUser } from "@/hooks/queries/user";
 const cx = classNames.bind(style);
 interface Props {
   message: {
-    userId: number;
+    userId: string;
     content: string;
     time: string;
   };

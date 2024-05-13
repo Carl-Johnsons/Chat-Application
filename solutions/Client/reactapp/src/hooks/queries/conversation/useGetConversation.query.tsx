@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 
 interface Props {
-  conversationId: number | undefined;
+  conversationId: string | undefined;
 }
 const getConversation = async ({
   conversationId,
@@ -42,7 +42,7 @@ const useGetConversation = (
   });
 };
 const useGetConversations = (
-  conversationsId: number[],
+  conversationsId: string[],
   queryOptions: Omit<
     UseQueryOptions<Conversation | null, Error, Conversation | null, unknown[]>,
     "queryKey" | "queryFn" | "initialData"

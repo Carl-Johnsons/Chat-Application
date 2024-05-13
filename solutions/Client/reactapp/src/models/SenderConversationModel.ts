@@ -1,4 +1,4 @@
 export type SenderConversationModel = {
-  senderId: number;
-  conversationId: number;
+  senderId: string;
+  conversationId: string;
 };

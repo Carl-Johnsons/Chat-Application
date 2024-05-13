@@ -117,7 +117,7 @@ const CreateGroupModalContent = () => {
 
     const model: GroupConversationWithMembersIdDTO = {
       name: form.groupName,
-      leaderId: currentUser?.userId ?? -1,
+      leaderId: currentUser?.id ?? "",
       membersId: members,
       inviteUrl: "string",
       imageURL: imgurImage?.data.link ?? "",

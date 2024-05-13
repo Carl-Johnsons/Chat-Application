@@ -10,7 +10,7 @@ import { menuContacts, MenuContactIndex } from "data/constants";
 import style from "./Contact.container.module.scss";
 import classNames from "classnames/bind";
 import {
-  useAddFriend,
+  useAcceptFriendRequest,
   useDeleteFriend,
   useDeleteFriendRequest,
   useGetFriendList,
@@ -33,22 +33,22 @@ const ContactContainer = ({ className }: Props) => {
 
   // hooks
   const { handleShowModal } = useModal();
-  const { mutate: addFriendMutate } = useAddFriend();
+  const { mutate: acceptFriendRequestMutate } = useAcceptFriendRequest();
   const { mutate: deleteFriendMutate } = useDeleteFriend();
   const { mutate: deleteFriendRequestMutate } = useDeleteFriendRequest();
 
-  const handleClickBtnDetail = (entityId: number, type: ModalType) => {
+  const handleClickBtnDetail = (entityId: string, type: ModalType) => {
     handleShowModal({ entityId, modalType: type });
   };
-  const handleClickAcpFriend = async (friendId: number) => {
-    addFriendMutate({ senderId: friendId });
+  const handleClickAcpFriend = async (frId: string) => {
+    acceptFriendRequestMutate({ frId });
   };
 
-  const handleClickDelFriend = async (friendId: number) => {
+  const handleClickDelFriend = async (friendId: string) => {
     deleteFriendMutate({ friendId });
   };
-  const handleClickDelFriendRequest = async (senderId: number) => {
-    deleteFriendRequestMutate({ senderId });
+  const handleClickDelFriendRequest = async (frId: string) => {
+    deleteFriendRequestMutate({ frId });
   };
   return (
     <div className={cx(className)}>
@@ -63,18 +63,16 @@ const ContactContainer = ({ className }: Props) => {
       <div className={cx("contact-list-container")}>
         {friendList &&
           activeContactType === MenuContactIndex.FRIEND_LIST &&
-          friendList.map((friend) => {
-            const friendObject = friend.friendNavigation;
+          friendList.map((friendId) => {
+            
             return (
               <ContactRow
-                key={friendObject.userId}
-                entityId={friendObject.userId}
+                key={friendId}
+                entityId={friendId}
                 onClickBtnDetail={() =>
-                  handleClickBtnDetail(friendObject.userId, "Friend")
+                  handleClickBtnDetail(friendId, "Friend")
                 }
-                onClickBtnDelFriend={() =>
-                  handleClickDelFriend(friendObject.userId)
-                }
+                onClickBtnDelFriend={() => handleClickDelFriend(friendId)}
               />
             );
           })}
@@ -96,21 +94,25 @@ const ContactContainer = ({ className }: Props) => {
         {friendRequestList &&
           activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
           friendRequestList.map((friendRequest, index) => {
-            const sender = friendRequest.sender;
+            const { id, senderId } = friendRequest;
             return (
-              <ContactRow
-                key={index}
-                entityId={sender.userId}
-                onClickBtnAcceptFriendRequest={() =>
-                  handleClickAcpFriend(sender.userId)
-                }
-                onClickBtnDetail={() =>
-                  handleClickBtnDetail(sender.userId, "Stranger")
-                }
-                onClickBtnDelFriendRequest={() =>
-                  handleClickDelFriendRequest(sender.userId)
-                }
-              />
+              <>
+                {id && senderId && (
+                  <ContactRow
+                    key={index}
+                    entityId={senderId}
+                    onClickBtnAcceptFriendRequest={() =>
+                      handleClickAcpFriend(id)
+                    }
+                    onClickBtnDetail={() =>
+                      handleClickBtnDetail(senderId, "Stranger")
+                    }
+                    onClickBtnDelFriendRequest={() =>
+                      handleClickDelFriendRequest(id)
+                    }
+                  />
+                )}
+              </>
             );
           })}
       </div>

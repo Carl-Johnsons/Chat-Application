@@ -24,12 +24,12 @@ const UserStatus = ({ type }: Props) => {
 
   const otherUserId = useMemo(() => {
     if (!isGroup && conversationUsersData?.length) {
-      return conversationUsersData[0].userId == currentUserData?.userId
+      return conversationUsersData[0].userId == currentUserData?.id
         ? conversationUsersData[1].userId
         : conversationUsersData[0].userId;
     }
     return null;
-  }, [conversationUsersData, currentUserData?.userId, isGroup]);
+  }, [conversationUsersData, currentUserData?.id, isGroup]);
 
   const isLoading = isLoadingConversationUser;
 

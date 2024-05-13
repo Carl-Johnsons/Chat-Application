@@ -41,10 +41,10 @@ const AsideBody = () => {
     useGetConversationUsersByConversationId(activeConversationId);
   const otherUserId =
     conversationUsersData &&
-    (conversationUsersData[0].userId == currentUserData?.userId
+    (conversationUsersData[0].userId == currentUserData?.id
       ? conversationUsersData[1].userId
       : conversationUsersData[0].userId);
-  const { data: otherUserData } = useGetUser(otherUserId ?? -1, {
+  const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });
   const avatar = otherUserData?.avatarUrl ?? images.userIcon.src;

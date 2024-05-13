@@ -1,1 +1,1 @@
-export { useUploadImage } from "./useUploadImage.mutation";
+export * from "./useUploadImage.mutation";

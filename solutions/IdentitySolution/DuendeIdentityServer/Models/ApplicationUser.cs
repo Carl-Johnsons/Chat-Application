@@ -28,4 +28,7 @@ public class ApplicationUser : IdentityUser
 
     [Required]
     public bool Active { get; set; }
+
+    public Friend[] Friends { get; set; } = [];
+    public FriendRequest[] FriendRequests { get; set; } = [];
 }

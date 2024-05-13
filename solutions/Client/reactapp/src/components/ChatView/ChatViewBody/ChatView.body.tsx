@@ -36,7 +36,7 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
   });
 
   const currentUserQuery = useGetCurrentUser();
-  const userId = currentUserQuery.data?.userId ?? -1;
+  const userId = currentUserQuery.data?.id ?? -1;
 
   const fethNextBatch = useCallback(async () => {
     if (!activeConversationId || !messageList) {
@@ -138,7 +138,7 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     if (!messageList || (messageList && messageList.length === 0)) {
       return;
     }
-    
+
     let start = messageList[0].senderId;
     let startIndex = 0;
     const messageContainers = [];

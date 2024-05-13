@@ -10,22 +10,27 @@ const SearchResultContent = () => {
     if (!searchResult) {
       return;
     }
-    
-    handleShowModal({ entityId: searchResult.userId });
+
+    handleShowModal({ entityId: searchResult.id });
   };
 
   return (
     <>
-      {searchResult && (
-        <SideBarItem
-          type="searchItem"
-          userId={searchResult.userId}
-          searchName={searchResult.name}
-          image={searchResult.avatarUrl}
-          phoneNumber={searchResult.phoneNumber}
-          onClick={() => handleClickSearchResult(searchResult)}
-        />
-      )}
+      {searchResult &&
+        searchResult.map((user) => {
+          const { id, name, avatarUrl, phoneNumber } = user;
+          return (
+            <SideBarItem
+              key={id}
+              type="searchItem"
+              userId={id}
+              searchName={name}
+              image={avatarUrl}
+              phoneNumber={phoneNumber}
+              onClick={() => handleClickSearchResult(user)}
+            />
+          );
+        })}
     </>
   );
 };

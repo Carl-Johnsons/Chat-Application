@@ -17,7 +17,7 @@ interface Props {
 
 const ChatViewContainer = ({ className }: Props) => {
   const [userTypingId] = useGlobalState("userTypingId");
-  const { data: userTyping, isLoading } = useGetUser(userTypingId ?? -1, {
+  const { data: userTyping, isLoading } = useGetUser(userTypingId ?? "", {
     enabled: !!userTypingId,
   });
 

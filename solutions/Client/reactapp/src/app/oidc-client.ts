@@ -9,7 +9,7 @@ const userManagerConfig: UserManagerSettings = {
   redirect_uri: "http://localhost:3000/signin-callback",
   response_type: "id_token token",
   post_logout_redirect_uri: "http://localhost:3000",
-  scope: "openid profile phone email",
+  scope: "openid profile phone email IdentityServerApi",
 };
 
 const userManager = new UserManager(userManagerConfig);

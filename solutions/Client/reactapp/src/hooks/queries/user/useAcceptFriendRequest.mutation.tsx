@@ -1,63 +1,62 @@
 import { axiosInstance } from "@/utils";
-import { useGetCurrentUser, useGetUser } from ".";
+import { useGetCurrentUser } from ".";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   signalRJoinConversation,
   signalRSendAcceptFriendRequest,
   useGlobalState,
+  useLocalStorage,
   useSignalREvents,
 } from "@/hooks";
 import { ConversationWithMembersId, Friend } from "@/models";
 import { useState } from "react";
 
 /**
- * Add a friend using fetch API
- * - Sender is the one who send the friend request
- * - Receiver is the one who accept the friend request
- * @param {number} senderId
- * @param {number} receiverId
+ *
+ * @param frId
  * @returns
  */
-const addFriend = async (
-  senderId: number,
-  receiverId: number
+const acceptFriendRequest = async (
+  frId: string,
+  accessToken: string
 ): Promise<ConversationWithMembersId | null> => {
-  // Sender is the one who send the request not the current user
-  // The current user is the one who accept the friend request
-  const url = "/api/Users/AddFriend/" + senderId + "/" + receiverId;
-  const response = await axiosInstance.post(url);
+  const data = {
+    friendRequestId: frId,
+  };
+  const url = "http://localhost:5001/api/users/friend-request/accept";
+  const response = await axiosInstance.post(url, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
   return response.data;
 };
 
-const useAddFriend = () => {
+const useAcceptFriendRequest = () => {
   const [connection] = useGlobalState("connection");
-  const [senderId, setsenderId] = useState(-1);
+  const [getAccessToken] = useLocalStorage("access_token");
+  const [senderId, setSenderId] = useState("");
 
   const { data: currentUser } = useGetCurrentUser();
-  const { data: sender } = useGetUser(senderId);
   const queryClient = useQueryClient();
   const invokeAction = useSignalREvents({ connection: connection });
   return useMutation<
     ConversationWithMembersId | null,
     Error,
     {
-      senderId: number;
+      frId: string;
     },
     unknown
   >({
-    mutationFn: ({ senderId }) => {
-      setsenderId(senderId);
-      return addFriend(senderId, currentUser?.userId ?? -1);
+    mutationFn: ({ frId }) => {
+      setSenderId(frId);
+      return acceptFriendRequest(frId, getAccessToken() as string);
     },
-    onSuccess: (conversation, { senderId }) => {
-      if (!sender) {
-        return;
-      }
+    onSuccess: (conversation) => {
       // Invert the property to send to other user
       const friend: Friend = {
-        userId: currentUser?.userId ?? -1,
+        userId: currentUser?.id ?? "",
         friendId: senderId,
-        friendNavigation: sender,
       };
 
       invokeAction(signalRSendAcceptFriendRequest(friend));
@@ -84,4 +83,4 @@ const useAddFriend = () => {
   });
 };
 
-export { useAddFriend };
+export { useAcceptFriendRequest };

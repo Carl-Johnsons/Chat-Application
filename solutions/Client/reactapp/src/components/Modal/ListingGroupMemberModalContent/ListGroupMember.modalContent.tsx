@@ -11,7 +11,7 @@ import Avatar from "@/components/shared/Avatar";
 import { useGetConversationUsersByConversationId } from "@/hooks/queries/conversation";
 
 interface Props {
-  onClickMember?: (memberId: number) => void;
+  onClickMember?: (memberId: string) => void;
 }
 
 const cx = classNames.bind(styles);
@@ -64,7 +64,7 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
                     "pb-2",
                     "w-100"
                   )}
-                  onClick={() => onClickMember(user.userId)}
+                  onClick={() => onClickMember(user.id)}
                 >
                   <Avatar
                     src={user.avatarUrl}

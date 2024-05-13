@@ -1,6 +1,6 @@
 import { ConversationType } from "./ConversationType";
 
 export type Conversation = {
-  id: number;
+  id: string;
   type: ConversationType;
 };

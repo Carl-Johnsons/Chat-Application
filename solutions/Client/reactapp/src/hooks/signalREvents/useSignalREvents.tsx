@@ -110,8 +110,8 @@ export function signalRDisableNotifyUserTyping(
   };
 }
 export function signalRJoinConversation(
-  userId: number,
-  conversationId: number
+  userId: string,
+  conversationId: string
 ) {
   return {
     name: "JoinConversation",

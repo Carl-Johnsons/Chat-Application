@@ -31,7 +31,7 @@ const ChatViewFooter = () => {
       return;
     }
     const model: SenderConversationModel = {
-      senderId: currentUser.userId,
+      senderId: currentUser.id,
       conversationId: activeConversationId,
     };
 
@@ -47,7 +47,7 @@ const ChatViewFooter = () => {
       return;
     }
     sendMessageMutate({
-      senderId: currentUser.userId,
+      senderId: currentUser.id,
       conversationId: activeConversationId,
       messageContent: inputValue,
     });
@@ -58,7 +58,7 @@ const ChatViewFooter = () => {
       return;
     }
     const model: SenderConversationModel = {
-      senderId: currentUser.userId,
+      senderId: currentUser.id,
       conversationId: activeConversationId,
     };
 

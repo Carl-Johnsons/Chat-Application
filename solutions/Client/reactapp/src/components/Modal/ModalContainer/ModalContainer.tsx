@@ -48,7 +48,7 @@ const ModalContainer = () => {
   const updateProfileRef = useRef(null);
   const updateAvatarRef = useRef(null);
 
-  const memberIdRef = useRef<number>();
+  const memberIdRef = useRef<string>();
 
   const handleClickSendFriendRequest = async () => {
     sendFriendRequestMutate({ receiverId: modalEntityId });
@@ -143,7 +143,7 @@ const ModalContainer = () => {
           modalContent: (
             <ProfileModalContent
               type="Friend"
-              modalEntityId={memberIdRef.current ?? -1}
+              modalEntityId={memberIdRef.current ?? ""}
             />
           ),
         },

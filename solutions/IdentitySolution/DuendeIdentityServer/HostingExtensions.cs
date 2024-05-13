@@ -1,6 +1,7 @@
+using AutoMapper;
 using Duende.IdentityServer;
-using Duende.IdentityServer.Services;
 using DuendeIdentityServer.Data;
+using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
 using DuendeIdentityServer.Pages.Profile;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +17,13 @@ internal static class HostingExtensions
         var services = builder.Services;
 
         services.AddRazorPages();
+
         services.AddControllers();
+
+        // Register automapper
+        IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+        builder.Services.AddSingleton(mapper);
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Config.GetConnectionString()));
@@ -34,6 +41,8 @@ internal static class HostingExtensions
 
                 // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
                 options.EmitStaticAudienceClaim = true;
+                options.Discovery.CustomEntries.Add("user-api", "~/api/users");
+                options.Discovery.CustomEntries.Add("friend-request-api", "~/api/users/friend-request");
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
@@ -53,6 +62,8 @@ internal static class HostingExtensions
                 options.ClientId = "copy client ID from Google here";
                 options.ClientSecret = "copy client secret from Google here";
             });
+
+        services.AddLocalApiAuthentication();
 
         services.AddCors(o => o.AddPolicy("AllowSpecificOrigins", builder =>
         {
@@ -86,14 +97,14 @@ internal static class HostingExtensions
         app.UseIdentityServer();
         app.UseAuthorization();
 
-        app.MapRazorPages()
-            .RequireAuthorization();
+        app.MapRazorPages();
 
         // Add a user api endpoint so this will not be a minimal API
-        #pragma warning disable ASP0014
+#pragma warning disable ASP0014
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapDefaultControllerRoute();
+            endpoints.MapDefaultControllerRoute()
+                .RequireAuthorization();
         });
 
         return app;

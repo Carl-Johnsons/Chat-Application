@@ -38,7 +38,7 @@ const ChatViewHeader = () => {
     useGetConversationUsersByConversationId(activeConversationId);
   const otherUserId =
     conversationUsersData &&
-    (conversationUsersData[0].userId == currentUserData?.userId
+    (conversationUsersData[0].userId == currentUserData?.id
       ? conversationUsersData[1].userId
       : conversationUsersData[0].userId);
 
@@ -48,7 +48,7 @@ const ChatViewHeader = () => {
       enabled: isGroup,
     }
   );
-  const { data: otherUserData } = useGetUser(otherUserId ?? -1, {
+  const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });
   const avatar =

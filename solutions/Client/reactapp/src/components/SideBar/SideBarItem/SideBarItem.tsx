@@ -18,20 +18,20 @@ const cx = classNames.bind(style);
 
 type ConversationVariant = {
   type: "conversation";
-  conversationId: number;
+  conversationId: string;
   lastMessage?: Message | null;
   isActive?: boolean;
   isNewMessage?: boolean;
-  onClick?: (conversationId: number) => void;
+  onClick?: (conversationId: string) => void;
 };
 type SearchItemVariant = {
   type: "searchItem";
-  userId: number;
+  userId: string;
   image: string;
   searchName: string;
   phoneNumber: string;
   isActive?: boolean;
-  onClick?: (userId: number) => void;
+  onClick?: (userId: string) => void;
 };
 
 type Variants = ConversationVariant | SearchItemVariant;
@@ -40,15 +40,15 @@ const SideBarItem = (variant: Variants) => {
   const [descriptionContent, setDescriptionContent] = useState("");
   const [timeContent, setTimeContent] = useState("");
 
-  let userId: number = 0;
-  let conversationId: number = 0;
+  let userId: string = "";
+  let conversationId: string = "";
   let image: string = images.defaultAvatarImg.src;
   let lastMessage: Message | null | undefined;
   let searchName: string = "";
   let phoneNumber: string = "";
   let isActive: boolean | undefined;
   let isNewMessage: boolean | undefined;
-  let onClick: ((id: number) => void) | undefined;
+  let onClick: ((id: string) => void) | undefined;
 
   const isConversation = variant.type === "conversation";
   const isSearchItem = variant.type === "searchItem";
@@ -63,7 +63,7 @@ const SideBarItem = (variant: Variants) => {
   const { data: conversationData } = useGetConversation({
     conversationId,
   });
-  const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? -1);
+  const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? "");
   const isGroupConversation = conversationData?.type === "Group";
 
   // Description
@@ -73,7 +73,7 @@ const SideBarItem = (variant: Variants) => {
         return;
       }
       const sender =
-        currentUserData?.userId === lastMessage.senderId
+        currentUserData?.id === lastMessage.senderId
           ? "You: "
           : conversationData?.type === "Group"
           ? `${lastMessageSenderQuery.data?.name}: `
@@ -84,7 +84,7 @@ const SideBarItem = (variant: Variants) => {
     }
   }, [
     conversationData?.type,
-    currentUserData?.userId,
+    currentUserData?.id,
     isSearchItem,
     lastMessage,
     lastMessageSenderQuery.data,
@@ -105,11 +105,11 @@ const SideBarItem = (variant: Variants) => {
     useGetConversationUsersByConversationId(conversationId);
   const otherUserId =
     conversationUsersData &&
-    (conversationUsersData[0].userId == currentUserData?.userId
+    (conversationUsersData[0].userId == currentUserData?.id
       ? conversationUsersData[1].userId
       : conversationUsersData[0].userId);
 
-  const { data: otherUserData } = useGetUser(otherUserId ?? -1, {
+  const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });
 

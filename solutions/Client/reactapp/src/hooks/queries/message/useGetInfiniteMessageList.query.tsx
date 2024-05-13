@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 
 interface FetchProps {
-  conversationId: number;
+  conversationId: string;
   skipBatch: number;
 }
 
@@ -22,7 +22,7 @@ const getMessageList = async ({
 };
 
 const useGetInfiniteMessageList = (
-  conversationId: number,
+  conversationId: string,
   queryOptions: Omit<
     UndefinedInitialDataInfiniteOptions<
       {

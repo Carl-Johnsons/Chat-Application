@@ -1,4 +1,3 @@
-import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/utils";
 import { resetGlobalState, useLocalStorage } from "@/hooks";
@@ -10,7 +9,6 @@ export const logout = async (): Promise<number> => {
 };
 
 const useLogout = () => {
-  const router = useRouter();
   const [, , removeAcessToken] = useLocalStorage("accessToken");
   const [, , removeIsAuth] = useLocalStorage("isAuth");
   const queryClient = useQueryClient();
@@ -21,7 +19,6 @@ const useLogout = () => {
       resetGlobalState();
       removeAcessToken();
       removeIsAuth();
-      router.push("/login");
       queryClient.removeQueries({
         queryKey: ["currentUser"],
       });

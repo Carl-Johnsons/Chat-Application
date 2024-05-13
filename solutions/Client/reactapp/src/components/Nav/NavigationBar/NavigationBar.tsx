@@ -67,7 +67,7 @@ const NavigationBar = () => {
       handleClickScreenSection(true);
       if (linkId === 0) {
         handleShowModal({
-          entityId: currentUser?.sub,
+          entityId: currentUser?.id,
           modalType: "Personal",
         });
         return;

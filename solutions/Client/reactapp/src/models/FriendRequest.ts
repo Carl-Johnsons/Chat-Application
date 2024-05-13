@@ -1,11 +1,12 @@
 import { User } from ".";
 
 export type FriendRequest = {
-  senderId: number;
-  receiverId: number;
+  id: string;
+  senderId: string;
+  receiverId: string;
   content: string;
   date: string;
   status: string;
-  receiver: null;
+  receiver: User | null;
   sender: User;
 };

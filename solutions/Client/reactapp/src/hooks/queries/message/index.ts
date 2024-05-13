@@ -1,6 +1,3 @@
-export {
-  useGetLastMessage,
-  useGetLastMessages,
-} from "./useGetLastMessage.query";
-export { useGetInfiniteMessageList } from "./useGetInfiniteMessageList.query";
-export { useSendMessage } from "./useSendMessage.mutation";
+export * from "./useGetInfiniteMessageList.query";
+export * from "./useGetLastMessage.query";
+export * from "./useSendMessage.mutation";

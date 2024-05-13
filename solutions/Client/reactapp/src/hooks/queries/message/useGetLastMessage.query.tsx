@@ -8,7 +8,7 @@ import {
 import { Message } from "@/models";
 
 interface FetchProps {
-  conversationId: number | undefined;
+  conversationId: string | undefined;
 }
 
 const getLastMessage = async ({
@@ -22,7 +22,7 @@ const getLastMessage = async ({
   return response.data;
 };
 
-const useGetLastMessage = (conversationId: number | undefined) => {
+const useGetLastMessage = (conversationId: string | undefined) => {
   const queryClient = useQueryClient();
   const lastMessageQuery = useQuery({
     queryKey: ["message", "conversation", conversationId, "last"],
@@ -43,7 +43,7 @@ const useGetLastMessage = (conversationId: number | undefined) => {
   return lastMessageQuery;
 };
 const useGetLastMessages = (
-  conversationIds: number[],
+  conversationIds: string[],
   queryOptions: Omit<
     UseQueryOptions<Message | null, Error, Message | null, unknown[]>,
     "queryKey" | "queryFn" | "initialData"

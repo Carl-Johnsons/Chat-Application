@@ -22,7 +22,7 @@ const useUpdateUser = () => {
         exact: true,
       });
       queryClient.invalidateQueries({
-        queryKey: ["users", data?.sub],
+        queryKey: ["users", data?.id],
         exact: true,
       });
       console.log("Update user successfully!");

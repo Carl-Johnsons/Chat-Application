@@ -12,15 +12,21 @@ import {
  * @param {number} userId
  * @returns {User}
  */
-const getUser = async (userId: number): Promise<User | null> => {
-  const url = "/api/Users/" + userId;
-  const response = await axiosInstance.get(url);
+const getUser = async (userId: string): Promise<User | null> => {
+  const url = "http://localhost:5001/api/users";
+
+  const response = await axiosInstance.get(url, {
+    params: {
+      id: userId,
+    },
+    paramsSerializer: {},
+  });
   const user: User = { ...DefaultUser, ...response.data };
   return user;
 };
 
 const useGetUser = (
-  userId: number,
+  userId: string,
   queryOptions: Omit<
     UseQueryOptions<User | null, unknown, User | null, QueryKey>,
     "queryKey" | "queryFn" | "initialData"
@@ -39,7 +45,7 @@ const useGetUser = (
 };
 
 const useGetUsers = (
-  userIds: number[],
+  userIds: string[],
   queryOptions: Omit<
     UseQueryOptions<User | null, unknown, User | null, QueryKey>,
     "queryKey" | "queryFn" | "initialData"

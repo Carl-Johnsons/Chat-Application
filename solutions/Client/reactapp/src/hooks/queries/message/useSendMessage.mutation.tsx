@@ -4,8 +4,8 @@ import { MessageDTO } from "@/models/DTOs";
 import { axiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface Props {
-  senderId: number;
-  conversationId: number;
+  senderId: string;
+  conversationId: string;
   messageContent: string;
 }
 

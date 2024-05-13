@@ -45,13 +45,13 @@ const LoginForm = ({ onClickNavigationLink }: Props) => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(userSchema) });
 
-  const { mutate: loginMutate } = useLogin();
+  // const { mutate: loginMutate } = useLogin();
 
   const onSubmit: SubmitHandler<UserSchema> = async ({
     phoneNumber,
     password,
   }) => {
-    loginMutate({ phoneNumber, password });
+    // loginMutate({ phoneNumber, password });
   };
 
   return (

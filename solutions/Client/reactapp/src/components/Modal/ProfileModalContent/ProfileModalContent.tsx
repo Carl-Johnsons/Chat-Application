@@ -23,7 +23,7 @@ import { GroupConversation } from "@/models";
 const cx = classNames.bind(style);
 
 type BaseVariant = {
-  modalEntityId: number;
+  modalEntityId: string;
 };
 
 type PersonalVariant = BaseVariant & {
@@ -265,7 +265,7 @@ const ProfileModalContent = (variant: Variants) => {
               const avatar = member?.avatarUrl ?? images.userIcon.src;
               return (
                 <Avatar
-                  key={member?.sub}
+                  key={member?.id}
                   variant="avatar-img-40px"
                   src={avatar}
                   className={cx(

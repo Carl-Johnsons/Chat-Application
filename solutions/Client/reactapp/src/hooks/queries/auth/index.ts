@@ -1,4 +1,3 @@
-export { useLogin } from "./useLogin.mutation";
-export { useLogout } from "./useLogout.mutation";
-export { useRefreshToken } from "./useRefreshToken.mutation";
-export { useRegister } from "./useRegister.mutation";
+export * from "./useLogin.mutation";
+export * from "./useLogout.mutation";
+export * from "./useRegister.mutation";

@@ -25,7 +25,7 @@ internal static class Log
         _invalidBackchannelLoginId(logger, id, null);
     }
 
-    private static Action<ILogger, IEnumerable<string>, Exception?> _externalClaims = LoggerMessage.Define<IEnumerable<string>>(
+    private static readonly Action<ILogger, IEnumerable<string>, Exception?> _externalClaims = LoggerMessage.Define<IEnumerable<string>>(
         LogLevel.Debug,
         EventIds.ExternalClaims,
         "External claims: {Claims}");
@@ -35,7 +35,7 @@ internal static class Log
         _externalClaims(logger, claims, null);
     }
 
-    private static Action<ILogger, string, Exception?> _noMatchingBackchannelLoginRequest = LoggerMessage.Define<string>(
+    private static readonly Action<ILogger, string, Exception?> _noMatchingBackchannelLoginRequest = LoggerMessage.Define<string>(
         LogLevel.Error,
         EventIds.NoMatchingBackchannelLoginRequest,
         "No backchannel login request matching id: {Id}");
@@ -45,7 +45,7 @@ internal static class Log
         _noMatchingBackchannelLoginRequest(logger, id, null);
     }
 
-    private static Action<ILogger, string, Exception?> _noConsentMatchingRequest = LoggerMessage.Define<string>(
+    private static readonly Action<ILogger, string, Exception?> _noConsentMatchingRequest = LoggerMessage.Define<string>(
         LogLevel.Error,
         EventIds.NoConsentMatchingRequest,
         "No consent request matching request: {ReturnUrl}");

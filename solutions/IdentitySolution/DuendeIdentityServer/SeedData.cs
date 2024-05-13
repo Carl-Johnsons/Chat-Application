@@ -19,17 +19,14 @@ public class SeedData
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        using (var serviceProvider = services.BuildServiceProvider())
-        {
-            using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
-                context.Database.Migrate();
+        using var serviceProvider = services.BuildServiceProvider();
+        using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        
+        var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+        context.Database.Migrate();
 
-                var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var mockUpData = new MockupData(userMgr);
-                mockUpData.SeedUserData();
-            }
-        }
+        var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var mockUpData = new MockupData(userMgr);
+        mockUpData.SeedUserData();
     }
 }

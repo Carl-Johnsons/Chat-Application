@@ -1,7 +1,7 @@
 import { User } from ".";
 
 const DefaultUser: User = {
-  userId: 0,
+  id: "",
   phoneNumber: "",
   name: "",
   dob: "",

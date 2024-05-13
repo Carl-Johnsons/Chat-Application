@@ -4,15 +4,16 @@ import { createGlobalState } from "react-hooks-global-state";
 
 const initialState = {
   // Number
-  activeConversationId: 0,
   activeContactType: 0,
   activeNav: 1,
   activeModal: 0,
-  modalEntityId: null as unknown as number,
-  userTypingId: null as unknown as number | null,
-  userIdsOnlineList: [] as number[],
+  // string
+  activeConversationId: "",
+  modalEntityId: null as unknown as string,
+  userTypingId: null as unknown as string | null,
+  userIdsOnlineList: [] as string[],
   // User
-  searchResult: null as unknown as User | null,
+  searchResult: null as unknown as User[] | null,
   // IndividualMessage | GroupMessage
   conversationType: "Individual" as ConversationType,
   // Boolean

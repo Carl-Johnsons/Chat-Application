@@ -4,7 +4,7 @@ import { useGetCurrentUser, useGetFriendList } from "./queries/user";
 import { useCallback } from "react";
 
 interface ModalProps {
-  entityId?: number;
+  entityId?: string;
   modalType?: ModalType;
 }
 const useModal = () => {
@@ -18,7 +18,7 @@ const useModal = () => {
   const handleShowModal = useCallback(
     ({ entityId, modalType }: ModalProps) => {
       let type: ModalType;
-      if (currentUser?.sub === entityId) {
+      if (currentUser?.id === entityId) {
         type = "Personal";
       } else {
         const friend = (friendList ?? []).filter(
@@ -30,13 +30,13 @@ const useModal = () => {
       setModalType(modalType ?? type);
       setShowModal(true);
     },
-    [currentUser?.sub, friendList, setModalEntityId, setModalType, setShowModal]
+    [currentUser?.id, friendList, setModalEntityId, setModalType, setShowModal]
   );
   const handleHideModal = () => {
     setActiveModal(0);
     setShowModal(false);
   };
-  const handleToggleModal = (modalUserId: number) => {
+  const handleToggleModal = (modalUserId: string) => {
     const state = !showModal;
     state ? handleShowModal({ entityId: modalUserId }) : handleHideModal();
     setShowModal(state);

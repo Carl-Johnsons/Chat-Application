@@ -1,48 +1,50 @@
 import { axiosInstance } from "@/utils";
-import { User, FriendRequest } from "@/models";
-import { useGetCurrentUser } from ".";
+import { FriendRequest } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   signalRSendFriendRequest,
   useGlobalState,
+  useLocalStorage,
   useSignalREvents,
 } from "@/hooks";
 
 /**
- * @param {User} user
- * @param {number} receiverId
+ *
+ * @param receiverId
+ * @param accessToken
  * @returns
  */
 const sendFriendRequest = async (
-  user: User | null | undefined,
-  receiverId: number
+  receiverId: string,
+  accessToken: string
 ): Promise<FriendRequest | null> => {
-  if (!user) {
-    return null;
-  }
   const data = {
-    senderId: user.userId,
     receiverId: receiverId,
-    content: "Xin chào! tôi là " + user.name,
+    content: "Hello",
   };
-  const url = "/api/Users/SendFriendRequest";
-  const response = await axiosInstance.post(url, data);
+  const url = "http://localhost:5001/api/users/friend-request";
+  const response = await axiosInstance.post(url, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
   return response.data;
 };
 
 const useSendFriendRequest = () => {
   const [connection] = useGlobalState("connection");
+  const [getAccessToken] = useLocalStorage("access_token");
   const invokeAction = useSignalREvents({ connection: connection });
 
-  const { data: currentUser } = useGetCurrentUser();
   const queryClient = useQueryClient();
   return useMutation<
     FriendRequest | null,
     Error,
-    { receiverId: number },
+    { receiverId: string },
     unknown
   >({
-    mutationFn: ({ receiverId }) => sendFriendRequest(currentUser, receiverId),
+    mutationFn: ({ receiverId }) =>
+      sendFriendRequest(receiverId, getAccessToken() as string),
     onSuccess: (fr) => {
       if (!fr) {
         return;

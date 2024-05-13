@@ -13,7 +13,7 @@ const cx = classNames.bind(style);
 interface Props {
   isSender: boolean;
   conversationType: ConversationType;
-  userId: number;
+  userId: string;
   messageList: MessageModel[];
 }
 

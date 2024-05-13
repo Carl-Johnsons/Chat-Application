@@ -1,36 +1,41 @@
 import { axiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useGetCurrentUser } from ".";
+import { useLocalStorage } from "hooks/useStorage";
 
 /**
- * - Sender is the who send the friend request
- * - Recevier is the who accept the friend request (current user)
- * @param senderId
- * @param receiverId
+ * @param friendRequestId
  * @returns
  */
 export const deleteFriendRequest = async (
-  senderId: number,
-  receiverId: number
+  friendRequestId: string,
+  accessToken: string
 ): Promise<boolean | null> => {
-  const url = "/api/Users/RemoveFriendRequest/" + senderId + "/" + receiverId;
-  const response = await axiosInstance.delete(url);
+  const data = {
+    friendRequestId,
+  };
+  const url = "http://localhost:5001/api/users/friend-request";
+  const response = await axiosInstance.delete(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    data,
+  });
   return response.status === 204;
 };
 
 const useDeleteFriendRequest = () => {
-  const { data: currentUser } = useGetCurrentUser();
+  const [getAccessToken] = useLocalStorage("access_token");
   const queryClient = useQueryClient();
   return useMutation<
     boolean | null,
     Error,
     {
-      senderId: number;
+      frId: string;
     },
     unknown
   >({
-    mutationFn: ({ senderId }) =>
-      deleteFriendRequest(senderId, currentUser?.userId ?? -1),
+    mutationFn: ({ frId }) =>
+      deleteFriendRequest(frId, getAccessToken() as string),
     onSuccess: () => {
       console.log("del friend request successfully");
       queryClient.invalidateQueries({

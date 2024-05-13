@@ -35,7 +35,7 @@ const ConversationContent = () => {
   });
 
   const handleClickConversation = useCallback(
-    (conversationId: number, type: ConversationType) => {
+    (conversationId: string, type: ConversationType) => {
       handleClickScreenSection(false);
       setActiveConversationId(conversationId);
       setConversationType(type);
@@ -75,7 +75,7 @@ const ConversationContent = () => {
               key={conversation.id}
               type="conversation"
               lastMessage={lastMessage}
-              conversationId={conversation.id ?? -1}
+              conversationId={conversation.id ?? ""}
               onClick={(conversationId) =>
                 handleClickConversation(conversationId, conversation.type)
               }

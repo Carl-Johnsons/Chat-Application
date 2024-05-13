@@ -30,8 +30,7 @@ public static class Config
 
     public static IEnumerable<ApiScope> ApiScopes =>
         [
-            new ApiScope("scope1"),
-            new ApiScope("scope2"),
+            new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
         ];
 
     public static IEnumerable<Client> Clients =>
@@ -69,6 +68,7 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.Phone,
                     IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.LocalApi.ScopeName
                 },
             }
         ];
