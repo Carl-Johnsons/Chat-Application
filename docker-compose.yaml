@@ -28,7 +28,7 @@ services:
       timeout: 3s
 
   sql-server.configurator:
-    build: 
+    build:
       context: ./data
       dockerfile: Dockerfile
     depends_on:
@@ -71,7 +71,7 @@ services:
   identity-api:
     build:
       context: ./solutions/IdentitySolution
-      dockerfile: ./src/IdentityService/Dockerfile
+      dockerfile: ./DuendeIdentityServer/Dockerfile
     container_name: identity-service
     ports:
       - '5001:80'
@@ -81,7 +81,7 @@ services:
     networks:
       - back-end
     env_file:
-      - ./solutions/IdentitySolution/src/IdentityService/.env
+      - ./solutions/IdentitySolution/DuendeIdentityServer/.env
 
   upload-api:
     build:
@@ -107,7 +107,7 @@ services:
       - front-end
     env_file:
       - ./solutions/ChatHubSolution/src/ChatHub/.env
-  
+
   conversation-api:
     build:
       context: ./solutions/ConversationSolution
@@ -123,38 +123,38 @@ services:
     env_file:
       - ./solutions/ConversationSolution/src/ConversationService.API/.env
 
-  # rabbitmq: # login guest:guest
-  #     image: rabbitmq:3-management
-  #     hostname: "rabbitmq"
-  #     container_name: service-bus
-  #     labels:
-  #       NAME: "rabbitmq"
-  #     ports:
-  #     - "4369:4369"
-  #     - "5671:5671"
-  #     - "5672:5672"
-  #     - "25672:25672"
-  #     - "15671:15671"
-  #     - "15672:15672"
+  reactapp:
+    build:
+      context: ./solutions/Client/reactapp
+      dockerfile: Dockerfile.dev
+    container_name: react-app
+    ports:
+      - '${CLIENT__PORT}:3000'
+    networks:
+      - front-end
+    env_file:
+      - .env
+    develop:
+      watch:
+        - path: ./solutions/Client/reactapp/package.json
+          action: rebuild
+        - path: ./solutions/Client/reactapp
+          target: /app
+          action: sync
+    # rabbitmq: # login guest:guest
+    #     image: rabbitmq:3-management
+    #     hostname: "rabbitmq"
+    #     container_name: service-bus
+    #     labels:
+    #       NAME: "rabbitmq"
+    #     ports:
+    #     - "4369:4369"
+    #     - "5671:5671"
+    #     - "5672:5672"
+    #     - "25672:25672"
+    #     - "15671:15671"
+    #     - "15672:15672"
 
-  #   reactapp:
-  #     build:
-  #       context: ./reactapp
-  #       dockerfile: Dockerfile.dev
-  #     container_name: react-app
-  #     ports:
-  #       - '${CLIENT__PORT}:3000'
-  #     networks:
-  #       - front-end
-  #     env_file:
-  #       - .env.development
-  #     develop:
-  #       watch:
-  #         - path: ./reactapp/package.json
-  #           action: rebuild
-  #         - path: ./reactapp
-  #           target: /app
-  #           action: sync
 networks:
   back-end:
   front-end:
