@@ -409,7 +409,6 @@ FodyWeavers.xsd
 # Database bind mount
 chat-sql-data
 data/db
-**/Migrations
 # appsettings
 **appsettings.*
 # IdentityServer4
