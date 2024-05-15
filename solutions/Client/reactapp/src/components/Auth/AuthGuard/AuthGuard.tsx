@@ -4,7 +4,9 @@ import classNames from "classnames/bind";
 import style from "./AuthGuard.module.scss"
 const cx=classNames.bind(style)
 const Loading = () => {
-  return <div className={cx("loader")}></div>;
+  return <div className={cx("container")}>
+    <div className={cx("loader")}></div>;
+  </div>;
 };
 
 const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -15,11 +17,11 @@ const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         await userManager.signinRedirect();
       }
     };
-   // handleLogin();
+   handleLogin();
   }, []);
 
-  //return <Suspense fallback={<Loading />}>{children}</Suspense>;
-  return <Loading></Loading>;
+  return <Suspense fallback={<Loading />}>{children}</Suspense>;
+  
 };
 
 export { AuthGuard };

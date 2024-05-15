@@ -1,20 +1,11 @@
 
-:global(*) {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-:global(html), :global(body), :global(#root) {
+.container{
   height: 100%;
-  margin: 0;
-}
-
-:global(#root) {
+  background: #f3f3f3f3;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f3f3f3;
+  text-align: center;
 }
 
 .loader {
@@ -24,7 +15,7 @@
   border: 8px solid rgba(0, 0, 0, 0.1); /* Light grey */
   border-top: 8px solid #3498db; /* Blue */
   border-radius: 50%;
-  animation: spin 2s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
