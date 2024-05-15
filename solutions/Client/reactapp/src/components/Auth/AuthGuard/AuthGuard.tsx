@@ -1,8 +1,10 @@
 import userManager from "app/oidc-client";
 import { Suspense, useEffect } from "react";
-
+import classNames from "classnames/bind";
+import style from "./AuthGuard.module.scss"
+const cx=classNames.bind(style)
 const Loading = () => {
-  return <div>Loading...</div>;
+  return <div className={cx("loader")}></div>;
 };
 
 const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -13,10 +15,11 @@ const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         await userManager.signinRedirect();
       }
     };
-    handleLogin();
+   // handleLogin();
   }, []);
 
-  return <Suspense fallback={<Loading />}>{children}</Suspense>;
+  //return <Suspense fallback={<Loading />}>{children}</Suspense>;
+  return <Loading></Loading>;
 };
 
 export { AuthGuard };
