@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ConversationService.Infrastructure.Migrations
+namespace ConversationService.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -15,8 +15,7 @@ namespace ConversationService.Infrastructure.Migrations
                 name: "Conversation",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     Created_At = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -29,40 +28,14 @@ namespace ConversationService.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Friend",
-                columns: table => new
-                {
-                    User_Id = table.Column<int>(type: "int", nullable: false),
-                    Friend_Id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Friend", x => new { x.User_Id, x.Friend_Id });
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FriendRequest",
-                columns: table => new
-                {
-                    Sender_Id = table.Column<int>(type: "int", nullable: false),
-                    Receiver_Id = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FriendRequest", x => new { x.Sender_Id, x.Receiver_Id });
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ConversationUser",
                 columns: table => new
                 {
-                    Conversation_Id = table.Column<int>(type: "int", nullable: false),
-                    User_Id = table.Column<int>(type: "int", nullable: false),
+                    Conversation_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    User_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReadTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ReadTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,10 +52,9 @@ namespace ConversationService.Infrastructure.Migrations
                 name: "Message",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Sender_Id = table.Column<int>(type: "int", nullable: true),
-                    Conversation_Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Sender_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Conversation_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Time = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Source = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
@@ -111,12 +83,6 @@ namespace ConversationService.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ConversationUser");
-
-            migrationBuilder.DropTable(
-                name: "Friend");
-
-            migrationBuilder.DropTable(
-                name: "FriendRequest");
 
             migrationBuilder.DropTable(
                 name: "Message");
