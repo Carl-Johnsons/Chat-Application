@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
+using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,12 +31,35 @@ public class FriendController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
         var friendIdList = _context.Friends
                                 .Where(f => f.UserId == userId || f.FriendId == userId)
                                 .Select(f => f.UserId == userId ? f.FriendId : f.UserId)
                                 .ToList();
 
         return Ok(friendIdList);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromBody] DeleteFriendDTO deleteFriendDTO)
+    {
+        var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
+        var friendId = deleteFriendDTO.FriendId;
+        var friend = _context.Friends
+                             .Where(f => (f.UserId == userId && f.FriendId == friendId) ||
+                             (f.FriendId == userId && f.UserId == friendId))
+                             .SingleOrDefault();
+        if (friend == null)
+        {
+            return BadRequest("They already not friend");
+        }
+        _context.Friends.Remove(friend);
+        var result = _context.SaveChanges();
+        if (result == 0)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Remove friend failed");
+        }
+
+        return NoContent();
     }
 }

@@ -48,12 +48,40 @@ public class FriendRequestController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] SendFriendRequestDTO sendFriendRequestDTO)
     {
-        var fr = _mapper.Map<SendFriendRequestDTO, FriendRequest>(sendFriendRequestDTO);
-        fr.SenderId = _httpContextAccessor.HttpContext?.User.Identity.GetSubjectId();
-        fr.CreatedAt = DateTime.UtcNow;
-        fr.Status = "Pending";
+        var frInput = _mapper.Map<SendFriendRequestDTO, FriendRequest>(sendFriendRequestDTO);
+        frInput.SenderId = _httpContextAccessor.HttpContext.User.GetSubjectId();
 
-        _context.FriendRequests.Add(fr);
+        var friend = _context.Friends
+                              .Where(f => (f.UserId == frInput.SenderId && f.FriendId == frInput.ReceiverId) ||
+                                    (f.FriendId == frInput.SenderId && f.UserId == frInput.ReceiverId))
+                              .SingleOrDefault();
+
+        // If they are already friend cancel the friend request
+        if (friend != null)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "They are already friend, cancel sending friend request");
+        }
+
+        var friendRequest = _context.FriendRequests
+                                     .Where(fr => (fr.SenderId == frInput.SenderId && fr.ReceiverId == frInput.ReceiverId))
+                                     .SingleOrDefault();
+
+        if (friendRequest != null)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "You already send the friend request, wait for them to accept");
+        }
+         friendRequest = _context.FriendRequests
+                             .Where(fr => (fr.ReceiverId == frInput.SenderId && fr.SenderId == frInput.ReceiverId))
+                             .SingleOrDefault();
+        if (friendRequest != null)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "You already have their pending friend request. Please accept the current friend request");
+        }
+
+        frInput.CreatedAt = DateTime.UtcNow;
+        frInput.Status = "Pending";
+
+        _context.FriendRequests.Add(frInput);
         int result = _context.SaveChanges();
 
         if (result == 0)
@@ -65,7 +93,7 @@ public class FriendRequestController : ControllerBase
     }
 
     [HttpPost("accept")]
-    public async Task<IActionResult> AcceptFriendRequest([FromBody] AccecptFriendRequestDTO accecptFriendRequestDTO)
+    public async Task<IActionResult> AcceptFriendRequest([FromBody] AcceptFriendRequestDTO accecptFriendRequestDTO)
     {
         var fr = _context.FriendRequests
                             .Where(fr => fr.Id.ToString() == accecptFriendRequestDTO.FriendRequestId)

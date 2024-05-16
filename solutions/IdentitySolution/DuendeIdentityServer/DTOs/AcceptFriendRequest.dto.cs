@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DuendeIdentityServer.DTOs;
 
-public class AccecptFriendRequestDTO
+public class AcceptFriendRequestDTO
 {
     [Required]
     [JsonProperty("friendRequestId")]

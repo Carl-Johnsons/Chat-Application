@@ -5,7 +5,6 @@ using DuendeIdentityServer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Sprache;
 using System.Text.RegularExpressions;
 using static Duende.IdentityServer.IdentityServerConstants;
