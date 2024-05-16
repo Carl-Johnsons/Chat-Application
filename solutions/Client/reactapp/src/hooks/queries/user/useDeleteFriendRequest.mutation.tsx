@@ -1,30 +1,24 @@
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocalStorage } from "hooks/useStorage";
 
 /**
  * @param friendRequestId
  * @returns
  */
 export const deleteFriendRequest = async (
-  friendRequestId: string,
-  accessToken: string
+  friendRequestId: string
 ): Promise<boolean | null> => {
   const data = {
     friendRequestId,
   };
   const url = "http://localhost:5001/api/users/friend-request";
-  const response = await axiosInstance.delete(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+  const response = await protectedAxiosInstance.delete(url, {
     data,
   });
   return response.status === 204;
 };
 
 const useDeleteFriendRequest = () => {
-  const [getAccessToken] = useLocalStorage("access_token");
   const queryClient = useQueryClient();
   return useMutation<
     boolean | null,
@@ -34,8 +28,7 @@ const useDeleteFriendRequest = () => {
     },
     unknown
   >({
-    mutationFn: ({ frId }) =>
-      deleteFriendRequest(frId, getAccessToken() as string),
+    mutationFn: ({ frId }) => deleteFriendRequest(frId),
     onSuccess: () => {
       console.log("del friend request successfully");
       queryClient.invalidateQueries({
