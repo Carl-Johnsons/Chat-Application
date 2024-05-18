@@ -9,9 +9,13 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["DuendeIdentityServer/DuendeIdentityServer.csproj", "DuendeIdentityServer/"]
+COPY ["IdentitySolution/DuendeIdentityServer/DuendeIdentityServer.csproj", "DuendeIdentityServer/"]
+COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "DuendeIdentityServer/"]
+
 RUN dotnet restore "./DuendeIdentityServer/DuendeIdentityServer.csproj"
-COPY . .
+
+COPY ["IdentitySolution/DuendeIdentityServer", "DuendeIdentityServer/"]
+
 WORKDIR "/src/DuendeIdentityServer"
 RUN dotnet build "./DuendeIdentityServer.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

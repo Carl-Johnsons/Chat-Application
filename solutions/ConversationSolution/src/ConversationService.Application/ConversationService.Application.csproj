@@ -6,10 +6,17 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="MassTransit" Version="8.2.2" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
 		<PackageReference Include="MediatR" Version="12.2.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\ConversationService.Domain\ConversationService.Domain.csproj" />
-	  <ProjectReference Include="..\ConversationService.Infrastructure\ConversationService.Infrastructure.csproj" />
+		<ProjectReference Include="..\ConversationService.Domain\ConversationService.Domain.csproj" />
+		<ProjectReference Include="..\ConversationService.Infrastructure\ConversationService.Infrastructure.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Reference Include="Contract">
+	    <HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>

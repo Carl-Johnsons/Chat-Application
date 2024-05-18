@@ -9,10 +9,11 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/ChatHub/ChatHub.csproj", "src/ChatHub/"]
-RUN dotnet restore "./src/ChatHub/ChatHub.csproj"
-COPY . .
-WORKDIR "/src/src/ChatHub"
+COPY ["ChatHubSolution/src/ChatHub/ChatHub.csproj", "ChatHubSolution/src/ChatHub/"]
+RUN dotnet restore "./ChatHubSolution/src/ChatHub/ChatHub.csproj"
+COPY ["ChatHubSolution/src/", "ChatHubSolution/src/"]
+
+WORKDIR "/src/ChatHubSolution/src/ChatHub"
 RUN dotnet build "./ChatHub.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
