@@ -4,6 +4,6 @@ namespace ConversationService.Domain.Entities;
 
 public class BaseEntity
 {
-    [Column("Id")]
-    public int Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; set; }
 }

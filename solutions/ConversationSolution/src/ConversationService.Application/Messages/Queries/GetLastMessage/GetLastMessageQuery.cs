@@ -1,3 +1,3 @@
 ﻿namespace ConversationService.Application.Messages.Queries.GetLastMessage;
 
-public record GetLastMessageQuery(int ConversationId) : IRequest<Message?>;
+public record GetLastMessageQuery(Guid ConversationId) : IRequest<Message?>;

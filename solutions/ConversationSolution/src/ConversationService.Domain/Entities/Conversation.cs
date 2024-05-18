@@ -1,13 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConversationService.Domain.Entities;
 
 [Table("Conversation")]
 [PrimaryKey(nameof(Id))]
-public class Conversation : BaseEntity
+public class Conversation : BaseAuditableEntity
 {
-    [Column("Type")]
+    [Required]
+    [JsonProperty("type")]
     public string Type { get; set; } = null!;
-    [Column("Created_At")]
-    public DateTime CreatedAt { get; set; }
 }

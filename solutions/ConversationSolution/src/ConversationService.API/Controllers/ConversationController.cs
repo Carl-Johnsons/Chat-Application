@@ -1,29 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
-using ConversationService.API.Controllers;
+﻿using ConversationService.Application.Conversations.Commands;
+using ConversationService.Application.Conversations.Commands.CreateGroupConversation;
+using ConversationService.Application.Conversations.Commands.DeleteConversation;
+using ConversationService.Application.Conversations.Commands.UpdateConversation;
 using ConversationService.Application.Conversations.Queries.GetAllConversations;
 using ConversationService.Application.Conversations.Queries.GetConversation;
 using ConversationService.Application.Conversations.Queries.GetConversationListByUserId;
 using ConversationService.Application.Conversations.Queries.GetMemberListByConversationId;
-using ConversationService.Application.Conversations.Commands.CreateIndividualConversation;
-using ConversationService.Application.Conversations.Commands.CreateGroupConversation;
-using ConversationService.Application.Conversations.Commands.UpdateConversation;
-using ConversationService.Application.Conversations.Commands.DeleteConversation;
-using ConversationService.Domain.Entities;
 using ConversationService.Domain.DTOs;
+using ConversationService.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
-namespace ChatAPI.Controllers;
+namespace ConversationService.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/conversation")]
 [ApiController]
 [Authorize]
 public partial class ConversationController : ApiControllerBase
 {
-    public ConversationController(ISender sender) : base(sender)
+    public ConversationController(
+            ISender sender,
+            IHttpContextAccessor httpContextAccessor
+        ) : base(sender, httpContextAccessor)
     {
     }
 
@@ -34,13 +38,13 @@ public partial class ConversationController : ApiControllerBase
         return Ok(conversations);
     }
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(Guid id)
     {
         var conversation = await _sender.Send(new GetConversationQuery(id));
         return Ok(conversation);
     }
-    [HttpGet("User/{userId}")]
-    public async Task<IActionResult> GetConversationListByUserId(int userId)
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetConversationListByUserId(Guid userId)
     {
         var query = new GetConversationListByUserIdQuery(userId);
         var cuList = await _sender.Send(query);
@@ -58,8 +62,8 @@ public partial class ConversationController : ApiControllerBase
         var json = JsonConvert.SerializeObject(cuList, jsonSettings);
         return Content(json, "application/json");
     }
-    [HttpGet("Member/{conversationId}")]
-    public async Task<IActionResult> GetMemberListByConversationId(int conversationId)
+    [HttpGet("member/{conversationId}")]
+    public async Task<IActionResult> GetMemberListByConversationId(Guid conversationId)
     {
         var query = new GetMemberListByConversationIdQuery(conversationId);
         var cuList = await _sender.Send(query);
@@ -67,19 +71,28 @@ public partial class ConversationController : ApiControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateIndividualConversation([FromBody] ConversationWithMembersId conversationWithMembersId)
+    public async Task<IActionResult> CreateIndividualConversation([FromBody] CreateIndividualConversationDTO createIndividualConversationDTO)
     {
-        var command = new CreateIndividualConversationCommand(conversationWithMembersId);
-        await _sender.Send(command);
-        return CreatedAtAction(nameof(Get), new
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        foreach (var claim in claims)
         {
-            id = conversationWithMembersId.Id
-        }, conversationWithMembersId);
+            await Console.Out.WriteLineAsync(claim.Type + "=" + claim.Value);
+        }
+
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var command = new CreateIndividualConversationCommand
+        {
+            CurrentUserId = subjectId!,
+            OtherUserId = createIndividualConversationDTO.OtherUserId,
+        };
+        await _sender.Send(command);
+        return Ok();
     }
-    [HttpPost("Group")]
+    [HttpPost("group")]
     public async Task<IActionResult> CreateGroupConversation([FromBody] GroupConversationWithMembersId conversationWithMembersId)
     {
-        if (conversationWithMembersId.MembersId == null || (conversationWithMembersId.MembersId != null && conversationWithMembersId.MembersId.Count <= 2))
+        if (conversationWithMembersId.MembersId == null || conversationWithMembersId.MembersId != null && conversationWithMembersId.MembersId.Count <= 2)
         {
             return StatusCode(StatusCodes.Status406NotAcceptable, "Can't create a group less than 3 members");
         }
@@ -99,7 +112,7 @@ public partial class ConversationController : ApiControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteConversationCommand(id);
         await _sender.Send(command);

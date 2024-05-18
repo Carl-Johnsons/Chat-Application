@@ -10,12 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConversationService.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/message")]
 [ApiController]
 [Authorize]
 public partial class MessageController : ApiControllerBase
 {
-    public MessageController(ISender sender) : base(sender)
+    public MessageController(ISender sender, IHttpContextAccessor httpContextAccessor)
+        : base(sender, httpContextAccessor)
     {
     }
     [HttpGet]
@@ -25,14 +26,14 @@ public partial class MessageController : ApiControllerBase
         return Ok(messages);
     }
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(Guid id)
     {
         var message = await _sender.Send(new GetMessageQuery(id));
         return Ok(message);
     }
     //GET api/Messages/Conversation/1?skip=1
     [HttpGet("Conversation/{id}")]
-    public async Task<IActionResult> GetByConversationId(int id, int? skip)
+    public async Task<IActionResult> GetByConversationId(Guid id, int? skip)
     {
         if (skip == null)
         {
@@ -42,7 +43,7 @@ public partial class MessageController : ApiControllerBase
         return Ok(messages);
     }
     [HttpGet("Conversation/{conversationId}/last")]
-    public async Task<IActionResult> GetLast(int conversationId)
+    public async Task<IActionResult> GetLast(Guid conversationId)
     {
         var m = await _sender.Send(new GetLastMessageQuery(conversationId));
         return Ok(m);

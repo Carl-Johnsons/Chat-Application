@@ -5,22 +5,22 @@ internal sealed class ConversationUsersRepository : BaseRepository<ConversationU
     public ConversationUsersRepository(ApplicationDbContext context) : base(context)
     {
     }
-    public Task<ConversationUser?> GetAsync(int conversationId, int userId)
+    public Task<ConversationUser?> GetAsync(Guid conversationId, Guid userId)
     {
         return _context.ConversationUsers
                          .SingleOrDefaultAsync(cu => cu.ConversationId == conversationId && cu.UserId == userId);
     }
-    public Task<List<ConversationUser>> GetByConversationIdAsync(int conversationId)
+    public Task<List<ConversationUser>> GetByConversationIdAsync(Guid conversationId)
     {
         return _context.ConversationUsers.Where(cu => cu.ConversationId == conversationId).ToListAsync();
     }
-    public List<ConversationUser> GetByUserId(int userId)
+    public List<ConversationUser> GetByUserId(Guid userId)
     {
         var conversationUsers = _context.ConversationUsers
                         .Where(cu => cu.UserId == userId)
                         .ToList();
         var groupConversationIds = conversationUsers
-                        .Where(cu => cu.Conversation.Type == ConversationType.GROUP)
+                        .Where(cu => cu.Conversation.Type == CONVERSATION_TYPE_CODE.GROUP)
                         .Select(cu => cu.ConversationId)
                         .ToList();
         var groupConversation = _context.GroupConversation
@@ -32,7 +32,7 @@ internal sealed class ConversationUsersRepository : BaseRepository<ConversationU
             {
                 continue;
             }
-            if (cu.Conversation.Type == ConversationType.GROUP)
+            if (cu.Conversation.Type == CONVERSATION_TYPE_CODE.GROUP)
             {
                 cu.Conversation = groupConversation.FirstOrDefault(gc => gc.Id == cu.ConversationId, cu.Conversation);
             }
@@ -41,7 +41,7 @@ internal sealed class ConversationUsersRepository : BaseRepository<ConversationU
         return conversationUsers;
     }
     // This query seem unoptimized
-    public ConversationUser? GetIndividualConversation(int userId, int user2Id)
+    public ConversationUser? GetIndividualConversation(Guid userId, Guid user2Id)
     {
         var user1Conversations = GetByUserId(userId);
         var user2Conversations = GetByUserId(user2Id);

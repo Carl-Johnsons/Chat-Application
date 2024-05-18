@@ -1,3 +1,3 @@
 ﻿namespace ConversationService.Application.Conversations.Queries.GetConversationListByUserId;
 
-public record GetConversationListByUserIdQuery(int UserId) : IRequest<List<ConversationUser>>;
+public record GetConversationListByUserIdQuery(Guid UserId) : IRequest<List<ConversationUser>>;

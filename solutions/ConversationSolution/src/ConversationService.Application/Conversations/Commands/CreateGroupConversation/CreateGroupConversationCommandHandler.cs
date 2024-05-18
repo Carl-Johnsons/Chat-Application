@@ -25,7 +25,7 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
             _conversationUserRepository.Add(new ConversationUser()
             {
                 ConversationId = conversationWithMembersId.Id, //this prop will be filled after created by ef-core
-                UserId = (int)leaderId,
+                UserId = (Guid)leaderId,
                 Role = "Leader",
             });
         }

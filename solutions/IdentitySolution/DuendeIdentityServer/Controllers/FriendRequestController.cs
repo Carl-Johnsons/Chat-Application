@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Contract.Event.FriendEvent;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
+
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +23,15 @@ public class FriendRequestController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public FriendRequestController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+    public FriendRequestController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IMapper mapper, IPublishEndpoint publishEndpoint)
     {
         _context = context;
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -70,9 +75,9 @@ public class FriendRequestController : ControllerBase
         {
             return StatusCode(StatusCodes.Status400BadRequest, "You already send the friend request, wait for them to accept");
         }
-         friendRequest = _context.FriendRequests
-                             .Where(fr => (fr.ReceiverId == frInput.SenderId && fr.SenderId == frInput.ReceiverId))
-                             .SingleOrDefault();
+        friendRequest = _context.FriendRequests
+                            .Where(fr => (fr.ReceiverId == frInput.SenderId && fr.SenderId == frInput.ReceiverId))
+                            .SingleOrDefault();
         if (friendRequest != null)
         {
             return StatusCode(StatusCodes.Status400BadRequest, "You already have their pending friend request. Please accept the current friend request");
@@ -117,6 +122,14 @@ public class FriendRequestController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "accept friend request fail");
         }
+        await Console.Out.WriteLineAsync("Sending friendCreatedEvent");
+        await _publishEndpoint.Publish(
+            new FriendCreatedEvent
+            {
+                UserId = Guid.Parse(fr.SenderId),
+                OtherUserId = Guid.Parse(fr.ReceiverId),
+            });
+        await Console.Out.WriteLineAsync("Done sending friendCreatedEvent");
 
         return Ok();
     }

@@ -11,11 +11,11 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
         _unitOfWork = unitOfWork;
     }
 
+
     public async Task Handle(SendClientMessageCommand request, CancellationToken cancellationToken)
     {
         var message = request.Message;
-        message.Time = DateTime.Now;
-        message.Source = MessageConstant.Source.CLIENT;
+        message.Source = MESSAGE_CONSTANTS.Source.CLIENT;
         message.Active = true;
 
         _messageRepository.Add(message);
