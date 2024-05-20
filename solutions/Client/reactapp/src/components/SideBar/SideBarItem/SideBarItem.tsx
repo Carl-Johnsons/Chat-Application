@@ -3,22 +3,18 @@ import { useEffect, useState } from "react";
 //component
 import Avatar from "@/components/shared/Avatar";
 //model
-import { GroupConversation, Message } from "@/models";
+import { Conversation, GroupConversation, Message } from "@/models";
 
 import style from "./SideBarItem.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
 import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
-import {
-  useGetConversation,
-  useGetConversationUsersByConversationId,
-} from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);
 
 type ConversationVariant = {
   type: "conversation";
-  conversationId: string;
+  conversation: Conversation;
   lastMessage?: Message | null;
   isActive?: boolean;
   isNewMessage?: boolean;
@@ -41,7 +37,7 @@ const SideBarItem = (variant: Variants) => {
   const [timeContent, setTimeContent] = useState("");
 
   let userId: string = "";
-  let conversationId: string = "";
+  let conversation: Conversation | null | undefined;
   let image: string = images.defaultAvatarImg.src;
   let lastMessage: Message | null | undefined;
   let searchName: string = "";
@@ -54,17 +50,14 @@ const SideBarItem = (variant: Variants) => {
   const isSearchItem = variant.type === "searchItem";
 
   if (isConversation) {
-    ({ conversationId, isActive, lastMessage, isNewMessage, onClick } =
-      variant);
+    ({ conversation, isActive, lastMessage, isNewMessage, onClick } = variant);
   } else if (isSearchItem) {
     ({ userId, image, searchName, phoneNumber, isActive, onClick } = variant);
   }
   const { data: currentUserData } = useGetCurrentUser();
-  const { data: conversationData } = useGetConversation({
-    conversationId,
-  });
+
   const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? "");
-  const isGroupConversation = conversationData?.type === "Group";
+  const isGroupConversation = conversation?.type === "GROUP";
 
   // Description
   useEffect(() => {
@@ -75,7 +68,7 @@ const SideBarItem = (variant: Variants) => {
       const sender =
         currentUserData?.id === lastMessage.senderId
           ? "You: "
-          : conversationData?.type === "Group"
+          : conversation?.type === "GROUP"
           ? `${lastMessageSenderQuery.data?.name}: `
           : "";
       setDescriptionContent(`${sender}${lastMessage.content}`);
@@ -83,7 +76,7 @@ const SideBarItem = (variant: Variants) => {
       setDescriptionContent(phoneNumber && `Phone Number: ${phoneNumber}`);
     }
   }, [
-    conversationData?.type,
+    conversation?.type,
     currentUserData?.id,
     isSearchItem,
     lastMessage,
@@ -101,13 +94,9 @@ const SideBarItem = (variant: Variants) => {
     setTimeContent(formattedDate);
   }, [lastMessage, lastMessage?.time]);
 
-  const { data: conversationUsersData } =
-    useGetConversationUsersByConversationId(conversationId);
-  const otherUserId =
-    conversationUsersData &&
-    (conversationUsersData[0].userId == currentUserData?.id
-      ? conversationUsersData[1].userId
-      : conversationUsersData[0].userId);
+  console.log(conversation?.users);
+  
+  const otherUserId = conversation?.users[0]?.userId;
 
   const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
@@ -118,12 +107,12 @@ const SideBarItem = (variant: Variants) => {
   const entityAvatar =
     (isConversation
       ? isGroupConversation
-        ? (conversationData as GroupConversation)?.imageURL
+        ? (conversation as GroupConversation)?.imageURL
         : otherUserAvatar
       : image) ?? images.userIcon.src;
   const entityName = isConversation
     ? isGroupConversation
-      ? (conversationData as GroupConversation).name
+      ? (conversation as GroupConversation).name
       : otherUserName
     : searchName;
 
@@ -145,8 +134,8 @@ const SideBarItem = (variant: Variants) => {
         if (isSearchItem && userId) {
           onClick(userId);
         }
-        if (conversationId) {
-          onClick(conversationId);
+        if (conversation) {
+          onClick(conversation.id);
           return;
         }
       }}

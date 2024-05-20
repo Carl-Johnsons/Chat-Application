@@ -10,7 +10,7 @@ interface Props {
   message: {
     userId: string;
     content: string;
-    time: string;
+    createdAt: string;
   };
   showUsername?: boolean;
   sender?: boolean;
@@ -22,11 +22,11 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
   ...htmlProp
 }) => {
   const mergeProp = Object.assign(htmlProp);
-  const { userId, content, time } = message;
+  const { userId, content, createdAt } = message;
 
   const { data } = useGetUser(userId);
   const tz = moment.tz.guess();
-  const formattedTime = moment(new Date(time)).tz(tz).format("HH:mm");
+  const formattedTime = moment(new Date(createdAt)).tz(tz).format("HH:mm");
   return (
     <div
       className={cx("message", "mb-1", "text-break", sender && "sender")}

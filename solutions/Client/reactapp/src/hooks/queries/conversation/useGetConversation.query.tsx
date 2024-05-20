@@ -1,5 +1,5 @@
 import { Conversation } from "@/models";
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import {
   UseQueryOptions,
   useQueries,
@@ -16,8 +16,8 @@ const getConversation = async ({
   if (!conversationId) {
     return null;
   }
-  const url = `/api/Conversation/${conversationId}`;
-  const response = await axiosInstance.get(url);
+  const url = `/api/conversation/${conversationId}`;
+  const response = await protectedAxiosInstance.get(url);
   return response.data;
 };
 

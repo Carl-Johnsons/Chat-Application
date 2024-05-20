@@ -26,7 +26,7 @@ const MessageContainer = ({
   const user = useGetUser(userId);
   return (
     <div className={cx("d-flex", "mb-3", isSender && "sender")}>
-      {!isSender && conversationType === "Group" && user.data?.avatarUrl && (
+      {!isSender && conversationType === "GROUP" && user.data?.avatarUrl && (
         <Avatar
           className={cx("me-2")}
           avatarClassName={cx("rounded-circle")}
@@ -50,7 +50,7 @@ const MessageContainer = ({
               message={{
                 userId: m.senderId,
                 content: m.content,
-                time: m.time ?? "",
+                createdAt: m.createdAt ?? "",
               }}
               sender={isSender}
               showUsername={index === 0}

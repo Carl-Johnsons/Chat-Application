@@ -1,7 +1,6 @@
 import { signalRSendMessage, useGlobalState, useSignalREvents } from "@/hooks";
 import { Message } from "@/models";
-import { MessageDTO } from "@/models/DTOs";
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface Props {
   senderId: string;
@@ -10,19 +9,14 @@ interface Props {
 }
 
 const sendMessage = async ({
-  senderId,
   conversationId,
   messageContent,
 }: Props): Promise<Message | null> => {
-  //group message object
-  const messageObject: MessageDTO = {
-    senderId: senderId,
+  const url = "/api/conversation/message";
+  const respone = await protectedAxiosInstance.post(url, {
     conversationId,
     content: messageContent,
-  };
-
-  const url = "/api/Messages";
-  const respone = await axiosInstance.post(url, messageObject);
+  });
   return respone.data;
 };
 

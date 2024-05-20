@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import { Message } from "@/models";
 import {
   InfiniteData,
@@ -16,8 +16,13 @@ const getMessageList = async ({
   conversationId,
   skipBatch,
 }: FetchProps): Promise<Message[] | null> => {
-  const url = `/api/Messages/Conversation/${conversationId}?skip=${skipBatch}`;
-  const response = await axiosInstance.get(url);
+  const url = `api/conversation/message`;
+  const response = await protectedAxiosInstance.get(url, {
+    params: {
+      conversationId,
+      skip: skipBatch,
+    },
+  });
   return response.data;
 };
 

@@ -15,7 +15,6 @@ import classNames from "classnames/bind";
 import images from "@/assets";
 import { User } from "@/models";
 import { useGetUser } from "@/hooks/queries/user";
-import { useGetConversation } from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);
 interface Props {

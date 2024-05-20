@@ -16,7 +16,7 @@ import {
 } from "@/hooks/queries/user";
 import {
   useGetConversation,
-  useGetConversationUsersByConversationId,
+  useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
 import { GroupConversation } from "@/models";
 
@@ -96,10 +96,12 @@ const ProfileModalContent = (variant: Variants) => {
     conversationId: modalEntityId,
   });
 
-  const { data: conversationUsersData } =
-    useGetConversationUsersByConversationId(modalEntityId, {
+  const { data: conversationUsersData } = useGetMemberListByConversationId(
+    modalEntityId,
+    {
       enabled: isGroup,
-    });
+    }
+  );
 
   const userData = isPersonal ? currentUserData : otherUserData;
 
