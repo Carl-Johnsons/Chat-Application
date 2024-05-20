@@ -17,10 +17,10 @@
         "OPTIONS"
       ],
       "UpstreamPathTemplate": "/api/conversation/{everything}",
-      //"AuthenticationOptions": {
-      //  "AuthenticationProviderKeys": [ "Bearer" ],
-      //  "AllowedScopes": [ "conversation-api" ]
-      //}
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [ "Bearer" ],
+        "AllowedScopes": [ "conversation-api" ]
+      }
     },
     {
       "DownstreamHostAndPorts": [

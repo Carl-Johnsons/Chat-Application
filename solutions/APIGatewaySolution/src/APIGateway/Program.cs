@@ -57,9 +57,10 @@ builder.ConfigureServices(services =>
         options.AddPolicy("AllowAnyOriginPolicy",
             builder =>
             {
-                builder.AllowAnyOrigin()
+                builder.WithOrigins("http://localhost:3001", "http://localhost:3000")
                        .AllowAnyMethod()
-                       .AllowAnyHeader();
+                       .AllowAnyHeader()
+                       .AllowCredentials();
             });
     });
     services.AddSignalR();
