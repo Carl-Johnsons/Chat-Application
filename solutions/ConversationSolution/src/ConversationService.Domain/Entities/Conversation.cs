@@ -11,4 +11,6 @@ public class Conversation : BaseAuditableEntity
     [Required]
     [JsonProperty("type")]
     public string Type { get; set; } = null!;
+
+    public virtual List<ConversationUser> Users { get; set; } = null!;
 }

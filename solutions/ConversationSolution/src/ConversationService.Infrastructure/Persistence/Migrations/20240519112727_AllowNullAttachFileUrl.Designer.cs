@@ -4,6 +4,7 @@ using ConversationService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConversationService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240519112727_AllowNullAttachFileUrl")]
+    partial class AllowNullAttachFileUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,7 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Conversation", (string)null);
+                    b.ToTable("Conversation");
 
                     b.HasDiscriminator<string>("Type").HasValue("INDIVIDUAL");
 
@@ -73,7 +76,7 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.ToTable("ConversationUser", (string)null);
+                    b.ToTable("ConversationUser");
                 });
 
             modelBuilder.Entity("ConversationService.Domain.Entities.Message", b =>
@@ -88,10 +91,10 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<string>("AttachedFilesURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ConversationId")
@@ -117,7 +120,7 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.ToTable("Message", (string)null);
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("ConversationService.Domain.Entities.GroupConversation", b =>
@@ -134,7 +137,7 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Conversation", (string)null);
+                    b.ToTable("Conversation");
 
                     b.HasDiscriminator().HasValue("GROUP");
                 });

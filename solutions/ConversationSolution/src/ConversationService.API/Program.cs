@@ -2,6 +2,7 @@
 using ConversationService.Application;
 using ConversationService.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,13 @@ var services = builder.Services;
 services.AddApplicationServices();
 services.AddInfrastructureServices(builder.Configuration);
 
-services.AddControllers();
+services.AddControllers()
+        // Prevent circular JSON reach max depth of the object when serialization
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
 
 services.AddHttpContextAccessor();
 

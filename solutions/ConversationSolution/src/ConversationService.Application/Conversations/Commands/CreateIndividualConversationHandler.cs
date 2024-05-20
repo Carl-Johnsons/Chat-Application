@@ -1,23 +1,22 @@
-﻿namespace ConversationService.Application.Conversations.Commands;
+﻿using ConversationService.Infrastructure.Persistence;
+
+namespace ConversationService.Application.Conversations.Commands;
 
 public record CreateIndividualConversationCommand : IRequest
 {
-    public string CurrentUserId { get; init; } = null!;
-    public string OtherUserId { get; init; } = null!;
+    public Guid CurrentUserId { get; init; }
+    public Guid OtherUserId { get; init; }
 };
 
 
 public class CreateIndividualConversationHandler : IRequestHandler<CreateIndividualConversationCommand>
 {
-    private readonly IConversationRepository _conversationRepository;
-    private readonly IConversationUsersRepository _conversationUserRepository;
+    private readonly ApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
 
-
-    public CreateIndividualConversationHandler(IConversationRepository conversationRepository, IConversationUsersRepository conversationUserRepository, IUnitOfWork unitOfWork)
+    public CreateIndividualConversationHandler(ApplicationDbContext context, IUnitOfWork unitOfWork)
     {
-        _conversationRepository = conversationRepository;
-        _conversationUserRepository = conversationUserRepository;
+        _context = context;
         _unitOfWork = unitOfWork;
     }
 
@@ -26,33 +25,28 @@ public class CreateIndividualConversationHandler : IRequestHandler<CreateIndivid
         var userId = request.CurrentUserId;
         var otherUserId = request.OtherUserId;
 
-        await Console.Out.WriteLineAsync("==================================");
-        await Console.Out.WriteLineAsync(request.CurrentUserId);
-        await Console.Out.WriteLineAsync(request.OtherUserId);
-        await Console.Out.WriteLineAsync("==================================");
-
         var conversation = new Conversation
         {
             Type = CONVERSATION_TYPE_CODE.INDIVIDUAL
         };
 
-        _conversationRepository.Add(conversation);
+        _context.Conversations.Add(conversation);
 
         ConversationUser cu = new()
         {
             ConversationId = conversation.Id,
-            UserId = Guid.Parse(userId),
+            UserId = userId,
             Role = "Member",
         };
-        _conversationUserRepository.Add(cu);
+        _context.ConversationUsers.Add(cu);
 
         ConversationUser cou = new()
         {
             ConversationId = conversation.Id,
-            UserId = Guid.Parse(otherUserId),
+            UserId = otherUserId,
             Role = "Member",
         };
-        _conversationUserRepository.Add(cou);
+        _context.ConversationUsers.Add(cou);
 
         await _unitOfWork.SaveChangeAsync(cancellationToken);
     }

@@ -1,18 +1,16 @@
 ﻿using Contract.Event.FriendEvent;
-using ConversationService.Infrastructure.Persistence;
+using ConversationService.Application.Conversations.Commands;
 using MassTransit;
 
 namespace ConversationService.Application.Conversations.EventHandlers.FriendCreated;
 
 public sealed class FriendCreatedConsumer : IConsumer<FriendCreatedEvent>
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ISender _sender;
 
-    public FriendCreatedConsumer(ApplicationDbContext context, IUnitOfWork unitOfWork)
+    public FriendCreatedConsumer(ISender sender)
     {
-        _context = context;
-        _unitOfWork = unitOfWork;
+        _sender = sender;
     }
 
     public async Task Consume(ConsumeContext<FriendCreatedEvent> context)
@@ -22,31 +20,13 @@ public sealed class FriendCreatedConsumer : IConsumer<FriendCreatedEvent>
         var userId = context.Message.UserId;
         var otherUserId = context.Message.OtherUserId;
 
-        var conversation = new Conversation
+        var command = new CreateIndividualConversationCommand
         {
-            Type = CONVERSATION_TYPE_CODE.INDIVIDUAL
+            CurrentUserId = userId,
+            OtherUserId = otherUserId,
         };
 
-        _context.Conversations.Add(conversation);
-
-
-        ConversationUser cu = new()
-        {
-            ConversationId = conversation.Id,
-            UserId = userId,
-            Role = "Member",
-        };
-        _context.ConversationUsers.Add(cu);
-
-        ConversationUser cou = new()
-        {
-            ConversationId = conversation.Id,
-            UserId = otherUserId,
-            Role = "Member",
-        };
-        _context.ConversationUsers.Add(cou);
-
-        await _unitOfWork.SaveChangeAsync();
+        await _sender.Send(command);
         await Console.Out.WriteLineAsync("Conversation-service done the request");
         await Console.Out.WriteLineAsync("======================================");
 

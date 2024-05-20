@@ -1,3 +1,0 @@
-﻿namespace ConversationService.Application.Conversations.Commands.CreateGroupConversation;
-
-public record CreateGroupConversationCommand(GroupConversationWithMembersId ConversationWithMembersId) : IRequest;

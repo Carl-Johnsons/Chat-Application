@@ -1,4 +1,5 @@
-﻿namespace ConversationService.Application.Conversations.Commands.CreateGroupConversation;
+﻿namespace ConversationService.Application.Conversations.Commands;
+public record CreateGroupConversationCommand(GroupConversationWithMembersId ConversationWithMembersId) : IRequest;
 
 public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroupConversationCommand>
 {

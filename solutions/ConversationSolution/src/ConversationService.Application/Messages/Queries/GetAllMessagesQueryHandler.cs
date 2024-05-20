@@ -1,4 +1,5 @@
-﻿namespace ConversationService.Application.Messages.Queries.GetAllMessages;
+﻿namespace ConversationService.Application.Messages.Queries;
+public record GetAllMessagesQuery : IRequest<List<Message>>;
 
 public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, List<Message>>
 {

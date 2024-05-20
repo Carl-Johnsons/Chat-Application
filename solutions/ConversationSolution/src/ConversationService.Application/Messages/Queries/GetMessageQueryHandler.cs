@@ -1,4 +1,6 @@
-﻿namespace ConversationService.Application.Messages.Queries.GetMessage;
+﻿namespace ConversationService.Application.Messages.Queries;
+
+public record GetMessageQuery(Guid MessageId) : IRequest<Message?>;
 
 public class GetMessageQueryHandler : IRequestHandler<GetMessageQuery, Message?>
 {

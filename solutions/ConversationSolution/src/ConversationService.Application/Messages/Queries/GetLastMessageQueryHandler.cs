@@ -1,4 +1,6 @@
-﻿namespace ConversationService.Application.Messages.Queries.GetLastMessage;
+﻿namespace ConversationService.Application.Messages.Queries;
+
+public record GetLastMessageQuery(Guid ConversationId) : IRequest<Message?>;
 
 public class GetLastMessageQueryHandler : IRequestHandler<GetLastMessageQuery, Message?>
 {

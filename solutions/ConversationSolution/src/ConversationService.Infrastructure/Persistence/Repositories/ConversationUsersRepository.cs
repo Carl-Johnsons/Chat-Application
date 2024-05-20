@@ -1,4 +1,6 @@
-﻿namespace ConversationService.Infrastructure.Persistence.Repositories;
+﻿using Newtonsoft.Json;
+
+namespace ConversationService.Infrastructure.Persistence.Repositories;
 
 internal sealed class ConversationUsersRepository : BaseRepository<ConversationUser>, IConversationUsersRepository
 {
@@ -19,13 +21,18 @@ internal sealed class ConversationUsersRepository : BaseRepository<ConversationU
         var conversationUsers = _context.ConversationUsers
                         .Where(cu => cu.UserId == userId)
                         .ToList();
+        Console.WriteLine(JsonConvert.SerializeObject(conversationUsers));
         var groupConversationIds = conversationUsers
                         .Where(cu => cu.Conversation.Type == CONVERSATION_TYPE_CODE.GROUP)
-                        .Select(cu => cu.ConversationId)
+                        .Select(cu => cu?.ConversationId)
                         .ToList();
+        Console.WriteLine(JsonConvert.SerializeObject(groupConversationIds));
+
         var groupConversation = _context.GroupConversation
                                 .Where(gc => groupConversationIds.Contains(gc.Id))
                                 .ToList();
+        Console.WriteLine(JsonConvert.SerializeObject(groupConversation));
+
         foreach (var cu in conversationUsers)
         {
             if (cu.Conversation == null)

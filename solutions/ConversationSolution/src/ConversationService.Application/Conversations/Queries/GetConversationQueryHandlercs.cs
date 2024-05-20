@@ -1,5 +1,6 @@
-﻿namespace ConversationService.Application.Conversations.Queries.GetConversation;
+﻿namespace ConversationService.Application.Conversations.Queries;
 
+public record GetConversationQuery(Guid ConversationId) : IRequest<Conversation?>;
 public class GetConversationQueryHandlercs : IRequestHandler<GetConversationQuery, Conversation?>
 {
     private readonly IConversationRepository _conversationRepository;

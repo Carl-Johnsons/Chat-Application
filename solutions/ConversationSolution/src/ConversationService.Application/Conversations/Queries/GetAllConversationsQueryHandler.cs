@@ -1,4 +1,6 @@
-﻿namespace ConversationService.Application.Conversations.Queries.GetAllConversations;
+﻿namespace ConversationService.Application.Conversations.Queries;
+
+public record GetAllConversationsQuery : IRequest<List<Conversation>>;
 
 public class GetAllConversationsQueryHandler : IRequestHandler<GetAllConversationsQuery, List<Conversation>>
 {

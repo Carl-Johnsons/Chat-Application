@@ -1,28 +1,17 @@
 ﻿using ConversationService.Application.Conversations.Commands;
-using ConversationService.Application.Conversations.Commands.CreateGroupConversation;
-using ConversationService.Application.Conversations.Commands.DeleteConversation;
-using ConversationService.Application.Conversations.Commands.UpdateConversation;
-using ConversationService.Application.Conversations.Queries.GetAllConversations;
-using ConversationService.Application.Conversations.Queries.GetConversation;
-using ConversationService.Application.Conversations.Queries.GetConversationListByUserId;
-using ConversationService.Application.Conversations.Queries.GetMemberListByConversationId;
+using ConversationService.Application.Conversations.Queries;
 using ConversationService.Domain.DTOs;
-using ConversationService.Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace ConversationService.API.Controllers;
 
 [Route("api/conversation")]
 [ApiController]
 [Authorize]
-public partial class ConversationController : ApiControllerBase
+public partial class ConversationController : BaseApiController
 {
     public ConversationController(
             ISender sender,
@@ -43,72 +32,26 @@ public partial class ConversationController : ApiControllerBase
         var conversation = await _sender.Send(new GetConversationQuery(id));
         return Ok(conversation);
     }
-    [HttpGet("user/{userId}")]
-    public async Task<IActionResult> GetConversationListByUserId(Guid userId)
-    {
-        var query = new GetConversationListByUserIdQuery(userId);
-        var cuList = await _sender.Send(query);
-
-        // base serialization make derived class return to base class, so using alternative way
-        var jsonSettings = new JsonSerializerSettings
-        {
-            Formatting = Formatting.Indented, // Use indented formatting
-            ContractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            }
-        };
-
-        var json = JsonConvert.SerializeObject(cuList, jsonSettings);
-        return Content(json, "application/json");
-    }
-    [HttpGet("member/{conversationId}")]
-    public async Task<IActionResult> GetMemberListByConversationId(Guid conversationId)
-    {
-        var query = new GetMemberListByConversationIdQuery(conversationId);
-        var cuList = await _sender.Send(query);
-        return Ok(cuList);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateIndividualConversation([FromBody] CreateIndividualConversationDTO createIndividualConversationDTO)
+    [HttpGet("user")]
+    public async Task<IActionResult> GetConversationListByUserId()
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
-        foreach (var claim in claims)
-        {
-            await Console.Out.WriteLineAsync(claim.Type + "=" + claim.Value);
-        }
-
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
-        var command = new CreateIndividualConversationCommand
-        {
-            CurrentUserId = subjectId!,
-            OtherUserId = createIndividualConversationDTO.OtherUserId,
-        };
-        await _sender.Send(command);
-        return Ok();
+        var query = new GetConversationListByUserIdQuery(Guid.Parse(subjectId!));
+        var cList = await _sender.Send(query);
+
+        return Ok(cList);
     }
-    [HttpPost("group")]
-    public async Task<IActionResult> CreateGroupConversation([FromBody] GroupConversationWithMembersId conversationWithMembersId)
+    [HttpGet("member")]
+    public async Task<IActionResult> GetMemberListByConversationId([FromQuery] GetMemberListByConversationIdDTO getMemberListByConversationIdDTO)
     {
-        if (conversationWithMembersId.MembersId == null || conversationWithMembersId.MembersId != null && conversationWithMembersId.MembersId.Count <= 2)
-        {
-            return StatusCode(StatusCodes.Status406NotAcceptable, "Can't create a group less than 3 members");
-        }
-        var command = new CreateGroupConversationCommand(conversationWithMembersId);
-        await _sender.Send(command);
-        return CreatedAtAction(nameof(Get), new
-        {
-            id = conversationWithMembersId.Id
-        }, conversationWithMembersId);
-    }
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] Conversation conversation)
-    {
-        var command = new UpdateConversationCommand(conversation);
-        await _sender.Send(command);
-        return NoContent();
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var query = new GetMemberListByConversationIdQuery(Guid.Parse(subjectId!), getMemberListByConversationIdDTO.ConversationId);
+        var cuList = await _sender.Send(query);
+        return Ok(cuList);
     }
 
     [HttpDelete("{id}")]

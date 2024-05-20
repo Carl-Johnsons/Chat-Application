@@ -32,14 +32,22 @@ public class ApplicationDbContext : DbContext
             entity.HasDiscriminator(e => e.Type)
                   .HasValue<Conversation>(CONVERSATION_TYPE_CODE.INDIVIDUAL)
                   .HasValue<GroupConversation>(CONVERSATION_TYPE_CODE.GROUP);
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
         });
         modelBuilder.Entity<ConversationUser>(entity =>
         {
-            entity.HasOne(d => d.Conversation).WithMany()
-                .HasForeignKey(d => d.ConversationId)
+            entity.HasOne(cu => cu.Conversation)
+                .WithMany(c => c.Users)
+                .HasForeignKey(cu => cu.ConversationId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.ReadTime)
+            entity.Property(cu => cu.ReadTime)
                 .HasConversion(v => v,
                                v => v.HasValue ? DateTime.SpecifyKind((DateTime)v, DateTimeKind.Utc) : null);
         });
@@ -47,6 +55,12 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Message>(entity =>
         {
             entity.Property(e => e.Active).HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         });
 
     }
