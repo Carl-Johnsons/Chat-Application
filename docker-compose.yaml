@@ -9,7 +9,7 @@ services:
     user: root #mssql
     ports:
       # Microsoft SQL Server uses the default port 1433 for all database connections
-      - '${DB__PORT}:1433'
+      - '${DB_PORT}:1433'
     networks:
       - back-end
     environment:
