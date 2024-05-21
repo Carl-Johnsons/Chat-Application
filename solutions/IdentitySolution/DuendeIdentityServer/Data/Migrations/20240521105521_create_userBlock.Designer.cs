@@ -4,6 +4,7 @@ using DuendeIdentityServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DuendeIdentityServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240521105521_create_userBlock")]
+    partial class create_userBlock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +129,7 @@ namespace DuendeIdentityServer.Data.Migrations
 
                     b.HasKey("UserId", "FriendId");
 
-                    b.ToTable("Friend", (string)null);
+                    b.ToTable("Friend");
                 });
 
             modelBuilder.Entity("DuendeIdentityServer.Models.FriendRequest", b =>
@@ -167,7 +170,7 @@ namespace DuendeIdentityServer.Data.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("FriendRequest", (string)null);
+                    b.ToTable("FriendRequest");
                 });
 
             modelBuilder.Entity("DuendeIdentityServer.Models.UserBlock", b =>
@@ -182,7 +185,7 @@ namespace DuendeIdentityServer.Data.Migrations
 
                     b.HasIndex("BlockUserId");
 
-                    b.ToTable("UserBlock", (string)null);
+                    b.ToTable("UserBlock");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
