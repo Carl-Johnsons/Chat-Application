@@ -26,7 +26,8 @@ public class SeedData
         context.Database.Migrate();
 
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        var mockUpData = new MockupData(userMgr);
+        var mockUpData = new MockupData(userMgr, context);
         mockUpData.SeedUserData();
+        mockUpData.SeedFriendData();
     }
 }

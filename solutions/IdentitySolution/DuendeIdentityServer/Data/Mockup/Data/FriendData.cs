@@ -25,6 +25,6 @@ public static class FriendData
                 new Friend {
                     UserId = "bb06e4ec-f371-45d5-804e-22c65c77f67d",
                     FriendId = "03e4b46e-b84a-43a9-a421-1b19e02023bb",
-                },
+                }
             ];
 }
