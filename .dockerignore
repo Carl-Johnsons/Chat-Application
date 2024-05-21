@@ -32,3 +32,5 @@ README.md
 .flaskenv*
 !.env.project
 !.env.vault
+# Keep contract.dll
+!**/Contract.dll

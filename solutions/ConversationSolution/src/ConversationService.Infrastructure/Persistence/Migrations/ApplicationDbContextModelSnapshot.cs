@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ConversationService.Infrastructure.Migrations
+namespace ConversationService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,14 +22,11 @@ namespace ConversationService.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ConversationService.Core.Entities.Conversation", b =>
+            modelBuilder.Entity("ConversationService.Domain.Entities.Conversation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
@@ -38,27 +35,29 @@ namespace ConversationService.Infrastructure.Migrations
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)")
-                        .HasColumnName("Type");
+                        .HasColumnType("nvarchar(13)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Updated_At");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Conversation");
+                    b.ToTable("Conversation", (string)null);
 
-                    b.HasDiscriminator<string>("Type").HasValue("Individual");
+                    b.HasDiscriminator<string>("Type").HasValue("INDIVIDUAL");
 
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("ConversationService.Core.Entities.ConversationUser", b =>
+            modelBuilder.Entity("ConversationService.Domain.Entities.ConversationUser", b =>
                 {
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int")
-                        .HasColumnName("Conversation_Id");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("User_Id");
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("ReadTime")
                         .HasColumnType("datetime2");
@@ -67,125 +66,93 @@ namespace ConversationService.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ConversationId", "UserId");
-
-                    b.ToTable("ConversationUser");
-                });
-
-            modelBuilder.Entity("ConversationService.Core.Entities.Friend", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("User_Id");
-
-                    b.Property<int>("FriendId")
-                        .HasColumnType("int")
-                        .HasColumnName("Friend_Id");
-
-                    b.HasKey("UserId", "FriendId");
-
-                    b.ToTable("Friend");
-                });
-
-            modelBuilder.Entity("ConversationService.Core.Entities.FriendRequest", b =>
-                {
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int")
-                        .HasColumnName("Sender_Id");
-
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("int")
-                        .HasColumnName("Receiver_Id");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Status")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Status");
-
-                    b.HasKey("SenderId", "ReceiverId");
-
-                    b.ToTable("FriendRequest");
-                });
-
-            modelBuilder.Entity("ConversationService.Core.Entities.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool?>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasColumnName("Active");
-
-                    b.Property<string>("AttachedFilesURL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Attached_Files_URL");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int")
-                        .HasColumnName("Conversation_Id");
-
-                    b.Property<int?>("SenderId")
-                        .HasColumnType("int")
-                        .HasColumnName("Sender_Id");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Source");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Time");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ConversationId");
 
-                    b.ToTable("Message");
+                    b.ToTable("ConversationUser", (string)null);
                 });
 
-            modelBuilder.Entity("ConversationService.Core.Entities.GroupConversation", b =>
+            modelBuilder.Entity("ConversationService.Domain.Entities.Message", b =>
                 {
-                    b.HasBaseType("ConversationService.Core.Entities.Conversation");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("Active")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("AttachedFilesURL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Created_At");
+
+                    b.Property<Guid?>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Updated_At");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("Message", (string)null);
+                });
+
+            modelBuilder.Entity("ConversationService.Domain.Entities.GroupConversation", b =>
+                {
+                    b.HasBaseType("ConversationService.Domain.Entities.Conversation");
 
                     b.Property<string>("ImageURL")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Image_URL");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InviteURL")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Invite_URL");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Name");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Conversation");
+                    b.ToTable("Conversation", (string)null);
 
-                    b.HasDiscriminator().HasValue("Group");
+                    b.HasDiscriminator().HasValue("GROUP");
                 });
 
-            modelBuilder.Entity("ConversationService.Core.Entities.ConversationUser", b =>
+            modelBuilder.Entity("ConversationService.Domain.Entities.ConversationUser", b =>
                 {
-                    b.HasOne("ConversationService.Core.Entities.Conversation", "Conversation")
+                    b.HasOne("ConversationService.Domain.Entities.Conversation", "Conversation")
+                        .WithMany("Users")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("ConversationService.Domain.Entities.Message", b =>
+                {
+                    b.HasOne("ConversationService.Domain.Entities.Conversation", "Conversation")
                         .WithMany()
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -194,15 +161,9 @@ namespace ConversationService.Infrastructure.Migrations
                     b.Navigation("Conversation");
                 });
 
-            modelBuilder.Entity("ConversationService.Core.Entities.Message", b =>
+            modelBuilder.Entity("ConversationService.Domain.Entities.Conversation", b =>
                 {
-                    b.HasOne("ConversationService.Core.Entities.Conversation", "Conversation")
-                        .WithMany()
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Conversation");
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

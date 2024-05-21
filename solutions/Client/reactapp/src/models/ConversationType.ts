@@ -1,1 +1,1 @@
-export type ConversationType = "Individual" | "Group";
+export type ConversationType = "INDIVIDUAL" | "GROUP";

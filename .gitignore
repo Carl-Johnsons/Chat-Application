@@ -409,6 +409,8 @@ FodyWeavers.xsd
 # Database bind mount
 chat-sql-data
 data/db
+# rabbitmq
+data/mq
 # appsettings
 **appsettings.*
 # IdentityServer4

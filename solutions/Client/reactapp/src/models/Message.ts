@@ -3,7 +3,8 @@ export type Message = {
   senderId: string;
   conversationId: string;
   content: string;
-  time: string;
+  createdAt: string;
+  updatedAt: string;
   source: "Client" | "Server";
   format: "Text" | "Image";
   active: boolean;

@@ -12,7 +12,7 @@ internal abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where
     {
         return _context.Set<TEntity>().ToListAsync();
     }
-    public Task<TEntity?> GetByIdAsync(int id)
+    public Task<TEntity?> GetByIdAsync(Guid id)
     {
         return _context.Set<TEntity>().SingleOrDefaultAsync(c => c.Id == id);
     }

@@ -8,7 +8,7 @@ import { useGetUsers } from "@/hooks/queries/user";
 import styles from "./ListingGroupMember.modalContent.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
-import { useGetConversationUsersByConversationId } from "@/hooks/queries/conversation";
+import { useGetMemberListByConversationId } from "@/hooks/queries/conversation";
 
 interface Props {
   onClickMember?: (memberId: string) => void;
@@ -20,7 +20,7 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
   const { data: conversationData } =
-    useGetConversationUsersByConversationId(modalEntityId);
+    useGetMemberListByConversationId(modalEntityId);
 
   const userIdList =
     modalType === "Group"

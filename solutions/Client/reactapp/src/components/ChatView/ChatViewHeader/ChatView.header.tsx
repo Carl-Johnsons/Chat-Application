@@ -12,9 +12,9 @@ import classNames from "classnames/bind";
 import images from "@/assets";
 import {
   useGetConversation,
-  useGetConversationUsersByConversationId,
+  useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
-import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import { useGetUser } from "@/hooks/queries/user";
 import UserStatus from "../UserStatus";
 
 const cx = classNames.bind(style);
@@ -25,22 +25,18 @@ const ChatViewHeader = () => {
   const [activeConversationId] = useGlobalState("activeConversationId");
   // hook
   const { handleShowModal } = useModal();
-  const isGroup = conversationType === "Group";
+  const isGroup = conversationType === "GROUP";
 
   const handleToggleAside = () => setShowAside(!showAside);
   const handleClickAvatar = () => {
     const modalType: ModalType =
-      conversationType === "Group" ? "Group" : "Friend";
+      conversationType === "GROUP" ? "Group" : "Friend";
     handleShowModal({ entityId: activeConversationId, modalType });
   };
-  const { data: currentUserData } = useGetCurrentUser();
   const { data: conversationUsersData } =
-    useGetConversationUsersByConversationId(activeConversationId);
-  const otherUserId =
-    conversationUsersData &&
-    (conversationUsersData[0].userId == currentUserData?.id
-      ? conversationUsersData[1].userId
-      : conversationUsersData[0].userId);
+    useGetMemberListByConversationId(activeConversationId);
+    
+  const otherUserId = conversationUsersData && conversationUsersData[0].userId;
 
   const { data: conversationData } = useGetConversation(
     { conversationId: activeConversationId },

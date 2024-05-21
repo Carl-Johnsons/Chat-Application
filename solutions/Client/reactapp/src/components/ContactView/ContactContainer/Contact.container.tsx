@@ -17,7 +17,7 @@ import {
   useGetFriendRequestList,
 } from "@/hooks/queries/user";
 import { ModalType } from "models/ModalType";
-import { useGetConversationUsers } from "@/hooks/queries/conversation";
+import { useGetConversationList } from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);
 
@@ -28,7 +28,7 @@ interface Props {
 const ContactContainer = ({ className }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
   const { data: friendList } = useGetFriendList();
-  const { data: conversationUsers } = useGetConversationUsers();
+  const { data: conversationList } = useGetConversationList();
   const { data: friendRequestList } = useGetFriendRequestList();
 
   // hooks
@@ -64,7 +64,6 @@ const ContactContainer = ({ className }: Props) => {
         {friendList &&
           activeContactType === MenuContactIndex.FRIEND_LIST &&
           friendList.map((friendId) => {
-            
             return (
               <ContactRow
                 key={friendId}
@@ -76,17 +75,15 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {conversationUsers &&
+        {conversationList &&
           activeContactType === MenuContactIndex.GROUP_LIST &&
-          conversationUsers.map((cu) => {
-            if (cu?.conversation?.type === "Group") {
+          conversationList.map((c) => {
+            if (c?.type === "GROUP") {
               return (
                 <ContactRow
-                  key={cu.conversationId}
-                  entityId={cu.conversationId}
-                  onClickBtnDetail={() =>
-                    handleClickBtnDetail(cu.conversationId, "Group")
-                  }
+                  key={c.id}
+                  entityId={c.id}
+                  onClickBtnDetail={() => handleClickBtnDetail(c.id, "Group")}
                 />
               );
             }

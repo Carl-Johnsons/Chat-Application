@@ -2,6 +2,8 @@
 using ConversationService.Application;
 using ConversationService.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,16 @@ var services = builder.Services;
 services.AddApplicationServices();
 services.AddInfrastructureServices(builder.Configuration);
 
-services.AddControllers();
+services.AddControllers()
+        // Prevent circular JSON reach max depth of the object when serialization
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
+
+services.AddHttpContextAccessor();
+
 
 services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
@@ -21,22 +32,23 @@ services.AddAuthentication("Bearer")
         //var IdentityServerEndpoint = "https://localhost:5001";
         options.Authority = IdentityServerEndpoint;
         options.RequireHttpsMetadata = false;
+        // Clear default Microsoft's JWT claim mapping
+        // Ref: https://stackoverflow.com/questions/70766577/asp-net-core-jwt-token-is-transformed-after-authentication
+        options.MapInboundClaims = false;
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = false,
             ValidateAudience = false,
             ValidateIssuer = false
-            //ValidIssuers = [
-            //    IdentityServerEndpoint
-            //],
         };
         // For development only
         options.IncludeErrorDetails = true;
     });
 
-
 services.AddEndpointsApiExplorer();
 var app = builder.Build();
+
 
 app.Use(async (context, next) =>
 {

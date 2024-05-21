@@ -1,31 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ConversationService.Domain.Entities;
 
 [Table("Message")]
 [PrimaryKey(nameof(Id))]
-public partial class Message : BaseEntity
+public partial class Message : BaseAuditableEntity
 {
-    [Column("Sender_Id")]
-    public int? SenderId { get; set; } // This props is null if the message come from the system
-    [Column("Conversation_Id")]
-    public int ConversationId { get; set; } // This props is the receiver
-    public string? Content { get; set; }
+    [AllowNull]
+    public Guid? SenderId { get; set; } // This props is null if the message come from the system
+    [Required]
+    public Guid ConversationId { get; set; } // This props is the receiver
+    public string Content { get; set; } = "";
 
-    [Column("Time")]
-    [DataType(DataType.DateTime)]
-    public DateTime Time { get; set; }
-
-    [Column("Source")]
+    [Required]
     [MaxLength(20)]
     public string Source { get; set; } = null!;
 
-    [Column("Attached_Files_URL")]
-    public string AttachedFilesURL { get; set; } = null!;
-    [Column("Active")]
+    [AllowNull]
+    public string? AttachedFilesURL { get; set; } = null!;
+    [AllowNull]
     public bool? Active { get; set; }
-
 
     // Navigation props
     public virtual Conversation Conversation { get; set; } = null!;

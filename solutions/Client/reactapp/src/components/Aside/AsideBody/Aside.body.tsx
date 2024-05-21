@@ -21,9 +21,9 @@ import { useGlobalState } from "@/hooks";
 // model
 import {
   useGetConversation,
-  useGetConversationUsersByConversationId,
+  useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
-import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import { useGetUser } from "@/hooks/queries/user";
 import { GroupConversation } from "models/GroupConversation";
 
 const cx = classnames.bind(style);
@@ -32,18 +32,13 @@ const AsideBody = () => {
   const [activeConversationId] = useGlobalState("activeConversationId");
   const [conversationType] = useGlobalState("conversationType");
 
-  const isGroup = conversationType === "Group";
+  const isGroup = conversationType === "GROUP";
   const { data: conversation } = useGetConversation({
     conversationId: activeConversationId,
   });
-  const { data: currentUserData } = useGetCurrentUser();
   const { data: conversationUsersData } =
-    useGetConversationUsersByConversationId(activeConversationId);
-  const otherUserId =
-    conversationUsersData &&
-    (conversationUsersData[0].userId == currentUserData?.id
-      ? conversationUsersData[1].userId
-      : conversationUsersData[0].userId);
+    useGetMemberListByConversationId(activeConversationId);
+  const otherUserId = conversationUsersData && conversationUsersData[0].userId;
   const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });

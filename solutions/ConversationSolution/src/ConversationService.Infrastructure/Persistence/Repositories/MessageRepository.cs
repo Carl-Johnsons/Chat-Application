@@ -6,17 +6,17 @@ internal sealed class MessageRepository : BaseRepository<Message>, IMessageRepos
     {
     }
 
-    public Task<List<Message>> GetAsync(int conversationId, int skip)
+    public Task<List<Message>> GetAsync(Guid conversationId, int skip)
     {
         return _context.Messages
             .Where(m => m.ConversationId == conversationId)
             .OrderByDescending(m => m.Id)
-            .Skip(skip * MessageConstant.LIMIT)
-            .Take(MessageConstant.LIMIT)
+            .Skip(skip * MESSAGE_CONSTANTS.LIMIT)
+            .Take(MESSAGE_CONSTANTS.LIMIT)
             .OrderBy(m => m.Id)
             .ToListAsync();
     }
-    public Task<Message?> GetLastAsync(int conversationId)
+    public Task<Message?> GetLastAsync(Guid conversationId)
     {
         return _context.Messages
             .Where(m => m.ConversationId == conversationId)

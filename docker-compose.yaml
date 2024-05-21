@@ -9,7 +9,7 @@ services:
     user: root #mssql
     ports:
       # Microsoft SQL Server uses the default port 1433 for all database connections
-      - '${DB__PORT}:1433'
+      - '${DB_PORT}:1433'
     networks:
       - back-end
     environment:
@@ -42,41 +42,52 @@ services:
     networks:
       - back-end
 
+  rabbitmq:
+    # login guest:guest
+    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    container_name: service-bus
+    labels:
+      NAME: "rabbitmq"
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    #   Force to attach to network back-end to use hostname "rabbitmq"
+    # Otherwise, use hostname "localhost" didn't work
+    networks:
+      - back-end
+    environment:
+      RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: true
+    volumes:
+      - './data/mq:/var/lib/rabbitmq'
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
   api-gateway:
     build:
       context: ./solutions/APIGatewaySolution
       dockerfile: ./src/APIGateway/Dockerfile
     ports:
-      - '5000:80'
+      - '${API_GATEWAY_PORT}:80'
     networks:
       - back-end
     env_file:
       - ./solutions/APIGatewaySolution/src/APIGateway/.env
 
-  # auth-api:
-  #   build:
-  #     context: ./solutions/AuthSolution
-  #     dockerfile: ./src/AuthService.API/Dockerfile
-  #   container_name: auth-service
-  #   ports:
-  #     - '5001:80'
-  #   depends_on:
-  #     sql-server:
-  #       condition: service_healthy
-  #   networks:
-  #     - back-end
-  #   env_file:
-  #     - ./solutions/AuthSolution/src/AuthService.API/.env
-
   identity-api:
     build:
-      context: ./solutions/IdentitySolution
-      dockerfile: ./DuendeIdentityServer/Dockerfile
+      context: solutions
+      dockerfile: ./IdentitySolution/DuendeIdentityServer/Dockerfile
     container_name: identity-service
     ports:
-      - '5001:80'
+      - '${IDENTITY_SERVICE_PORT}:80'
     depends_on:
       sql-server:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks:
       - back-end
@@ -85,11 +96,11 @@ services:
 
   upload-api:
     build:
-      context: ./solutions/UploadFileSolution
-      dockerfile: ./src/UploadFileService.API/Dockerfile
+      context: solutions
+      dockerfile: ./UploadFileSolution/src/UploadFileService.API/Dockerfile
     container_name: upload-service
     ports:
-      - '5002:80'
+      - '${UPLOAD_SERVICE_PORT}:80'
     networks:
       - back-end
     env_file:
@@ -97,11 +108,11 @@ services:
 
   websocket:
     build:
-      context: ./solutions/ChatHubSolution
-      dockerfile: ./src/ChatHub/Dockerfile
+      context: solutions
+      dockerfile: ./ChatHubSolution/src/ChatHub/Dockerfile
     container_name: chat-hub
     ports:
-      - '5003:80'
+      - '${SIGNALR_PORT}:80'
     networks:
       - back-end
       - front-end
@@ -110,14 +121,16 @@ services:
 
   conversation-api:
     build:
-      context: ./solutions/ConversationSolution
-      dockerfile: ./src/ConversationService.API/Dockerfile
+      context: solutions
+      dockerfile: ./ConversationSolution/src/ConversationService.API/Dockerfile
     container_name: conversation-service
     depends_on:
       sql-server:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     ports:
-      - '5004:80'
+      - '${CONVERSATION_SERVICE}:80'
     networks:
       - back-end
     env_file:
@@ -129,7 +142,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: react-app
     ports:
-      - '${CLIENT__PORT}:3000'
+      - '${CLIENT_PORT}:3000'
     networks:
       - front-end
     env_file:
@@ -141,19 +154,6 @@ services:
         - path: ./solutions/Client/reactapp
           target: /app
           action: sync
-    # rabbitmq: # login guest:guest
-    #     image: rabbitmq:3-management
-    #     hostname: "rabbitmq"
-    #     container_name: service-bus
-    #     labels:
-    #       NAME: "rabbitmq"
-    #     ports:
-    #     - "4369:4369"
-    #     - "5671:5671"
-    #     - "5672:5672"
-    #     - "25672:25672"
-    #     - "15671:15671"
-    #     - "15672:15672"
 
 networks:
   back-end:
