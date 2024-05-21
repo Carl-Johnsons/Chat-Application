@@ -21,5 +21,9 @@ cd "%project_root%" &&^
 echo Pulling upload file service env file .... &&^
 cd .\solutions\UploadFileSolution\src\UploadFileService.API &&^
 npx dotenv-vault@latest pull &&^
+cd "%project_root%" &&^
+echo Publishing Contract solution ... &&^
+cd .\solutions\Contract &&^
+dotnet publish &&^
 cd "%project_root%"
 pause
