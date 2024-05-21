@@ -14,6 +14,8 @@ public class MappingConfig
 
             config.CreateMap<FriendRequest, SendFriendRequestDTO>().ReverseMap();
             config.CreateMap<FriendRequest, FriendRequestResponseDTO>().ReverseMap();
+
+            config.CreateMap<UserBlock, BlockUserDTO>().ReverseMap();
         });
 
         

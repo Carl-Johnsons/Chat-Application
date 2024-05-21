@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
@@ -20,12 +21,14 @@ public class UsersController : ControllerBase
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
         _userManager = userManager;
         _mapper = mapper;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpGet]
@@ -61,14 +64,15 @@ public class UsersController : ControllerBase
 
         var match = Regex.Match(searchValue, phonePattern);
         IQueryable<ApplicationUser> query = _context.Users;
+        var currentUserId = _httpContextAccessor.HttpContext.User.GetSubjectId();
 
         if (match.Success)
         {
-            query = query.Where(u => u.PhoneNumber == searchValue);
+            query = query.Where(u => u.PhoneNumber == searchValue && !_context.UserBlocks.Any(ub => ub.BlockUserId == u.Id && ub.UserId == currentUserId));
         }
         else
         {
-            query = query.Where(u => u.Name.Contains(searchValue));
+            query = query.Where(u => u.Name.Contains(searchValue) && !_context.UserBlocks.Any(ub => ub.BlockUserId == u.Id && ub.UserId == currentUserId));
         }
 
         var users = query.ToList();
@@ -96,6 +100,79 @@ public class UsersController : ControllerBase
         _context.SaveChanges();
 
         return Ok();
+    }
+
+    [HttpPost("block")]
+    public async Task<IActionResult> Block([FromBody] BlockUserDTO blockUserDTO)
+    {        
+        var buInput = _mapper.Map<BlockUserDTO, UserBlock>(blockUserDTO);
+        buInput.UserId = _httpContextAccessor.HttpContext.User.GetSubjectId(); 
+
+        var existingUser = await _context.Users.FindAsync(blockUserDTO.BlockUserId);
+
+        if (existingUser == null)
+        {
+            return BadRequest("This user does not exit!");
+        }
+
+        if (buInput.UserId == buInput.BlockUserId)
+        {
+            return BadRequest("You can not block yourself!");
+        }
+
+        var blockUser = _context.UserBlocks
+                            .Where(bu => (bu.UserId == buInput.UserId && bu.BlockUserId == buInput.BlockUserId))
+                            .SingleOrDefault();
+                            
+        if (blockUser != null) 
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "You already block this user!");
+        }
+
+        var friend = _context.Friends
+                             .Where(f => (f.UserId == buInput.UserId && f.FriendId == buInput.BlockUserId) ||
+                             (f.FriendId == buInput.BlockUserId && f.UserId == buInput.UserId))
+                             .SingleOrDefault();
+
+        _context.UserBlocks.Add(buInput);
+        if (friend != null)
+        {
+            _context.Remove(friend);
+        }
+        var result = _context.SaveChanges();
+
+
+        if (result == 0)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
+        }
+
+        return Ok(); 
+    }
+
+    [HttpDelete("unblock")]
+    public async Task<IActionResult> Ubblock([FromBody] UnblockUserDTO unblockUserDTO)
+    {
+        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var blockUserId = unblockUserDTO.UnblockUserId;
+        var unblockUser = _context.UserBlocks
+                            .Where(ub => (ub.UserId == userId && ub.BlockUserId == blockUserId))                     
+                            .SingleOrDefault();
+
+        if (unblockUser == null)
+        {
+            return BadRequest("They are not in black list");
+        }
+
+        _context.UserBlocks.Remove(unblockUser);
+        var result = _context.SaveChanges();
+
+        if (result == 0)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
+        }
+
+        return NoContent();
     }
 
 
