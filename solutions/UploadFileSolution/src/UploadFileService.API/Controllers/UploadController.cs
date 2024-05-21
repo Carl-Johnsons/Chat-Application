@@ -1,41 +1,76 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.JSInterop.Infrastructure;
 using System.Net.Http.Headers;
 
 namespace UploadFileService.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/upload")]
 [ApiController]
 public class UploadController : ControllerBase
 {
-    [HttpPost("Image")]
-    public async Task<IActionResult> UploadImage(IFormFile ImageFile)
+    private readonly Cloudinary cloudinary;
+
+    public UploadController() {
+        DotNetEnv.Env.Load();
+        cloudinary = new Cloudinary(Environment.GetEnvironmentVariable("Cloudinary_URL"));
+        cloudinary.Api.Secure = true;
+    }
+
+
+   
+
+    [HttpPost]
+    public async Task<IActionResult> UploadFile(IFormFile file)
     {
         try
         {
-            if (ImageFile == null || ImageFile.Length == 0)
+            
+            if (file == null || file.Length == 0)
             {
                 return BadRequest("File object is null");
             }
-            string? accessToken = Environment.GetEnvironmentVariable("Imgur__AccessToken");
 
-            using var httpClient = new HttpClient();
-            using var form = new MultipartFormDataContent();
-            using var stream = new MemoryStream();
+            string fileName = file.FileName;
+            Stream fileStream = file.OpenReadStream();
 
-            await ImageFile.CopyToAsync(stream);
-            byte[] fileBytes = stream.ToArray();
-            form.Add(new ByteArrayContent(fileBytes, 0, fileBytes.Length), "image", "image.png");
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            var img_response = await httpClient.PostAsync("https://api.imgur.com/3/upload", form);
-            img_response.EnsureSuccessStatusCode();
-            var responseContent = await img_response.Content.ReadAsStringAsync();
-
-            return Content(responseContent, "application/json");
+            var uploadParams = new AutoUploadParams()
+            {
+                File = new FileDescription(fileName, fileStream),
+                PublicId = Guid.NewGuid().ToString() + fileName,
+                Folder = Environment.GetEnvironmentVariable("Cloudinary_Folder"),
+            };
+            var uploadResult = cloudinary.Upload(uploadParams);
+            return Content(uploadResult.JsonObj.ToString(), "application/json");
         }
         catch (Exception ex)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteFile([FromForm] string fileId)
+    {
+        try
+        {
+
+            if (fileId == null || fileId == "")
+            {
+                return BadRequest("FileId is null");
+            }
+
+            var deleteParams = new DeletionParams(fileId) {
+                ResourceType = ResourceType.Raw};
+            var deleteResult = cloudinary.Destroy(deleteParams);
+            return Content(deleteResult.JsonObj.ToString(), "application/json");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
 }

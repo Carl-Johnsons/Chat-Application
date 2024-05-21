@@ -1,4 +1,5 @@
-using UploadFileService.API.Middlewares;
+
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +19,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
-app.UseValidateImgurAccessToken(); // apply to all request
+app.UseHttpsRedirection();
 
 app.MapControllers();
 
