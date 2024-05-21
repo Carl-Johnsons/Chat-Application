@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import { User } from "@/models";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -7,7 +7,7 @@ const searchUser = async (searchValue: string): Promise<User[] | null> => {
     value: searchValue,
   };
   const url = "http://localhost:5001/api/users/search";
-  const response = await axiosInstance.get(url, {
+  const response = await protectedAxiosInstance.get(url, {
     params,
   });
   return response.data;
