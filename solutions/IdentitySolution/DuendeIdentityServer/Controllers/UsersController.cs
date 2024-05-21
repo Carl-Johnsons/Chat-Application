@@ -68,11 +68,11 @@ public class UsersController : ControllerBase
 
         if (match.Success)
         {
-            query = query.Where(u => u.PhoneNumber == searchValue && !_context.UserBlocks.Any(ub => ub.BlockUserId == u.Id && ub.UserId == currentUserId));
+            query = query.Where(u => u.PhoneNumber == searchValue && !_context.UserBlocks.Any(ub => (ub.BlockUserId == u.Id && ub.UserId == currentUserId) || (ub.BlockUserId == currentUserId && ub.UserId == u.Id)));
         }
         else
         {
-            query = query.Where(u => u.Name.Contains(searchValue) && !_context.UserBlocks.Any(ub => ub.BlockUserId == u.Id && ub.UserId == currentUserId));
+            query = query.Where(u => u.Name.Contains(searchValue) && !_context.UserBlocks.Any(ub => (ub.BlockUserId == u.Id && ub.UserId == currentUserId) || (ub.BlockUserId == currentUserId && ub.UserId == u.Id)));
         }
 
         var users = query.ToList();
