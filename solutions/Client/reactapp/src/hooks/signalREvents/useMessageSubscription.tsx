@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { useGlobalState } from "../globalState";
 import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
@@ -8,8 +8,7 @@ import { Message } from "@/models";
 const useMessageSubscription = (connection?: HubConnection) => {
   const [activeConversationId] = useGlobalState("activeConversationId");
   const queryClient = useQueryClient();
-
-  useEffect(() => {
+  const subscribeMessageEvent = useCallback(() => {
     if (!connection) {
       return;
     }
@@ -29,10 +28,19 @@ const useMessageSubscription = (connection?: HubConnection) => {
         exact: true,
       });
     });
-    return () => {
-      connection.off(SignalREvent.RECEIVE_MESSAGE);
-    };
   }, [activeConversationId, connection, queryClient]);
+
+  const unsubscribeMessageEvent = useCallback(() => {
+    if (!connection) {
+      return;
+    }
+    connection.off(SignalREvent.RECEIVE_MESSAGE);
+  }, [connection]);
+
+  return {
+    subscribeMessageEvent,
+    unsubscribeMessageEvent,
+  };
 };
 
 export default useMessageSubscription;

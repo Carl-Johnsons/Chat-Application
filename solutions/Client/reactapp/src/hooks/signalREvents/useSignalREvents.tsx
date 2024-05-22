@@ -9,14 +9,6 @@ import {
 } from "@/models";
 
 import { useGlobalState } from "../globalState";
-import useMessageSubscription from "./useMessageSubscription";
-import useFriendRequestSubscription from "./useFriendRequestSubscription";
-import useConnectedSubscription from "./useConnectedSubscription";
-import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
-import useDisableNotifyUserTypingSubscription from "./useDisableNotifyUserTypingSubscription";
-import useAcceptedFriendRequestSubscription from "./useAcceptedFriendRequestSubscription";
-import useDisconnectedSubscription from "./useDisconnectedSubscription";
-import useJoinConversationSubscription from "./useJoinConversationSubscription";
 
 interface SignalREvent {
   name: string;
@@ -31,18 +23,11 @@ interface useSignalREventsProps {
   events?: SignalREvent[];
 }
 
-const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
+const useSignalREvents = ({ events }: useSignalREventsProps) => {
   // global state
+  const [connection] = useGlobalState("connection");
   const [connectionState] = useGlobalState("connectionState");
-  // hook
-  useAcceptedFriendRequestSubscription(connection);
-  useConnectedSubscription(connection);
-  useDisableNotifyUserTypingSubscription(connection);
-  useDisconnectedSubscription(connection);
-  useFriendRequestSubscription(connection);
-  useJoinConversationSubscription(connection);
-  useMessageSubscription(connection);
-  useNotifyUserTypingSubscription(connection);
+
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
@@ -71,7 +56,9 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
     };
   }, [connection, events]);
 
-  return invokeActionRef.current;
+  return {
+    invokeAction: invokeActionRef.current,
+  };
 };
 
 export function signalRSendMessage(m: Message) {

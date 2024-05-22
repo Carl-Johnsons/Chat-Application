@@ -1,11 +1,12 @@
 import { HubConnection } from "@microsoft/signalr";
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { SignalREvent } from "../../data/constants";
 import { useQueryClient } from "@tanstack/react-query";
 
 const useJoinConversationSubscription = (connection?: HubConnection) => {
   const queryClient = useQueryClient();
-  useEffect(() => {
+
+  const subscribeJoinConversationEvent = useCallback(() => {
     if (!connection) {
       return;
     }
@@ -19,10 +20,19 @@ const useJoinConversationSubscription = (connection?: HubConnection) => {
         });
       }
     );
-    return () => {
-      connection.off(SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST);
-    };
   }, [connection, queryClient]);
+
+  const unsubscribeJoinConversationEvent = useCallback(() => {
+    if (!connection) {
+      return;
+    }
+    connection.off(SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST);
+  }, [connection]);
+
+  return {
+    subscribeJoinConversationEvent,
+    unsubscribeJoinConversationEvent,
+  };
 };
 
 export default useJoinConversationSubscription;

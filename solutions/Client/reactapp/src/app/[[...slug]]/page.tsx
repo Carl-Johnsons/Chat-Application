@@ -1,12 +1,7 @@
 "use client";
 
 // Hooks
-import { useEffect } from "react";
-import {
-  useGlobalState,
-  useScreenSectionNavigator,
-  useSignalRConnection,
-} from "@/hooks";
+import { useGlobalState, useScreenSectionNavigator } from "@/hooks";
 //components
 import styles from "./Home.module.scss";
 import classNames from "classnames/bind";
@@ -20,16 +15,11 @@ import SidebarContent from "@/components/SideBar/SidebarContent";
 const cx = classNames.bind(styles);
 
 const Home = () => {
-  const [, setConnection] = useGlobalState("connection");
   const [showAside] = useGlobalState("showAside");
   const [activeNav] = useGlobalState("activeNav");
   //Local state
-  const conn = useSignalRConnection(process.env.NEXT_PUBLIC_SIGNALR_URL ?? "");
   //Ref
   const { leftRef, rightRef } = useScreenSectionNavigator();
-  useEffect(() => {
-    conn && setConnection(conn);
-  }, [conn, setConnection]);
 
   return (
     <div className="container-fluid p-0 d-flex w-100 h-100">

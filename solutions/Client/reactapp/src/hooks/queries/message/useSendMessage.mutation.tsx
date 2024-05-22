@@ -3,7 +3,6 @@ import { Message } from "@/models";
 import { protectedAxiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface Props {
-  senderId: string;
   conversationId: string;
   messageContent: string;
 }
@@ -26,9 +25,11 @@ const useSendMessage = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Message | null, Error, Props, unknown>({
-    mutationFn: ({ senderId, conversationId, messageContent }: Props) =>
-      sendMessage({ senderId, conversationId, messageContent }),
+    mutationFn: ({ conversationId, messageContent }: Props) =>
+      sendMessage({ conversationId, messageContent }),
     onSuccess: (im, { conversationId }) => {
+      console.log("success sending message " + im);
+
       if (!im) {
         return;
       }

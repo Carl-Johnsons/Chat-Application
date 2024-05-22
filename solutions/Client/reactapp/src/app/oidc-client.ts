@@ -10,7 +10,7 @@ const userManagerConfig: UserManagerSettings = {
   redirect_uri: `${clientBaseUrl}/signin-callback`,
   response_type: "id_token token",
   post_logout_redirect_uri: clientBaseUrl,
-  scope: "openid profile phone email IdentityServerApi",
+  scope: "openid profile phone email IdentityServerApi conversation-api",
 };
 
 const userManager = new UserManager(userManagerConfig);

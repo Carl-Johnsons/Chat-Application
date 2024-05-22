@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 
 import style from "./ChatView.footer.module.scss";
 import classNames from "classnames/bind";
@@ -42,17 +42,19 @@ const ChatViewFooter = () => {
     debounceInvokeAction();
   }, [debounceInvokeAction, inputValue]);
 
-  const fetchSendMessage = async () => {
+  const fetchSendMessage = useCallback(async () => {
     if (!currentUser) {
       return;
     }
     sendMessageMutate({
-      senderId: currentUser.id,
       conversationId: activeConversationId,
       messageContent: inputValue,
     });
     setInputValue("");
-  };
+  }, [activeConversationId, currentUser, inputValue, sendMessageMutate]);
+
+  console.log({ activeConversationId });
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!currentUser) {
       return;
