@@ -29,5 +29,6 @@ public class SeedData
         var mockUpData = new MockupData(userMgr, context);
         mockUpData.SeedUserData();
         mockUpData.SeedFriendData();
+        mockUpData.SeedFriendRequestData();
     }
 }
