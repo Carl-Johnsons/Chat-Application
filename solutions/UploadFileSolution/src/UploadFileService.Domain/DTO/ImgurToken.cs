@@ -1,7 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace UploadFileService.Core.DTO;
+namespace UploadFileService.Domain.DTO;
 public class ImgurToken
 {
     [JsonProperty("access_token")]

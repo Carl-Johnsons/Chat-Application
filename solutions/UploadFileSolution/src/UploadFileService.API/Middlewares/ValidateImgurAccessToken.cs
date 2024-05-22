@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
-using UploadFileService.Core.DTO;
 
 namespace UploadFileService.API.Middlewares
 {

@@ -39,6 +39,7 @@ services:
       SA_PASSWORD: ${SA_PASSWORD}
       IdentityDB: ${IdentityDB}
       MessageDB: ${MessageDB}
+      FileDB: ${FileDB}
     networks:
       - back-end
 

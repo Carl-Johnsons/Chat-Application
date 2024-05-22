@@ -29,6 +29,13 @@ cd .\solutions\IdentitySolution\DuendeIdentityServer &&^
 dotnet ef database update &&^
 cd "%project_root%"
 
+SET DB=%FileDB%
+echo [96mApplying Upload file Service Migrations ....[0m &&^
+echo [96mDB=[0m'%DB%' &&^
+cd .\solutions\UploadFileSolution\src\UploadFileService.Infrastructure &&^
+dotnet ef database update &&^
+cd "%project_root%"
+
 endlocal
 
 
