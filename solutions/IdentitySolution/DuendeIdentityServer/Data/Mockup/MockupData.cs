@@ -39,12 +39,13 @@ public class MockupData
     {
         foreach (var friendRequest in FriendRequestData.Data)
         {
-            var friendRq = _context.FriendRequests.Any(fR => (fR.SenderId == friendRequest.SenderId && fR.ReceiverId == friendRequest.ReceiverId) ||
-                                                                fR.SenderId == friendRequest.ReceiverId && fR.ReceiverId == friendRequest.SenderId);
+            var friendRq = _context.FriendRequests.Any(fR => ((fR.SenderId == friendRequest.SenderId && fR.ReceiverId == friendRequest.ReceiverId) ||
+                                                                (fR.SenderId == friendRequest.ReceiverId && fR.ReceiverId == friendRequest.SenderId)));
             var friend = _context.Friends.Any(fR => ((fR.UserId == friendRequest.SenderId && fR.FriendId == friendRequest.ReceiverId) ||
                                                         (fR.UserId == friendRequest.ReceiverId && fR.FriendId == friendRequest.SenderId)));
             if (!friend && !friendRq)
             {
+                await Console.Out.WriteLineAsync(friendRequest.SenderId + " ==== " + friendRequest.ReceiverId);
                 await _context.FriendRequests.AddAsync(friendRequest);
                 await _context.SaveChangesAsync();
             }

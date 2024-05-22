@@ -8,7 +8,7 @@ namespace DuendeIdentityServer;
 
 public class SeedData
 {
-    public static void EnsureSeedData(string connectionString)
+    public static async void EnsureSeedData(string connectionString)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -28,7 +28,7 @@ public class SeedData
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var mockUpData = new MockupData(userMgr, context);
         mockUpData.SeedUserData();
-        mockUpData.SeedFriendData();
-        mockUpData.SeedFriendRequestData();
+        await mockUpData.SeedFriendData();
+        await mockUpData.SeedFriendRequestData();
     }
 }
