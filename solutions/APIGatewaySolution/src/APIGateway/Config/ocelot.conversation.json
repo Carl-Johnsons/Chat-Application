@@ -38,7 +38,11 @@
         "DELETE",
         "OPTIONS"
       ],
-      "UpstreamPathTemplate": "/api/conversation/message/{everything}"
+      "UpstreamPathTemplate": "/api/conversation/message/{everything}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [ "Bearer" ],
+        "AllowedScopes": [ "conversation-api" ]
+      }
     }
   ]
 }
