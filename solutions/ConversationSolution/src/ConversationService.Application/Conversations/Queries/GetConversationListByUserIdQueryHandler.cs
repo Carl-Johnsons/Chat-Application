@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Conversations.Queries;
 
-public record GetConversationListByUserIdQuery(Guid UserId) : IRequest<List<Conversation>>;
+public record GetConversationListByUserIdQuery : IRequest<List<Conversation>>
+{
+    public Guid UserId { get; init; }
+};
 
 public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConversationListByUserIdQuery, List<Conversation>>
 {

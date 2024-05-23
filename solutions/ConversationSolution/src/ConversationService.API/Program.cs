@@ -1,5 +1,6 @@
 
 using ConversationService.Application;
+using ConversationService.Domain.Interfaces;
 using ConversationService.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
@@ -47,7 +48,9 @@ services.AddAuthentication("Bearer")
     });
 
 services.AddEndpointsApiExplorer();
+
 var app = builder.Build();
+
 
 
 app.Use(async (context, next) =>
@@ -65,5 +68,8 @@ app.MapControllers();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+var signalService = app.Services.GetService<ISignalRService>();
+await signalService!.StartConnectionAsync();
 
 app.Run();

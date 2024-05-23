@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>5fbd38f4-9da2-4a02-a5cd-d8fd83de54ff</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileContext>..\..\..\.</DockerfileContext>
+		<DockerfileContext>..\..\..</DockerfileContext>
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 

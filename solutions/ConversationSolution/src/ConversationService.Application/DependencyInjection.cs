@@ -1,4 +1,5 @@
 ﻿using ConversationService.Application.Conversations.EventHandlers.FriendCreated;
+using ConversationService.Application.Conversations.EventHandlers.GetConversationByUserId;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -16,6 +17,8 @@ public static class DependencyInjection
             //busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
 
             busConfig.AddConsumer<FriendCreatedConsumer>();
+            busConfig.AddConsumer<GetConversationByUserIdConsumer>();
+
 
             busConfig.UsingRabbitMq((context, config) =>
             {
@@ -31,9 +34,17 @@ public static class DependencyInjection
                     e.Bind("friend-created-event"); // Bind to the same exchange
                 });
 
+                config.ReceiveEndpoint("get-conversation-by-user-id-event-queue", e =>
+                {
+                    e.ConfigureConsumer<GetConversationByUserIdConsumer>(context);
+                });
+
                 config.ConfigureEndpoints(context);
             });
         });
+
+        services.AddSingleton<ISignalRService, SignalRService>();
+
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         return services;
     }

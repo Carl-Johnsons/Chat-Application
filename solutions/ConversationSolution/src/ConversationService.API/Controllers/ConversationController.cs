@@ -29,7 +29,10 @@ public partial class ConversationController : BaseApiController
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var conversation = await _sender.Send(new GetConversationQuery(id));
+        var conversation = await _sender.Send(new GetConversationQuery
+        {
+            ConversationId = id
+        });
         return Ok(conversation);
     }
     [HttpGet("user")]
@@ -38,7 +41,10 @@ public partial class ConversationController : BaseApiController
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
-        var query = new GetConversationListByUserIdQuery(Guid.Parse(subjectId!));
+        var query = new GetConversationListByUserIdQuery
+        {
+            UserId = Guid.Parse(subjectId!)
+        };
         var cList = await _sender.Send(query);
 
         return Ok(cList);
@@ -49,7 +55,11 @@ public partial class ConversationController : BaseApiController
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
-        var query = new GetMemberListByConversationIdQuery(Guid.Parse(subjectId!), getMemberListByConversationIdDTO.ConversationId);
+        var query = new GetMemberListByConversationIdQuery
+        {
+            UserId = Guid.Parse(subjectId!),
+            ConversationId = getMemberListByConversationIdDTO.ConversationId
+        };
         var cuList = await _sender.Send(query);
         return Ok(cuList);
     }
@@ -57,7 +67,10 @@ public partial class ConversationController : BaseApiController
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var command = new DeleteConversationCommand(id);
+        var command = new DeleteConversationCommand
+        {
+            ConversationId = id
+        };
         await _sender.Send(command);
         return NoContent();
     }

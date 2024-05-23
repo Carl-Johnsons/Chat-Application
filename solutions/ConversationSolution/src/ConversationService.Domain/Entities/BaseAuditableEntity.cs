@@ -4,8 +4,8 @@ namespace ConversationService.Domain.Entities;
 
 public class BaseAuditableEntity : BaseEntity
 {
-    [Column("Created_At")]
+    [Column]
     public DateTime CreatedAt { get; set; }
-    [Column("Updated_At")]
+    [Column]
     public DateTime UpdatedAt { get; set; }
 }

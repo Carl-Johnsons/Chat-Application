@@ -9,6 +9,8 @@
 		<PackageReference Include="MassTransit" Version="8.2.2" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
 		<PackageReference Include="MediatR" Version="12.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.5" />
+
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ConversationService.Domain\ConversationService.Domain.csproj" />

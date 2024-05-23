@@ -12,12 +12,17 @@ public record SendClientMessageCommand : IRequest<Message>
 public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessageCommand, Message>
 {
     private readonly ApplicationDbContext _context;
+
     private readonly IUnitOfWork _unitOfWork;
 
-    public SendClientMessageCommandHandler(ApplicationDbContext context, IUnitOfWork unitOfWork)
+    private readonly ISignalRService _signalRService;
+
+    public SendClientMessageCommandHandler(IUnitOfWork unitOfWork, ApplicationDbContext context, ISignalRService signalRService)
     {
+
         _context = context;
         _unitOfWork = unitOfWork;
+        _signalRService = signalRService;
     }
 
 
@@ -34,6 +39,8 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
 
         _context.Messages.Add(message);
         await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+        await _signalRService.InvokeAction(SignalREvent.SEND_MESSAGE_ACTION, message);
 
         return message;
     }

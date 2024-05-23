@@ -40,7 +40,10 @@ public partial class MessageController : BaseApiController
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var message = await _sender.Send(new GetMessageQuery(id));
+        var message = await _sender.Send(new GetMessageQuery
+        {
+            MessageId = id
+        });
         return Ok(message);
     }
 

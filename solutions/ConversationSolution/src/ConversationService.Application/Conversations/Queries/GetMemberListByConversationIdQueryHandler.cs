@@ -3,7 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Conversations.Queries;
 
-public record GetMemberListByConversationIdQuery(Guid UserId, Guid ConversationId) : IRequest<List<ConversationUser>>;
+public record GetMemberListByConversationIdQuery : IRequest<List<ConversationUser>>
+{
+    public Guid UserId { get; init; }
+    public Guid ConversationId { get; set; }
+};
 public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemberListByConversationIdQuery, List<ConversationUser>>
 {
     private readonly ApplicationDbContext _context;
@@ -17,7 +21,7 @@ public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemb
     {
         var conversationId = request.ConversationId;
         var cuList = _context.ConversationUsers
-                             .Where(cu => cu.ConversationId == conversationId 
+                             .Where(cu => cu.ConversationId == conversationId
                                     && cu.UserId != request.UserId).ToListAsync();
 
         return cuList;

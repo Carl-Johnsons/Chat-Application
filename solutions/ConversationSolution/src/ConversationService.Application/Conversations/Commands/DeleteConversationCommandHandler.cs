@@ -1,7 +1,10 @@
 ﻿using ConversationService.Infrastructure.Persistence;
 
 namespace ConversationService.Application.Conversations.Commands;
-public record DeleteConversationCommand(Guid ConversationId) : IRequest;
+public record DeleteConversationCommand : IRequest
+{
+    public Guid ConversationId { get; init; }
+};
 
 public class DeleteConversationCommandHandler : IRequestHandler<DeleteConversationCommand>
 {
