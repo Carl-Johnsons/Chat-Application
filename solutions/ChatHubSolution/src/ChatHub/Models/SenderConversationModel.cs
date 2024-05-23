@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace ChatService.Models
+namespace ChatHub.Models
 {
     public class SenderConversationModel
     {

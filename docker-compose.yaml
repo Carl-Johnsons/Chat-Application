@@ -90,6 +90,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      websocket:
+        condition: service_started
     networks:
       - back-end
     env_file:
@@ -114,6 +116,9 @@ services:
     container_name: chat-hub
     ports:
       - '${SIGNALR_PORT}:80'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - back-end
       - front-end
@@ -130,6 +135,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      websocket:
+        condition: service_started
     ports:
       - '${CONVERSATION_SERVICE}:80'
     networks:
