@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   signalRJoinConversation,
   signalRSendAcceptFriendRequest,
-  useGlobalState,
   useSignalREvents,
 } from "@/hooks";
 import { ConversationWithMembersId, Friend } from "@/models";
@@ -27,12 +26,11 @@ const acceptFriendRequest = async (
 };
 
 const useAcceptFriendRequest = () => {
-  const [connection] = useGlobalState("connection");
   const [senderId, setSenderId] = useState("");
 
   const { data: currentUser } = useGetCurrentUser();
   const queryClient = useQueryClient();
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { invokeAction } = useSignalREvents();
   return useMutation<
     ConversationWithMembersId | null,
     Error,

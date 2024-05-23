@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 
-import { useGlobalState } from "../globalState";
 import useConnectedSubscription from "./useConnectedSubscription";
 import useAcceptedFriendRequestSubscription from "./useAcceptedFriendRequestSubscription";
 import useDisableNotifyUserTypingSubscription from "./useDisableNotifyUserTypingSubscription";
@@ -9,75 +8,81 @@ import useFriendRequestSubscription from "./useFriendRequestSubscription";
 import useJoinConversationSubscription from "./useJoinConversationSubscription";
 import useMessageSubscription from "./useMessageSubscription";
 import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
+import { HubConnection } from "@microsoft/signalr";
 
 const useSubscribeSignalREvents = () => {
   // global state
-  const [connection] = useGlobalState("connection");
   const { subscribeConnectedEvent, unsubscribeConnectedEvent } =
-    useConnectedSubscription(connection);
+    useConnectedSubscription();
   const {
     subscribeAcceptFriendRequestEvent,
     unsubscribeAcceptFriendRequestEvent,
-  } = useAcceptedFriendRequestSubscription(connection);
+  } = useAcceptedFriendRequestSubscription();
   const {
     subscribeDisableNotifyUserTypingEvent,
     unsubscribeDisableNotifyUserTypingEvent,
-  } = useDisableNotifyUserTypingSubscription(connection);
+  } = useDisableNotifyUserTypingSubscription();
 
   const { subscribeDisconnectedEvent, unsubscribeDisconnectedEvent } =
-    useDisconnectedSubscription(connection);
+    useDisconnectedSubscription();
 
   const { subscribeFriendRequestEvent, unsubscribeFriendRequestEvent } =
-    useFriendRequestSubscription(connection);
+    useFriendRequestSubscription();
 
   const { subscribeJoinConversationEvent, unsubscribeJoinConversationEvent } =
-    useJoinConversationSubscription(connection);
+    useJoinConversationSubscription();
 
   const { subscribeMessageEvent, unsubscribeMessageEvent } =
-    useMessageSubscription(connection);
+    useMessageSubscription();
 
   const { subscribeNotifyUserTypingEvent, unsubscribeNotifyUserTypingEvent } =
-    useNotifyUserTypingSubscription(connection);
+    useNotifyUserTypingSubscription();
 
-  const subscribeAllEvents = useCallback(() => {
-    subscribeConnectedEvent();
-    subscribeAcceptFriendRequestEvent();
-    subscribeDisableNotifyUserTypingEvent();
-    subscribeDisconnectedEvent();
-    subscribeFriendRequestEvent();
-    subscribeJoinConversationEvent();
-    subscribeMessageEvent();
-    subscribeNotifyUserTypingEvent();
-  }, [
-    subscribeAcceptFriendRequestEvent,
-    subscribeConnectedEvent,
-    subscribeDisableNotifyUserTypingEvent,
-    subscribeDisconnectedEvent,
-    subscribeFriendRequestEvent,
-    subscribeJoinConversationEvent,
-    subscribeMessageEvent,
-    subscribeNotifyUserTypingEvent,
-  ]);
+  const subscribeAllEvents = useCallback(
+    (connection: HubConnection) => {
+      subscribeConnectedEvent(connection);
+      subscribeAcceptFriendRequestEvent(connection);
+      subscribeDisableNotifyUserTypingEvent(connection);
+      subscribeDisconnectedEvent(connection);
+      subscribeFriendRequestEvent(connection);
+      subscribeJoinConversationEvent(connection);
+      subscribeMessageEvent(connection);
+      subscribeNotifyUserTypingEvent(connection);
+    },
+    [
+      subscribeAcceptFriendRequestEvent,
+      subscribeConnectedEvent,
+      subscribeDisableNotifyUserTypingEvent,
+      subscribeDisconnectedEvent,
+      subscribeFriendRequestEvent,
+      subscribeJoinConversationEvent,
+      subscribeMessageEvent,
+      subscribeNotifyUserTypingEvent,
+    ]
+  );
 
-  const unsubscribeAllEvents = useCallback(() => {
-    unsubscribeConnectedEvent();
-    unsubscribeAcceptFriendRequestEvent();
-    unsubscribeDisableNotifyUserTypingEvent();
-    unsubscribeDisconnectedEvent();
-    unsubscribeFriendRequestEvent();
-    unsubscribeJoinConversationEvent();
-    unsubscribeMessageEvent();
-    unsubscribeNotifyUserTypingEvent();
-  }, [
-    unsubscribeAcceptFriendRequestEvent,
-    unsubscribeConnectedEvent,
-    unsubscribeDisableNotifyUserTypingEvent,
-    unsubscribeDisconnectedEvent,
-    unsubscribeFriendRequestEvent,
-    unsubscribeJoinConversationEvent,
-    unsubscribeMessageEvent,
-    unsubscribeNotifyUserTypingEvent,
-  ]);
+  const unsubscribeAllEvents = useCallback(
+    (connection: HubConnection) => {
+      unsubscribeConnectedEvent(connection);
+      unsubscribeAcceptFriendRequestEvent(connection);
+      unsubscribeDisableNotifyUserTypingEvent(connection);
+      unsubscribeDisconnectedEvent(connection);
+      unsubscribeFriendRequestEvent(connection);
+      unsubscribeJoinConversationEvent(connection);
+      unsubscribeMessageEvent(connection);
+      unsubscribeNotifyUserTypingEvent(connection);
+    },
+    [
+      unsubscribeAcceptFriendRequestEvent,
+      unsubscribeConnectedEvent,
+      unsubscribeDisableNotifyUserTypingEvent,
+      unsubscribeDisconnectedEvent,
+      unsubscribeFriendRequestEvent,
+      unsubscribeJoinConversationEvent,
+      unsubscribeMessageEvent,
+      unsubscribeNotifyUserTypingEvent,
+    ]
+  );
 
   return {
     subscribeAllEvents,

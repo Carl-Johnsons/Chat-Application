@@ -20,9 +20,8 @@ const cx = classNames.bind(style);
 const ChatViewFooter = () => {
   const [inputValue, setInputValue] = useState("");
   const [activeConversationId] = useGlobalState("activeConversationId");
-  const [connection] = useGlobalState("connection");
   // hook
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { invokeAction } = useSignalREvents();
   const { data: currentUser } = useGetCurrentUser();
   const { mutate: sendMessageMutate } = useSendMessage();
 

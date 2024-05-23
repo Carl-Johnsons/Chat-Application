@@ -5,19 +5,15 @@ import {
 } from "@microsoft/signalr";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGlobalState } from "./globalState";
-import { useLocalStorage } from ".";
 import { useSubscribeSignalREvents } from "./signalREvents/useSubscribeSignalREvents";
+import { useGetCurrentUser } from "./queries/user";
 
 // Need some best practice or something, current the connection in the App keep re-rendering this hook
 const useSignalRConnection = () => {
   const hubURL = process.env.NEXT_PUBLIC_SIGNALR_URL ?? "";
   const [waitingToReconnect, setWaitingToReconnect] = useState(false);
-  console.log("=============================================");
-  console.log({ hubURL });
-  console.log(JSON.stringify(process.env));
-
+  const { data: currentUser } = useGetCurrentUser();
   const [, setConnectionState] = useGlobalState("connectionState");
-  const [getAccessToken] = useLocalStorage("access_token");
   const { subscribeAllEvents, unsubscribeAllEvents } =
     useSubscribeSignalREvents();
   // hook
@@ -31,12 +27,10 @@ const useSignalRConnection = () => {
     console.log("starting signalr");
     await connRef.current
       .start()
-      .then(() => {
-        subscribeAllEvents();
-      })
+      .then(() => {})
       .catch((err) => console.error(err));
     setConnectionState(connRef.current?.state);
-  }, [setConnectionState, subscribeAllEvents]);
+  }, [setConnectionState]);
 
   const stopConnection = useCallback(async () => {
     if (!connRef.current) {
@@ -44,32 +38,35 @@ const useSignalRConnection = () => {
     }
     console.log("stop signalr");
     await connRef.current.stop();
-    unsubscribeAllEvents();
+    unsubscribeAllEvents(connRef.current);
     setConnectionState(connRef.current?.state);
   }, [setConnectionState, unsubscribeAllEvents]);
 
   useEffect(() => {
-    if (waitingToReconnect || connRef.current) {
+    if (waitingToReconnect || connRef.current || !currentUser) {
       return;
     }
     setWaitingToReconnect(true);
-
     connRef.current = new HubConnectionBuilder()
-      .withUrl(hubURL, {
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
+      .withUrl(`${hubURL}?userId=${currentUser.id}`)
       .configureLogging(LogLevel.Information)
       .build();
+
     connRef.current
       .start()
       .then(() => {
-        subscribeAllEvents();
+        console.log(
+          "==========================SIGNALR CONNECTED =========================="
+        );
+
+        connRef.current && subscribeAllEvents(connRef.current);
         setWaitingToReconnect(false);
+        console.log(
+          "==========================SIGNALR EVENTS SUBSCRIBED =========================="
+        );
       })
       .catch((err) => console.error(err));
-  }, [getAccessToken, hubURL, subscribeAllEvents, waitingToReconnect]);
+  }, [currentUser, hubURL, subscribeAllEvents, waitingToReconnect]);
 
   return { connection: connRef.current, startConnection, stopConnection };
 };

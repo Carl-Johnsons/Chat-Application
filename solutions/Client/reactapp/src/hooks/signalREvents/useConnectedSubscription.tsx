@@ -3,27 +3,41 @@ import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
 import { useGlobalState } from "..";
 
-const useConnectedSubscription = (connection?: HubConnection) => {
+const useConnectedSubscription = () => {
   const [, setUserIdsOnlineList] = useGlobalState("userIdsOnlineList");
-  const subscribeConnectedEvent = useCallback(() => {
-    if (!connection) {
-      return;
-    }
-    connection.on(SignalREvent.CONNECTED, (userIdsOnlineList: string[]) => {
+  const subscribeConnectedEvent = useCallback(
+    (connection?: HubConnection) => {
+      console.log(
+        "subscribe to connected event: " + JSON.stringify(connection)
+      );
       if (!connection) {
         return;
       }
-      setUserIdsOnlineList(userIdsOnlineList);
-      console.log("signalR Connected");
-    });
-  }, [connection, setUserIdsOnlineList]);
+      console.log("subscribe to connected event");
 
-  const unsubscribeConnectedEvent = useCallback(() => {
-    if (!connection) {
-      return;
-    }
-    connection.off(SignalREvent.CONNECTED);
-  }, [connection]);
+      connection.on(SignalREvent.CONNECTED, (userIdsOnlineList: string[]) => {
+        if (!connection) {
+          return;
+        }
+        console.log("=============================");
+        setUserIdsOnlineList(userIdsOnlineList);
+        console.log({ userIdsOnlineList });
+        console.log("=============================");
+        console.log("signalR Connected");
+      });
+    },
+    [setUserIdsOnlineList]
+  );
+
+  const unsubscribeConnectedEvent = useCallback(
+    (connection?: HubConnection) => {
+      if (!connection) {
+        return;
+      }
+      connection.off(SignalREvent.CONNECTED);
+    },
+    []
+  );
 
   return { subscribeConnectedEvent, unsubscribeConnectedEvent };
 };

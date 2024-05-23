@@ -4,11 +4,7 @@ import {
   ConversationWithMembersId,
   GroupConversationWithMembersId,
 } from "@/models";
-import {
-  signalRJoinConversation,
-  useGlobalState,
-  useSignalREvents,
-} from "@/hooks";
+import { signalRJoinConversation, useSignalREvents } from "@/hooks";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 
 interface Props {
@@ -38,8 +34,7 @@ const createGroupConversation = async ({
   return response.data;
 };
 const useCreateConversation = () => {
-  const [connection] = useGlobalState("connection");
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { invokeAction } = useSignalREvents();
 
   const queryClient = useQueryClient();
   return useMutation<ConversationWithMembersId | null, Error, Props, unknown>({
@@ -61,8 +56,7 @@ const useCreateConversation = () => {
   });
 };
 const useCreateGroupConversation = () => {
-  const [connection] = useGlobalState("connection");
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { invokeAction } = useSignalREvents();
 
   const queryClient = useQueryClient();
   return useMutation<

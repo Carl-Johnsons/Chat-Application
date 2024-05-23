@@ -2,9 +2,9 @@ import { HubConnection } from "@microsoft/signalr";
 import { useCallback } from "react";
 import { useGlobalState } from "..";
 
-const useDisconnectedSubscription = (connection?: HubConnection) => {
+const useDisconnectedSubscription = () => {
   const [, setUserIdsOnlineList] = useGlobalState("userIdsOnlineList");
-  const subscribeDisconnectedEvent = useCallback(() => {
+  const subscribeDisconnectedEvent = useCallback((connection: HubConnection) => {
     if (!connection) {
       return;
     }
@@ -14,14 +14,14 @@ const useDisconnectedSubscription = (connection?: HubConnection) => {
       );
       console.log("signalR Disconnected");
     });
-  }, [connection, setUserIdsOnlineList]);
+  }, [setUserIdsOnlineList]);
   
-  const unsubscribeDisconnectedEvent = useCallback(() => {
+  const unsubscribeDisconnectedEvent = useCallback((connection: HubConnection) => {
     if (!connection) {
       return;
     }
     connection.off("Disconnected");
-  }, [connection]);
+  }, []);
 
   return {
     subscribeDisconnectedEvent,

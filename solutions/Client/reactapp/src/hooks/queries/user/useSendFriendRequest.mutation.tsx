@@ -1,11 +1,7 @@
 import { protectedAxiosInstance } from "@/utils";
 import { FriendRequest } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  signalRSendFriendRequest,
-  useGlobalState,
-  useSignalREvents,
-} from "@/hooks";
+import { signalRSendFriendRequest, useSignalREvents } from "@/hooks";
 
 /**
  *
@@ -26,8 +22,7 @@ const sendFriendRequest = async (
 };
 
 const useSendFriendRequest = () => {
-  const [connection] = useGlobalState("connection");
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { invokeAction } = useSignalREvents();
 
   const queryClient = useQueryClient();
   return useMutation<

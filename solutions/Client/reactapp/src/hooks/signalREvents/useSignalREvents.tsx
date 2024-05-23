@@ -1,5 +1,4 @@
-import { HubConnection } from "@microsoft/signalr";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 import {
   Friend,
@@ -10,20 +9,12 @@ import {
 
 import { useGlobalState } from "../globalState";
 
-interface SignalREvent {
-  name: string;
-  func: (...args: never[]) => void;
-}
 interface InvokeSignalREvent {
   name: string;
   args: unknown[];
 }
-interface useSignalREventsProps {
-  connection?: HubConnection;
-  events?: SignalREvent[];
-}
 
-const useSignalREvents = ({ events }: useSignalREventsProps) => {
+const useSignalREvents = () => {
   // global state
   const [connection] = useGlobalState("connection");
   const [connectionState] = useGlobalState("connectionState");
@@ -41,20 +32,6 @@ const useSignalREvents = ({ events }: useSignalREventsProps) => {
       console.error(`Error invoking ${name}: ${err}`);
     });
   };
-
-  useEffect(() => {
-    if (!events) {
-      return;
-    }
-    events.forEach((event) => {
-      connection?.on(event.name, event.func);
-    });
-    return () => {
-      events.forEach((event) => {
-        connection?.off(event.name);
-      });
-    };
-  }, [connection, events]);
 
   return {
     invokeAction: invokeActionRef.current,

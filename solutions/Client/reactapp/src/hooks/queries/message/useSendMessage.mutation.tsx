@@ -1,4 +1,4 @@
-import { signalRSendMessage, useGlobalState, useSignalREvents } from "@/hooks";
+import { signalRSendMessage, useSignalREvents } from "@/hooks";
 import { Message } from "@/models";
 import { protectedAxiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -20,8 +20,7 @@ const sendMessage = async ({
 };
 
 const useSendMessage = () => {
-  const [connection] = useGlobalState("connection");
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { invokeAction } = useSignalREvents();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Message | null, Error, Props, unknown>({

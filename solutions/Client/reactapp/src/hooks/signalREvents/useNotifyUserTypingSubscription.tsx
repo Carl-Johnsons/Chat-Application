@@ -4,30 +4,36 @@ import { useCallback } from "react";
 import { SenderConversationModel } from "../../models";
 import { useGlobalState } from "../globalState";
 
-const useNotifyUserTypingSubscription = (connection?: HubConnection) => {
+const useNotifyUserTypingSubscription = () => {
   const [, setUserTypingId] = useGlobalState("userTypingId");
   const [activeConversationId] = useGlobalState("activeConversationId");
 
-  const subscribeNotifyUserTypingEvent = useCallback(() => {
-    if (!connection) {
-      return;
-    }
-    connection.on(
-      SignalREvent.RECEIVE_NOTIFY_USER_TYPING,
-      (model: SenderConversationModel) => {
-        if (activeConversationId === model.conversationId) {
-          setUserTypingId(model.senderId);
-        }
+  const subscribeNotifyUserTypingEvent = useCallback(
+    (connection: HubConnection) => {
+      if (!connection) {
+        return;
       }
-    );
-  }, [activeConversationId, connection, setUserTypingId]);
+      connection.on(
+        SignalREvent.RECEIVE_NOTIFY_USER_TYPING,
+        (model: SenderConversationModel) => {
+          if (activeConversationId === model.conversationId) {
+            setUserTypingId(model.senderId);
+          }
+        }
+      );
+    },
+    [activeConversationId, setUserTypingId]
+  );
 
-  const unsubscribeNotifyUserTypingEvent = useCallback(() => {
-    if (!connection) {
-      return;
-    }
-    connection.off(SignalREvent.RECEIVE_NOTIFY_USER_TYPING);
-  }, [connection]);
+  const unsubscribeNotifyUserTypingEvent = useCallback(
+    (connection: HubConnection) => {
+      if (!connection) {
+        return;
+      }
+      connection.off(SignalREvent.RECEIVE_NOTIFY_USER_TYPING);
+    },
+    []
+  );
 
   return {
     subscribeNotifyUserTypingEvent,

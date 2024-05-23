@@ -1,41 +1,55 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useGlobalState } from "../globalState";
 import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { Message } from "@/models";
 
-const useMessageSubscription = (connection?: HubConnection) => {
+const useMessageSubscription = () => {
   const [activeConversationId] = useGlobalState("activeConversationId");
   const queryClient = useQueryClient();
-  const subscribeMessageEvent = useCallback(() => {
-    if (!connection) {
-      return;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    connection.on(SignalREvent.RECEIVE_MESSAGE, (message: Message) => {
-      queryClient.invalidateQueries({
-        queryKey: [
-          "messageList",
-          "conversation",
-          activeConversationId,
-          "infinite",
-        ],
-        exact: true,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["message", "conversation", message.conversationId, "last"],
-        exact: true,
-      });
-    });
-  }, [activeConversationId, connection, queryClient]);
+  const activeConversationIdRef = useRef(activeConversationId);
 
-  const unsubscribeMessageEvent = useCallback(() => {
+  // Update ref whenever activeConversationId changes
+  useEffect(() => {
+    activeConversationIdRef.current = activeConversationId;
+  }, [activeConversationId]);
+
+  const subscribeMessageEvent = useCallback(
+    (connection: HubConnection) => {
+      if (!connection) {
+        return;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      connection.on(SignalREvent.RECEIVE_MESSAGE, (message: Message) => {
+        if (message.conversationId === activeConversationIdRef.current) {
+          console.log("invalidate messageList");
+          queryClient.invalidateQueries({
+            queryKey: [
+              "messageList",
+              "conversation",
+              activeConversationIdRef.current,
+              "infinite",
+            ],
+            exact: true,
+          });
+        }
+
+        // queryClient.invalidateQueries({
+        //   queryKey: ["message", "conversation", message.conversationId, "last"],
+        //   exact: true,
+        // });
+      });
+    },
+    [activeConversationId, queryClient]
+  );
+
+  const unsubscribeMessageEvent = useCallback((connection: HubConnection) => {
     if (!connection) {
       return;
     }
     connection.off(SignalREvent.RECEIVE_MESSAGE);
-  }, [connection]);
+  }, []);
 
   return {
     subscribeMessageEvent,
