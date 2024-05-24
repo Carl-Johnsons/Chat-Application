@@ -1,7 +1,7 @@
 using ChatHub.Hubs;
 using Contract.Event.ConversationEvent;
-using Contract.Event.FriendEvent;
 using MassTransit;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -9,12 +9,15 @@ var services = builder.Services;
 services.AddSignalR();
 services.AddHttpContextAccessor();
 
+services.AddSignalR()
+    .AddNewtonsoftJsonProtocol(options =>
+    {
+        options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    });
+
 services.AddMassTransit(busConfig =>
 {
     busConfig.SetKebabCaseEndpointNameFormatter();
-
-    //busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
-
 
     busConfig.UsingRabbitMq((context, config) =>
     {

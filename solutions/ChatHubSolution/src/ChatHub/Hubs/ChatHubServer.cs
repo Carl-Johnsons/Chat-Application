@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http.Extensions;
-using ChatHub.Models;
 using ChatHub.DTOs;
 using Newtonsoft.Json;
 using MassTransit;
@@ -14,6 +13,7 @@ public class ChatHubServer : Hub<IChatClient>
     //Use the dictionary to map the userId and userConnectionId
     private static readonly ConcurrentDictionary<string, Guid> UserConnectionMap = new();
     private readonly IHttpContextAccessor _httpContextAccessor;
+    // rabbitmq
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IBus _bus;
 
@@ -27,10 +27,10 @@ public class ChatHubServer : Hub<IChatClient>
     // The url would be like "https://yourhubURL:port?userId=???"
     public override async Task OnConnectedAsync()
     {
-        var userId = _httpContextAccessor.HttpContext.Request.Query["userId"].ToString();
+        var userId = _httpContextAccessor.HttpContext?.Request.Query["userId"].ToString();
         try
         {
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId))
             {
                 var RequestUrl = Context.GetHttpContext()?.Request.GetDisplayUrl() ?? "Unknown";
                 await Console.Out.WriteLineAsync($"Service with url {RequestUrl} has connected to signalR sucessfully!");
@@ -77,47 +77,48 @@ public class ChatHubServer : Hub<IChatClient>
         }
     }
 
-    //public async Task SendFriendRequest(FriendRequest friendRequest)
-    //{
-    //    // Have to get list because the 1 person can join on 2 different tab on browser
-    //    // So the connectionId may differnect but still 1 userId
-    //    var receiverConnectionIdList = UserConnectionMap.
-    //        Where(pair => pair.Value == friendRequest.ReceiverId)
-    //        .Select(pair => pair.Key)
-    //        .ToList();
+    public async Task SendFriendRequest(FriendRequestDTO friendRequestDTO)
+    {
+        await Console.Out.WriteLineAsync("Invoking SendFriendRequest");
+        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(UserConnectionMap));
+        // Have to get list because the 1 person can join on 2 different tab on browser
+        // So the connectionId may differnect but still 1 userId
+        var receiverConnectionIdList = UserConnectionMap.
+            Where(pair => pair.Value == friendRequestDTO.ReceiverId)
+            .Select(pair => pair.Key)
+            .ToList();
 
-    //    // If the receiver didn't online, simply do nothing
-    //    if (receiverConnectionIdList.Count <= 0)
-    //    {
-    //        return;
-    //    }
+        // If the receiver didn't online, simply do nothing
+        if (receiverConnectionIdList.Count <= 0)
+        {
+            return;
+        }
 
-    //    foreach (var receiverConnectionId in receiverConnectionIdList)
-    //    {
-    //        await Clients.Client(receiverConnectionId).ReceiveFriendRequest(friendRequest);
-    //    }
-    //}
+        foreach (var receiverConnectionId in receiverConnectionIdList)
+        {
+            await Clients.Client(receiverConnectionId).ReceiveFriendRequest(friendRequestDTO);
+        }
+    }
+    public async Task SendAcceptFriendRequest(FriendDTO friendDTO)
+    {
+        // Notify a list of user because they might have open mulit tab in browsers
+        // UserId now is the senderId who accept the friend request,
+        // so in other to notify other user use friendId instead
+        var senderConnectionIdList = UserConnectionMap.
+            Where(pair => pair.Value == friendDTO.FriendId)
+            .Select(pair => pair.Key)
+            .ToList();
 
-    //public async Task SendAcceptFriendRequest(Friend friend)
-    //{
-    //    // Notify a list of user because they might have open mulit tab in browsers
-    //    // UserId now is the senderId who accept the friend request,
-    //    // so in other to notify other user use friendId instead
-    //    var senderConnectionIdList = UserConnectionMap.
-    //        Where(pair => pair.Value == friend.FriendId)
-    //        .Select(pair => pair.Key)
-    //        .ToList();
-
-    //    // If the receiver didn't online, simply do nothing
-    //    if (senderConnectionIdList.Count <= 0)
-    //    {
-    //        return;
-    //    }
-    //    foreach (var senderConnectionId in senderConnectionIdList)
-    //    {
-    //        await Clients.Client(senderConnectionId).ReceiveAcceptFriendRequest(friend);
-    //    }
-    //}
+        // If the receiver didn't online, simply do nothing
+        if (senderConnectionIdList.Count <= 0)
+        {
+            return;
+        }
+        foreach (var senderConnectionId in senderConnectionIdList)
+        {
+            await Clients.Client(senderConnectionId).ReceiveAcceptFriendRequest(friendDTO);
+        }
+    }
     public async Task JoinConversation(Guid memberId, Guid conversationId)
     {
         var memberConnectionId = UserConnectionMap
@@ -131,15 +132,15 @@ public class ChatHubServer : Hub<IChatClient>
         await Groups.AddToGroupAsync(memberConnectionId, conversationId.ToString());
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveJoinConversation(conversationId);
     }
-    public async Task NotifyUserTyping(SenderConversationModel model)
+    public async Task NotifyUserTyping(UserTypingNotificationDTO userTypingNotificationDTO)
     {
         // Notify a list of user because they might have open mulit tab in browsers
-
-        await Clients.OthersInGroup(model.ConversationId.ToString()).ReceiveNotifyUserTyping(model);
+        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(userTypingNotificationDTO));
+        await Clients.OthersInGroup(userTypingNotificationDTO.ConversationId.ToString()).ReceiveNotifyUserTyping(userTypingNotificationDTO);
     }
-    public async Task DisableNotifyUserTyping(SenderConversationModel model)
+    public async Task DisableNotifyUserTyping(UserTypingNotificationDTO userTypingNotificationDTO)
     {
-        await Clients.OthersInGroup(model.ConversationId.ToString()).ReceiveDisableNotifyUserTyping();
+        await Clients.OthersInGroup(userTypingNotificationDTO.ConversationId.ToString()).ReceiveDisableNotifyUserTyping();
     }
     public async Task LeaveGroup(int groupId)
     {
