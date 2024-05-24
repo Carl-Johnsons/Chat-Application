@@ -94,7 +94,7 @@ public class FriendRequestController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
         }
 
-        return Ok();
+        return Ok(frInput);
     }
 
     [HttpPost("accept")]
@@ -131,7 +131,7 @@ public class FriendRequestController : ControllerBase
             });
         await Console.Out.WriteLineAsync("Done sending friendCreatedEvent");
 
-        return Ok();
+        return Ok(friend);
     }
 
     [HttpDelete]
