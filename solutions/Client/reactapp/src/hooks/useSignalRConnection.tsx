@@ -55,15 +55,8 @@ const useSignalRConnection = () => {
     connRef.current
       .start()
       .then(() => {
-        console.log(
-          "==========================SIGNALR CONNECTED =========================="
-        );
-
         connRef.current && subscribeAllEvents(connRef.current);
         setWaitingToReconnect(false);
-        console.log(
-          "==========================SIGNALR EVENTS SUBSCRIBED =========================="
-        );
       })
       .catch((err) => console.error(err));
   }, [currentUser, hubURL, subscribeAllEvents, waitingToReconnect]);

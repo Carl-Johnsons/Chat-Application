@@ -50,11 +50,6 @@ const useAcceptFriendRequest = () => {
         friendId: senderId,
       };
 
-      invokeAction(signalRSendAcceptFriendRequest(friend));
-      conversation?.membersId.forEach((memberId) => {
-        invokeAction(signalRJoinConversation(memberId, conversation.id));
-      });
-
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],
         exact: true,
@@ -67,6 +62,12 @@ const useAcceptFriendRequest = () => {
         queryKey: ["friendRequestList"],
         exact: true,
       });
+
+      invokeAction(signalRSendAcceptFriendRequest(friend));
+      conversation?.membersId.forEach((memberId) => {
+        invokeAction(signalRJoinConversation(memberId, conversation.id));
+      });
+
     },
     onError: (err) => {
       console.error("Add friend failed: " + err.message);

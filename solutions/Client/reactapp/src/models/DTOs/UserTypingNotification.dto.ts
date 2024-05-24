@@ -1,4 +1,4 @@
-export type SenderConversationModel = {
+export type UserTypingNotificationDTO = {
   senderId: string;
   conversationId: string;
 };

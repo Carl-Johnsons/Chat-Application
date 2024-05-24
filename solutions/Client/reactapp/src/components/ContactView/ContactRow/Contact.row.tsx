@@ -46,13 +46,11 @@ const ContactRow = ({
   // );
 
   const entityData = userData;
-  console.log({ entityData });
 
   const avatar = (entityData as User)?.avatarUrl ?? images.userIcon.src;
   const name = (entityData as User)?.name ?? "";
 
   // const entityData = isGroup ? conversationData : userData;
-  // console.log({ entityData });
 
   // const avatar =
   //   (isGroup

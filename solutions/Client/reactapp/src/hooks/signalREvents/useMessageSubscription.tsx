@@ -35,13 +35,13 @@ const useMessageSubscription = () => {
           });
         }
 
-        // queryClient.invalidateQueries({
-        //   queryKey: ["message", "conversation", message.conversationId, "last"],
-        //   exact: true,
-        // });
+        queryClient.invalidateQueries({
+          queryKey: ["message", "conversation", message.conversationId, "last"],
+          exact: true,
+        });
       });
     },
-    [activeConversationId, queryClient]
+    [queryClient]
   );
 
   const unsubscribeMessageEvent = useCallback((connection: HubConnection) => {

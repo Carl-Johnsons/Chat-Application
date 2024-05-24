@@ -33,15 +33,14 @@ const useSendFriendRequest = () => {
   >({
     mutationFn: ({ receiverId }) => sendFriendRequest(receiverId),
     onSuccess: (fr) => {
-      if (!fr) {
-        return;
-      }
-      invokeAction(signalRSendFriendRequest(fr));
-
       queryClient.invalidateQueries({
         queryKey: ["friendRequestList"],
         exact: true,
       });
+      if (!fr) {
+        return;
+      }
+      invokeAction(signalRSendFriendRequest(fr));
     },
     onError: (err) => {
       console.error("Failed to send friend request" + err);

@@ -56,13 +56,16 @@ const SideBarItem = (variant: Variants) => {
   }
   const { data: currentUserData } = useGetCurrentUser();
 
-  const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? "");
+  const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? "", {
+    enabled: !!lastMessage?.senderId,
+  });
   const isGroupConversation = conversation?.type === "GROUP";
 
   // Description
   useEffect(() => {
     if (!isSearchItem && lastMessage) {
       if (!lastMessageSenderQuery.data?.name) {
+        setDescriptionContent(`${lastMessage.content}`);
         return;
       }
       const sender =
@@ -85,17 +88,15 @@ const SideBarItem = (variant: Variants) => {
   ]);
   // Time
   useEffect(() => {
-    if (!lastMessage) {
+    if (!lastMessage || !lastMessage.createdAt) {
       return;
     }
-    const d = new Date(lastMessage.time + "");
+    const d = new Date(lastMessage.createdAt + "");
     const tz = moment.tz.guess();
     const formattedDate = moment(moment(d).tz(tz).format()).fromNow(true);
     setTimeContent(formattedDate);
-  }, [lastMessage, lastMessage?.time]);
+  }, [lastMessage, lastMessage?.createdAt]);
 
-  console.log(conversation?.users);
-  
   const otherUserId = conversation?.users[0]?.userId;
 
   const { data: otherUserData } = useGetUser(otherUserId ?? "", {

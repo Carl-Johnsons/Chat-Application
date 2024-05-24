@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 
 import SideBarItem from "../../SideBarItem";
 import { useGlobalState, useScreenSectionNavigator } from "@/hooks";
-import { ConversationType } from "@/models";
+import { ConversationType, Message } from "@/models";
 import {
   useGetInfiniteMessageList,
   useGetLastMessages,
@@ -54,10 +54,12 @@ const ConversationContent = () => {
     <>
       {conversationListData &&
         (conversationListData ?? []).map((conversation, index) => {
-          const lastMessage = lastMessageQueries[index].data ?? undefined;
           if (!conversation) {
             return;
           }
+          const lastMessage: Message = lastMessageQueries[index].data ?? {
+            content: "This conversation is new! Say hi",
+          };
 
           return (
             <SideBarItem

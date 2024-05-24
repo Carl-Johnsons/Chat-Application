@@ -12,7 +12,7 @@ const useJoinConversationSubscription = () => {
         return;
       }
       connection.on(
-        SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST,
+        SignalREvent.RECEIVE_JOIN_CONVERSATION,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (_conversationId: number) => {
           queryClient.invalidateQueries({
@@ -30,7 +30,7 @@ const useJoinConversationSubscription = () => {
       if (!connection) {
         return;
       }
-      connection.off(SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST);
+      connection.off(SignalREvent.RECEIVE_JOIN_CONVERSATION);
     },
     []
   );

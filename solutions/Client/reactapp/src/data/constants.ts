@@ -14,11 +14,12 @@ enum MenuContactIndex {
 enum SignalREvent {
   CONNECTED = "Connected",
   DISCONNECTED = "Disconnected",
-  RECEIVE_MESSAGE = "ReceiveMessage",
-  RECEIVE_FRIEND_REQUEST = "ReceiveFriendRequest",
   RECEIVE_ACCEPT_FRIEND_REQUEST = "ReceiveAcceptFriendRequest",
-  RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",
   RECEIVE_DISABLE_NOTIFY_USER_TYPING = "ReceiveDisableNotifyUserTyping",
+  RECEIVE_FRIEND_REQUEST = "ReceiveFriendRequest",
+  RECEIVE_JOIN_CONVERSATION = "ReceiveJoinConversation",
+  RECEIVE_MESSAGE = "ReceiveMessage",
+  RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",
 }
 const menuContacts: MenuContact[] = [
   { image: images.userSolid.src, name: "Danh sách bạn bè" },

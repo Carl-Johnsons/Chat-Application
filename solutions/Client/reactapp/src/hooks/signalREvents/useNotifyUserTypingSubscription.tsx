@@ -1,12 +1,18 @@
 import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
-import { useCallback } from "react";
-import { SenderConversationModel } from "../../models";
+import { useCallback, useEffect, useRef } from "react";
 import { useGlobalState } from "../globalState";
+import { UserTypingNotificationDTO } from "@/models/DTOs";
 
 const useNotifyUserTypingSubscription = () => {
   const [, setUserTypingId] = useGlobalState("userTypingId");
   const [activeConversationId] = useGlobalState("activeConversationId");
+
+  const activeConversationIdRef = useRef(activeConversationId);
+
+  useEffect(() => {
+    activeConversationIdRef.current = activeConversationId;
+  }, [activeConversationId]);
 
   const subscribeNotifyUserTypingEvent = useCallback(
     (connection: HubConnection) => {
@@ -15,14 +21,21 @@ const useNotifyUserTypingSubscription = () => {
       }
       connection.on(
         SignalREvent.RECEIVE_NOTIFY_USER_TYPING,
-        (model: SenderConversationModel) => {
-          if (activeConversationId === model.conversationId) {
+        (model: UserTypingNotificationDTO) => {
+          console.log({ model });
+          console.log(activeConversationIdRef.current);
+          console.log(
+            "activeConversationId === model.conversationId : " +
+              (activeConversationIdRef.current === model.conversationId)
+          );
+
+          if (activeConversationIdRef.current === model.conversationId) {
             setUserTypingId(model.senderId);
           }
         }
       );
     },
-    [activeConversationId, setUserTypingId]
+    [setUserTypingId]
   );
 
   const unsubscribeNotifyUserTypingEvent = useCallback(

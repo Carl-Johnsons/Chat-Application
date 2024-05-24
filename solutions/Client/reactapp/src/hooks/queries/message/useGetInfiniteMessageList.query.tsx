@@ -2,10 +2,13 @@ import { protectedAxiosInstance } from "@/utils";
 import {
   InfiniteData,
   UndefinedInitialDataInfiniteOptions,
+  UseQueryOptions,
   useInfiniteQuery,
+  useQueries,
   useQueryClient,
 } from "@tanstack/react-query";
 import { PaginatedMessageListResponse } from "models/DTOs";
+import { Message } from "yup";
 
 interface FetchProps {
   conversationId: string;
@@ -81,4 +84,38 @@ const useGetInfiniteMessageList = (
   return infiniteMessageListQuery;
 };
 
-export { useGetInfiniteMessageList };
+const useGetLastMessages = (
+  conversationIds: string[],
+  queryOptions: Omit<
+    UseQueryOptions<Message | undefined, Error, Message | undefined, unknown[]>,
+    "queryKey" | "queryFn" | "initialData"
+  > = {}
+) => {
+  const queryClient = useQueryClient();
+  const queries = useQueries({
+    queries: conversationIds.map((conversationId) => {
+      return {
+        ...queryOptions,
+        queryKey: ["message", "conversation", conversationId, "last"],
+        queryFn: async () => {
+          const response = await getMessageList({
+            conversationId,
+            skipBatch: 0,
+          });
+          return response.metadata.lastMessage;
+        },
+        initialData: () => {
+          return queryClient.getQueryData<Message | undefined>([
+            "message",
+            "conversation",
+            conversationId,
+            "last",
+          ]);
+        },
+      };
+    }),
+  });
+  return queries;
+};
+
+export { useGetInfiniteMessageList, useGetLastMessages };

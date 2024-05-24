@@ -7,23 +7,14 @@ const useConnectedSubscription = () => {
   const [, setUserIdsOnlineList] = useGlobalState("userIdsOnlineList");
   const subscribeConnectedEvent = useCallback(
     (connection?: HubConnection) => {
-      console.log(
-        "subscribe to connected event: " + JSON.stringify(connection)
-      );
       if (!connection) {
         return;
       }
-      console.log("subscribe to connected event");
-
       connection.on(SignalREvent.CONNECTED, (userIdsOnlineList: string[]) => {
         if (!connection) {
           return;
         }
-        console.log("=============================");
         setUserIdsOnlineList(userIdsOnlineList);
-        console.log({ userIdsOnlineList });
-        console.log("=============================");
-        console.log("signalR Connected");
       });
     },
     [setUserIdsOnlineList]

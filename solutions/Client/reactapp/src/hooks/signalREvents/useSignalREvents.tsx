@@ -1,13 +1,9 @@
 import { useRef } from "react";
 
-import {
-  Friend,
-  FriendRequest,
-  Message,
-  SenderConversationModel,
-} from "@/models";
+import { Friend, FriendRequest, Message } from "@/models";
 
 import { useGlobalState } from "../globalState";
+import { UserTypingNotificationDTO } from "@/models/DTOs";
 
 interface InvokeSignalREvent {
   name: string;
@@ -17,14 +13,12 @@ interface InvokeSignalREvent {
 const useSignalREvents = () => {
   // global state
   const [connection] = useGlobalState("connection");
-  const [connectionState] = useGlobalState("connectionState");
 
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
-    console.log(`Invoke ${name}`);
-    if (!connection || connectionState !== "Connected") {
+    if (!connection) {
       return;
     }
 
@@ -58,19 +52,19 @@ export function signalRSendAcceptFriendRequest(f: Friend) {
   };
 }
 export function signalRNotifyUserTyping(
-  senderConversationModel: SenderConversationModel
+  userTypingNotificationDTO: UserTypingNotificationDTO
 ) {
   return {
     name: "NotifyUserTyping",
-    args: [senderConversationModel],
+    args: [userTypingNotificationDTO],
   };
 }
 export function signalRDisableNotifyUserTyping(
-  senderConversationModel: SenderConversationModel
+  userTypingNotificationDTO: UserTypingNotificationDTO
 ) {
   return {
     name: "DisableNotifyUserTyping",
-    args: [senderConversationModel],
+    args: [userTypingNotificationDTO],
   };
 }
 export function signalRJoinConversation(
