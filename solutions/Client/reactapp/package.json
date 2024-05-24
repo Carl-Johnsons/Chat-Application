@@ -31,8 +31,7 @@
     "react-bootstrap": "^2.9.2",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.0",
-    "react-loading-skeleton": "^3.4.0",
-    "yup": "^1.4.0"
+    "react-loading-skeleton": "^3.4.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.20.1",
