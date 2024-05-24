@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-import { Friend, FriendRequest, Message } from "@/models";
+import { FriendRequest } from "@/models";
 
 import { useGlobalState } from "../globalState";
 import { UserTypingNotificationDTO } from "@/models/DTOs";
@@ -32,25 +32,13 @@ const useSignalREvents = () => {
   };
 };
 
-export function signalRSendMessage(m: Message) {
-  return {
-    name: "SendMessage",
-    args: [m],
-  };
-}
-
 export function signalRSendFriendRequest(fr: FriendRequest) {
   return {
     name: "SendFriendRequest",
     args: [fr],
   };
 }
-export function signalRSendAcceptFriendRequest(f: Friend) {
-  return {
-    name: "SendAcceptFriendRequest",
-    args: [f],
-  };
-}
+
 export function signalRNotifyUserTyping(
   userTypingNotificationDTO: UserTypingNotificationDTO
 ) {
@@ -59,6 +47,7 @@ export function signalRNotifyUserTyping(
     args: [userTypingNotificationDTO],
   };
 }
+
 export function signalRDisableNotifyUserTyping(
   userTypingNotificationDTO: UserTypingNotificationDTO
 ) {
@@ -67,13 +56,5 @@ export function signalRDisableNotifyUserTyping(
     args: [userTypingNotificationDTO],
   };
 }
-export function signalRJoinConversation(
-  userId: string,
-  conversationId: string
-) {
-  return {
-    name: "JoinConversation",
-    args: [userId, conversationId],
-  };
-}
+
 export { useSignalREvents };

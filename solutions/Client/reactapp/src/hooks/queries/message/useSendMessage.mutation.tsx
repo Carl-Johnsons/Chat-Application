@@ -1,4 +1,3 @@
-import { signalRSendMessage, useSignalREvents } from "@/hooks";
 import { Message } from "@/models";
 import { protectedAxiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -20,7 +19,6 @@ const sendMessage = async ({
 };
 
 const useSendMessage = () => {
-  const { invokeAction } = useSignalREvents();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Message | null, Error, Props, unknown>({
@@ -32,7 +30,6 @@ const useSendMessage = () => {
       if (!im) {
         return;
       }
-      invokeAction(signalRSendMessage(im));
 
       queryClient.invalidateQueries({
         queryKey: ["messageList", "conversation", conversationId, "infinite"],

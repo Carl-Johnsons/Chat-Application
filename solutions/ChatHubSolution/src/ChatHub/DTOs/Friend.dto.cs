@@ -5,6 +5,11 @@ namespace ChatHub.DTOs;
 
 public class FriendDTO
 {
+    public FriendDTO()
+    {
+
+    }
+
     [Required]
     [JsonProperty("userId")]
     public Guid UserId { get; set; }

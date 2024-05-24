@@ -11,7 +11,7 @@ const useFriendRequestSubscription = () => {
         return;
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      connection.on(SignalREvent.RECEIVE_FRIEND_REQUEST, (_json: string) => {
+      connection.on(SignalREvent.RECEIVE_FRIEND_REQUEST, () => {
         queryClient.invalidateQueries({
           queryKey: ["friendRequestList"],
         });

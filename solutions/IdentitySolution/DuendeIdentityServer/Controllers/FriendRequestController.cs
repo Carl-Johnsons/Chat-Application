@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using Contract.Event.FriendEvent;
+using ConversationService.Domain.Constants;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
-
+using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -24,14 +25,16 @@ public class FriendRequestController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ISignalRService _signalRService;
 
-    public FriendRequestController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IMapper mapper, IPublishEndpoint publishEndpoint)
+    public FriendRequestController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IMapper mapper, IPublishEndpoint publishEndpoint, ISignalRService signalRService)
     {
         _context = context;
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _publishEndpoint = publishEndpoint;
+        _signalRService = signalRService;
     }
 
     [HttpGet]
@@ -131,6 +134,8 @@ public class FriendRequestController : ControllerBase
             });
         await Console.Out.WriteLineAsync("Done sending friendCreatedEvent");
 
+        await _signalRService.InvokeAction(SignalREvent.SEND_ACCEPT_FRIEND_REQUEST_ACTION, friend);
+        
         return Ok(friend);
     }
 

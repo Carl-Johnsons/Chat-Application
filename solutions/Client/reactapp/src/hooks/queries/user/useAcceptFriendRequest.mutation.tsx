@@ -1,13 +1,6 @@
 import { protectedAxiosInstance } from "@/utils";
-import { useGetCurrentUser } from ".";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  signalRJoinConversation,
-  signalRSendAcceptFriendRequest,
-  useSignalREvents,
-} from "@/hooks";
-import { ConversationWithMembersId, Friend } from "@/models";
-import { useState } from "react";
+import { ConversationWithMembersId } from "@/models";
 
 /**
  *
@@ -26,11 +19,7 @@ const acceptFriendRequest = async (
 };
 
 const useAcceptFriendRequest = () => {
-  const [senderId, setSenderId] = useState("");
-
-  const { data: currentUser } = useGetCurrentUser();
   const queryClient = useQueryClient();
-  const { invokeAction } = useSignalREvents();
   return useMutation<
     ConversationWithMembersId | null,
     Error,
@@ -40,16 +29,9 @@ const useAcceptFriendRequest = () => {
     unknown
   >({
     mutationFn: ({ frId }) => {
-      setSenderId(frId);
       return acceptFriendRequest(frId);
     },
-    onSuccess: (conversation) => {
-      // Invert the property to send to other user
-      const friend: Friend = {
-        userId: currentUser?.id ?? "",
-        friendId: senderId,
-      };
-
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],
         exact: true,
@@ -62,12 +44,6 @@ const useAcceptFriendRequest = () => {
         queryKey: ["friendRequestList"],
         exact: true,
       });
-
-      invokeAction(signalRSendAcceptFriendRequest(friend));
-      conversation?.membersId.forEach((memberId) => {
-        invokeAction(signalRJoinConversation(memberId, conversation.id));
-      });
-
     },
     onError: (err) => {
       console.error("Add friend failed: " + err.message);

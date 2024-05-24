@@ -14,11 +14,13 @@ public class CreateIndividualConversationHandler : IRequestHandler<CreateIndivid
 {
     private readonly ApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISignalRService _signalRService;
 
-    public CreateIndividualConversationHandler(ApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreateIndividualConversationHandler(ApplicationDbContext context, IUnitOfWork unitOfWork, ISignalRService signalRService)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _signalRService = signalRService;
     }
 
     public async Task Handle(CreateIndividualConversationCommand request, CancellationToken cancellationToken)
@@ -64,5 +66,11 @@ public class CreateIndividualConversationHandler : IRequestHandler<CreateIndivid
         _context.ConversationUsers.Add(cou);
 
         await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+        await _signalRService.InvokeAction(SignalREvent.JOIN_CONVERSATION_ACTION, new JoinConversationDTO
+        {
+            MemberIds = [userId, otherUserId],
+            ConversationId = conversation.Id
+        });
     }
 }

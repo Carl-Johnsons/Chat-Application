@@ -14,13 +14,11 @@ public class ChatHubServer : Hub<IChatClient>
     private static readonly ConcurrentDictionary<string, Guid> UserConnectionMap = new();
     private readonly IHttpContextAccessor _httpContextAccessor;
     // rabbitmq
-    private readonly IPublishEndpoint _publishEndpoint;
     private readonly IBus _bus;
 
-    public ChatHubServer(IHttpContextAccessor httpContextAccessor, IPublishEndpoint publishEndpoint, IBus bus)
+    public ChatHubServer(IHttpContextAccessor httpContextAccessor, IBus bus)
     {
         _httpContextAccessor = httpContextAccessor;
-        _publishEndpoint = publishEndpoint;
         _bus = bus;
     }
 
@@ -99,37 +97,51 @@ public class ChatHubServer : Hub<IChatClient>
             await Clients.Client(receiverConnectionId).ReceiveFriendRequest(friendRequestDTO);
         }
     }
+
+    /* 
+     * - Notify a list of user because they might have open mulit tab in browsers
+     * - UserId now is the friendId who accept the friend request,
+     * so in other to notify other user use userId instead
+    */
     public async Task SendAcceptFriendRequest(FriendDTO friendDTO)
     {
-        // Notify a list of user because they might have open mulit tab in browsers
-        // UserId now is the senderId who accept the friend request,
-        // so in other to notify other user use friendId instead
+        await Console.Out.WriteLineAsync("Invoking SendAcceptFriendRequest");
+        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(friendDTO));
+        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(UserConnectionMap));
+
         var senderConnectionIdList = UserConnectionMap.
-            Where(pair => pair.Value == friendDTO.FriendId)
+            Where(pair => pair.Value == friendDTO.UserId)
             .Select(pair => pair.Key)
             .ToList();
 
         // If the receiver didn't online, simply do nothing
+        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(senderConnectionIdList));
         if (senderConnectionIdList.Count <= 0)
         {
             return;
         }
         foreach (var senderConnectionId in senderConnectionIdList)
         {
+            await Console.Out.WriteLineAsync("Sending to client");
             await Clients.Client(senderConnectionId).ReceiveAcceptFriendRequest(friendDTO);
         }
     }
-    public async Task JoinConversation(Guid memberId, Guid conversationId)
+    public async Task JoinConversation(JoinConversationDTO joinConversationDTO)
     {
-        var memberConnectionId = UserConnectionMap
-                                .Where(pair => pair.Value == memberId)
+        var memberConnectionIds = UserConnectionMap
+                                .Where(pair => joinConversationDTO.MemberIds.Contains(pair.Value))
                                 .Select(pair => pair.Key)
-                                .SingleOrDefault();
-        if (memberConnectionId == null)
+                                .ToList();
+        if (memberConnectionIds.Count == 0)
         {
             return;
         }
-        await Groups.AddToGroupAsync(memberConnectionId, conversationId.ToString());
+        var conversationId = joinConversationDTO.ConversationId;
+
+        foreach (var memberConnectionId in memberConnectionIds)
+        {
+            await Groups.AddToGroupAsync(memberConnectionId, conversationId.ToString());
+        }
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveJoinConversation(conversationId);
     }
     public async Task NotifyUserTyping(UserTypingNotificationDTO userTypingNotificationDTO)

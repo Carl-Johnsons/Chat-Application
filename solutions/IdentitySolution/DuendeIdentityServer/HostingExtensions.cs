@@ -5,6 +5,7 @@ using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
 using DuendeIdentityServer.Pages.Profile;
+using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,8 @@ internal static class HostingExtensions
         IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 
         builder.Services.AddSingleton(mapper);
+
+        services.AddSingleton<ISignalRService, SignalRService>();
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -133,6 +136,8 @@ internal static class HostingExtensions
                 .RequireAuthorization();
         });
 
+        var signalService = app.Services.GetService<ISignalRService>();
+        signalService!.StartConnectionAsync();
         return app;
     }
 }

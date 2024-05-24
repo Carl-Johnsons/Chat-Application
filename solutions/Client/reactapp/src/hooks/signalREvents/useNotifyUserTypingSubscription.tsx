@@ -22,13 +22,6 @@ const useNotifyUserTypingSubscription = () => {
       connection.on(
         SignalREvent.RECEIVE_NOTIFY_USER_TYPING,
         (model: UserTypingNotificationDTO) => {
-          console.log({ model });
-          console.log(activeConversationIdRef.current);
-          console.log(
-            "activeConversationId === model.conversationId : " +
-              (activeConversationIdRef.current === model.conversationId)
-          );
-
           if (activeConversationIdRef.current === model.conversationId) {
             setUserTypingId(model.senderId);
           }

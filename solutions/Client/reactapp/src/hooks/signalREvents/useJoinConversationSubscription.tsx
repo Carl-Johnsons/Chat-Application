@@ -11,16 +11,12 @@ const useJoinConversationSubscription = () => {
       if (!connection) {
         return;
       }
-      connection.on(
-        SignalREvent.RECEIVE_JOIN_CONVERSATION,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (_conversationId: number) => {
-          queryClient.invalidateQueries({
-            queryKey: ["conversationList"],
-            exact: true,
-          });
-        }
-      );
+      connection.on(SignalREvent.RECEIVE_JOIN_CONVERSATION, () => {
+        queryClient.invalidateQueries({
+          queryKey: ["conversationList"],
+          exact: true,
+        });
+      });
     },
     [queryClient]
   );

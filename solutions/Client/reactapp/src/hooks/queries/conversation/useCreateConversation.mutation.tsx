@@ -4,7 +4,6 @@ import {
   ConversationWithMembersId,
   GroupConversationWithMembersId,
 } from "@/models";
-import { signalRJoinConversation, useSignalREvents } from "@/hooks";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 
 interface Props {
@@ -34,17 +33,11 @@ const createGroupConversation = async ({
   return response.data;
 };
 const useCreateConversation = () => {
-  const { invokeAction } = useSignalREvents();
-
   const queryClient = useQueryClient();
   return useMutation<ConversationWithMembersId | null, Error, Props, unknown>({
     mutationFn: ({ conversationWithMembersId }) =>
       createConversation({ conversationWithMembersId }),
-    onSuccess: (conversation) => {
-      conversation?.membersId.forEach((memberId) => {
-        invokeAction(signalRJoinConversation(memberId, conversation.id));
-      });
-
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],
         exact: true,
@@ -56,7 +49,6 @@ const useCreateConversation = () => {
   });
 };
 const useCreateGroupConversation = () => {
-  const { invokeAction } = useSignalREvents();
 
   const queryClient = useQueryClient();
   return useMutation<
@@ -67,10 +59,7 @@ const useCreateGroupConversation = () => {
   >({
     mutationFn: ({ conversationWithMembersId }) =>
       createGroupConversation({ conversationWithMembersId }),
-    onSuccess: (conversation) => {
-      conversation?.membersId.forEach((memberId) => {
-        invokeAction(signalRJoinConversation(memberId, conversation.id));
-      });
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],
         exact: true,
