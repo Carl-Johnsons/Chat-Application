@@ -2,38 +2,51 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Messages.Queries;
-public record GetMessagesByConversationIdQuery : IRequest<List<Message>>
+public record GetMessagesByConversationIdQuery : IRequest<PaginatedMessageListResponseDTO>
 {
     public Guid ConversationId { get; init; }
     public int Skip { get; init; }
 };
 
-public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessagesByConversationIdQuery, List<Message>>
+public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessagesByConversationIdQuery, PaginatedMessageListResponseDTO>
 {
     private readonly ApplicationDbContext _context;
+    private readonly IPaginateDataUtility<Message, MessageListMetadata> _paginateDataUtility;
 
-    public GetMessagesByConversationIdQueryHandler(ApplicationDbContext context)
+    public GetMessagesByConversationIdQueryHandler(ApplicationDbContext context, IPaginateDataUtility<Message, MessageListMetadata> paginateDataUtility)
     {
         _context = context;
+        _paginateDataUtility = paginateDataUtility;
     }
 
-    public Task<List<Message>> Handle(GetMessagesByConversationIdQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedMessageListResponseDTO> Handle(GetMessagesByConversationIdQuery request, CancellationToken cancellationToken)
     {
-        Console.WriteLine("==================================");
-        Console.WriteLine(request.ConversationId.ToString());
-        Console.WriteLine(request.Skip);
-        Console.WriteLine("==================================");
+        var LastMessage = _context.Messages
+                        .Where(m => m.ConversationId == request.ConversationId)
+                        .OrderByDescending(m => m.Id)
+                        .Take(1)
+                        .SingleOrDefault();
 
-        return _context.Messages
+        var query = _context.Messages
             .Where(m => m.ConversationId == request.ConversationId)
-            .ToListAsync();
+            .OrderByDescending(m => m.Id);
 
-        //return _context.Messages
-        //    .Where(m => m.ConversationId == request.ConversationId)
-        //    .OrderByDescending(m => m.Id)
-        //    .Skip(request.Skip * MESSAGE_CONSTANTS.LIMIT)
-        //    .Take(MESSAGE_CONSTANTS.LIMIT)
-        //    .OrderBy(m => m.Id)
-        //    .ToListAsync();
+        query = (IOrderedQueryable<Message>)_paginateDataUtility.PaginateQuery(query, new PaginateParam
+        {
+            Offset = request.Skip * MESSAGE_CONSTANTS.LIMIT,
+            Limit = MESSAGE_CONSTANTS.LIMIT
+        });
+
+        var messageList = await query.OrderBy(m => m.Id).ToListAsync();
+
+
+        return new PaginatedMessageListResponseDTO
+        {
+            PaginatedData = messageList,
+            Metadata = new MessageListMetadata
+            {
+                LastMessage = LastMessage
+            }
+        };
     }
 }

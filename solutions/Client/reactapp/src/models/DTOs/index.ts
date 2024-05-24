@@ -1,3 +1,4 @@
 export * from "./FriendRequest.response.dto";
 export * from "./GroupConversationWithMembersIdDTO";
-export * from "./MessageDTO";
+export * from "./MessageList.metadata";
+export * from "./PaginatedData.response.dto";

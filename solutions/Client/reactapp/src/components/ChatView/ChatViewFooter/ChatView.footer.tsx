@@ -52,8 +52,6 @@ const ChatViewFooter = () => {
     setInputValue("");
   }, [activeConversationId, currentUser, inputValue, sendMessageMutate]);
 
-  console.log({ activeConversationId });
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!currentUser) {
       return;

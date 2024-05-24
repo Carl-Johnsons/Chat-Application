@@ -1,7 +1,6 @@
 ﻿using ConversationService.Application.Messages.Commands;
 using ConversationService.Application.Messages.Queries;
 using ConversationService.Domain.DTOs;
-using ConversationService.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,20 +20,19 @@ public partial class MessageController : BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetByConversationId([FromQuery] GetByConversationIdDTO getByConversationIdDTO)
     {
-        List<Message> messages;
         if (getByConversationIdDTO.ConversationId == null)
         {
-            messages = await _sender.Send(new GetAllMessagesQuery());
-            return Ok(messages);
+            var messagesList = await _sender.Send(new GetAllMessagesQuery());
+            return Ok(messagesList);
         }
 
-        messages = await _sender.Send(new GetMessagesByConversationIdQuery
+        var paginatedMessageList = await _sender.Send(new GetMessagesByConversationIdQuery
         {
             ConversationId = (Guid)getByConversationIdDTO.ConversationId!,
             Skip = getByConversationIdDTO.Skip ?? 0
         });
 
-        return Ok(messages);
+        return Ok(paginatedMessageList);
     }
 
     [HttpGet("{id}")]
@@ -47,12 +45,6 @@ public partial class MessageController : BaseApiController
         return Ok(message);
     }
 
-    [HttpGet("Conversation/{conversationId}/last")]
-    public async Task<IActionResult> GetLast(Guid conversationId)
-    {
-        var m = await _sender.Send(new GetLastMessageQuery(conversationId));
-        return Ok(m);
-    }
     [HttpPost]
     public async Task<IActionResult> SendClientMessage([FromBody] SendClientMessageDTO sendClientMessageDTO)
     {

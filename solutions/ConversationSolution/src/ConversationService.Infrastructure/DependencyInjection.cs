@@ -1,6 +1,7 @@
 ﻿using ConversationService.Infrastructure.Persistence;
 using ConversationService.Infrastructure.Persistence.Mockup;
 using ConversationService.Infrastructure.Persistence.Repositories;
+using ConversationService.Infrastructure.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,7 +29,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IMessageRepository), typeof(MessageRepository));
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
         services.AddScoped<MockupData>();
-
+        services.AddScoped(typeof(IPaginateDataUtility<,>), typeof(PaginateDataUtility<,>));
         // Build a temporary service provider to resolve services
         using (var serviceProvider = services.BuildServiceProvider())
         {

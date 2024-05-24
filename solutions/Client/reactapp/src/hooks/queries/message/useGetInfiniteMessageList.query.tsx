@@ -1,11 +1,11 @@
 import { protectedAxiosInstance } from "@/utils";
-import { Message } from "@/models";
 import {
   InfiniteData,
   UndefinedInitialDataInfiniteOptions,
   useInfiniteQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { PaginatedMessageListResponse } from "models/DTOs";
 
 interface FetchProps {
   conversationId: string;
@@ -15,7 +15,7 @@ interface FetchProps {
 const getMessageList = async ({
   conversationId,
   skipBatch,
-}: FetchProps): Promise<Message[] | null> => {
+}: FetchProps): Promise<PaginatedMessageListResponse> => {
   const url = `api/conversation/message`;
   const response = await protectedAxiosInstance.get(url, {
     params: {
@@ -31,12 +31,12 @@ const useGetInfiniteMessageList = (
   queryOptions: Omit<
     UndefinedInitialDataInfiniteOptions<
       {
-        data: Message[];
+        data: PaginatedMessageListResponse;
         nextPage: number;
       },
       Error,
       InfiniteData<{
-        data: Message[];
+        data: PaginatedMessageListResponse;
         nextPage: number;
       }>,
       unknown[],
@@ -56,21 +56,24 @@ const useGetInfiniteMessageList = (
     queryKey: ["messageList", "conversation", conversationId, "infinite"],
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
-      const ml = await getMessageList({
+      const pml = await getMessageList({
         conversationId,
         skipBatch: pageParam,
       });
       return {
-        data: ml ?? [],
+        data: pml,
         nextPage: pageParam + 1,
       };
     },
     getNextPageParam: (prev) => {
-      return prev.data.length === 0 ? undefined : prev.nextPage;
+      return prev.data.paginatedData.length === 0 ? undefined : prev.nextPage;
     },
     initialData: () => {
       return queryClient.getQueryData<
-        InfiniteData<{ data: Message[]; nextPage: number }, number>
+        InfiniteData<
+          { data: PaginatedMessageListResponse; nextPage: number },
+          number
+        >
       >(["messageList", "conversation", conversationId, "infinite"]);
     },
   });

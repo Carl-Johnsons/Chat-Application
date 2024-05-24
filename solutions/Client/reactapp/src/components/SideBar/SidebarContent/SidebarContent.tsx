@@ -37,7 +37,7 @@ const SidebarContent = () => {
         </div>
       )}
       {isSearchBarFocus && (
-        <div className={cx("bg-secondary", "w-100", "h-100")}>
+        <div className={cx("bg-secondary", "w-100", "h-100", "overflow-auto")}>
           <SearchResultContent />
         </div>
       )}

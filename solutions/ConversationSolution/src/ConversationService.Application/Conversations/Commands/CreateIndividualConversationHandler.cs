@@ -1,4 +1,5 @@
 ﻿using ConversationService.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Conversations.Commands;
 
@@ -24,6 +25,20 @@ public class CreateIndividualConversationHandler : IRequestHandler<CreateIndivid
     {
         var userId = request.CurrentUserId;
         var otherUserId = request.OtherUserId;
+
+        var isConversationExisted = _context.Conversations
+                                    .Include(c => c.Users)
+                                    .Where(c => c.Type == CONVERSATION_TYPE_CODE.INDIVIDUAL &&
+                                                c.Users.Where(u => u.UserId == userId)
+                                                       .SingleOrDefault() != null &&
+                                                c.Users.Where(u => u.UserId == otherUserId)
+                                                       .SingleOrDefault() != null)
+                                    .SingleOrDefault() != null;
+        if (isConversationExisted)
+        {
+            await Console.Out.WriteLineAsync("They already have the conversation, abort adding addition conversation");
+            return;
+        }
 
         var conversation = new Conversation
         {

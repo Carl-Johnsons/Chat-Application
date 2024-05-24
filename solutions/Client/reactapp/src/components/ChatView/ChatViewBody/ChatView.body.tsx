@@ -14,20 +14,22 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
   const [activeConversationId] = useGlobalState("activeConversationId");
 
   const messageContainerRef = useRef(null);
-  const firstOldMessageIdRef = useRef<number | null>();
-  const prevActiveConversationRef = useRef<number>(-1);
+  const firstOldMessageIdRef = useRef<string | null>();
+  const prevActiveConversationRef = useRef<string>();
 
   const {
     data: infiniteML,
     fetchNextPage: fetchNextML,
     isLoading: isLoadingNextML,
   } = useGetInfiniteMessageList(activeConversationId, {
-    enabled: activeConversationId > 0,
+    enabled: !!activeConversationId,
   });
 
   const messageList = [...(infiniteML?.pages ?? [])]
-    .reverse() // reverse function mutate the orginal array which is messed the useInfinite query, so creating a new array is needed
-    .flatMap((page) => page.data);
+    .reverse() // reverse function mutate the original array which is messed the useInfinite query, so creating a new array is needed
+    .flatMap((page) => page.data.paginatedData);
+
+  console.log({ messageList });
 
   const prevValuesRef = useRef({
     activeConversationId: activeConversationId,
