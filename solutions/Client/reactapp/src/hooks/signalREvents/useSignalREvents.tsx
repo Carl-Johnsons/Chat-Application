@@ -1,54 +1,24 @@
-import { HubConnection } from "@microsoft/signalr";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
-import {
-  Friend,
-  FriendRequest,
-  Message,
-  SenderConversationModel,
-} from "@/models";
+import { FriendRequest } from "@/models";
 
 import { useGlobalState } from "../globalState";
-import useMessageSubscription from "./useMessageSubscription";
-import useFriendRequestSubscription from "./useFriendRequestSubscription";
-import useConnectedSubscription from "./useConnectedSubscription";
-import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
-import useDisableNotifyUserTypingSubscription from "./useDisableNotifyUserTypingSubscription";
-import useAcceptedFriendRequestSubscription from "./useAcceptedFriendRequestSubscription";
-import useDisconnectedSubscription from "./useDisconnectedSubscription";
-import useJoinConversationSubscription from "./useJoinConversationSubscription";
+import { UserTypingNotificationDTO } from "@/models/DTOs";
 
-interface SignalREvent {
-  name: string;
-  func: (...args: never[]) => void;
-}
 interface InvokeSignalREvent {
   name: string;
   args: unknown[];
 }
-interface useSignalREventsProps {
-  connection?: HubConnection;
-  events?: SignalREvent[];
-}
 
-const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
+const useSignalREvents = () => {
   // global state
-  const [connectionState] = useGlobalState("connectionState");
-  // hook
-  useAcceptedFriendRequestSubscription(connection);
-  useConnectedSubscription(connection);
-  useDisableNotifyUserTypingSubscription(connection);
-  useDisconnectedSubscription(connection);
-  useFriendRequestSubscription(connection);
-  useJoinConversationSubscription(connection);
-  useMessageSubscription(connection);
-  useNotifyUserTypingSubscription(connection);
+  const [connection] = useGlobalState("connection");
+
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
-    console.log(`Invoke ${name}`);
-    if (!connection || connectionState !== "Connected") {
+    if (!connection) {
       return;
     }
 
@@ -57,29 +27,10 @@ const useSignalREvents = ({ connection, events }: useSignalREventsProps) => {
     });
   };
 
-  useEffect(() => {
-    if (!events) {
-      return;
-    }
-    events.forEach((event) => {
-      connection?.on(event.name, event.func);
-    });
-    return () => {
-      events.forEach((event) => {
-        connection?.off(event.name);
-      });
-    };
-  }, [connection, events]);
-
-  return invokeActionRef.current;
-};
-
-export function signalRSendMessage(m: Message) {
   return {
-    name: "SendMessage",
-    args: [m],
+    invokeAction: invokeActionRef.current,
   };
-}
+};
 
 export function signalRSendFriendRequest(fr: FriendRequest) {
   return {
@@ -87,35 +38,23 @@ export function signalRSendFriendRequest(fr: FriendRequest) {
     args: [fr],
   };
 }
-export function signalRSendAcceptFriendRequest(f: Friend) {
-  return {
-    name: "SendAcceptFriendRequest",
-    args: [f],
-  };
-}
+
 export function signalRNotifyUserTyping(
-  senderConversationModel: SenderConversationModel
+  userTypingNotificationDTO: UserTypingNotificationDTO
 ) {
   return {
     name: "NotifyUserTyping",
-    args: [senderConversationModel],
+    args: [userTypingNotificationDTO],
   };
 }
+
 export function signalRDisableNotifyUserTyping(
-  senderConversationModel: SenderConversationModel
+  userTypingNotificationDTO: UserTypingNotificationDTO
 ) {
   return {
     name: "DisableNotifyUserTyping",
-    args: [senderConversationModel],
+    args: [userTypingNotificationDTO],
   };
 }
-export function signalRJoinConversation(
-  userId: string,
-  conversationId: string
-) {
-  return {
-    name: "JoinConversation",
-    args: [userId, conversationId],
-  };
-}
+
 export { useSignalREvents };

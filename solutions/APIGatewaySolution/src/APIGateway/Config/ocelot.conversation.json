@@ -7,7 +7,7 @@
           "Port": 80
         }
       ],
-      "DownstreamPathTemplate": "/api/Conversation/{everything}",
+      "DownstreamPathTemplate": "/api/conversation/{everything}",
       "DownstreamScheme": "http",
       "UpstreamHttpMethod": [
         "GET",
@@ -16,7 +16,7 @@
         "DELETE",
         "OPTIONS"
       ],
-      "UpstreamPathTemplate": "/api/Conversation/{everything}",
+      "UpstreamPathTemplate": "/api/conversation/{everything}",
       "AuthenticationOptions": {
         "AuthenticationProviderKeys": [ "Bearer" ],
         "AllowedScopes": [ "conversation-api" ]
@@ -29,7 +29,7 @@
           "Port": 80
         }
       ],
-      "DownstreamPathTemplate": "/api/Message/{everything}",
+      "DownstreamPathTemplate": "/api/conversation/message/{everything}",
       "DownstreamScheme": "http",
       "UpstreamHttpMethod": [
         "GET",
@@ -38,25 +38,7 @@
         "DELETE",
         "OPTIONS"
       ],
-      "UpstreamPathTemplate": "/api/Conversation/Message/{everything}"
-    },
-    {
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "conversation-api",
-          "Port": 80
-        }
-      ],
-      "DownstreamPathTemplate": "/api/User/{everything}",
-      "DownstreamScheme": "http",
-      "UpstreamHttpMethod": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE",
-        "OPTIONS"
-      ],
-      "UpstreamPathTemplate": "/api/Conversation/User/{everything}",
+      "UpstreamPathTemplate": "/api/conversation/message/{everything}",
       "AuthenticationOptions": {
         "AuthenticationProviderKeys": [ "Bearer" ],
         "AllowedScopes": [ "conversation-api" ]

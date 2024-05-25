@@ -2,8 +2,7 @@ import { ConversationType } from "@/models";
 import style from "./UserStatus.module.scss";
 import classNames from "classnames/bind";
 import { useGlobalState } from "@/hooks";
-import { useGetConversationUsersByConversationId } from "@/hooks/queries/conversation";
-import { useGetCurrentUser } from "@/hooks/queries/user";
+import { useGetMemberListByConversationId } from "@/hooks/queries/conversation";
 import { useMemo } from "react";
 const cx = classNames.bind(style);
 
@@ -15,21 +14,18 @@ const UserStatus = ({ type }: Props) => {
   const [activeConversationId] = useGlobalState("activeConversationId");
   const [userIdsOnlineList] = useGlobalState("userIdsOnlineList");
 
-  const { data: currentUserData } = useGetCurrentUser();
   const { data: conversationUserData, isLoading: isLoadingConversationUser } =
-    useGetConversationUsersByConversationId(activeConversationId);
+    useGetMemberListByConversationId(activeConversationId);
   const { data: conversationUsersData } =
-    useGetConversationUsersByConversationId(activeConversationId);
-  const isGroup = type === "Group";
+    useGetMemberListByConversationId(activeConversationId);
+  const isGroup = type === "GROUP";
 
   const otherUserId = useMemo(() => {
     if (!isGroup && conversationUsersData?.length) {
-      return conversationUsersData[0].userId == currentUserData?.id
-        ? conversationUsersData[1].userId
-        : conversationUsersData[0].userId;
+      return conversationUsersData[0].userId;
     }
     return null;
-  }, [conversationUsersData, currentUserData?.id, isGroup]);
+  }, [conversationUsersData, isGroup]);
 
   const isLoading = isLoadingConversationUser;
 
@@ -45,7 +41,7 @@ const UserStatus = ({ type }: Props) => {
       {isLoading
         ? "Loading...."
         : isGroup
-        ? `${conversationUserData?.length} thành viên`
+        ? `${(conversationUserData?.length ?? -1) + 1} thành viên`
         : isOnline
         ? "Online"
         : "Offline"}

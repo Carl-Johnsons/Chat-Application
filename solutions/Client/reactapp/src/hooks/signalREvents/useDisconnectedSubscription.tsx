@@ -1,26 +1,32 @@
 import { HubConnection } from "@microsoft/signalr";
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { useGlobalState } from "..";
 
-const useDisconnectedSubscription = (connection?: HubConnection) => {
+const useDisconnectedSubscription = () => {
   const [, setUserIdsOnlineList] = useGlobalState("userIdsOnlineList");
-  useEffect(() => {
+  const subscribeDisconnectedEvent = useCallback((connection: HubConnection) => {
     if (!connection) {
       return;
     }
-    connection.on("Disconnected", (userDisconnectedId: number) => {
+    connection.on("Disconnected", (userDisconnectedId: string) => {
       setUserIdsOnlineList((prev) =>
         prev.filter((userId) => userId !== userDisconnectedId)
       );
       console.log("signalR Disconnected");
     });
-    return () => {
-      if (!connection) {
-        return;
-      }
-      connection.off("Disconnected");
-    };
-  }, [connection, setUserIdsOnlineList]);
+  }, [setUserIdsOnlineList]);
+  
+  const unsubscribeDisconnectedEvent = useCallback((connection: HubConnection) => {
+    if (!connection) {
+      return;
+    }
+    connection.off("Disconnected");
+  }, []);
+
+  return {
+    subscribeDisconnectedEvent,
+    unsubscribeDisconnectedEvent,
+  };
 };
 
 export default useDisconnectedSubscription;

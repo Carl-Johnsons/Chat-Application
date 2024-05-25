@@ -1,21 +1,16 @@
 import { HubConnection } from "@microsoft/signalr";
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { SignalREvent } from "../../data/constants";
-import { Friend } from "../../models";
 import { useQueryClient } from "@tanstack/react-query";
 
-const useAcceptedFriendRequestSubscription = (connection?: HubConnection) => {
+const useAcceptedFriendRequestSubscription = () => {
   const queryClient = useQueryClient();
-  useEffect(() => {
-    if (!connection) {
-      return;
-    }
-    connection.on(
-      SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (_friend: Friend) => {
-        console.log("receive accept friend request");
-
+  const subscribeAcceptFriendRequestEvent = useCallback(
+    (connection: HubConnection) => {
+      if (!connection) {
+        return;
+      }
+      connection.on(SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST, () => {
         queryClient.invalidateQueries({
           queryKey: ["friendList"],
           exact: true,
@@ -24,12 +19,25 @@ const useAcceptedFriendRequestSubscription = (connection?: HubConnection) => {
           queryKey: ["friendRequestList"],
           exact: true,
         });
+      });
+    },
+    [queryClient]
+  );
+
+  const unsubscribeAcceptFriendRequestEvent = useCallback(
+    (connection: HubConnection) => {
+      if (!connection) {
+        return;
       }
-    );
-    return () => {
       connection.off(SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST);
-    };
-  }, [connection, queryClient]);
+    },
+    []
+  );
+
+  return {
+    subscribeAcceptFriendRequestEvent,
+    unsubscribeAcceptFriendRequestEvent,
+  };
 };
 
 export default useAcceptedFriendRequestSubscription;

@@ -2,15 +2,12 @@ import { useCallback, useState } from "react";
 
 import SideBarItem from "../../SideBarItem";
 import { useGlobalState, useScreenSectionNavigator } from "@/hooks";
-import { ConversationType } from "@/models";
+import { ConversationType, Message } from "@/models";
 import {
   useGetInfiniteMessageList,
   useGetLastMessages,
 } from "@/hooks/queries/message";
-import {
-  useGetConversationUsers,
-  useGetConversations,
-} from "@/hooks/queries/conversation";
+import { useGetConversationList } from "@/hooks/queries/conversation";
 
 const ConversationContent = () => {
   const [, setConversationType] = useGlobalState("conversationType");
@@ -24,12 +21,9 @@ const ConversationContent = () => {
   const messageListQuery = useGetInfiniteMessageList(activeConversationId, {
     enabled: enableMessageListQuery,
   });
-  const { data: conversationUsersData } = useGetConversationUsers();
-  const conversationsId =
-    conversationUsersData?.flatMap((cu) => cu.conversationId) ?? [];
-  const conversationQueries = useGetConversations(conversationsId, {
-    enabled: conversationsId.length > 0,
-  });
+  const { data: conversationListData } = useGetConversationList();
+  const conversationsId = conversationListData?.flatMap((c) => c.id) ?? [];
+
   const lastMessageQueries = useGetLastMessages(conversationsId, {
     enabled: conversationsId.length > 0,
   });
@@ -58,24 +52,21 @@ const ConversationContent = () => {
   // }, [friendList, handleClickConversation, activeConversationId]);
   return (
     <>
-      {conversationQueries &&
-        (conversationQueries ?? []).map((query, index) => {
-          if (query.isLoading) {
-            return;
-          }
-          const conversation = query.data;
-          const lastMessage = lastMessageQueries[index].data ?? undefined;
-
+      {conversationListData &&
+        (conversationListData ?? []).map((conversation, index) => {
           if (!conversation) {
             return;
           }
+          const lastMessage: Message = lastMessageQueries[index].data ?? {
+            content: "This conversation is new! Say hi",
+          };
 
           return (
             <SideBarItem
               key={conversation.id}
               type="conversation"
+              conversation={conversation}
               lastMessage={lastMessage}
-              conversationId={conversation.id ?? ""}
               onClick={(conversationId) =>
                 handleClickConversation(conversationId, conversation.type)
               }

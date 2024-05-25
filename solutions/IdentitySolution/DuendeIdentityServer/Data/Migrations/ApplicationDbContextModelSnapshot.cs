@@ -126,7 +126,7 @@ namespace DuendeIdentityServer.Data.Migrations
 
                     b.HasKey("UserId", "FriendId");
 
-                    b.ToTable("Friend");
+                    b.ToTable("Friend", (string)null);
                 });
 
             modelBuilder.Entity("DuendeIdentityServer.Models.FriendRequest", b =>
@@ -167,7 +167,22 @@ namespace DuendeIdentityServer.Data.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("FriendRequest");
+                    b.ToTable("FriendRequest", (string)null);
+                });
+
+            modelBuilder.Entity("DuendeIdentityServer.Models.UserBlock", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BlockUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "BlockUserId");
+
+                    b.HasIndex("BlockUserId");
+
+                    b.ToTable("UserBlock", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -338,6 +353,27 @@ namespace DuendeIdentityServer.Data.Migrations
                     b.Navigation("Receiver");
 
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("DuendeIdentityServer.Models.UserBlock", b =>
+                {
+                    b.HasOne("DuendeIdentityServer.Models.ApplicationUser", "BlockUser")
+                        .WithMany()
+                        .HasForeignKey("BlockUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("BlockUser_UserBlock");
+
+                    b.HasOne("DuendeIdentityServer.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("User_UserBlock");
+
+                    b.Navigation("BlockUser");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

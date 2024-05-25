@@ -5,10 +5,9 @@ USER root
 # Change init.sh file window line ending to Unix line ending
 COPY --chmod=755 ./sh/init.sh init.sh
 RUN apt-get update && \
-    apt-get install -y dos2unix && \
+    apt-get install -y --no-install-recommends dos2unix && \
     dos2unix ./init.sh && \
-    apt-get remove -y dos2unix && \
-    apt-get clean && \
+    apt-get purge -y --auto-remove dos2unix && \
     rm -rf /var/lib/apt/lists/*
 USER mssql
 

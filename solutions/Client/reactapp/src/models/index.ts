@@ -11,6 +11,5 @@ export * from "./ImgurImage";
 export * from "./JwtToken";
 export * from "./Message";
 export * from "./ModalType";
-export * from "./SenderConversationModel";
 export * from "./User";
 export * from "./UserInputForm";

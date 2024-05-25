@@ -1,16 +1,15 @@
-﻿using ChatService.Models;
+﻿using ChatHub.DTOs;
 
-namespace ChatService.Hubs
+namespace ChatHub.Hubs;
+
+public interface IChatClient
 {
-    public interface IChatClient
-    {
-        Task Connected(IEnumerable<int>? userIdOnlineList);
-        Task Disconnected(int userDisconnectedId);
-        //Task ReceiveMessage(Message message);
-        //Task ReceiveFriendRequest(FriendRequest fr);
-        //Task ReceiveAcceptFriendRequest(Friend f);
-        Task ReceiveJoinConversation(int conversationId);
-        Task ReceiveNotifyUserTyping(SenderConversationModel model);
-        Task ReceiveDisableNotifyUserTyping();
-    }
+    Task Connected(IEnumerable<Guid>? userIdOnlineList);
+    Task Disconnected(Guid userDisconnectedId);
+    Task ReceiveMessage(MessageDTO messageDTO);
+    Task ReceiveFriendRequest(FriendRequestDTO fr);
+    Task ReceiveAcceptFriendRequest(FriendDTO f);
+    Task ReceiveJoinConversation(Guid conversationId);
+    Task ReceiveNotifyUserTyping(UserTypingNotificationDTO model);
+    Task ReceiveDisableNotifyUserTyping();
 }

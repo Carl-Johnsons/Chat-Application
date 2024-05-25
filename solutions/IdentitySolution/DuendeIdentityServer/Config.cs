@@ -13,9 +13,9 @@ public static class Config
             DotNetEnv.Env.Load(".env.development");
         }
 
-        var server = DotNetEnv.Env.GetString("SERVER", "Not found");
-        var db = DotNetEnv.Env.GetString("DB", "Not found");
-        var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found");
+        var server = DotNetEnv.Env.GetString("SERVER", "Not found").Trim();
+        var db = DotNetEnv.Env.GetString("DB", "Not found").Trim();
+        var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found").Trim();
         var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
         Console.WriteLine(connectionString);
         return connectionString;
@@ -31,6 +31,7 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         [
             new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
+            new ApiScope("conversation-api")
         ];
 
     public static IEnumerable<Client> Clients =>
@@ -68,7 +69,8 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.Phone,
                     IdentityServerConstants.StandardScopes.Email,
-                    IdentityServerConstants.LocalApi.ScopeName
+                    IdentityServerConstants.LocalApi.ScopeName,
+                    "conversation-api"
                 },
             }
         ];

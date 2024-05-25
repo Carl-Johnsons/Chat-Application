@@ -9,13 +9,15 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/ConversationService.API/ConversationService.API.csproj", "src/ConversationService.API/"]
-COPY ["src/ConversationService.Application/ConversationService.Application.csproj", "src/ConversationService.Application/"]
-COPY ["src/ConversationService.Domain/ConversationService.Domain.csproj", "src/ConversationService.Domain/"]
-COPY ["src/ConversationService.Infrastructure/ConversationService.Infrastructure.csproj", "src/ConversationService.Infrastructure/"]
-RUN dotnet restore "./src/ConversationService.API/ConversationService.API.csproj"
-COPY . .
-WORKDIR "/src/src/ConversationService.API"
+COPY ["ConversationSolution/src/ConversationService.API/ConversationService.API.csproj", "ConversationSolution/src/ConversationService.API/"]
+COPY ["ConversationSolution/src/ConversationService.Application/ConversationService.Application.csproj", "ConversationSolution/src/ConversationService.Application/"]
+COPY ["ConversationSolution/src/ConversationService.Domain/ConversationService.Domain.csproj", "ConversationSolution/src/ConversationService.Domain/"]
+COPY ["ConversationSolution/src/ConversationService.Infrastructure/ConversationService.Infrastructure.csproj", "ConversationSolution/src/ConversationService.Infrastructure/"]
+COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationSolution/src/ConversationService.Application/"]
+
+RUN dotnet restore "./ConversationSolution/src/ConversationService.API/ConversationService.API.csproj"
+COPY ["ConversationSolution/src","ConversationSolution/src"]
+WORKDIR "/src/ConversationSolution/src/ConversationService.API"
 RUN dotnet build "./ConversationService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

@@ -1,25 +1,36 @@
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
 import { useGlobalState } from "..";
 
-const useConnectedSubscription = (connection?: HubConnection) => {
+const useConnectedSubscription = () => {
   const [, setUserIdsOnlineList] = useGlobalState("userIdsOnlineList");
-  useEffect(() => {
-    if (!connection) {
-      return;
-    }
-    connection.on(SignalREvent.CONNECTED, (userIdsOnlineList: number[]) => {
+  const subscribeConnectedEvent = useCallback(
+    (connection?: HubConnection) => {
       if (!connection) {
         return;
       }
-      setUserIdsOnlineList(userIdsOnlineList);
-      console.log("signalR Connected");
-    });
-    return () => {
+      connection.on(SignalREvent.CONNECTED, (userIdsOnlineList: string[]) => {
+        if (!connection) {
+          return;
+        }
+        setUserIdsOnlineList(userIdsOnlineList);
+      });
+    },
+    [setUserIdsOnlineList]
+  );
+
+  const unsubscribeConnectedEvent = useCallback(
+    (connection?: HubConnection) => {
+      if (!connection) {
+        return;
+      }
       connection.off(SignalREvent.CONNECTED);
-    };
-  }, [connection, setUserIdsOnlineList]);
+    },
+    []
+  );
+
+  return { subscribeConnectedEvent, unsubscribeConnectedEvent };
 };
 
 export default useConnectedSubscription;

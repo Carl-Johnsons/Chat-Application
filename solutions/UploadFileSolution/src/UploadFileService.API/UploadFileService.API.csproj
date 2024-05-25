@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>8634138b-d394-4b51-9e73-57652e50bfd4</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
+    <DockerfileContext>..\..\..</DockerfileContext>
 	  <DockerfileRunArguments>--env-file "./.env.development"</DockerfileRunArguments>
   </PropertyGroup>
 
@@ -20,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UploadFileService.Core\UploadFileService.Core.csproj" />
+    <ProjectReference Include="..\UploadFileService.Application\UploadFileService.Application.csproj" />
+    <ProjectReference Include="..\UploadFileService.Domain\UploadFileService.Domain.csproj" />
   </ItemGroup>
 
 </Project>

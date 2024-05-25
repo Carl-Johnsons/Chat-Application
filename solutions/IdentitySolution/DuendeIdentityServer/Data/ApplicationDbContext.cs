@@ -8,6 +8,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<Friend> Friends { get; set; }
     public DbSet<FriendRequest> FriendRequests { get; set; }
+    public DbSet<UserBlock> UserBlocks { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
@@ -51,6 +52,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                         .WithMany()
                         .HasForeignKey(fr => fr.ReceiverId)
                         .HasConstraintName("Receiver_FriendRequest")
+                        .OnDelete(DeleteBehavior.Restrict);
+                   });
+        builder.Entity<UserBlock>(
+                   e =>
+                   {
+                       e.HasOne(ub => ub.User)
+                        .WithMany()
+                        .HasForeignKey(ub => ub.UserId)
+                        .HasConstraintName("User_UserBlock")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                       e.HasOne(ub => ub.BlockUser)
+                        .WithMany()
+                        .HasForeignKey(ub => ub.BlockUserId)
+                        .HasConstraintName("BlockUser_UserBlock")
                         .OnDelete(DeleteBehavior.Restrict);
                    });
     }

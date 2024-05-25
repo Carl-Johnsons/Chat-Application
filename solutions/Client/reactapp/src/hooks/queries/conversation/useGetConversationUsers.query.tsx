@@ -1,57 +1,50 @@
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import { ConversationUser } from "models/ConversationUser";
-import { useGetCurrentUser } from "../user";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { Conversation } from "@/models";
 
-interface FetchPropsByUserId {
-  userId: string | undefined;
-}
 interface FetchPropsByConversationId {
   conversationId: string | undefined;
 }
 
-const getConversationUserByUserId = async ({
-  userId,
-}: FetchPropsByUserId): Promise<ConversationUser[] | null> => {
-  if (!userId) {
-    return null;
-  }
-  const url = `/api/Conversation/User/${userId}`;
-  const response = await axiosInstance.get(url);
+const getConversationList = async (): Promise<Conversation[] | null> => {
+  const url = `/api/conversation/user`;
+  const response = await protectedAxiosInstance.get(url);
+  console.log(response.data);
+
   return response.data;
 };
-const getConversationUserByConversationId = async ({
+const getMemberListByConversationId = async ({
   conversationId,
 }: FetchPropsByConversationId): Promise<ConversationUser[] | null> => {
-  if (!conversationId) {
-    return null;
-  }
-  const url = `/api/Conversation/member/${conversationId}`;
-  const response = await axiosInstance.get(url);
+  const url = `/api/conversation/member`;
+  const response = await protectedAxiosInstance.get(url, {
+    params: {
+      conversationId: conversationId,
+    },
+  });
   return response.data;
 };
 
-const useGetConversationUsers = (
+const useGetConversationList = (
   queryOptions: Omit<
     UseQueryOptions<
-      ConversationUser[] | null,
+      Conversation[] | null,
       Error,
-      ConversationUser[] | null,
+      Conversation[] | null,
       unknown[]
     >,
     "queryKey" | "queryFn" | "enabled" | "initialData"
   > = {}
 ) => {
-  const { data: currentUser } = useGetCurrentUser();
   return useQuery({
     ...queryOptions,
     queryKey: ["conversationList"],
-    enabled: !!currentUser,
-    queryFn: () => getConversationUserByUserId({ userId: currentUser?.id }),
+    queryFn: getConversationList,
   });
 };
 
-const useGetConversationUsersByConversationId = (
+const useGetMemberListByConversationId = (
   conversationId: string,
   queryOptions: Omit<
     UseQueryOptions<
@@ -67,8 +60,8 @@ const useGetConversationUsersByConversationId = (
     ...queryOptions,
     queryKey: ["conversation", "member", conversationId],
     queryFn: () =>
-      getConversationUserByConversationId({ conversationId: conversationId }),
+      getMemberListByConversationId({ conversationId: conversationId }),
   });
 };
 
-export { useGetConversationUsers, useGetConversationUsersByConversationId };
+export { useGetConversationList, useGetMemberListByConversationId };

@@ -1,9 +1,12 @@
 using AutoMapper;
+using Contract.Event.FriendEvent;
 using Duende.IdentityServer;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
 using DuendeIdentityServer.Pages.Profile;
+using DuendeIdentityServer.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -22,8 +25,34 @@ internal static class HostingExtensions
 
         // Register automapper
         IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+
         builder.Services.AddSingleton(mapper);
+
+        services.AddSingleton<ISignalRService, SignalRService>();
+
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        services.AddMassTransit(busConfig =>
+        {
+            busConfig.SetKebabCaseEndpointNameFormatter();
+
+            //busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
+            busConfig.UsingRabbitMq((context, config) =>
+            {
+                config.Host("amqp://rabbitmq/", host =>
+                {
+                    host.Username("admin");
+                    host.Password("pass");
+                });
+                config.ConfigureEndpoints(context);
+
+                config.Message<FriendCreatedEvent>(m =>
+                {
+                    m.SetEntityName("friend-created-event"); // Explicit exchange name
+                });
+
+            });
+        });
 
         services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Config.GetConnectionString()));
@@ -107,6 +136,8 @@ internal static class HostingExtensions
                 .RequireAuthorization();
         });
 
+        var signalService = app.Services.GetService<ISignalRService>();
+        signalService!.StartConnectionAsync();
         return app;
     }
 }

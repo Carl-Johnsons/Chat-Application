@@ -9,11 +9,12 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/UploadFileService.API/UploadFileService.API.csproj", "src/UploadFileService.API/"]
-COPY ["src/UploadFileService.Core/UploadFileService.Core.csproj", "src/UploadFileService.Core/"]
-RUN dotnet restore "./src/UploadFileService.API/UploadFileService.API.csproj"
-COPY . .
-WORKDIR "/src/src/UploadFileService.API"
+COPY ["UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj", "UploadFileSolution/src/UploadFileService.API/"]
+RUN dotnet restore "./UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj"
+
+COPY ["UploadFileSolution/src/", "UploadFileSolution/src/"]
+
+WORKDIR "/src/UploadFileSolution/src/UploadFileService.API"
 RUN dotnet build "./UploadFileService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

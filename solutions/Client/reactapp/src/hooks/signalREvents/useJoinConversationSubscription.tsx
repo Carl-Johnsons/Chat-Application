@@ -1,28 +1,40 @@
 import { HubConnection } from "@microsoft/signalr";
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { SignalREvent } from "../../data/constants";
 import { useQueryClient } from "@tanstack/react-query";
 
-const useJoinConversationSubscription = (connection?: HubConnection) => {
+const useJoinConversationSubscription = () => {
   const queryClient = useQueryClient();
-  useEffect(() => {
-    if (!connection) {
-      return;
-    }
-    connection.on(
-      SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (_conversationId: number) => {
+
+  const subscribeJoinConversationEvent = useCallback(
+    (connection: HubConnection) => {
+      if (!connection) {
+        return;
+      }
+      connection.on(SignalREvent.RECEIVE_JOIN_CONVERSATION, () => {
         queryClient.invalidateQueries({
           queryKey: ["conversationList"],
           exact: true,
         });
+      });
+    },
+    [queryClient]
+  );
+
+  const unsubscribeJoinConversationEvent = useCallback(
+    (connection: HubConnection) => {
+      if (!connection) {
+        return;
       }
-    );
-    return () => {
-      connection.off(SignalREvent.RECEIVE_ACCEPT_FRIEND_REQUEST);
-    };
-  }, [connection, queryClient]);
+      connection.off(SignalREvent.RECEIVE_JOIN_CONVERSATION);
+    },
+    []
+  );
+
+  return {
+    subscribeJoinConversationEvent,
+    unsubscribeJoinConversationEvent,
+  };
 };
 
 export default useJoinConversationSubscription;

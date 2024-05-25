@@ -6,13 +6,14 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>5fbd38f4-9da2-4a02-a5cd-d8fd83de54ff</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileContext>..\..</DockerfileContext>
+		<DockerfileContext>..\..\..</DockerfileContext>
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="MediatR" Version="12.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
 	</ItemGroup>
 
 	<ItemGroup>

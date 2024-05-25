@@ -6,12 +6,15 @@
 		<Nullable>enable</Nullable>
 		<UserSecretsId>55ba8883-210e-4d88-832e-4676bd759c94</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..\.</DockerfileContext>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="DotNetEnv" Version="3.0.0" />
 		<PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.0.4" />
+		<PackageReference Include="MassTransit" Version="8.2.2" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
 
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.3" />
 
@@ -29,9 +32,19 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.3" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.1" />
+		
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Data\Migrations\" />
+		<Folder Include="Data\Migrations\" />
+		<Folder Include="EventHandler\" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Contract">
+	    <HintPath>..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
 </Project>

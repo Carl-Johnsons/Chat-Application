@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 
 import style from "./ChatView.footer.module.scss";
 import classNames from "classnames/bind";
@@ -14,58 +14,58 @@ import {
 
 import { useGetCurrentUser } from "@/hooks/queries/user";
 import { useSendMessage } from "@/hooks/queries/message";
-import { SenderConversationModel } from "@/models";
+import { UserTypingNotificationDTO } from "models/DTOs/UserTypingNotification.dto";
 
 const cx = classNames.bind(style);
 const ChatViewFooter = () => {
   const [inputValue, setInputValue] = useState("");
   const [activeConversationId] = useGlobalState("activeConversationId");
-  const [connection] = useGlobalState("connection");
   // hook
-  const invokeAction = useSignalREvents({ connection: connection });
+  const { invokeAction } = useSignalREvents();
   const { data: currentUser } = useGetCurrentUser();
   const { mutate: sendMessageMutate } = useSendMessage();
+  const isTyping = useRef(false);
 
-  const debounceInvokeAction = useDebounce(() => {
+  const debounceInvokeDisableNotifyUserTyping = useDebounce(() => {
     if (!currentUser) {
       return;
     }
-    const model: SenderConversationModel = {
+    const model: UserTypingNotificationDTO = {
       senderId: currentUser.id,
       conversationId: activeConversationId,
     };
-
     invokeAction(signalRDisableNotifyUserTyping(model));
+    isTyping.current = false;
   }, 1000);
-  // debounce to remove the user typing notification
-  useEffect(() => {
-    debounceInvokeAction();
-  }, [debounceInvokeAction, inputValue]);
 
-  const fetchSendMessage = async () => {
-    if (!currentUser) {
-      return;
-    }
-    sendMessageMutate({
-      senderId: currentUser.id,
-      conversationId: activeConversationId,
-      messageContent: inputValue,
-    });
-    setInputValue("");
-  };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!currentUser) {
       return;
     }
-    const model: SenderConversationModel = {
-      senderId: currentUser.id,
-      conversationId: activeConversationId,
-    };
 
     setInputValue(e.target.value);
-    invokeAction(signalRNotifyUserTyping(model));
+    if (!isTyping.current) {
+      const model: UserTypingNotificationDTO = {
+        senderId: currentUser.id,
+        conversationId: activeConversationId,
+      };
+      invokeAction(signalRNotifyUserTyping(model));
+      isTyping.current = true;
+    }
+
+    debounceInvokeDisableNotifyUserTyping();
   };
 
+  const fetchSendMessage = useCallback(async () => {
+    if (!currentUser) {
+      return;
+    }
+    sendMessageMutate({
+      conversationId: activeConversationId,
+      messageContent: inputValue,
+    });
+    setInputValue("");
+  }, [activeConversationId, currentUser, inputValue, sendMessageMutate]);
   const onKeyDown = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       fetchSendMessage();

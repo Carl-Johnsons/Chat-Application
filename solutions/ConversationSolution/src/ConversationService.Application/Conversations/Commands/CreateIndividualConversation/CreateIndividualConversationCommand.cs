@@ -1,3 +1,0 @@
-﻿namespace ConversationService.Application.Conversations.Commands.CreateIndividualConversation;
-
-public record CreateIndividualConversationCommand(ConversationWithMembersId ConversationWithMembersId) : IRequest;

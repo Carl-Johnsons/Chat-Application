@@ -1,44 +1,35 @@
-import { signalRSendMessage, useGlobalState, useSignalREvents } from "@/hooks";
 import { Message } from "@/models";
-import { MessageDTO } from "@/models/DTOs";
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface Props {
-  senderId: string;
   conversationId: string;
   messageContent: string;
 }
 
 const sendMessage = async ({
-  senderId,
   conversationId,
   messageContent,
 }: Props): Promise<Message | null> => {
-  //group message object
-  const messageObject: MessageDTO = {
-    senderId: senderId,
+  const url = "/api/conversation/message";
+  const respone = await protectedAxiosInstance.post(url, {
     conversationId,
     content: messageContent,
-  };
-
-  const url = "/api/Messages";
-  const respone = await axiosInstance.post(url, messageObject);
+  });
   return respone.data;
 };
 
 const useSendMessage = () => {
-  const [connection] = useGlobalState("connection");
-  const invokeAction = useSignalREvents({ connection: connection });
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Message | null, Error, Props, unknown>({
-    mutationFn: ({ senderId, conversationId, messageContent }: Props) =>
-      sendMessage({ senderId, conversationId, messageContent }),
+    mutationFn: ({ conversationId, messageContent }: Props) =>
+      sendMessage({ conversationId, messageContent }),
     onSuccess: (im, { conversationId }) => {
+      console.log("success sending message " + im);
+
       if (!im) {
         return;
       }
-      invokeAction(signalRSendMessage(im));
 
       queryClient.invalidateQueries({
         queryKey: ["messageList", "conversation", conversationId, "infinite"],

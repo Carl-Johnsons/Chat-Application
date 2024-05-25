@@ -1,17 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConversationService.Domain.Entities;
 
 [Table("ConversationUser")]
-[PrimaryKey(nameof(ConversationId), nameof(UserId))]
+[PrimaryKey(nameof(Id))]
 
 public class ConversationUser : BaseEntity
 {
-    [Column("Conversation_Id")]
-    public int ConversationId { get; set; }
-    [Column("User_Id")]
-    public int UserId { get; set; }
+    public Guid ConversationId { get; set; }
+    public Guid UserId { get; set; }
     public string Role { get; set; } = null!;
     public DateTime? ReadTime { get; set; } = null!;
 
