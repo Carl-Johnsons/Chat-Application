@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using ConversationService.Domain.DTOs;
+using Newtonsoft.Json;
 
-namespace ConversationService.Domain.DTOs;
+namespace ConversationService.Domain.Common;
 
 public class BasePaginatedResponse<Type, MetadataType>
     where Type : class
@@ -12,6 +13,4 @@ public class BasePaginatedResponse<Type, MetadataType>
     [JsonProperty("metadata")]
     public MetadataType? Metadata { get; set; } = null!;
 }
-
-public class PaginatedMessageListResponseDTO : BasePaginatedResponse<Message, MessageListMetadata>;
 

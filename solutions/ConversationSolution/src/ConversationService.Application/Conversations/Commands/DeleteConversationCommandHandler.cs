@@ -1,5 +1,4 @@
-﻿using ConversationService.Infrastructure.Persistence;
-
+﻿
 namespace ConversationService.Application.Conversations.Commands;
 public record DeleteConversationCommand : IRequest
 {
@@ -8,13 +7,13 @@ public record DeleteConversationCommand : IRequest
 
 public class DeleteConversationCommandHandler : IRequestHandler<DeleteConversationCommand>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
 
-    public DeleteConversationCommandHandler(IUnitOfWork unitOfWork, ApplicationDbContext context)
+    public DeleteConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
         _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(DeleteConversationCommand request, CancellationToken cancellationToken)

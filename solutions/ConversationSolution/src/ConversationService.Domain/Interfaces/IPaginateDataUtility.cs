@@ -1,6 +1,4 @@
-﻿using ConversationService.Domain.DTOs;
-
-namespace ConversationService.Domain.Interfaces;
+﻿namespace ConversationService.Domain.Interfaces;
 
 public class PaginateParam
 {

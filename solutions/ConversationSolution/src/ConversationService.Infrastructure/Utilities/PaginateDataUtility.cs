@@ -1,4 +1,4 @@
-﻿using ConversationService.Domain.DTOs;
+﻿using ConversationService.Domain.Common;
 
 namespace ConversationService.Infrastructure.Utilities;
 

@@ -1,5 +1,4 @@
-﻿using ConversationService.Infrastructure.Persistence;
-
+﻿
 namespace ConversationService.Application.Messages.Commands;
 
 public record SendClientMessageCommand : IRequest<Message>
@@ -11,20 +10,16 @@ public record SendClientMessageCommand : IRequest<Message>
 
 public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessageCommand, Message>
 {
-    private readonly ApplicationDbContext _context;
-
+    private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
-
     private readonly ISignalRService _signalRService;
 
-    public SendClientMessageCommandHandler(IUnitOfWork unitOfWork, ApplicationDbContext context, ISignalRService signalRService)
+    public SendClientMessageCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, ISignalRService signalRService)
     {
-
         _context = context;
         _unitOfWork = unitOfWork;
         _signalRService = signalRService;
     }
-
 
     public async Task<Message> Handle(SendClientMessageCommand request, CancellationToken cancellationToken)
     {

@@ -1,5 +1,4 @@
-﻿using ConversationService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Messages.Queries;
 public record GetMessagesByConversationIdQuery : IRequest<PaginatedMessageListResponseDTO>
@@ -10,10 +9,10 @@ public record GetMessagesByConversationIdQuery : IRequest<PaginatedMessageListRe
 
 public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessagesByConversationIdQuery, PaginatedMessageListResponseDTO>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IPaginateDataUtility<Message, MessageListMetadata> _paginateDataUtility;
 
-    public GetMessagesByConversationIdQueryHandler(ApplicationDbContext context, IPaginateDataUtility<Message, MessageListMetadata> paginateDataUtility)
+    public GetMessagesByConversationIdQueryHandler(IApplicationDbContext context, IPaginateDataUtility<Message, MessageListMetadata> paginateDataUtility)
     {
         _context = context;
         _paginateDataUtility = paginateDataUtility;

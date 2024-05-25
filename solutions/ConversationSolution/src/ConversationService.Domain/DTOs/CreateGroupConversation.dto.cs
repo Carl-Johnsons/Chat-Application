@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace ConversationService.Domain.DTOs;
-public class GroupConversationWithMembersId : GroupConversation
+public class CreateGroupConversationDTO : GroupConversation
 {
     [Required]
     [JsonProperty("membersId")]

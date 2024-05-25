@@ -1,4 +1,6 @@
-﻿namespace ConversationService.Application.Conversations.Queries;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace ConversationService.Application.Conversations.Queries;
 
 public record GetConversationQuery : IRequest<Conversation?>
 {
@@ -6,15 +8,17 @@ public record GetConversationQuery : IRequest<Conversation?>
 };
 public class GetConversationQueryHandlercs : IRequestHandler<GetConversationQuery, Conversation?>
 {
-    private readonly IConversationRepository _conversationRepository;
+    private readonly IApplicationDbContext _context;
 
-    public GetConversationQueryHandlercs(IConversationRepository conversationRepository)
+    public GetConversationQueryHandlercs(IApplicationDbContext context)
     {
-        _conversationRepository = conversationRepository;
+        _context = context;
     }
 
-    public Task<Conversation?> Handle(GetConversationQuery request, CancellationToken cancellationToken)
+    public async Task<Conversation?> Handle(GetConversationQuery request, CancellationToken cancellationToken)
     {
-        return _conversationRepository.GetByIdAsync(request.ConversationId);
+        return await _context.Conversations
+                            .Where(c => c.Id == request.ConversationId)
+                            .SingleOrDefaultAsync(cancellationToken);
     }
 }

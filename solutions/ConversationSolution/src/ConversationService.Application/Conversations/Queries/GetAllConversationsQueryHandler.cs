@@ -1,18 +1,20 @@
-﻿namespace ConversationService.Application.Conversations.Queries;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace ConversationService.Application.Conversations.Queries;
 
 public record GetAllConversationsQuery : IRequest<List<Conversation>>;
 
 public class GetAllConversationsQueryHandler : IRequestHandler<GetAllConversationsQuery, List<Conversation>>
 {
-    private readonly IConversationRepository _conversationRepository;
+    private readonly IApplicationDbContext _context;
 
-    public GetAllConversationsQueryHandler(IConversationRepository conversationRepository)
+    public GetAllConversationsQueryHandler(IApplicationDbContext context)
     {
-        _conversationRepository = conversationRepository;
+        _context = context;
     }
 
-    public Task<List<Conversation>> Handle(GetAllConversationsQuery request, CancellationToken cancellationToken)
+    public async Task<List<Conversation>> Handle(GetAllConversationsQuery request, CancellationToken cancellationToken)
     {
-        return _conversationRepository.GetAsync();
+        return await _context.Conversations.ToListAsync(cancellationToken: cancellationToken);
     }
 }

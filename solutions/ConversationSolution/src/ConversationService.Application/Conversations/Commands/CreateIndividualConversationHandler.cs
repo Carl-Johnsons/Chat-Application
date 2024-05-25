@@ -1,5 +1,4 @@
-﻿using ConversationService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Conversations.Commands;
 
@@ -12,11 +11,11 @@ public record CreateIndividualConversationCommand : IRequest
 
 public class CreateIndividualConversationHandler : IRequestHandler<CreateIndividualConversationCommand>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISignalRService _signalRService;
 
-    public CreateIndividualConversationHandler(ApplicationDbContext context, IUnitOfWork unitOfWork, ISignalRService signalRService)
+    public CreateIndividualConversationHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, ISignalRService signalRService)
     {
         _context = context;
         _unitOfWork = unitOfWork;

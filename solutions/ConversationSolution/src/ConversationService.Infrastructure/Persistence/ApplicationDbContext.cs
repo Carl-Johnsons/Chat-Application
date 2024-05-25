@@ -1,6 +1,6 @@
 ﻿namespace ConversationService.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext()
     {
@@ -9,10 +9,14 @@ public class ApplicationDbContext : DbContext
     : base(options)
     {
     }
+
+    public DbContext Instance => this;
     public virtual DbSet<Conversation> Conversations { get; set; }
     public virtual DbSet<GroupConversation> GroupConversation { get; set; }
     public virtual DbSet<ConversationUser> ConversationUsers { get; set; }
     public virtual DbSet<Message> Messages { get; set; }
+
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

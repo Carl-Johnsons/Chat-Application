@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ConversationService.Domain.Entities;
+namespace ConversationService.Domain.Common;
 
 public class BaseAuditableEntity : BaseEntity
 {

@@ -1,5 +1,4 @@
-﻿using ConversationService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Conversations.Queries;
 
@@ -10,9 +9,9 @@ public record GetConversationListByUserIdQuery : IRequest<List<Conversation>>
 
 public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConversationListByUserIdQuery, List<Conversation>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public GetConversationListByUserIdQueryHandler(ApplicationDbContext context)
+    public GetConversationListByUserIdQueryHandler(IApplicationDbContext context)
     {
         _context = context;
     }

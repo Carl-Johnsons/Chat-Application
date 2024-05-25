@@ -1,50 +1,55 @@
-﻿namespace ConversationService.Application.Conversations.Commands;
-public record CreateGroupConversationCommand(GroupConversationWithMembersId ConversationWithMembersId) : IRequest;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ConversationService.Application.Conversations.Commands;
+public record CreateGroupConversationCommand : IRequest
+{
+    [Required]
+    public CreateGroupConversationDTO CreateGroupConversationDTO { get; init; } = null!;
+};
 
 public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroupConversationCommand>
 {
-    private readonly IConversationRepository _conversationRepository;
-    private readonly IConversationUsersRepository _conversationUserRepository;
+    private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateGroupConversationCommandHandler(IConversationRepository conversationRepository, IConversationUsersRepository conversationUserRepository, IUnitOfWork unitOfWork)
+    public CreateGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
     {
-        _conversationRepository = conversationRepository;
-        _conversationUserRepository = conversationUserRepository;
+        _context = context;
         _unitOfWork = unitOfWork;
     }
 
     async Task IRequestHandler<CreateGroupConversationCommand>.Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
     {
-        var conversationWithMembersId = request.ConversationWithMembersId;
+        var conversationWithMembersId = request.CreateGroupConversationDTO;
 
-        _conversationRepository.Add(conversationWithMembersId);
+        _context.Conversations.Add(conversationWithMembersId);
+
         var leaderId = conversationWithMembersId.LeaderId;
         var membersId = conversationWithMembersId.MembersId;
-        if (leaderId != null)
+        if (leaderId == null || membersId == null)
         {
-            _conversationUserRepository.Add(new ConversationUser()
+            return;
+        }
+
+        _context.ConversationUsers.Add(new ConversationUser()
+        {
+            ConversationId = conversationWithMembersId.Id, //this prop will be filled after created by ef-core
+            UserId = (Guid)leaderId,
+            Role = "Leader",
+        });
+
+        foreach (var memberId in membersId)
+        {
+            if (memberId == leaderId)
+            {
+                continue;
+            }
+            _context.ConversationUsers.Add(new ConversationUser()
             {
                 ConversationId = conversationWithMembersId.Id, //this prop will be filled after created by ef-core
-                UserId = (Guid)leaderId,
-                Role = "Leader",
+                UserId = memberId,
+                Role = "Member",
             });
-        }
-        if (membersId != null)
-        {
-            foreach (var memberId in membersId)
-            {
-                if (memberId == leaderId)
-                {
-                    continue;
-                }
-                _conversationUserRepository.Add(new ConversationUser()
-                {
-                    ConversationId = conversationWithMembersId.Id, //this prop will be filled after created by ef-core
-                    UserId = memberId,
-                    Role = "Member",
-                });
-            }
         }
         await _unitOfWork.SaveChangeAsync(cancellationToken);
     }
