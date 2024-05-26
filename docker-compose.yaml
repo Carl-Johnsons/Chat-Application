@@ -1,15 +1,15 @@
 version: '3.8'
 
 services:
-  chatdb:
+  sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: chat-db
+    container_name: sqlserver
     volumes:
-      - ./chat-sql-data:/var/opt/mssql/data # bind mount
+      - ./data/db:/var/opt/mssql/data # bind mount
     user: root #mssql
     ports:
       # Microsoft SQL Server uses the default port 1433 for all database connections
-      - '${DB__PORT}:1433'
+      - '${DB_PORT}:1433'
     networks:
       - back-end
     environment:
@@ -27,64 +27,143 @@ services:
       start_period: 10s
       timeout: 3s
 
-  chatdb.configurator:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    volumes:
-      - ./data:/docker-entrypoint-initdb.d
+  sql-server.configurator:
+    build:
+      context: ./data
+      dockerfile: Dockerfile
     depends_on:
-      chatdb:
+      sql-server:
         condition: service_healthy
     environment:
       ACCEPT_EULA: ${ACCEPT_EULA}
       SA_PASSWORD: ${SA_PASSWORD}
-    # command: >
-    #   bash -c '/opt/mssql-tools/bin/sqlcmd -S chatdb -U sa -P ${SA_PASSWORD} -i docker-entrypoint-initdb.d/backup.sql;
-    #   echo "All done!";'
+      IdentityDB: ${IdentityDB}
+      MessageDB: ${MessageDB}
+      FileDB: ${FileDB}
     networks:
       - back-end
 
-  chatapi:
-    build:
-      context: .
-      dockerfile: ./ChatAPI/Dockerfile
-    container_name: chat-api
+  rabbitmq:
+    # login guest:guest
+    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    container_name: service-bus
+    labels:
+      NAME: "rabbitmq"
     ports:
-      - '${API__PORT}:80'
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    #   Force to attach to network back-end to use hostname "rabbitmq"
+    # Otherwise, use hostname "localhost" didn't work
+    networks:
+      - back-end
+    environment:
+      RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: true
+    volumes:
+      - './data/mq:/var/lib/rabbitmq'
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: ./solutions/APIGatewaySolution
+      dockerfile: ./src/APIGateway/Dockerfile
+    container_name: apigateway
+    ports:
+      - '${API_GATEWAY_PORT}:80'
     networks:
       - back-end
     env_file:
-      - .env.development
-  # SignalR service to enable real-time communication
-  chathub:
+      - ./solutions/APIGatewaySolution/src/APIGateway/.env
+
+  identity-api:
     build:
-      context: .
-      dockerfile: ./ChatService/Dockerfile.prod
+      context: solutions
+      dockerfile: ./IdentitySolution/DuendeIdentityServer/Dockerfile
+    container_name: identity-service
+    ports:
+      - '${IDENTITY_SERVICE_PORT}:80'
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      websocket:
+        condition: service_started
+    networks:
+      - back-end
+    env_file:
+      - ./solutions/IdentitySolution/DuendeIdentityServer/.env
+
+  upload-api:
+    build:
+      context: solutions
+      dockerfile: ./UploadFileSolution/src/UploadFileService.API/Dockerfile
+    container_name: upload-service
+    ports:
+      - '${UPLOAD_SERVICE_PORT}:80'
+    networks:
+      - back-end
+    env_file:
+      - ./solutions/UploadFileSolution/src/UploadFileService.API/.env
+
+  websocket:
+    build:
+      context: solutions
+      dockerfile: ./ChatHubSolution/src/ChatHub/Dockerfile
     container_name: chat-hub
     ports:
-      - '${HUB__PORT}:80'
+      - '${SIGNALR_PORT}:80'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - back-end
+      - front-end
+    env_file:
+      - ./solutions/ChatHubSolution/src/ChatHub/.env
+
+  conversation-api:
+    build:
+      context: solutions
+      dockerfile: ./ConversationSolution/src/ConversationService.API/Dockerfile
+    container_name: conversation-service
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      websocket:
+        condition: service_started
+    ports:
+      - '${CONVERSATION_SERVICE}:80'
     networks:
       - back-end
     env_file:
-      - .env
+      - ./solutions/ConversationSolution/src/ConversationService.API/.env
 
   reactapp:
     build:
-      context: ./reactapp
+      context: ./solutions/Client/reactapp
       dockerfile: Dockerfile.dev
     container_name: react-app
     ports:
-      - '${CLIENT__PORT}:3000'
+      - '${CLIENT_PORT}:3000'
     networks:
       - front-end
     env_file:
-      - .env.development
+      - .env
     develop:
       watch:
-        - path: ./reactapp/package.json
+        - path: ./solutions/Client/reactapp/package.json
           action: rebuild
-        - path: ./reactapp
+        - path: ./solutions/Client/reactapp
           target: /app
           action: sync
+
 networks:
   back-end:
   front-end:

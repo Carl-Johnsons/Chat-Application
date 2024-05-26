@@ -1,56 +1,31 @@
 # Chat-Application
 
-This project is for education purpose and takes inpiration from Zalo
+This project is for education purpose and takes inspiration from Zalo
 
-## 1. Set up the chatAPI
-- Open cmd with OpenSSL or git bash with OpenSSL
+## Requirements:
+- Docker (**latest**)
+- Strong connection (to download library when building services)
+- Ram at least 16GB (8GB still okay but your machine won't make it)
+- Core: 4
 
-- Run this line will create a key.pem and certificate.pem for security usage at the root of the chatAPI project
-```shell
-openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
-```
-### Install OpenSSL: https://stackoverflow.com/questions/50625283/how-to-install-openssl-in-windows-10
-
-## 2. Config the repo
-- Create a .env file and put it at the root of the repo
-- Fill out the information like this:
-
-```
-# server
-# =========== Secret ===========
-# Db
-SA_PASSWORD="<your db password>"
-# Imgur
-Imgur__ClientID="<your imgur client id>"
-Imgur__ClientSecret="<your imgur client secret>"
-# =========== Secret ===========
-
-# server
-HOST_NAME="localhost"
-# Ports
-API__PORT="7191"
-HUB__PORT="7235"
-CLIENT__PORT="3001"
-DB__PORT="2001"
-# .NET env variable
-ASPNETCORE_ENVIRONMENT="Development"
-Logging__LogLevel__Microsoft.AspNetCore="Warning"
-Logging__LogLevel__Microsoft.AspNetCore.Hosting.Diagnostics="Trace"
-# Db
-ACCEPT_EULA="Y"
-ConnectionString="Server=chat-db;Database=chatApplication;User Id=sa;Password='${SA_PASSWORD}';TrustServerCertificate=true"
-# Client
-NEXT_PUBLIC_BASE_API_URL="http://${HOST_NAME}:${API__PORT}"
-NEXT_PUBLIC_SIGNALR_URL="http://${HOST_NAME}:${HUB__PORT}/chatHub"
-NEXT_PUBLIC_PORT="${CLIENT__PORT}"
-# JWT
-Jwt__Issuer="http://${HOST_NAME}:${CLIENT__PORT}"
-Jwt__Audience="http://${HOST_NAME}:${CLIENT__PORT}"
-```
-
-## 3. Run services with Docker
+## Install Docker
 - Run docker engine or "Docker desktop (Window)" in your local machine
 - Download docker engine: https://docs.docker.com/engine/install/ 
-- Run StartAllService.bat at the root of the repo to start ChatService, ChatAPI, ChatDB and react-app in docker
-- Access to http://localhost:3001 to see the result
-### RAM Usage: Need at least 3.5Gb for docker
+
+
+## Set up project
+- Run "**setup-env.bat**" to init the environment for each service
+- Run docker command at the root of the project to init all services.
+    ``` shell
+    docker compose up
+    ```
+- Setup **rabbitmq** (Only do it once):
+    + Navigate to (*http://localhost:15672*) login with account **guest**/**guest**.
+    + Go to tab "**Admin**" add new user with username "**admin**" and password "**pass**", set tag "**Admin**".
+    + Click new user "**admin**" in user list and click "**Set permission**" button to allow other service to run the message queue
+- Run "**apply-all-migrations.bat**" (To apply all migrations, obviously)
+- Kill all services, then run docker command again in order to let other services to connect to **rabbitmq**
+    ``` shell
+    docker compose up
+    ```
+- Navigate to (*http://localhost:3001*) to see the UI

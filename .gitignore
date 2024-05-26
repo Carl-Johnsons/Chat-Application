@@ -408,4 +408,14 @@ FodyWeavers.xsd
 **/*.env.*
 # Database bind mount
 chat-sql-data
-data
+data/db
+# rabbitmq
+data/mq
+# appsettings
+**appsettings.*
+# IdentityServer4
+**/tempkey.jwk
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
