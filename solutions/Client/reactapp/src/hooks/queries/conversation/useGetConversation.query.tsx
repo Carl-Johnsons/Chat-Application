@@ -16,8 +16,12 @@ const getConversation = async ({
   if (!conversationId) {
     return null;
   }
-  const url = `/api/conversation/${conversationId}`;
-  const response = await protectedAxiosInstance.get(url);
+  const url = `/api/conversation`;
+  const response = await protectedAxiosInstance.get(url, {
+    params: {
+      conversationId: conversationId,
+    },
+  });
   return response.data;
 };
 

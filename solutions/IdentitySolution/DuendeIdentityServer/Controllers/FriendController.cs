@@ -36,8 +36,11 @@ public class FriendController : ControllerBase
                                 .Where(f => f.UserId == userId || f.FriendId == userId)
                                 .Select(f => f.UserId == userId ? f.FriendId : f.UserId)
                                 .ToList();
-
-        return Ok(friendIdList);
+        var users = _context.Users
+                               .Where(u => friendIdList.Contains(u.Id))
+                               .ToList();
+        var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
+        return Ok(mappedUsers);
     }
 
     [HttpDelete]

@@ -63,15 +63,13 @@ const ContactContainer = ({ className }: Props) => {
       <div className={cx("contact-list-container")}>
         {friendList &&
           activeContactType === MenuContactIndex.FRIEND_LIST &&
-          friendList.map((friendId) => {
+          friendList.map((f) => {
             return (
               <ContactRow
-                key={friendId}
-                entityId={friendId}
-                onClickBtnDetail={() =>
-                  handleClickBtnDetail(friendId, "Friend")
-                }
-                onClickBtnDelFriend={() => handleClickDelFriend(friendId)}
+                key={f.id}
+                entityId={f.id}
+                onClickBtnDetail={() => handleClickBtnDetail(f.id, "Friend")}
+                onClickBtnDelFriend={() => handleClickDelFriend(f.id)}
               />
             );
           })}

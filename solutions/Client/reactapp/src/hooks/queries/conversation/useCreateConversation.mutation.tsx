@@ -28,7 +28,7 @@ const createGroupConversation = async ({
   if (!conversationWithMembersId) {
     return null;
   }
-  const url = `/api/Conversation/Group`;
+  const url = `/api/conversation/group`;
   const response = await axiosInstance.post(url, conversationWithMembersId);
   return response.data;
 };
