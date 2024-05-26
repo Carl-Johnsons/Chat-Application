@@ -64,12 +64,12 @@ public partial class ConversationController : BaseApiController
         return Ok(cuList);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete()]
+    public async Task<IActionResult> Delete([FromBody]DeleteConversationDTO deleteConversationDTO)
     {
         var command = new DeleteConversationCommand
         {
-            ConversationId = id
+            ConversationId = deleteConversationDTO.Id
         };
         await _sender.Send(command);
         return NoContent();

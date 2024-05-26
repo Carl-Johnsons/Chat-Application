@@ -15,6 +15,11 @@ public class GetAllConversationsQueryHandler : IRequestHandler<GetAllConversatio
 
     public async Task<List<Conversation>> Handle(GetAllConversationsQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Conversations.ToListAsync(cancellationToken: cancellationToken);
+        // Fetch data from the database
+        var conversations = await _context.Conversations
+            .Include(c => c.Users) // Assuming there's a navigation property for Users
+            .ToListAsync(cancellationToken);
+
+        return conversations;
     }
 }

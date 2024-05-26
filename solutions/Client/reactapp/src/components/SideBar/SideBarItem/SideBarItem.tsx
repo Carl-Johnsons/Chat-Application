@@ -20,6 +20,16 @@ type ConversationVariant = {
   isNewMessage?: boolean;
   onClick?: (conversationId: string) => void;
 };
+
+type GroupConversationVariant = {
+  type: "groupConversation";
+  conversation: GroupConversation;
+  lastMessage?: Message | null;
+  isActive?: boolean;
+  isNewMessage?: boolean;
+  onClick?: (conversationId: string) => void;
+};
+
 type SearchItemVariant = {
   type: "searchItem";
   userId: string;
@@ -30,14 +40,17 @@ type SearchItemVariant = {
   onClick?: (userId: string) => void;
 };
 
-type Variants = ConversationVariant | SearchItemVariant;
+type Variants =
+  | ConversationVariant
+  | GroupConversationVariant
+  | SearchItemVariant;
 
 const SideBarItem = (variant: Variants) => {
   const [descriptionContent, setDescriptionContent] = useState("");
   const [timeContent, setTimeContent] = useState("");
 
   let userId: string = "";
-  let conversation: Conversation | null | undefined;
+  let conversation: Conversation | GroupConversation | null | undefined;
   let image: string = images.defaultAvatarImg.src;
   let lastMessage: Message | null | undefined;
   let searchName: string = "";
@@ -47,9 +60,10 @@ const SideBarItem = (variant: Variants) => {
   let onClick: ((id: string) => void) | undefined;
 
   const isConversation = variant.type === "conversation";
+  const isGroupConversation = variant.type === "groupConversation";
   const isSearchItem = variant.type === "searchItem";
 
-  if (isConversation) {
+  if (isConversation || isGroupConversation) {
     ({ conversation, isActive, lastMessage, isNewMessage, onClick } = variant);
   } else if (isSearchItem) {
     ({ userId, image, searchName, phoneNumber, isActive, onClick } = variant);
@@ -59,7 +73,6 @@ const SideBarItem = (variant: Variants) => {
   const lastMessageSenderQuery = useGetUser(lastMessage?.senderId ?? "", {
     enabled: !!lastMessage?.senderId,
   });
-  const isGroupConversation = conversation?.type === "GROUP";
 
   // Description
   useEffect(() => {
@@ -107,14 +120,15 @@ const SideBarItem = (variant: Variants) => {
   const otherUserName = otherUserData?.name ?? "";
   const entityAvatar =
     (isConversation
-      ? isGroupConversation
-        ? (conversation as GroupConversation)?.imageURL
-        : otherUserAvatar
+      ? otherUserAvatar
+      : isGroupConversation
+      ? (conversation as GroupConversation)?.imageURL
       : image) ?? images.userIcon.src;
+
   const entityName = isConversation
-    ? isGroupConversation
-      ? (conversation as GroupConversation).name
-      : otherUserName
+    ? otherUserName
+    : isGroupConversation
+    ? (conversation as GroupConversation).name
     : searchName;
 
   return (

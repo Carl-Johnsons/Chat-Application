@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Contract.DTOs;
 
-public class ConversationResponseDTO : BaseAuditableEntity
+public class ConversationEventResponseDTO : BaseAuditableEntity
 {
     [Required]
     [JsonProperty("type")]

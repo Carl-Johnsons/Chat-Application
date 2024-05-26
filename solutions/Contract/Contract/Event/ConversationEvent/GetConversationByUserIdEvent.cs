@@ -9,7 +9,7 @@ public record GetConversationByUserIdEvent
     public Guid UserId { get; set; }
 }
 
-public class ConversationResponse
+public class ConversationEventResponse
 {
-    public List<ConversationResponseDTO> Conversations { get; set; } = null!;
+    public List<ConversationEventResponseDTO> Conversations { get; set; } = null!;
 }

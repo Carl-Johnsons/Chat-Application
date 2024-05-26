@@ -28,7 +28,7 @@ interface Props {
 const ContactContainer = ({ className }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
   const { data: friendList } = useGetFriendList();
-  const { data: conversationList } = useGetConversationList();
+  const { data: conversationResponse } = useGetConversationList();
   const { data: friendRequestList } = useGetFriendRequestList();
 
   // hooks
@@ -75,18 +75,16 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {conversationList &&
+        {conversationResponse?.groupConversations &&
           activeContactType === MenuContactIndex.GROUP_LIST &&
-          conversationList.map((c) => {
-            if (c?.type === "GROUP") {
-              return (
-                <ContactRow
-                  key={c.id}
-                  entityId={c.id}
-                  onClickBtnDetail={() => handleClickBtnDetail(c.id, "Group")}
-                />
-              );
-            }
+          conversationResponse?.groupConversations.map((gc) => {
+            return (
+              <ContactRow
+                key={gc.id}
+                entityId={gc.id}
+                onClickBtnDetail={() => handleClickBtnDetail(gc.id, "Group")}
+              />
+            );
           })}
         {friendRequestList &&
           activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&

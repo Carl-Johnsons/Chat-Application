@@ -1,19 +1,20 @@
 import { protectedAxiosInstance } from "@/utils";
 import { ConversationUser } from "models/ConversationUser";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { Conversation } from "@/models";
+import { ConversationResponseDTO } from "@/models/DTOs";
 
 interface FetchPropsByConversationId {
   conversationId: string | undefined;
 }
 
-const getConversationList = async (): Promise<Conversation[] | null> => {
-  const url = `/api/conversation/user`;
-  const response = await protectedAxiosInstance.get(url);
-  console.log(response.data);
+const getConversationList =
+  async (): Promise<ConversationResponseDTO | null> => {
+    const url = `/api/conversation/user`;
+    const response = await protectedAxiosInstance.get(url);
+    console.log(response.data);
 
-  return response.data;
-};
+    return response.data;
+  };
 const getMemberListByConversationId = async ({
   conversationId,
 }: FetchPropsByConversationId): Promise<ConversationUser[] | null> => {
@@ -29,9 +30,9 @@ const getMemberListByConversationId = async ({
 const useGetConversationList = (
   queryOptions: Omit<
     UseQueryOptions<
-      Conversation[] | null,
+      ConversationResponseDTO | null,
       Error,
-      Conversation[] | null,
+      ConversationResponseDTO | null,
       unknown[]
     >,
     "queryKey" | "queryFn" | "enabled" | "initialData"

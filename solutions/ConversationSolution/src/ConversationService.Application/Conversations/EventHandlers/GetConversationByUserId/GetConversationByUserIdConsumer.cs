@@ -22,10 +22,10 @@ public sealed class GetConversationByUserIdConsumer : IConsumer<GetConversationB
             UserId = context.Message.UserId,
         });
 
-        List<ConversationResponseDTO> responses = [];
-        foreach (var conversation in conversations)
+        List<ConversationEventResponseDTO> responses = [];
+        foreach (var conversation in conversations.Conversations)
         {
-            responses.Add(new ConversationResponseDTO
+            responses.Add(new ConversationEventResponseDTO
             {
                 Id = conversation.Id,
                 Type = conversation.Type,
@@ -34,7 +34,19 @@ public sealed class GetConversationByUserIdConsumer : IConsumer<GetConversationB
             });
         }
 
-        await context.RespondAsync(new ConversationResponse
+        foreach (var conversation in conversations.GroupConversations)
+        {
+            responses.Add(new ConversationEventResponseDTO
+            {
+                Id = conversation.Id,
+                Type = conversation.Type,
+                CreatedAt = conversation.CreatedAt,
+                UpdatedAt = conversation.UpdatedAt,
+            });
+        }
+
+
+        await context.RespondAsync(new ConversationEventResponse
         {
             Conversations = responses
         });

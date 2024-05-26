@@ -167,7 +167,7 @@ public class ChatHubServer : Hub<IChatClient>
 
         Console.WriteLine("=================Call conversation service by sending message to queue===============");
         var requestClient = _bus.CreateRequestClient<GetConversationByUserIdEvent>();
-        var conversationsResponse = await requestClient.GetResponse<ConversationResponse>(new GetConversationByUserIdEvent
+        var conversationsResponse = await requestClient.GetResponse<ConversationEventResponse>(new GetConversationByUserIdEvent
         {
             UserId = userId
         });
