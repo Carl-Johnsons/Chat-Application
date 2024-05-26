@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net;
 
 namespace DuendeIdentityServer.Pages.Account.Login
 {
@@ -51,6 +52,10 @@ namespace DuendeIdentityServer.Pages.Account.Login
         public async Task<IActionResult> OnGet(string? returnUrl)
         {
             await BuildModelAsync(returnUrl);
+
+            var encodedRedirectUri = WebUtility.UrlEncode(returnUrl);
+
+            ViewData["ReturnUrl"] = encodedRedirectUri;
 
             if (View.IsExternalLoginOnly)
             {
