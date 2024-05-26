@@ -71,6 +71,7 @@ services:
     build:
       context: ./solutions/APIGatewaySolution
       dockerfile: ./src/APIGateway/Dockerfile
+    container_name: apigateway
     ports:
       - '${API_GATEWAY_PORT}:80'
     networks:

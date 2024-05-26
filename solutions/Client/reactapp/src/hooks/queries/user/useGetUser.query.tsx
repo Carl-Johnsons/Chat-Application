@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/utils";
+import { protectedAxiosInstance } from "@/utils";
 import { DefaultUser, User } from "@/models";
 import {
   QueryKey,
@@ -15,7 +15,7 @@ import {
 const getUser = async (userId: string): Promise<User | null> => {
   const url = "http://localhost:5001/api/users";
 
-  const response = await axiosInstance.get(url, {
+  const response = await protectedAxiosInstance.get(url, {
     params: {
       id: userId,
     },
