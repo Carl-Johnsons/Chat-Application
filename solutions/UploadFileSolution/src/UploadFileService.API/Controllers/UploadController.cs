@@ -1,190 +1,97 @@
-using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
-using Microsoft.AspNetCore.Hosting;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.JSInterop.Infrastructure;
-using System.Net.Http.Headers;
+using UploadFileService.Application.CoudinaryFiles.Commands;
+using UploadFileService.Application.CoudinaryFiles.Queries;
+using UploadFileService.Domain.DTOs;
 
 namespace UploadFileService.API.Controllers;
+
 
 [Route("api/upload")]
 [ApiController]
 public class UploadController : ControllerBase
 {
-    private readonly Cloudinary cloudinary;
+    private readonly ISender _sender;
 
-    public UploadController()
+    public UploadController(ISender sender)
     {
-        DotNetEnv.Env.Load();
-        cloudinary = new Cloudinary(Environment.GetEnvironmentVariable("Cloudinary_URL"));
-        cloudinary.Api.Secure = true;
+        _sender = sender;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _sender.Send(new GetAllCloudinaryFilesQuery());
+        return Ok(result);
+    }
 
-
+    [HttpGet("id")]
+    public async Task<IActionResult> Get([FromQuery] GetCloudinaryFileByIdDTO getCloudinaryFileByIdDTO)
+    {
+        if(getCloudinaryFileByIdDTO.Id != null)
+        {
+            var result = await _sender.Send(new GetCloudinaryFileByIdQuery 
+            { 
+                Id  = getCloudinaryFileByIdDTO.Id
+            });
+            return Ok(result);
+        }
+        return BadRequest("Get file fail");
+    }
 
     [HttpPost("image")]
-    public async Task<IActionResult> UploadImage(IFormFile file)
+    public async Task<IActionResult> UploadImage([FromForm] UploadFileDTO uploadFileDTO)
     {
-        try
+        var cloudinaryFile = await _sender.Send(new CreateCloudinaryImageFileCommand
         {
-
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("File object is null");
-            }
-
-            string fileName = file.FileName;
-            fileName = fileName.Substring(0, fileName.LastIndexOf("."));
-            Stream fileStream = file.OpenReadStream();
-
-            var uploadParams = new ImageUploadParams()
-            {
-                File = new FileDescription(fileName, fileStream),
-                PublicId = Guid.NewGuid().ToString() + fileName,
-                Folder = Environment.GetEnvironmentVariable("Cloudinary_Folder"),
-            };
-            var uploadResult = cloudinary.Upload(uploadParams);
-            return Content(uploadResult.JsonObj.ToString(), "application/json");
-        }
-        catch (Exception ex)
+            FormFile = uploadFileDTO.File
+        });
+        if (cloudinaryFile == null)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            return BadRequest(cloudinaryFile);
         }
+        return Ok(cloudinaryFile);
     }
 
     [HttpPost("video")]
-    public async Task<IActionResult> UploadVideo(IFormFile file)
+    public async Task<IActionResult> UploadVideo([FromForm] UploadFileDTO uploadFileDTO)
     {
-        try
+        var cloudinaryFile = await _sender.Send(new CreateCloudinaryVideoFileCommand
         {
-
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("File object is null");
-            }
-
-            string fileName = file.FileName;
-            fileName = fileName.Substring(0, fileName.LastIndexOf("."));
-            Stream fileStream = file.OpenReadStream();
-
-            var uploadParams = new VideoUploadParams()
-            {
-                File = new FileDescription(fileName, fileStream),
-                PublicId = Guid.NewGuid().ToString() + fileName,
-                Folder = Environment.GetEnvironmentVariable("Cloudinary_Folder"),
-            };
-            var uploadResult = cloudinary.Upload(uploadParams);
-            return Content(uploadResult.JsonObj.ToString(), "application/json");
-        }
-        catch (Exception ex)
+            FormFile = uploadFileDTO.File
+        });
+        if (cloudinaryFile == null)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            return BadRequest(cloudinaryFile);
         }
+        return Ok(cloudinaryFile);
     }
 
     [HttpPost("raw")]
-    public async Task<IActionResult> UploadRaw(IFormFile file)
+    public async Task<IActionResult> UploadRaw([FromForm] UploadFileDTO uploadFileDTO)
     {
-        try
+        var cloudinaryFile = await _sender.Send(new CreateCloudinaryRawFileCommand
         {
-
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("File object is null");
-            }
-
-            string fileName = file.FileName;
-            Stream fileStream = file.OpenReadStream();
-
-            var uploadParams = new RawUploadParams()
-            {
-                File = new FileDescription(fileName, fileStream),
-                PublicId = Guid.NewGuid().ToString() + fileName,
-                Folder = Environment.GetEnvironmentVariable("Cloudinary_Folder"),
-            };
-            var uploadResult = cloudinary.Upload(uploadParams);
-            return Content(uploadResult.JsonObj.ToString(), "application/json");
-        }
-        catch (Exception ex)
+            FormFile = uploadFileDTO.File
+        });
+        if (cloudinaryFile == null)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            return BadRequest(cloudinaryFile);
         }
+        return Ok(cloudinaryFile);
     }
 
-    [HttpDelete("image")]
-    public async Task<IActionResult> DeleteImage([FromForm] string fileId)
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromQuery] DeleteCloudinaryFileByIdDTO deleteCloudinaryFileById)
     {
-        try
-        {
-
-            if (fileId == null || fileId == "")
+        if(deleteCloudinaryFileById.Id != null) {
+        
+            var deleteMessage = await _sender.Send(new DeleteCloudinaryFileCommand
             {
-                return BadRequest("FileId is null");
-            }
-
-
-            var deleteParams = new DeletionParams(fileId)
-            {
-                ResourceType = ResourceType.Image
-            };
-            var deleteResult = cloudinary.Destroy(deleteParams);
-            return Content(deleteResult.JsonObj.ToString(), "application/json");
+                Id = deleteCloudinaryFileById.Id
+            });
+            return Ok(deleteMessage);
         }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        return BadRequest("Delete fail");
     }
-
-    [HttpDelete("video")]
-    public async Task<IActionResult> DeleteVideo([FromForm] string fileId)
-    {
-        try
-        {
-
-            if (fileId == null || fileId == "")
-            {
-                return BadRequest("FileId is null");
-            }
-
-
-            var deleteParams = new DeletionParams(fileId)
-            {
-                ResourceType = ResourceType.Video
-            };
-            var deleteResult = cloudinary.Destroy(deleteParams);
-            return Content(deleteResult.JsonObj.ToString(), "application/json");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
-    }
-
-    [HttpDelete("raw")]
-    public async Task<IActionResult> DeleteRaw([FromForm] string fileId)
-    {
-        try
-        {
-
-            if (fileId == null || fileId == "")
-            {
-                return BadRequest("FileId is null");
-            }
-
-
-            var deleteParams = new DeletionParams(fileId)
-            {
-                ResourceType = ResourceType.Raw
-            };
-            var deleteResult = cloudinary.Destroy(deleteParams);
-            return Content(deleteResult.JsonObj.ToString(), "application/json");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
-    }
-
 }
