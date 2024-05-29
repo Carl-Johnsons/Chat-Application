@@ -1,4 +1,6 @@
-﻿namespace PostService.Infrastructure.Persistence;
+﻿using PostService.Domain.Entities;
+
+namespace PostService.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
@@ -12,7 +14,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbContext Instance => this;
 
-
+    public DbSet<Post> Posts { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<PostComment> PostComments { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<Interaction> Interactions { get; set; }
+    public DbSet<PostInteract> PostInteracts { get; set; }
+    public DbSet<PostTag> PostTags { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
