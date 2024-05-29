@@ -10,10 +10,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj", "UploadFileSolution/src/UploadFileService.API/"]
+COPY ["UploadFileSolution/src/UploadFileService.Application/UploadFileService.Application.csproj", "UploadFileSolution/src/UploadFileService.Application/"]
+COPY ["UploadFileSolution/src/UploadFileService.Domain/UploadFileService.Domain.csproj", "UploadFileSolution/src/UploadFileService.Domain/"]
+COPY ["UploadFileSolution/src/UploadFileService.Infrastructure/UploadFileService.Infrastructure.csproj", "UploadFileSolution/src/UploadFileService.Infrastructure/"]
 RUN dotnet restore "./UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj" --verbosity normal
-
 COPY ["UploadFileSolution/src/", "UploadFileSolution/src/"]
-
 WORKDIR "/src/UploadFileSolution/src/UploadFileService.API"
 RUN dotnet build "./UploadFileService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
