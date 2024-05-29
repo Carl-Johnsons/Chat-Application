@@ -7,11 +7,13 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using DuendeIdentityServer.Models;
+using DuendeIdentityServer.Pages.Account.Register;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net;
 
 namespace DuendeIdentityServer.Pages.Account.Login
 {
@@ -50,6 +52,10 @@ namespace DuendeIdentityServer.Pages.Account.Login
         public async Task<IActionResult> OnGet(string? returnUrl)
         {
             await BuildModelAsync(returnUrl);
+
+            var encodedRedirectUri = WebUtility.UrlEncode(returnUrl);
+
+            ViewData["ReturnUrl"] = encodedRedirectUri;
 
             if (View.IsExternalLoginOnly)
             {
@@ -139,7 +145,7 @@ namespace DuendeIdentityServer.Pages.Account.Login
                 const string error = "invalid credentials";
                 await _events.RaiseAsync(new UserLoginFailureEvent(Input.Username, error, clientId: context?.Client.ClientId));
                 Telemetry.Metrics.UserLoginFailure(context?.Client.ClientId, IdentityServerConstants.LocalIdentityProvider, error);
-                ModelState.AddModelError(string.Empty, LoginOptions.InvalidCredentialsErrorMessage);
+                ModelState.AddModelError(string.Empty, RegisterOptions.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error
@@ -208,8 +214,8 @@ namespace DuendeIdentityServer.Pages.Account.Login
 
             View = new ViewModel
             {
-                AllowRememberLogin = LoginOptions.AllowRememberLogin,
-                EnableLocalLogin = allowLocal && LoginOptions.AllowLocalLogin,
+                AllowRememberLogin = RegisterOptions.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && RegisterOptions.AllowLocalLogin,
                 ExternalProviders = providers.ToArray()
             };
         }

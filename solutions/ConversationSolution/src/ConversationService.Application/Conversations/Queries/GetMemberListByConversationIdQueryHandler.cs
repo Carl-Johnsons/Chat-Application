@@ -20,8 +20,7 @@ public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemb
     {
         var conversationId = request.ConversationId;
         var cuList = _context.ConversationUsers
-                             .Where(cu => cu.ConversationId == conversationId
-                                    && cu.UserId != request.UserId).ToListAsync();
+                             .Where(cu => cu.ConversationId == conversationId).ToListAsync();
 
         return cuList;
     }

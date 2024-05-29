@@ -29,8 +29,8 @@ builder.ConfigureServices(services =>
     services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>
         {
-            //var IdentityServerEndpoint = "http://identity-api";
-            var IdentityServerEndpoint = "https://localhost:5001";
+            var IdentityServerEndpoint = "http://identity-api";
+            //var IdentityServerEndpoint = "http://localhost:5001";
             options.Authority = IdentityServerEndpoint;
             options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new TokenValidationParameters
@@ -70,6 +70,11 @@ builder.ConfigureServices(services =>
 builder.Configure(app =>
 {
     app.UseCors("AllowAnyOriginPolicy");
+    
+    app.UseAuthentication();
+    
+    app.UseAuthorization();
+
     app.UseOcelot().Wait();
 })
 .Build()

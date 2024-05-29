@@ -14,7 +14,7 @@ import {
   useGetConversation,
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
-import { useGetUser } from "@/hooks/queries/user";
+import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
 import UserStatus from "../UserStatus";
 
 const cx = classNames.bind(style);
@@ -24,6 +24,7 @@ const ChatViewHeader = () => {
   const [conversationType] = useGlobalState("conversationType");
   const [activeConversationId] = useGlobalState("activeConversationId");
   // hook
+  const { data: currentUserData } = useGetCurrentUser();
   const { handleShowModal } = useModal();
   const isGroup = conversationType === "GROUP";
 
@@ -35,8 +36,12 @@ const ChatViewHeader = () => {
   };
   const { data: conversationUsersData } =
     useGetMemberListByConversationId(activeConversationId);
-    
-  const otherUserId = conversationUsersData && conversationUsersData[0].userId;
+
+  const otherUserId =
+    conversationUsersData &&
+    (conversationUsersData[0].userId == currentUserData?.id
+      ? conversationUsersData[1].userId
+      : conversationUsersData[0].userId);
 
   const { data: conversationData } = useGetConversation(
     { conversationId: activeConversationId },
@@ -49,9 +54,12 @@ const ChatViewHeader = () => {
   });
   const avatar =
     (isGroup
-      ? (conversationData as GroupConversation).imageURL
+      ? (conversationData as GroupConversation)?.imageURL
       : otherUserData?.avatarUrl) ?? images.userIcon.src;
-  const name = otherUserData?.name ?? "";
+  const name =
+    (isGroup
+      ? (conversationData as GroupConversation)?.name
+      : otherUserData?.name) ?? "";
 
   return (
     <>

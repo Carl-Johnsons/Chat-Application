@@ -10,7 +10,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj", "UploadFileSolution/src/UploadFileService.API/"]
-RUN dotnet restore "./UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj"
+RUN dotnet restore "./UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj" --verbosity normal
 
 COPY ["UploadFileSolution/src/", "UploadFileSolution/src/"]
 

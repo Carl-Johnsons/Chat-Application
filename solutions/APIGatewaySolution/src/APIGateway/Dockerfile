@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/APIGateway/APIGateway.csproj", "src/APIGateway/"]
-RUN dotnet restore "./src/APIGateway/APIGateway.csproj"
+RUN dotnet restore "./src/APIGateway/APIGateway.csproj" --verbosity normal
 COPY . .
 WORKDIR "/src/src/APIGateway"
 RUN dotnet build "./APIGateway.csproj" -c $BUILD_CONFIGURATION -o /app/build

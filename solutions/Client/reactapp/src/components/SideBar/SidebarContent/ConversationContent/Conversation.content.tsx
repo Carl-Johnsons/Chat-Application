@@ -21,8 +21,9 @@ const ConversationContent = () => {
   const messageListQuery = useGetInfiniteMessageList(activeConversationId, {
     enabled: enableMessageListQuery,
   });
-  const { data: conversationListData } = useGetConversationList();
-  const conversationsId = conversationListData?.flatMap((c) => c.id) ?? [];
+  const { data: conversationResponse } = useGetConversationList();
+  const conversationsId =
+    conversationResponse?.conversations?.flatMap((c) => c.id) ?? [];
 
   const lastMessageQueries = useGetLastMessages(conversationsId, {
     enabled: conversationsId.length > 0,
@@ -34,6 +35,9 @@ const ConversationContent = () => {
       setActiveConversationId(conversationId);
       setConversationType(type);
       setEnableMessageListQuery(true);
+      
+      console.log({ conversationId, type });
+
       messageListQuery.refetch();
     },
     [
@@ -52,28 +56,54 @@ const ConversationContent = () => {
   // }, [friendList, handleClickConversation, activeConversationId]);
   return (
     <>
-      {conversationListData &&
-        (conversationListData ?? []).map((conversation, index) => {
-          if (!conversation) {
-            return;
-          }
-          const lastMessage: Message = lastMessageQueries[index].data ?? {
-            content: "This conversation is new! Say hi",
-          };
+      {conversationResponse?.conversations &&
+        (conversationResponse.conversations ?? []).map(
+          (conversation, index) => {
+            if (!conversation) {
+              return;
+            }
+            const lastMessage: Message = lastMessageQueries[index].data ?? {
+              content: "This conversation is new! Say hi",
+            };
 
-          return (
-            <SideBarItem
-              key={conversation.id}
-              type="conversation"
-              conversation={conversation}
-              lastMessage={lastMessage}
-              onClick={(conversationId) =>
-                handleClickConversation(conversationId, conversation.type)
-              }
-              isActive={activeConversationId === conversation.id}
-            />
-          );
-        })}
+            return (
+              <SideBarItem
+                key={conversation.id}
+                type="conversation"
+                conversation={conversation}
+                lastMessage={lastMessage}
+                onClick={(conversationId) =>
+                  handleClickConversation(conversationId, conversation.type)
+                }
+                isActive={activeConversationId === conversation.id}
+              />
+            );
+          }
+        )}
+      {conversationResponse?.groupConversations &&
+        (conversationResponse.groupConversations ?? []).map(
+          (conversation, index) => {
+            if (!conversation) {
+              return;
+            }
+            const lastMessage: Message = lastMessageQueries[index].data ?? {
+              content: "This conversation is new! Say hi",
+            };
+
+            return (
+              <SideBarItem
+                key={conversation.id}
+                type="groupConversation"
+                conversation={conversation}
+                lastMessage={lastMessage}
+                onClick={(conversationId) =>
+                  handleClickConversation(conversationId, conversation.type)
+                }
+                isActive={activeConversationId === conversation.id}
+              />
+            );
+          }
+        )}
     </>
   );
 };

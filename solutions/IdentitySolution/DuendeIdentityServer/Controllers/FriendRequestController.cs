@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Contract.Event.FriendEvent;
-using ConversationService.Domain.Constants;
 using Duende.IdentityServer.Extensions;
+using DuendeIdentityServer.Constants;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;

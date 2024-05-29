@@ -96,7 +96,7 @@ internal static class HostingExtensions
 
         services.AddCors(o => o.AddPolicy("AllowSpecificOrigins", builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
+            builder.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://api-gateway")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();

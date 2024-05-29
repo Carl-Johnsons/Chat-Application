@@ -35,16 +35,6 @@ public partial class MessageController : BaseApiController
         return Ok(paginatedMessageList);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id)
-    {
-        var message = await _sender.Send(new GetMessageQuery
-        {
-            MessageId = id
-        });
-        return Ok(message);
-    }
-
     [HttpPost]
     public async Task<IActionResult> SendClientMessage([FromBody] SendClientMessageDTO sendClientMessageDTO)
     {

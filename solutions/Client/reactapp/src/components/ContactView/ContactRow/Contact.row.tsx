@@ -13,8 +13,9 @@ import { MenuContactIndex } from "data/constants";
 import style from "./Contact.row.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
-import { User } from "@/models";
+import { GroupConversation, User } from "@/models";
 import { useGetUser } from "@/hooks/queries/user";
+import { useGetConversation } from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);
 interface Props {
@@ -32,34 +33,29 @@ const ContactRow = ({
   onClickBtnDelFriendRequest = () => {},
 }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
-  // const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
+  const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
 
-  const { data: userData } = useGetUser(entityId, {
-  });
-  // const { data: conversationData } = useGetConversation(
-  //   {
-  //     conversationId: entityId,
-  //   },
-  //   {
-  //     enabled: isGroup,
-  //   }
-  // );
+  const { data: userData } = useGetUser(entityId, {});
+  const { data: conversationData } = useGetConversation(
+    {
+      conversationId: entityId,
+    },
+    {
+      enabled: isGroup,
+    }
+  );
 
-  const entityData = userData;
+  const entityData = isGroup ? conversationData : userData;
 
-  const avatar = (entityData as User)?.avatarUrl ?? images.userIcon.src;
-  const name = (entityData as User)?.name ?? "";
-
-  // const entityData = isGroup ? conversationData : userData;
-
-  // const avatar =
-  //   (isGroup
-  //     ? (entityData as GroupConversation).imageURL
-  //     : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
-  // const name =
-  //   (isGroup
-  //     ? (entityData as GroupConversation).name
-  //     : (entityData as User)?.name) ?? "";
+  const avatar =
+    (isGroup
+      ? (entityData as GroupConversation)?.imageURL
+      : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
+      
+  const name =
+    (isGroup
+      ? (entityData as GroupConversation)?.name
+      : (entityData as User)?.name) ?? "";
 
   return (
     <div className={cx("contact-row", "d-flex", "justify-content-between")}>

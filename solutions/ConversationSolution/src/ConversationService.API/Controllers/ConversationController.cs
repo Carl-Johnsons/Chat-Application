@@ -21,10 +21,22 @@ public partial class ConversationController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] GetConversationByIdDTO getConversationByIdDTO)
     {
-        var conversations = await _sender.Send(new GetAllConversationsQuery());
-        return Ok(conversations);
+        if (getConversationByIdDTO == null)
+        {
+            var conversations = await _sender.Send(new GetAllConversationsQuery());
+            return Ok(conversations);
+
+        }
+
+        var conversation = await _sender.Send(new GetConversationQuery
+        {
+            ConversationId = getConversationByIdDTO.ConversationId
+        });
+        return Ok(conversation);
+
+
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
@@ -64,12 +76,12 @@ public partial class ConversationController : BaseApiController
         return Ok(cuList);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete()]
+    public async Task<IActionResult> Delete([FromBody] DeleteConversationDTO deleteConversationDTO)
     {
         var command = new DeleteConversationCommand
         {
-            ConversationId = id
+            ConversationId = deleteConversationDTO.Id
         };
         await _sender.Send(command);
         return NoContent();

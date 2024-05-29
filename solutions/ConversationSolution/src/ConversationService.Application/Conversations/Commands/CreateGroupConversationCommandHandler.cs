@@ -4,6 +4,9 @@ namespace ConversationService.Application.Conversations.Commands;
 public record CreateGroupConversationCommand : IRequest
 {
     [Required]
+    public Guid CurrentUserID { get; init; }
+
+    [Required]
     public CreateGroupConversationDTO CreateGroupConversationDTO { get; init; } = null!;
 };
 
@@ -22,31 +25,40 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
     {
         var conversationWithMembersId = request.CreateGroupConversationDTO;
 
-        _context.Conversations.Add(conversationWithMembersId);
+        var groupConversation = new GroupConversation
+        {
+            ImageURL = conversationWithMembersId.ImageURL,
+            Name = conversationWithMembersId.Name,
+            InviteURL = "link",
+            Type = CONVERSATION_TYPE_CODE.GROUP,
+        };
 
-        var leaderId = conversationWithMembersId.LeaderId;
+
+        _context.Conversations.Add(groupConversation);
+
+        var currentUserId = request.CurrentUserID;
         var membersId = conversationWithMembersId.MembersId;
-        if (leaderId == null || membersId == null)
+        if (membersId == null || membersId.Count <= 1)
         {
             return;
         }
 
         _context.ConversationUsers.Add(new ConversationUser()
         {
-            ConversationId = conversationWithMembersId.Id, //this prop will be filled after created by ef-core
-            UserId = (Guid)leaderId,
+            ConversationId = groupConversation.Id, //this prop will be filled after created by ef-core
+            UserId = currentUserId,
             Role = "Leader",
         });
 
         foreach (var memberId in membersId)
         {
-            if (memberId == leaderId)
+            if (memberId == currentUserId)
             {
                 continue;
             }
             _context.ConversationUsers.Add(new ConversationUser()
             {
-                ConversationId = conversationWithMembersId.Id, //this prop will be filled after created by ef-core
+                ConversationId = groupConversation.Id, //this prop will be filled after created by ef-core
                 UserId = memberId,
                 Role = "Member",
             });

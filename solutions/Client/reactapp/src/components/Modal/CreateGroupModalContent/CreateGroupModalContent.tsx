@@ -5,12 +5,12 @@ import { faCamera, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 import { useModal } from "@/hooks";
-import { Friend } from "@/models";
+import { User } from "@/models";
 
 import style from "./CreateGroupModalContent.module.scss";
 import classnames from "classnames/bind";
 import { useUploadImage } from "@/hooks/queries/tool";
-import { useGetCurrentUser, useGetFriendList } from "@/hooks/queries/user";
+import { useGetFriendList } from "@/hooks/queries/user";
 import { useCreateGroupConversation } from "@/hooks/queries/conversation";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 
@@ -18,10 +18,9 @@ const cx = classnames.bind(style);
 
 const CreateGroupModalContent = () => {
   const { handleHideModal } = useModal();
-  const [selectedUser, setSelectedUser] = useState<Friend[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User[]>([]);
   const [previewImgURL, setPreviewImgURL] = useState<string>();
 
-  const { data: currentUser } = useGetCurrentUser();
   const { data: friendList } = useGetFriendList();
   const { mutate: createGroupConversationMutate } =
     useCreateGroupConversation();
@@ -35,9 +34,7 @@ const CreateGroupModalContent = () => {
   });
 
   const filterFriendList = useMemo(() => {
-    return (friendList ?? []).filter((f) =>
-      f.friendNavigation.name.includes(form.searchValue)
-    );
+    return (friendList ?? []).filter((f) => f.name.includes(form.searchValue));
   }, [form.searchValue, friendList]);
 
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -49,19 +46,18 @@ const CreateGroupModalContent = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
 
-    const friendId =
-      e.target.dataset.friendId && parseInt(e.target.dataset.friendId);
+    const friendId = e.target.dataset.friendId && e.target.dataset.friendId;
 
     if (!friendId) {
       return;
     }
 
-    const friend = (friendList ?? []).find((f) => f.friendId == friendId);
+    const friend = (friendList ?? []).find((f) => f.id == friendId);
     if (!friend) {
       return;
     }
     if (!isChecked && selectedUser.includes(friend)) {
-      setSelectedUser(selectedUser.filter((u) => u.friendId !== friendId));
+      setSelectedUser(selectedUser.filter((u) => u.id !== friendId));
       return;
     }
     if (isChecked) {
@@ -107,22 +103,15 @@ const CreateGroupModalContent = () => {
       return;
     }
     //Upload img to imgur
-    if (!currentUser) {
-      return;
-    }
     const imgurImage = await uploadImageMutateAsync({ file: form.avatarFile });
-    const members = selectedUser.map((f) => f.friendId);
-    // Include the current user too
-    members.push(currentUser.userId);
+    const members = selectedUser.map((f) => f.id);
 
     const model: GroupConversationWithMembersIdDTO = {
       name: form.groupName,
-      leaderId: currentUser?.id ?? "",
       membersId: members,
       inviteUrl: "string",
       imageURL: imgurImage?.data.link ?? "",
     };
-
     createGroupConversationMutate({ conversationWithMembersId: model });
     handleHideModal();
   };
@@ -219,17 +208,17 @@ const CreateGroupModalContent = () => {
                   id={index + ""}
                   onChange={handleChange}
                   checked={selectedUser.includes(friend)}
-                  data-friend-id={friend.friendId}
+                  data-friend-id={friend.id}
                 />
                 <label htmlFor={index + ""}>
                   <div className={cx("d-flex", "align-items-center")}>
                     <Avatar
                       className={cx("me-2")}
                       avatarClassName={cx("rounded-circle")}
-                      src={friend.friendNavigation.avatarUrl}
+                      src={friend.avatarUrl}
                       alt="user avatar"
                     />
-                    <div> {friend.friendNavigation.name}</div>
+                    <div> {friend.name}</div>
                   </div>
                 </label>
               </div>
@@ -245,8 +234,8 @@ const CreateGroupModalContent = () => {
         >
           <label> Đã chọn {selectedUser.length}/100</label>
           {selectedUser.map((friend, index) => {
-            const avatar = friend.friendNavigation.avatarUrl;
-            const name = friend.friendNavigation.name;
+            const avatar = friend.avatarUrl;
+            const name = friend.name;
             return (
               <div
                 key={index}

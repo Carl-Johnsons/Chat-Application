@@ -32,7 +32,6 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public IActionResult Get()
     {
         var senderId = HttpContext.Request.Query["id"].ToString();
@@ -55,7 +54,6 @@ public class UsersController : ControllerBase
 
     // api/users/search?value=test
     [HttpGet("search")]
-    [AllowAnonymous]
     public IActionResult Search()
     {
         string phonePattern = @"^\d{10}$";

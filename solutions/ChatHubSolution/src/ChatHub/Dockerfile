@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ChatHubSolution/src/ChatHub/ChatHub.csproj", "ChatHubSolution/src/ChatHub/"]
-RUN dotnet restore "./ChatHubSolution/src/ChatHub/ChatHub.csproj"
+RUN dotnet restore "./ChatHubSolution/src/ChatHub/ChatHub.csproj" --verbosity normal
 COPY ["ChatHubSolution/src/", "ChatHubSolution/src/"]
 COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "ChatHubSolution/src/ChatHub/"]
 

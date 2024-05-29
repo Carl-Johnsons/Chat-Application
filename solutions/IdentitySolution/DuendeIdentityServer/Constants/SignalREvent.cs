@@ -1,5 +1,4 @@
-﻿
-namespace ConversationService.Domain.Constants;
+﻿namespace DuendeIdentityServer.Constants;
 
 public static class SignalREvent
 {

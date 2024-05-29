@@ -21,9 +21,7 @@ const useModal = () => {
       if (currentUser?.id === entityId) {
         type = "Personal";
       } else {
-        const friend = (friendList ?? []).filter(
-          (f) => f.friendId === entityId
-        );
+        const friend = (friendList ?? []).filter((f) => f.id === entityId);
         type = friend[0] ? "Friend" : "Stranger";
       }
       entityId && setModalEntityId(entityId);

@@ -104,10 +104,11 @@ const ProfileModalContent = (variant: Variants) => {
   );
 
   const userData = isPersonal ? currentUserData : otherUserData;
-
+  currentUserData && conversationUsersData?.push();
   const userIdList = isGroup
     ? conversationUsersData?.flatMap((cu) => cu.userId)
     : undefined;
+
   const usersQueryData = useGetUsers(userIdList ?? []);
 
   const name = isGroup
