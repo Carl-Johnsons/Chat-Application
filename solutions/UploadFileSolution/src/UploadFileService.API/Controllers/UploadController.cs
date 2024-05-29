@@ -1,41 +1,97 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using UploadFileService.Application.CoudinaryFiles.Commands;
+using UploadFileService.Application.CoudinaryFiles.Queries;
+using UploadFileService.Domain.DTOs;
 
 namespace UploadFileService.API.Controllers;
 
-[Route("api/[controller]")]
+
+[Route("api/upload")]
 [ApiController]
 public class UploadController : ControllerBase
 {
-    [HttpPost("Image")]
-    public async Task<IActionResult> UploadImage(IFormFile ImageFile)
+    private readonly ISender _sender;
+
+    public UploadController(ISender sender)
     {
-        try
+        _sender = sender;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _sender.Send(new GetAllCloudinaryFilesQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("id")]
+    public async Task<IActionResult> Get([FromQuery] GetCloudinaryFileByIdDTO getCloudinaryFileByIdDTO)
+    {
+        if(getCloudinaryFileByIdDTO.Id != null)
         {
-            if (ImageFile == null || ImageFile.Length == 0)
+            var result = await _sender.Send(new GetCloudinaryFileByIdQuery 
+            { 
+                Id  = getCloudinaryFileByIdDTO.Id
+            });
+            return Ok(result);
+        }
+        return BadRequest("Get file fail");
+    }
+
+    [HttpPost("image")]
+    public async Task<IActionResult> UploadImage([FromForm] UploadFileDTO uploadFileDTO)
+    {
+        var cloudinaryFile = await _sender.Send(new CreateCloudinaryImageFileCommand
+        {
+            FormFile = uploadFileDTO.File
+        });
+        if (cloudinaryFile == null)
+        {
+            return BadRequest(cloudinaryFile);
+        }
+        return Ok(cloudinaryFile);
+    }
+
+    [HttpPost("video")]
+    public async Task<IActionResult> UploadVideo([FromForm] UploadFileDTO uploadFileDTO)
+    {
+        var cloudinaryFile = await _sender.Send(new CreateCloudinaryVideoFileCommand
+        {
+            FormFile = uploadFileDTO.File
+        });
+        if (cloudinaryFile == null)
+        {
+            return BadRequest(cloudinaryFile);
+        }
+        return Ok(cloudinaryFile);
+    }
+
+    [HttpPost("raw")]
+    public async Task<IActionResult> UploadRaw([FromForm] UploadFileDTO uploadFileDTO)
+    {
+        var cloudinaryFile = await _sender.Send(new CreateCloudinaryRawFileCommand
+        {
+            FormFile = uploadFileDTO.File
+        });
+        if (cloudinaryFile == null)
+        {
+            return BadRequest(cloudinaryFile);
+        }
+        return Ok(cloudinaryFile);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromQuery] DeleteCloudinaryFileByIdDTO deleteCloudinaryFileById)
+    {
+        if(deleteCloudinaryFileById.Id != null) {
+        
+            var deleteMessage = await _sender.Send(new DeleteCloudinaryFileCommand
             {
-                return BadRequest("File object is null");
-            }
-            string? accessToken = Environment.GetEnvironmentVariable("Imgur__AccessToken");
-
-            using var httpClient = new HttpClient();
-            using var form = new MultipartFormDataContent();
-            using var stream = new MemoryStream();
-
-            await ImageFile.CopyToAsync(stream);
-            byte[] fileBytes = stream.ToArray();
-            form.Add(new ByteArrayContent(fileBytes, 0, fileBytes.Length), "image", "image.png");
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            var img_response = await httpClient.PostAsync("https://api.imgur.com/3/upload", form);
-            img_response.EnsureSuccessStatusCode();
-            var responseContent = await img_response.Content.ReadAsStringAsync();
-
-            return Content(responseContent, "application/json");
+                Id = deleteCloudinaryFileById.Id
+            });
+            return Ok(deleteMessage);
         }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        return BadRequest("Delete fail");
     }
 }

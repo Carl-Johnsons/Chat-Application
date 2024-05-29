@@ -14,11 +14,11 @@ COPY ["src/APIGateway/APIGateway.csproj", "src/APIGateway/"]
 RUN dotnet restore "./src/APIGateway/APIGateway.csproj" --verbosity normal
 COPY . .
 WORKDIR "/src/src/APIGateway"
-RUN dotnet build "./APIGateway.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./APIGateway.csproj" --no-restore -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./APIGateway.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./APIGateway.csproj" --no-restore --no-build -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

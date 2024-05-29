@@ -14,11 +14,11 @@ public static class DependencyInjection
         var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found");
 
         var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
-        services.AddDbContext<ApplicationDbContext>(options =>
+        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
         {
             options.UseSqlServer(connectionString);
         });
-
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         return services;
     }
 }

@@ -28,11 +28,11 @@ WORKDIR /src
 
 COPY ["ConversationSolution/src","ConversationSolution/src"]
 WORKDIR "/src/ConversationSolution/src/ConversationService.API"
-RUN dotnet build "./ConversationService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./ConversationService.API.csproj" --no-restore -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ConversationService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./ConversationService.API.csproj" --no-restore --no-build -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

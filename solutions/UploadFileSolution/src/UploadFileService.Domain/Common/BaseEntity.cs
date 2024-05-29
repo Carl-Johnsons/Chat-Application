@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UploadFileService.Domain.Entities;
+namespace UploadFileService.Domain.Common;
 
 public class BaseEntity
 {

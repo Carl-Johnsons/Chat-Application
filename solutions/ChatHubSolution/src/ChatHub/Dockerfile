@@ -16,11 +16,11 @@ COPY ["ChatHubSolution/src/", "ChatHubSolution/src/"]
 COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "ChatHubSolution/src/ChatHub/"]
 
 WORKDIR "/src/ChatHubSolution/src/ChatHub"
-RUN dotnet build "./ChatHub.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./ChatHub.csproj" --no-restore -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ChatHub.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./ChatHub.csproj" --no-restore --no-build -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

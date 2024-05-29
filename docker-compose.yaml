@@ -155,11 +155,32 @@ services:
       websocket:
         condition: service_started
     ports:
-      - '${CONVERSATION_SERVICE}:80'
+      - '${CONVERSATION_SERVICE_PORT}:80'
     networks:
       - back-end
     env_file:
       - ./solutions/ConversationSolution/src/ConversationService.API/.env
+
+  post-api:
+    build:
+      context: solutions
+      dockerfile: ./PostSolution/src/PostService.API/Dockerfile
+    container_name: post-service
+    volumes:
+      - ./data/nuget-cache:/home/app/.nuget/packages
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      websocket:
+        condition: service_started
+    ports:
+      - '${POST_SERVICE_PORT}:80'
+    networks:
+      - back-end
+    env_file:
+      - ./solutions/PostSolution/src/PostService.API/.env
 
   reactapp:
     build:
