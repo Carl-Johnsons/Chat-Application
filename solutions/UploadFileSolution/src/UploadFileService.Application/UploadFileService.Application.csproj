@@ -7,9 +7,20 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DotNetEnv" Version="3.0.0" />
+		<PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
 		<PackageReference Include="MassTransit" Version="8.2.2" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
 		<PackageReference Include="MediatR" Version="12.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\UploadFileService.Domain\UploadFileService.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ExtensionTypes\Commands\" />
+	  <Folder Include="ExtensionTypes\Queries\" />
 	</ItemGroup>
 
 </Project>
