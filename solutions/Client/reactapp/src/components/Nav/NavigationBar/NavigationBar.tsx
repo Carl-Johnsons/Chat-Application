@@ -50,7 +50,13 @@ const NavigationBar = () => {
       dataContent: "contact-page",
       href: "#",
       image: images.contactIcon.src,
-      imageAlt: "Chat Icon",
+      imageAlt: "Contact Icon",
+    },
+    {
+      dataContent: "post-page",
+      href: "#",
+      image: images.post.src,
+      imageAlt: "Post Icon",
       className: "mb-auto",
     },
     {
@@ -63,7 +69,6 @@ const NavigationBar = () => {
 
   const handleClick = useCallback(
     (linkId: number) => {
-
       handleClickScreenSection(true);
       if (linkId === 0) {
         handleShowModal({

@@ -11,6 +11,7 @@ import ContactContainer from "@/components/ContactView/ContactContainer";
 import ModalContainer from "@/components/Modal/ModalContainer";
 import NavigationBar from "@/components/Nav/NavigationBar";
 import SidebarContent from "@/components/SideBar/SidebarContent";
+import { PostViewContainer } from "@/components/PostView";
 
 const cx = classNames.bind(styles);
 
@@ -47,6 +48,7 @@ const Home = () => {
         >
           {activeNav === 1 && <ChatViewContainer />}
           {activeNav === 2 && <ContactContainer />}
+          {activeNav === 3 && <PostViewContainer />}
         </div>
         <div
           className={cx(
