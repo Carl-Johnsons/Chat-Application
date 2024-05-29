@@ -406,11 +406,9 @@ FodyWeavers.xsd
 **/certificate.pem
 **/*.env
 **/*.env.*
-# Database bind mount
-chat-sql-data
-data/db
-# rabbitmq
-data/mq
+# Data bind mount
+data/*
+!data/sh
 # appsettings
 **appsettings.*
 # IdentityServer4

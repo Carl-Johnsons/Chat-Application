@@ -19,9 +19,13 @@ COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationSolution
 COPY ["ConversationSolution/ConversationSolution.sln","ConversationSolution/ConversationSolution.sln"]
 COPY ["ConversationSolution/NuGet.config","ConversationSolution/NuGet.config"]
 
+# Ensure the non-root user has access to the package cache directory
+RUN mkdir -p /home/app/.nuget/packages && chown -R app:app /home/app/.nuget
+
 WORKDIR /src/ConversationSolution
-RUN dotnet restore
+RUN dotnet restore --packages "/home/app/.nuget/packages" --verbosity normal
 WORKDIR /src
+
 COPY ["ConversationSolution/src","ConversationSolution/src"]
 WORKDIR "/src/ConversationSolution/src/ConversationService.API"
 RUN dotnet build "./ConversationService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build

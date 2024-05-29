@@ -12,8 +12,7 @@ WORKDIR /src
 COPY ["IdentitySolution/DuendeIdentityServer/DuendeIdentityServer.csproj", "DuendeIdentityServer/"]
 COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "DuendeIdentityServer/"]
 
-RUN dotnet restore "./DuendeIdentityServer/DuendeIdentityServer.csproj"
-
+RUN dotnet restore "./DuendeIdentityServer/DuendeIdentityServer.csproj" --verbosity normal
 COPY ["IdentitySolution/DuendeIdentityServer", "DuendeIdentityServer/"]
 
 WORKDIR "/src/DuendeIdentityServer"
