@@ -1,7 +1,19 @@
-using UploadFileService.API.Middlewares;
+using System.Text.Json.Serialization;
+using UploadFileService.Application;
+using UploadFileService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+services.AddApplicationService();
+services.AddInfrastructureServices(builder.Configuration);
 
+services.AddControllers()
+        // Prevent circular JSON reach max depth of the object when serialization
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -18,9 +30,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
-app.UseValidateImgurAccessToken(); // apply to all request
+app.UseHttpsRedirection();
 
 app.MapControllers();
 
