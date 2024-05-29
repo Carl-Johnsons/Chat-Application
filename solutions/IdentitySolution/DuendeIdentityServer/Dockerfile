@@ -16,11 +16,11 @@ RUN dotnet restore "./DuendeIdentityServer/DuendeIdentityServer.csproj" --verbos
 COPY ["IdentitySolution/DuendeIdentityServer", "DuendeIdentityServer/"]
 
 WORKDIR "/src/DuendeIdentityServer"
-RUN dotnet build "./DuendeIdentityServer.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./DuendeIdentityServer.csproj" --no-restore -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./DuendeIdentityServer.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./DuendeIdentityServer.csproj" --no-restore --no-build -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
