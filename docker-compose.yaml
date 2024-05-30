@@ -193,6 +193,7 @@ services:
       - front-end
     env_file:
       - .env
+      - ./solutions/Client/reactapp/.env
     develop:
       watch:
         - path: ./solutions/Client/reactapp/package.json

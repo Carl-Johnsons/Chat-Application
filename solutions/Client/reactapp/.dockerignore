@@ -5,3 +5,6 @@ node_modules/**
 .flaskenv*
 !.env.project
 !.env.vault
+
+# tinymce
+/public/tinymce/
