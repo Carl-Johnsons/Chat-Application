@@ -322,4 +322,4 @@ const ProfileModalContent = (variant: Variants) => {
   );
 };
 
-export default ProfileModalContent;
+export { ProfileModalContent };

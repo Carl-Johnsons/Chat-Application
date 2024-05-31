@@ -1,0 +1,21 @@
+.modal-body {
+    overflow: hidden;
+    ul {
+        width: 200%;
+        li {
+            background-color: white;
+            > * {
+                margin-left: 1rem;
+                margin-right: 1rem;
+                box-sizing: border-box;
+            }
+            transition: transform 0.2s ease-in-out;
+        }
+        li:not(li:first-child) {
+            transform: translateX(100%);
+            &.active {
+                transform: translateX(0%);
+            }
+        }
+    }
+}
