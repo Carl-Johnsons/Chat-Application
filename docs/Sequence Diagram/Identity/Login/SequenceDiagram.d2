@@ -43,17 +43,17 @@ resourceService: <<service>> \n resourceService
 
 DB: DB
 
-Customer -> application.get: User request resource
-application.get -> apiGateway.get: User request resource
-apiGateway.get -> identityService.get: User is unauthorized
+Customer -> application.get: 1. User request resource
+application.get -> apiGateway.get: 2. User request resource
+apiGateway.get -> identityService.get: 3. User is unauthorized
 
-apiGateWay.get <- identityService.get: return login page {class: return arrow}
-application.get <- apiGateway.get: return login page {class: return arrow}
-Customer <- application.get: return login page {class: return arrow}
+apiGateWay.get <- identityService.get: 4. return login page {class: return arrow}
+application.get <- apiGateway.get: 5. return login page {class: return arrow}
+Customer <- application.get: 6. return login page {class: return arrow}
 # Login
-Customer -> application.post.login: login(username, password)
-application.post.login -> apiGateway.login: login(username, password)
-apiGateway.login -> identityService.post.login: login(username, password)
+Customer -> application.post.login: 7. login(username, password)
+application.post.login -> apiGateway.login: 8. login(username, password)
+apiGateway.login -> identityService.post.login: 9. login(username, password)
 
 alt: "alt" {
   class: frame
@@ -61,34 +61,33 @@ alt: "alt" {
   if login failed: "[if login failed]" {
     class: frame
 
-    apiGateway.login <- identityService.post.login: login failed {class: return arrow}
-    application.post.login <- apiGateway.login: login failed {class: return arrow}
-
-    Customer <- application.post.login: notify login failed
+    apiGateway.login <- identityService.post.login: 10A. login failed {class: return arrow}
+    application.post.login <- apiGateway.login: 10A.1. login failed {class: return arrow}
+    Customer <- application.post.login: 10A.2. notify login failed
   }
   if login successfully: "[if login successfully]" {
     class: frame
 
-    apiGateway.login <- identityService.post.login: return code {class: return arrow}
-    application.post.login <- apiGateway.login: return code {class: return arrow}
+    apiGateway.login <- identityService.post.login: 10. return code {class: return arrow}
   }
 }
+application.post.login <- apiGateway.login: 11. return code {class: return arrow}
 
 # Request token
-application.post.requestToken -> apiGateway.requestToken: request token
-apiGateway.requestToken -> identityService.post.requestToken: request token
-apiGateway.requestToken <- identityService.post.requestToken: return access_token {class: return arrow}
-application.post.requestToken <- apiGateway.requestToken: request token {class: return arrow}
+application.post.requestToken -> apiGateway.requestToken: 12. request token
+apiGateway.requestToken -> identityService.post.requestToken: 13. request token
+apiGateway.requestToken <- identityService.post.requestToken: 14. return access_token {class: return arrow}
+application.post.requestToken <- apiGateway.requestToken: 15. request token {class: return arrow}
 
 # Request resource
-application.post.requestResource -> apiGateway.requestResource: resource request
-apiGateway.requestResource -> resourceService.get: resource request
+application.post.requestResource -> apiGateway.requestResource: 16. resource request
+apiGateway.requestResource -> resourceService.get: 17. resource request
 # Validate token
-identityService.validateToken <- resourceService.get: validate token
-identityService.validateToken -> resourceService.get: validate success {class: return arrow}
+identityService.validateToken <- resourceService.get: 18. validate token
+identityService.validateToken -> resourceService.get: 19. validate success {class: return arrow}
 # Continue request resource
-resourceService.get -> DB.get: request database
-resourceService.get <- DB.get: response {class: return arrow}
-apiGateway.requestResource <- resourceService.get: resource response {class: return arrow}
-application.post.requestResource <- apiGateway.requestResource: resource request {class: return resource}
-Customer <- application.post.requestResource: resource response {class: return arrow}
+resourceService.get -> DB.get: 20. request database
+resourceService.get <- DB.get: 21. response {class: return arrow}
+apiGateway.requestResource <- resourceService.get: 22. resource response {class: return arrow}
+application.post.requestResource <- apiGateway.requestResource: 23. resource request {class: return resource}
+Customer <- application.post.requestResource: 24. resource response {class: return arrow}
