@@ -1,17 +1,14 @@
-import React from "react";
+import React, { LegacyRef, memo } from "react";
 import { Modal } from "react-bootstrap";
 import classNames from "classnames/bind";
 import style from "./AppModal.body.module.scss";
 import { useGlobalState } from "@/hooks";
+import { ModalContent } from "@/models";
 
 const cx = classNames.bind(style);
 
 interface Props {
-  modalContents: {
-    title: string;
-    ref: React.MutableRefObject<HTMLLIElement | null>;
-    modalContent: React.ReactNode;
-  }[];
+  modalContents: ModalContent[];
   modalBodyDimension: {
     width: number;
     height: number;
@@ -20,6 +17,7 @@ interface Props {
 
 const AppModalBody = ({ modalContents, modalBodyDimension }: Props) => {
   const [activeModal] = useGlobalState("activeModal");
+  console.log("re-render modal body");
 
   return (
     <Modal.Body
@@ -39,7 +37,7 @@ const AppModalBody = ({ modalContents, modalBodyDimension }: Props) => {
         {modalContents.map((item, index) => (
           <li
             key={index}
-            ref={item.ref}
+            ref={item.ref as LegacyRef<HTMLLIElement> | undefined}
             className={cx(
               "h-fit-content",
               "position-absolute",
@@ -54,4 +52,6 @@ const AppModalBody = ({ modalContents, modalBodyDimension }: Props) => {
   );
 };
 
-export { AppModalBody };
+const MemoizedAppModalBody = memo(AppModalBody);
+
+export { MemoizedAppModalBody };

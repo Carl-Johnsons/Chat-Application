@@ -1,4 +1,4 @@
-import React from "react";
+import moment from "moment";
 import { Post } from "models/Post";
 
 import style from "./AppPost.module.scss";
@@ -15,7 +15,9 @@ interface Props {
 }
 
 const AppPost = ({ post }: Props) => {
-  const { interactions, comments, content } = post;
+  const { interactions, comments, content, createdAt } = post;
+  const tz = moment.tz.guess();
+  const formattedTime = moment(new Date(createdAt)).tz(tz).format("HH:mm");
   return (
     <div
       className={cx(
@@ -36,7 +38,10 @@ const AppPost = ({ post }: Props) => {
           src={images.defaultAvatarImg.src}
           alt="author avatar"
         ></Avatar>
-        <div className={cx("author-name", "fw-medium")}>test user</div>
+        <div className={cx("author-name", "fw-medium", "me-auto")}>
+          test user
+        </div>
+        <div className={cx("time")}>{formattedTime}</div>
       </div>
       <div className={cx("ps-2", "pe-2", "text-break")}>{content}</div>
       <InteractionContainer

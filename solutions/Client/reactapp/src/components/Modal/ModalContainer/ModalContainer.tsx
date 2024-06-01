@@ -1,29 +1,29 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { useGlobalState, useModal } from "@/hooks";
-import { useSendFriendRequest } from "@/hooks/queries/user";
 
 import style from "./ModalContainer.module.scss";
 import classNames from "classnames/bind";
-import { AppModalBody, AppModalHeader, ModalContentMapper } from "..";
+import {
+  MemoizedAppModalBody,
+  ModalContentMapper,
+  MemoizedAppModalHeader,
+} from "..";
+import { ModalContent } from "@/models";
 
 const cx = classNames.bind(style);
 
-interface ModalContent {
-  title?: string;
-  ref: React.MutableRefObject<null>;
-  modalContent: React.ReactNode;
-}
-
 const ModalContainer = () => {
   // Global state
-  const [modalEntityId] = useGlobalState("modalEntityId");
   const [showModal] = useGlobalState("showModal");
-  const [activeModal, setActiveModal] = useGlobalState("activeModal");
+  const [activeModal] = useGlobalState("activeModal");
 
   // Hooks
   const { handleHideModal } = useModal();
-  const { mutate: sendFriendRequestMutate } = useSendFriendRequest();
+
+  const modalContentsRef = useRef<ModalContent[]>([]);
+
+  const modalContents = ModalContentMapper();
 
   // Local state
   const [modalBodyDimension, setModalBodyDimension] = useState({
@@ -31,33 +31,52 @@ const ModalContainer = () => {
     height: 0,
   });
 
-  // Reference
-  const modalContentsRef = useRef<ModalContent[]>([]);
+  const observedDiv = useRef<HTMLElement>();
 
-  const handleClickSendFriendRequest = async () => {
-    sendFriendRequestMutate({ receiverId: modalEntityId });
-  };
-
-  const modalContents = ModalContentMapper({
-    handleClick,
-    handleClickSendFriendRequest,
-  });
-
+  //  Update the initialize width, height of the element. 
+  // But didn't update when the div update dimension
   useEffect(() => {
     modalContentsRef.current = modalContents;
     modalContents.forEach((item, index) => {
       if (showModal && activeModal === index && item.ref.current) {
-        setModalBodyDimension({
-          width: (item.ref.current as unknown as HTMLElement).offsetWidth,
-          height: (item.ref.current as unknown as HTMLElement).offsetHeight,
-        });
+        observedDiv.current = item.ref.current;
       }
     });
-  }, [activeModal, showModal, modalContents]);
+    if (!observedDiv.current) return;
+    setModalBodyDimension({
+      width: observedDiv.current.offsetWidth,
+      height: observedDiv.current.offsetHeight,
+    });
+  }, [activeModal, modalContents, showModal]);
 
-  function handleClick(index: number) {
-    setActiveModal(index);
-  }
+  //  Observe the div if the it update its width and height
+  // in order to flexible update modal body width and height
+  useEffect(
+    () => {
+      if (!observedDiv.current) {
+        return;
+      }
+      const resizeObserver = new ResizeObserver(() => {
+        if (
+          observedDiv.current?.offsetWidth !== modalBodyDimension.width ||
+          observedDiv.current?.offsetHeight !== modalBodyDimension.height
+        ) {
+          setModalBodyDimension({
+            width: observedDiv.current?.offsetWidth ?? 384,
+            height: observedDiv.current?.offsetHeight ?? 0,
+          });
+        }
+      });
+
+      resizeObserver.observe(observedDiv.current);
+
+      return function cleanup() {
+        resizeObserver.disconnect();
+      };
+    },
+    // only update the effect if the ref element changed
+    [modalBodyDimension.height, modalBodyDimension.width]
+  );
 
   return (
     <Modal
@@ -69,13 +88,12 @@ const ModalContainer = () => {
       contentClassName={cx("modal-content")}
       role="dialog"
     >
-      <AppModalHeader
-        handleClick={handleClick}
-        modalContents={modalContents}
+      <MemoizedAppModalHeader
+        title={modalContents[activeModal]?.title}
         handleHideModal={handleHideModal}
         modalBodyDimension={modalBodyDimension}
       />
-      <AppModalBody
+      <MemoizedAppModalBody
         modalContents={modalContents}
         modalBodyDimension={modalBodyDimension}
       />

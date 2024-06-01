@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
@@ -11,12 +11,7 @@ import classNames from "classnames/bind";
 const cx = classNames.bind(style);
 
 interface Props {
-  handleClick: (index: number) => void;
-  modalContents: {
-    title: string;
-    ref: React.MutableRefObject<HTMLElement | null>;
-    modalContent: React.ReactNode;
-  }[];
+  title?: string;
   handleHideModal: () => void;
   modalBodyDimension: {
     width: number;
@@ -25,13 +20,13 @@ interface Props {
 }
 
 const AppModalHeader = ({
-  handleClick,
-  modalContents,
+  title = "",
   handleHideModal,
   modalBodyDimension,
 }: Props) => {
-  const [activeModal] = useGlobalState("activeModal");
-
+  const [activeModal, setActiveModal] = useGlobalState("activeModal");
+  console.log("re-render modal header");
+  
   return (
     <Modal.Header
       className={cx(
@@ -48,13 +43,13 @@ const AppModalHeader = ({
         {activeModal !== 0 && (
           <AppButton
             className={cx("rounded-circle", "p-0", "me-1")}
-            onClick={() => handleClick(0)}
+            onClick={() => setActiveModal(0)}
             variant="app-btn-primary-transparent"
           >
             <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
           </AppButton>
         )}
-        {modalContents[activeModal]?.title}
+        {title}
       </Modal.Title>
       <Button
         className={cx(
@@ -71,4 +66,6 @@ const AppModalHeader = ({
   );
 };
 
-export { AppModalHeader };
+const MemoizedAppModalHeader = memo(AppModalHeader);
+
+export { MemoizedAppModalHeader };

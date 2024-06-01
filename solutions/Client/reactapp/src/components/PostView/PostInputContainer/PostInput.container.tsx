@@ -5,11 +5,12 @@ import style from "./PostInput.container.module.scss";
 import classNames from "classnames/bind";
 import { EditorEvent } from "tinymce";
 import AppButton from "@/components/shared/AppButton";
+import { ClearableFile } from "@/components/shared";
 
 const cx = classNames.bind(style);
 
 const PostInputContainer = () => {
-  const [previewSrc, setPreviewSrc] = useState<string[]>([]);
+  const [blobs, setBlobs] = useState<File[]>([]);
 
   const plugins = ["lists", "code", "table", "codesample", "link"];
   const toolbar =
@@ -18,23 +19,31 @@ const PostInputContainer = () => {
     alert("drag and drop");
   }, []);
 
+  const handleCancel = (blob: File) => {
+    setBlobs((prev) => {
+      prev = prev.filter((b) => b !== blob);
+      return prev;
+    });
+  };
+
+  const handleCancelAll = () => {
+    setBlobs([]);
+  };
+
   const handlePaste = (e: EditorEvent<ClipboardEvent>) => {
     const clipboardData = e.clipboardData;
     const items = clipboardData?.items;
     if (!items) {
       return;
     }
-    const newPreviews: string[] = previewSrc;
+    const newBlob: File[] = [];
 
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const itemType = item.type;
       if (itemType.startsWith("image/")) {
         const blob = item.getAsFile();
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          newPreviews.push(url);
-        }
+        blob && newBlob.push(blob);
       }
 
       if (
@@ -50,14 +59,9 @@ const PostInputContainer = () => {
       console.log(`Item ${i}:`, item);
       console.log(`Type: ${itemType}`);
     }
-    // Update the previewSrc state with new URLs
-    setPreviewSrc((prev) => [...prev, ...newPreviews]);
-    // Revoke the object URLs after the component unmounts or when a new image is pasted
-    console.log({ previewSrc });
+    setBlobs((prev) => [...prev, ...newBlob]);
     return () => {
-      newPreviews.forEach((url) => {
-        URL.revokeObjectURL(url);
-      });
+      setBlobs([]);
     };
   };
 
@@ -87,13 +91,35 @@ const PostInputContainer = () => {
         />
       </div>
       <div>
-        <div className={cx("preview-file-btn-container")}>
-          {previewSrc.length > 0 && <AppButton>Clear all file</AppButton>}
+        <div
+          className={cx(
+            "preview-file-btn-container",
+            "d-flex",
+            "justify-content-end",
+            "mb-2",
+            "mt-2"
+          )}
+        >
+          {blobs.length > 0 && (
+            <AppButton variant="app-btn-secondary" onClick={handleCancelAll}>Clear all file</AppButton>
+          )}
         </div>
-        <div className={cx("preview-file-container")}>
-          {previewSrc.map((src, index) => {
+        <div
+          className={cx(
+            "preview-file-container",
+            "d-flex",
+            "flex-column",
+            "align-items-center"
+          )}
+        >
+          {blobs.map((blob, index) => {
             return (
-              <img className={cx("preview-file")} key={index} src={src} />
+              <ClearableFile
+                className={cx("mb-3", "pt-1")}
+                key={index}
+                blob={blob}
+                onClickCancel={() => handleCancel(blob)}
+              />
             );
           })}
         </div>

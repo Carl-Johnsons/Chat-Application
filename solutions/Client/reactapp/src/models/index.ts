@@ -12,6 +12,7 @@ export * from "./ImgurImage";
 export * from "./Interaction";
 export * from "./JwtToken";
 export * from "./Message";
+export * from "./ModalContent";
 export * from "./ModalType";
 export * from "./User";
 export * from "./UserInputForm";
