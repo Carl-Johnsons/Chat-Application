@@ -5,7 +5,11 @@ import style from "./AppPost.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
-import { CommentContainer, InteractionContainer } from "../";
+import {
+  CommentContainer,
+  InteractionCounterContainer,
+  PostButtonContainer,
+} from "../";
 import { AppDivider } from "@/components/shared";
 
 const cx = classNames.bind(style);
@@ -44,10 +48,12 @@ const AppPost = ({ post }: Props) => {
         <div className={cx("time")}>{formattedTime}</div>
       </div>
       <div className={cx("ps-2", "pe-2", "text-break")}>{content}</div>
-      <InteractionContainer
+      <InteractionCounterContainer
         className={cx("ps-2", "pe-2")}
         interactions={interactions}
       />
+      <AppDivider />
+      <PostButtonContainer />
       <AppDivider />
       <CommentContainer comments={comments} />
     </div>

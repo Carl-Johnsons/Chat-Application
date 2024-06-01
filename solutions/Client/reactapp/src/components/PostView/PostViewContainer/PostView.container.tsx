@@ -136,6 +136,7 @@ const PostViewContainer = ({ className }: Props) => {
           />
         </div>
       </div>
+
       <div
         className={cx(
           "w-100",
