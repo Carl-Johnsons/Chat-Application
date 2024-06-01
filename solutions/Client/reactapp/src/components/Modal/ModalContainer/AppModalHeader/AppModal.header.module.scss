@@ -1,0 +1,8 @@
+$modal-header-height: 52.14px;
+
+.modal-header {
+    height: $modal-header-height;
+    .modal-title {
+        font-size: 16px;
+    }
+}

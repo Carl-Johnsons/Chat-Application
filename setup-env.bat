@@ -26,6 +26,10 @@ echo [95mPulling post service env file ....[0m &&^
 cd .\solutions\UploadFileSolution\src\UploadFileService.API &&^
 npx dotenv-vault@latest pull &&^
 cd "%project_root%" &&^
+echo [95mPulling react-app env file ....[0m &&^
+cd .\solutions\Client\reactapp &&^
+npx dotenv-vault@latest pull &&^
+cd "%project_root%" &&^
 echo [95mPublishing Contract solution ...[0m &&^
 cd .\solutions\Contract &&^
 dotnet publish &&^

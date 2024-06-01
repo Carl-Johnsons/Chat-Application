@@ -3,6 +3,11 @@ import style from "./PostView.container.module.scss";
 
 import { Post } from "models/Post";
 import { AppPost } from "..";
+import { useGetCurrentUser } from "hooks/queries/user/useGetCurrentUser.query";
+import Avatar from "@/components/shared/Avatar";
+import images from "@/assets";
+import { useModal } from "hooks/useModal";
+import { useCallback, useRef } from "react";
 
 const cx = classNames.bind(style);
 
@@ -10,12 +15,21 @@ interface Props {
   className?: string;
 }
 const PostViewContainer = ({ className }: Props) => {
+  const { data: userData } = useGetCurrentUser();
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { handleShowModal } = useModal();
+  const handleFocus = useCallback(() => {
+    inputRef.current?.blur();
+  }, []);
+
   const posts: Post[] = [
     {
       id: "1",
       content:
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      createdAt: new Date(),
+      createdAt: new Date("2023-2-1"),
       comments: [],
       interactions: [],
     },
@@ -87,10 +101,44 @@ const PostViewContainer = ({ className }: Props) => {
   ];
 
   return (
-    <div className={cx(className)}>
+    <div
+      className={cx(
+        className,
+        "post-body-container",
+        "d-flex",
+        "flex-column",
+        "align-items-center"
+      )}
+    >
       <div
         className={cx(
-          "post-body-container",
+          "post-input",
+          "w-100",
+          "d-flex",
+          "justify-content-center"
+        )}
+      >
+        <div className={cx("input-group", "w-75", "mt-3", "mb-3")}>
+          <div className={cx("me-3")}>
+            <Avatar
+              avatarClassName={cx("rounded-circle", "shadow")}
+              src={userData?.avatarUrl ?? images.defaultAvatarImg.src}
+              alt="user avatar"
+            />
+          </div>
+          <input
+            type="text"
+            ref={inputRef}
+            className={cx("form-control", "rounded-3", "shadow")}
+            placeholder="Write your thought"
+            onClick={() => handleShowModal({ modalType: "PostInput" })}
+            onFocus={handleFocus}
+          />
+        </div>
+      </div>
+
+      <div
+        className={cx(
           "w-100",
           "d-flex",
           "flex-column",

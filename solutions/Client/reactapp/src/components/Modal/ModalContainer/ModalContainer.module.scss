@@ -1,6 +1,3 @@
-$modal-header-height: 52.14px;
-$margin-left-right-child-element: 1rem;
-
 .info-modal {
     .modal-dialog {
         display: flex;
@@ -15,34 +12,6 @@ $margin-left-right-child-element: 1rem;
         .modal-content {
             border-radius: var(--modal-border-radius);
             width: auto;
-            .modal-header {
-                height: $modal-header-height;
-                .modal-title {
-                    font-size: 16px;
-                }
-            }
-
-            .modal-body {
-                overflow: hidden;
-                ul {
-                    width: 200%;
-                    li {
-                        background-color: white;
-                        > * {
-                            margin-left: $margin-left-right-child-element;
-                            margin-right: $margin-left-right-child-element;
-                            box-sizing: border-box;
-                        }
-                        transition: transform 0.2s ease-in-out;
-                    }
-                    li:not(li:first-child) {
-                        transform: translateX(100%);
-                        &.active {
-                            transform: translateX(0%);
-                        }
-                    }
-                }
-            }
         }
     }
 }

@@ -1,1 +1,1 @@
-export { default } from "./ListGroupMember.modalContent";
+export * from "./ListGroupMember.modalContent";
