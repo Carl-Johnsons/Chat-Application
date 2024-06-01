@@ -102,7 +102,17 @@ public class UsersController : ControllerBase
 
     [HttpPost("block")]
     public async Task<IActionResult> Block([FromBody] BlockUserDTO blockUserDTO)
-    {        
+    {
+        // User in homepage
+
+        // User request block user -> APIGateway
+        // Api gateway -> IdentityService
+        // IdentityService -> DB: Request database
+
+        // User request block user <- APIGateway
+        // Api gateway <- IdentityService
+        // IdentityService <- DB
+
         var buInput = _mapper.Map<BlockUserDTO, UserBlock>(blockUserDTO);
         buInput.UserId = _httpContextAccessor.HttpContext.User.GetSubjectId(); 
 

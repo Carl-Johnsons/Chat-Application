@@ -1,0 +1,94 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+Customer: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+resourceService: <<service>> \n resourceService
+
+DB: DB
+
+Customer -> application.get: User request resource
+application.get -> apiGateway.get: User request resource
+apiGateway.get -> identityService.get: User is unauthorized
+
+apiGateWay.get <- identityService.get: return login page {class: return arrow}
+application.get <- apiGateway.get: return login page {class: return arrow}
+Customer <- application.get: return login page {class: return arrow}
+# Login
+Customer -> application.post.login: login(username, password)
+application.post.login -> apiGateway.login: login(username, password)
+apiGateway.login -> identityService.post.login: login(username, password)
+
+alt: "alt" {
+  class: frame
+
+  if login failed: "[if login failed]" {
+    class: frame
+
+    apiGateway.login <- identityService.post.login: login failed {class: return arrow}
+    application.post.login <- apiGateway.login: login failed {class: return arrow}
+
+    Customer <- application.post.login: notify login failed
+  }
+  if login successfully: "[if login successfully]" {
+    class: frame
+
+    apiGateway.login <- identityService.post.login: return code {class: return arrow}
+    application.post.login <- apiGateway.login: return code {class: return arrow}
+  }
+}
+
+# Request token
+application.post.requestToken -> apiGateway.requestToken: request token
+apiGateway.requestToken -> identityService.post.requestToken: request token
+apiGateway.requestToken <- identityService.post.requestToken: return access_token {class: return arrow}
+application.post.requestToken <- apiGateway.requestToken: request token {class: return arrow}
+
+# Request resource
+application.post.requestResource -> apiGateway.requestResource: resource request
+apiGateway.requestResource -> resourceService.get: resource request
+# Validate token
+identityService.validateToken <- resourceService.get: validate token
+identityService.validateToken -> resourceService.get: validate success {class: return arrow}
+# Continue request resource
+resourceService.get -> DB.get: request database
+resourceService.get <- DB.get: response {class: return arrow}
+apiGateway.requestResource <- resourceService.get: resource response {class: return arrow}
+application.post.requestResource <- apiGateway.requestResource: resource request {class: return resource}
+Customer <- application.post.requestResource: resource response {class: return arrow}
