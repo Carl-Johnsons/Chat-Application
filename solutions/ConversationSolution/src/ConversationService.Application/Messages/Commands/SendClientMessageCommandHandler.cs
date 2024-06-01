@@ -20,6 +20,7 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
         _unitOfWork = unitOfWork;
         _signalRService = signalRService;
     }
+    
 
     public async Task<Message> Handle(SendClientMessageCommand request, CancellationToken cancellationToken)
     {
@@ -31,6 +32,8 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
             Source = MESSAGE_CONSTANTS.Source.CLIENT,
             Active = true,
         };
+        //check conversation exist
+        //check file array has element
 
         _context.Messages.Add(message);
         await _unitOfWork.SaveChangeAsync(cancellationToken);

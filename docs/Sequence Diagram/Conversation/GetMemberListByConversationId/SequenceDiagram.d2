@@ -1,0 +1,54 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+conversationService: <<service>> \n conversationService
+
+DB: DB
+
+User -> application.get: 1. User request with access token
+application.get -> apiGateway.get: 2. User request with access token
+apiGateway.get -> conversationService.get: User request with access token
+
+conversationService.get -> DB.get: 3. Request database
+conversationService.get <- DB.get: 4. Database response {class: return arrow}
+
+apiGateWay.get <- conversationService.get: 5. return ConversationUser list {class: return arrow}
+application.get <- apiGateway.get: 6. return ConversationUser list {class: return arrow}
+User <- application.get: 7. return ConversationUser list {class: return arrow}

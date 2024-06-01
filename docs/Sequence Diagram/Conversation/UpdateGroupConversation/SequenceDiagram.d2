@@ -1,0 +1,64 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+conversationService: <<service>> \n conversationService
+
+DB: DB
+
+User -> application.get: 1. User request with access token
+application.get -> apiGateway.get: 2. User request with access token
+apiGateway.get -> conversationService.get: 3. User request with access token
+
+alt: "alt" {
+  class: frame
+  if memberCount less than 2: "[if conversation is not exist]" {
+    class: frame
+    apiGateway.get <- conversationService.get: 4A. return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 4A.1 return 400 status {class: return arrow}
+    User <- application.get: 4A.2 return 400 status {class: return arrow}
+  }
+  else: "[if conversation is exist]" {
+    conversationService.get -> DB.get: 4. Request database
+    conversationService.get <- DB.get: 5. Database response {class: return arrow}
+    apiGateway.get <- conversationService.get: 6. return 201 status {class: return arrow}
+    application.get <- apiGateway.get: 7. return 201 status {class: return arrow}
+    User <- application.get: 8. return 201 status {class: return arrow}
+  }
+}
