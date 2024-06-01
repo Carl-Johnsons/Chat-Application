@@ -1,0 +1,68 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+postService: <<service>> \n postService
+postInteraction: <<coordinator>> \n postInteraction
+
+DB: DB
+
+User -> application.get: 1. User request with access token
+application.get -> apiGateway.get: 2. User request with access token
+apiGateway.get -> postService.get: 3. Request create post interaction
+
+alt: "alt" {
+  class: frame
+  If post post id or interaction code not exist: "[If post post id or interaction code not exist]" {
+    class: frame
+    apiGateway.get <- postService.get: 4A. Return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 4A.1. Return 400 status {class: return arrow}
+    User <- application.get: 4A.2. Display error {class: return arrow}
+  }
+  If post post id or interaction code exist: "[If post post id or interaction code exist]" {
+    class: frame
+    postService.get -> postInteraction.get: 4. Create relation
+    postInteraction.get -> DB.get: 5. Request database
+    postService.get <- DB.get: 6. Database response {class: return arrow}
+    apiGateway.get <- postService.get: 7. return 201 status {class: return arrow}
+    application.get <- apiGateway.get: 8. return 201 status {class: return arrow}
+    User <- application.get: 9. return 201 status {class: return arrow}
+    User <- application.get: 9A.1. send notification to post's user {class: return arrow}
+  }
+}
