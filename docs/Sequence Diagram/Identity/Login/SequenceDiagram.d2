@@ -36,7 +36,7 @@ Customer: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-application: <<user interaction>> \n application
+application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 identityService: <<service>> \n identityService
 resourceService: <<service>> \n resourceService
@@ -54,40 +54,43 @@ Customer <- application.get: 6. return login page {class: return arrow}
 Customer -> application.post.login: 7. login(username, password)
 application.post.login -> apiGateway.login: 8. login(username, password)
 apiGateway.login -> identityService.post.login: 9. login(username, password)
+identityService.post.login -> DB.login: 10. request database
+identityService.post.login <- DB.login: 11. database response
+
 
 alt: "alt" {
   class: frame
 
-  if login failed: "[if login failed]" {
+  if account not exist: "[if account not exist]" {
     class: frame
 
-    apiGateway.login <- identityService.post.login: 10A. login failed {class: return arrow}
-    application.post.login <- apiGateway.login: 10A.1. login failed {class: return arrow}
-    Customer <- application.post.login: 10A.2. notify login failed
+    apiGateway.login <- identityService.post.login: 12A. login failed {class: return arrow}
+    application.post.login <- apiGateway.login: 12A.1. login failed {class: return arrow}
+    Customer <- application.post.login: 12A.2. notify login failed
   }
-  if login successfully: "[if login successfully]" {
+  if account exist: "[if account exist]" {
     class: frame
 
-    apiGateway.login <- identityService.post.login: 10. return code {class: return arrow}
+    apiGateway.login <- identityService.post.login: 12. return authorization code {class: return arrow}
   }
 }
-application.post.login <- apiGateway.login: 11. return code {class: return arrow}
+application.post.login <- apiGateway.login: 13. return authorization code {class: return arrow}
 
 # Request token
-application.post.requestToken -> apiGateway.requestToken: 12. request token
-apiGateway.requestToken -> identityService.post.requestToken: 13. request token
-apiGateway.requestToken <- identityService.post.requestToken: 14. return access_token {class: return arrow}
-application.post.requestToken <- apiGateway.requestToken: 15. request token {class: return arrow}
+application.post.requestToken -> apiGateway.requestToken: 14. request token
+apiGateway.requestToken -> identityService.post.requestToken: 15. request token
+apiGateway.requestToken <- identityService.post.requestToken: 16. return access_token {class: return arrow}
+application.post.requestToken <- apiGateway.requestToken: 17. return access_token {class: return arrow}
 
 # Request resource
-application.post.requestResource -> apiGateway.requestResource: 16. resource request
-apiGateway.requestResource -> resourceService.get: 17. resource request
+application.post.requestResource -> apiGateway.requestResource: 18. resource request
+apiGateway.requestResource -> resourceService.get: 19. resource request
 # Validate token
-identityService.validateToken <- resourceService.get: 18. validate token
-identityService.validateToken -> resourceService.get: 19. validate success {class: return arrow}
+identityService.validateToken <- resourceService.get: 20. validate token
+identityService.validateToken -> resourceService.get: 21. validate success {class: return arrow}
 # Continue request resource
-resourceService.get -> DB.get: 20. request database
-resourceService.get <- DB.get: 21. response {class: return arrow}
-apiGateway.requestResource <- resourceService.get: 22. resource response {class: return arrow}
-application.post.requestResource <- apiGateway.requestResource: 23. resource request {class: return resource}
-Customer <- application.post.requestResource: 24. resource response {class: return arrow}
+resourceService.get -> DB.get: 22. request database
+resourceService.get <- DB.get: 23. response {class: return arrow}
+apiGateway.requestResource <- resourceService.get: 24. resource response {class: return arrow}
+application.post.requestResource <- apiGateway.requestResource: 25. resource request {class: return resource}
+Customer <- application.post.requestResource: 26. resource response {class: return arrow}
