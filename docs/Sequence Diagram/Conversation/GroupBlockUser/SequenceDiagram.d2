@@ -51,10 +51,10 @@ opt: {
   class: frame
   if user is in group: "[if user is in group]" {
     class: frame
-    conversationService.get -> conversationService.get: 5A. kick user out of group
-    conversationService.get -> DB.get: 5A.1. Request database
-    conversationService.get <- DB.get: 5A.2. Database response {class: return arrow}
-    conversationService.get -> signalRService.get: 5A.3. notify all group member
+    conversationService.get -> conversationService.get.kick: 5A. kick user out of group
+    conversationService.get.kick -> DB.get: 5A.1. Request database
+    conversationService.get.kick <- DB.get: 5A.2. Database response {class: return arrow}
+    conversationService.get.kick -> signalRService.get: 5A.3. notify all group member
   }
 }
 alt: {

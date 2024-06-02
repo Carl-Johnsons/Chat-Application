@@ -44,11 +44,12 @@ DB: DB
 
 Admin -> application.get: 1. Admin request with access token
 application.get -> apiGateway.get: 2. Admin request with access token
-apiGateway.get -> conversationService.get: Request interaction emoji list
+apiGateway.get."3. validate token success"
+apiGateway.get -> conversationService.get: 4. Request interaction emoji list
 
-conversationService.get -> DB.get: 3. Request database
-conversationService.get <- DB.get: 4. Database response {class: return arrow}
+conversationService.get -> DB.get: 5. Request database
+conversationService.get <- DB.get: 6. Database response {class: return arrow}
 
-apiGateWay.get <- conversationService.get: 5. return interaction list {class: return arrow}
-application.get <- apiGateway.get: 6. return interaction list {class: return arrow}
-Admin <- application.get: 7. return interaction list {class: return arrow}
+apiGateWay.get <- conversationService.get: 7. return interaction list {class: return arrow}
+application.get <- apiGateway.get: 8. return interaction list {class: return arrow}
+Admin <- application.get: 9. return interaction list {class: return arrow}
