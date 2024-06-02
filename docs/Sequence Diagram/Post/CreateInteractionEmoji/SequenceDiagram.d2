@@ -45,23 +45,23 @@ DB: DB
 
 Admin -> application.get: 1. Admin request with access token
 application.get -> apiGateway.get: 2. Admin request with access token
-apiGateway.get -> postService.get: 3. Request create interaction emoji
+apiGateway.get."3. validate token success"
+apiGateway.get -> postService.get: 4. Request create interaction emoji
 
 alt: "alt" {
   class: frame
   If interaction code exist: "[If interaction code exist]" {
     class: frame
-    apiGateway.get <- postService.get: 4A. Return 400 status {class: return arrow}
-    application.get <- apiGateway.get: 4A.1. Return 400 status {class: return arrow}
-    Admin <- application.get: 4A.2. Display error {class: return arrow}
+    apiGateway.get <- postService.get: 5A. Return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 5A.1. Return 400 status {class: return arrow}
+    Admin <- application.get: 5A.2. Display error {class: return arrow}
   }
   If interaction code not exist: "[If interaction code not exist]" {
     class: frame
-    postService.get -> DB.get: 4. Request database
-    postService.get <- DB.get: 5. Database response {class: return arrow}
-    apiGateway.get <- postService.get: 6. return 201 status {class: return arrow}
-    application.get <- apiGateway.get: 7. return 201 status {class: return arrow}
-    Admin <- application.get: 8. return 201 status {class: return arrow}
-    chatHub.get <- apiGateway.get: 7A.1. send notification to post's user {class: return arrow}
+    postService.get -> DB.get: 5. Request database
+    postService.get <- DB.get: 6. Database response {class: return arrow}
+    apiGateway.get <- postService.get: 7. return 201 status {class: return arrow}
+    application.get <- apiGateway.get: 8. return 201 status {class: return arrow}
+    Admin <- application.get: 9. return 201 status {class: return arrow}
   }
 }
