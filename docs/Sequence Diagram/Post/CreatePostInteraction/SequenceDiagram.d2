@@ -37,6 +37,7 @@ User: {
 }
 
 application: <<user interaction>> \n chat application
+chatHub: <<coordinator>> \n chatHub
 apiGateway: <<coordinator>> \n apiGateway
 postService: <<service>> \n postService
 postInteraction: <<coordinator>> \n postInteraction
@@ -63,6 +64,6 @@ alt: "alt" {
     apiGateway.get <- postService.get: 7. return 201 status {class: return arrow}
     application.get <- apiGateway.get: 8. return 201 status {class: return arrow}
     User <- application.get: 9. return 201 status {class: return arrow}
-    User <- application.get: 9A.1. send notification to post's user {class: return arrow}
+    chatHub.get <- apiGateway.get: 8A.1. send notification to post's user {class: return arrow}
   }
 }

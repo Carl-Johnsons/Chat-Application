@@ -38,6 +38,7 @@ Admin: {
 
 application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
+chatHub: <<coordinator>> \n chatHub
 postService: <<service>> \n postService
 
 DB: DB
@@ -61,5 +62,6 @@ alt: "alt" {
     apiGateway.get <- postService.get: 6. return 201 status {class: return arrow}
     application.get <- apiGateway.get: 7. return 201 status {class: return arrow}
     Admin <- application.get: 8. return 201 status {class: return arrow}
+    chatHub.get <- apiGateway.get: 7A.1. send notification to post's user {class: return arrow}
   }
 }
