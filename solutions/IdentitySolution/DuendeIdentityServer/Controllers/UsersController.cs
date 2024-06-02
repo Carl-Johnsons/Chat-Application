@@ -103,16 +103,6 @@ public class UsersController : ControllerBase
     [HttpPost("block")]
     public async Task<IActionResult> Block([FromBody] BlockUserDTO blockUserDTO)
     {
-        // User in homepage
-
-        // User request block user -> APIGateway
-        // Api gateway -> IdentityService
-        // IdentityService -> DB: Request database
-
-        // User request block user <- APIGateway
-        // Api gateway <- IdentityService
-        // IdentityService <- DB
-
         var buInput = _mapper.Map<BlockUserDTO, UserBlock>(blockUserDTO);
         buInput.UserId = _httpContextAccessor.HttpContext.User.GetSubjectId(); 
 
@@ -159,7 +149,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("unblock")]
-    public async Task<IActionResult> Ubblock([FromBody] UnblockUserDTO unblockUserDTO)
+    public async Task<IActionResult> Unblock([FromBody] UnblockUserDTO unblockUserDTO)
     {
         var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
         var blockUserId = unblockUserDTO.UnblockUserId;
