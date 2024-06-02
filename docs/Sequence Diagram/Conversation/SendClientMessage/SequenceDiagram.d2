@@ -57,8 +57,11 @@ alt: {
     User <- application.get: 5A.2. Display error {class: return arrow}
   }
   if conversation is exist: "[if conversation is exist]" {
+    class: frame
     opt: {
+      class: frame
       if message has files: "[if message has files]" {
+        class: frame
         conversationService.get -> cloudinaryFileService.get: 6A. request to upload file with access token
         cloudinaryFileService.get."6A.1. validate token success"
         cloudinaryFileService.get -> DB.get: 6A.2. Request database

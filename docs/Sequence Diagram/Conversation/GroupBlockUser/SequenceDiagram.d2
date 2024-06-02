@@ -60,11 +60,13 @@ opt: {
 alt: {
   class: frame
   if user is not exist: "[if user is not exist]" {
+    class: frame
     apiGateway.get <- conversationService.get: 5A. return 400 status {class: return arrow}
     application.get <- apiGateway.get: 5A.1. return 400 status {class: return arrow}
     User <- application.get: 5A.2. Display error {class: return arrow}
   }
   if user is exist: "[if user is exist]" {
+    class: frame
     conversationService.get -> DB.get: Request database
     conversationService.get <- DB.get: Database response {class: return arrow}
 

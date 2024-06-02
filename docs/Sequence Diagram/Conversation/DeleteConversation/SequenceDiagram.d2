@@ -56,6 +56,7 @@ alt: "alt" {
     User <- application.get: 5A.2 return 400 status {class: return arrow}
   }
   else: "[if conversation is exist]" {
+    class: frame
     conversationService.get -> DB.get: 6. Request database
     conversationService.get <- DB.get: 7. Database response {class: return arrow}
     apiGateway.get <- conversationService.get: 6. return 201 status {class: return arrow}

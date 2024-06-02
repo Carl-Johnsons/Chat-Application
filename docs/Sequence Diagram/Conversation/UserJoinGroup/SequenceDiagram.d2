@@ -56,8 +56,11 @@ alt: {
     User <- application.get: 5A.2. Display error {class: return arrow}
   }
   if group is exist: "[if group is exist]" {
+    class: frame
     opt: {
+      class: frame
       if user is banned: "[if user is banned]" {
+        class: frame
         apiGateway.get <- conversationService.get: 6A. return 400 status {class: return arrow}
         application.get <- apiGateway.get: 6A.1. return 400 status {class: return arrow}
         User <- application.get: 6A.2. Display error {class: return arrow}
