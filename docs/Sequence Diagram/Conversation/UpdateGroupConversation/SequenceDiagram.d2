@@ -44,22 +44,23 @@ DB: DB
 
 User -> application.get: 1. User request with access token
 application.get -> apiGateway.get: 2. User request with access token
-apiGateway.get -> conversationService.get: 3. User request with access token
+apiGateway.get."3. validate token success"
+apiGateway.get -> conversationService.get: 4. User request with access token
 
 alt: "alt" {
   class: frame
   if memberCount less than 2: "[if conversation is not exist]" {
     class: frame
-    apiGateway.get <- conversationService.get: 4A. return 400 status {class: return arrow}
-    application.get <- apiGateway.get: 4A.1 return 400 status {class: return arrow}
-    User <- application.get: 4A.2 return 400 status {class: return arrow}
+    apiGateway.get <- conversationService.get: 5A. return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 5A.1. return 400 status {class: return arrow}
+    User <- application.get: 5A.2. return 400 status {class: return arrow}
   }
   else: "[if conversation is exist]" {
     class: frame
-    conversationService.get -> DB.get: 4. Request database
-    conversationService.get <- DB.get: 5. Database response {class: return arrow}
-    apiGateway.get <- conversationService.get: 6. return 201 status {class: return arrow}
-    application.get <- apiGateway.get: 7. return 201 status {class: return arrow}
-    User <- application.get: 8. return 201 status {class: return arrow}
+    conversationService.get -> DB.get: 6. Request database
+    conversationService.get <- DB.get: 7. Database response {class: return arrow}
+    apiGateway.get <- conversationService.get: 8. return 201 status {class: return arrow}
+    application.get <- apiGateway.get: 9. return 201 status {class: return arrow}
+    User <- application.get: 10. return 201 status {class: return arrow}
   }
 }

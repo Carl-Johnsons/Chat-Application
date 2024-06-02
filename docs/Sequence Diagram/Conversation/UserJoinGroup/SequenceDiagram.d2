@@ -57,7 +57,7 @@ alt: {
   }
   if group is exist: "[if group is exist]" {
     class: frame
-    opt: {
+    alt1: {
       class: frame
       if user is banned: "[if user is banned]" {
         class: frame
@@ -65,14 +65,16 @@ alt: {
         application.get <- apiGateway.get: 6A.1. return 400 status {class: return arrow}
         User <- application.get: 6A.2. Display error {class: return arrow}
       }
+      if user is not banned: "[if user is not banned]" {
+        conversationService.get -> DB.get: 7. Request database
+        conversationService.get <- DB.get: 8. Database response {class: return arrow}
+
+        conversationService.get -> signalRService.get: 9. notify all group member
+
+        apiGateway.get <- conversationService.get: 10. Return 201 status {class: return arrow}
+        application.get <- apiGateway.get: 11. Return 201 status {class: return arrow}
+        User <- application.get: 12. Return 201 status {class: return arrow}
+      }
     }
-    conversationService.get -> DB.get: 7. Request database
-    conversationService.get <- DB.get: 8. Database response {class: return arrow}
-
-    conversationService.get -> signalRService.get: 9. notify all group member
-
-    apiGateway.get <- conversationService.get: 10. Return 201 status {class: return arrow}
-    application.get <- apiGateway.get: 11. Return 201 status {class: return arrow}
-    User <- application.get: 12. Return 201 status {class: return arrow}
   }
 }
