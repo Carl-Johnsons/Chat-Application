@@ -38,30 +38,28 @@ User: {
 
 application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
-chatHub: <<coordinator>> \n chatHub
 postService: <<service>> \n postService
 
 DB: DB
 
 User -> application.get: 1. User request with access token
 application.get -> apiGateway.get: 2. User request with access token
-apiGateway.get -> postService.get: 3. Request create comment
+apiGateway.get -> postService.get: 3. Request get post by id
 
 alt: "alt" {
   class: frame
-  If post id not exist: "[If post id not exist]" {
+  If tag code not exist: "[If post code not exist]" {
     class: frame
     apiGateway.get <- postService.get: 4A. Return 400 status {class: return arrow}
     application.get <- apiGateway.get: 4A.1. Return 400 status {class: return arrow}
     User <- application.get: 4A.2. Display error {class: return arrow}
   }
-  If post id exist: "[If post id exist]" {
+  If tag code exist: "[If post code  exist]" {
     class: frame
     postService.get -> DB.get: 4. Request database
     postService.get <- DB.get: 5. Database response {class: return arrow}
-    apiGateway.get <- postService.get: 6. return 201 status {class: return arrow}
-    application.get <- apiGateway.get: 7. return 201 status {class: return arrow}
-    User <- application.get: 8. return 201 status {class: return arrow}
-    chatHub.get <- apiGateway.get: 8A.1. send notification to admin {class: return arrow}
+    apiGateway.get <- postService.get: 6. return post {class: return arrow}
+    application.get <- apiGateway.get: 7. return post {class: return arrow}
+    User <- application.get: 8. return post {class: return arrow}
   }
 }
