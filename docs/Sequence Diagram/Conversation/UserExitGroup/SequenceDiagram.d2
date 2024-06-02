@@ -39,7 +39,7 @@ User: {
 application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 conversationService: <<service>> \n conversationService
-
+signalRService: <<service>> \n signalRService
 DB: DB
 
 User -> application.get: 1. User request with access token
@@ -47,19 +47,11 @@ application.get -> apiGateway.get: 2. User request with access token
 apiGateway.get."3. validate token success"
 apiGateway.get -> conversationService.get: 4. User request with access token
 
-alt: "alt" {
-  class: frame
-  if memberCount less than 2: "[if conversation is not exist]" {
-    class: frame
-    apiGateway.get <- conversationService.get: 5A. return 400 status {class: return arrow}
-    application.get <- apiGateway.get: 5A.1 return 400 status {class: return arrow}
-    User <- application.get: 5A.2 return 400 status {class: return arrow}
-  }
-  else: "[if conversation is exist]" {
-    conversationService.get -> DB.get: 6. Request database
-    conversationService.get <- DB.get: 7. Database response {class: return arrow}
-    apiGateway.get <- conversationService.get: 6. return 201 status {class: return arrow}
-    application.get <- apiGateway.get: 8. return 201 status {class: return arrow}
-    User <- application.get: 9. return 201 status {class: return arrow}
-  }
-}
+conversationService.get -> DB.get: 5. Request database
+conversationService.get <- DB.get: 6. Database response {class: return arrow}
+
+conversationService.get -> signalRService.get: 7. notify all group member
+
+apiGateway.get <- conversationService.get: 8. Return 201 status {class: return arrow}
+application.get <- apiGateway.get: 9. Return 201 status {class: return arrow}
+User <- application.get: 10. Return 201 status {class: return arrow}

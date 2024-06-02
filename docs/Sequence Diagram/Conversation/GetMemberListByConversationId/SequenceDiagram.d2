@@ -44,11 +44,12 @@ DB: DB
 
 User -> application.get: 1. User request with access token
 application.get -> apiGateway.get: 2. User request with access token
-apiGateway.get -> conversationService.get: User request with access token
+apiGateway.get."3. validate token success"
+apiGateway.get -> conversationService.get: 4. User request with access token
 
-conversationService.get -> DB.get: 3. Request database
-conversationService.get <- DB.get: 4. Database response {class: return arrow}
+conversationService.get -> DB.get: 5. Request database
+conversationService.get <- DB.get: 6. Database response {class: return arrow}
 
-apiGateWay.get <- conversationService.get: 5. return ConversationUser list {class: return arrow}
-application.get <- apiGateway.get: 6. return ConversationUser list {class: return arrow}
-User <- application.get: 7. return ConversationUser list {class: return arrow}
+apiGateWay.get <- conversationService.get: 7. return ConversationUser list {class: return arrow}
+application.get <- apiGateway.get: 8. return ConversationUser list {class: return arrow}
+User <- application.get: 9. return ConversationUser list {class: return arrow}
