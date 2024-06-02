@@ -57,7 +57,7 @@ alt: {
   }
   if group is exist: "[if group is exist]" {
     class: frame
-    alt1: {
+    alt1: "alt" {
       class: frame
       if user is banned: "[if user is banned]" {
         class: frame
@@ -66,6 +66,7 @@ alt: {
         User <- application.get: 6A.2. Display error {class: return arrow}
       }
       if user is not banned: "[if user is not banned]" {
+        class: frame
         conversationService.get -> DB.get: 7. Request database
         conversationService.get <- DB.get: 8. Database response {class: return arrow}
 
