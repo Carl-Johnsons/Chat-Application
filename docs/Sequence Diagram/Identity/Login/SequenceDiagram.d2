@@ -29,7 +29,7 @@ classes: {
 
 shape: sequence_diagram
 
-Customer: {
+User: {
   shape: image
   width: 50
   height: 60
@@ -39,24 +39,24 @@ Customer: {
 application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 identityService: <<service>> \n identityService
-resourceService: <<service>> \n resourceService
 
 DB: DB
 
-Customer -> application.get: 1. User request resource
-application.get -> apiGateway.get: 2. User request resource
-apiGateway.get -> identityService.get: 3. User is unauthorized
+application.get."unauthorized": 1. UserUnauthorized
 
-apiGateWay.get <- identityService.get: 4. return login page {class: return arrow}
-application.get <- apiGateway.get: 5. return login page {class: return arrow}
-Customer <- application.get: 6. return login page {class: return arrow}
+User <- application.get: "2. return login page" {class: return arrow}
+
+opt1: "opt" {
+  class: frame
+
+  User."register": 3A. Register new account
+}
 # Login
-Customer -> application.post.login: 7. login(username, password)
-application.post.login -> apiGateway.login: 8. login(username, password)
-apiGateway.login -> identityService.post.login: 9. login(username, password)
-identityService.post.login -> DB.login: 10. request database
-identityService.post.login <- DB.login: 11. database response
-
+User -> application.post.login: 3. login(username, password)
+application.post.login -> apiGateway.login: 4. login(username, password)
+apiGateway.login -> identityService.post.login: 5. login(username, password)
+identityService.post.login -> DB.login: 6. request database
+identityService.post.login <- DB.login: 7. database response
 
 alt: "alt" {
   class: frame
@@ -64,33 +64,23 @@ alt: "alt" {
   if account not exist: "[if account not exist]" {
     class: frame
 
-    apiGateway.login <- identityService.post.login: 12A. login failed {class: return arrow}
-    application.post.login <- apiGateway.login: 12A.1. login failed {class: return arrow}
-    Customer <- application.post.login: 12A.2. notify login failed
+    apiGateway.login <- identityService.post.login: 8A. login failed {class: return arrow}
+    application.post.login <- apiGateway.login: 8A.1. login failed {class: return arrow}
+    User <- application.post.login: 8A.2. notify login failed
   }
   if account exist: "[if account exist]" {
     class: frame
 
-    apiGateway.login <- identityService.post.login: 12. return authorization code {class: return arrow}
+    apiGateway.login <- identityService.post.login: 8. return authorization code {class: return arrow}
   }
 }
-application.post.login <- apiGateway.login: 13. return authorization code {class: return arrow}
+application.post.login <- apiGateway.login: 9. return authorization code {class: return arrow}
 
 # Request token
-application.post.requestToken -> apiGateway.requestToken: 14. request token
-apiGateway.requestToken -> identityService.post.requestToken: 15. request token
-apiGateway.requestToken <- identityService.post.requestToken: 16. return access_token {class: return arrow}
-application.post.requestToken <- apiGateway.requestToken: 17. return access_token {class: return arrow}
+application.post.requestToken -> apiGateway.requestToken: 10. request token
+apiGateway.requestToken -> identityService.post.requestToken: 11. request token
+apiGateway.requestToken <- identityService.post.requestToken: 12. return access_token {class: return arrow}
+application.post.requestToken <- apiGateway.requestToken: 13. return access_token {class: return arrow}
 
-# Request resource
-application.post.requestResource -> apiGateway.requestResource: 18. resource request
-apiGateway.requestResource -> resourceService.get: 19. resource request
-# Validate token
-identityService.validateToken <- resourceService.get: 20. validate token
-identityService.validateToken -> resourceService.get: 21. validate success {class: return arrow}
-# Continue request resource
-resourceService.get -> DB.get: 22. request database
-resourceService.get <- DB.get: 23. response {class: return arrow}
-apiGateway.requestResource <- resourceService.get: 24. resource response {class: return arrow}
-application.post.requestResource <- apiGateway.requestResource: 25. resource request {class: return resource}
-Customer <- application.post.requestResource: 26. resource response {class: return arrow}
+application.post.requestToken."validate": "14. Validate token"
+

@@ -1,0 +1,59 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+
+DB: DB
+
+apiGateway.requestResource.validate -> identityService.validateToken: 1. validate token
+
+alt1: "alt" {
+  class: frame
+  if token is invalid: "[if token is invalid]" {
+    class: frame
+    apiGateway.requestResource.validate <- identityService.validateToken: 2A. validate failed {class: return arrow}
+    apiGateway.requestResource.validate."Login": 2A.1. Login
+  }
+  if token is valid: "[if token is valid]" {
+    class: frame
+    apiGateway.requestResource.validate <- identityService.validateToken: 2. validate success {class: return arrow}
+  }
+}
+
