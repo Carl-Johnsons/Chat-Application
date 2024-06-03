@@ -1,0 +1,55 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+notficationService: <<service>> \n notficationService
+
+DB: DB
+
+User -> application.get: 1. User request with access token
+application.get -> apiGateway.post: 2. User request with access token
+apiGateway.post."3. validate token success"
+apiGateway.post -> notficationService.post: 4. Request update user
+
+notficationService.post -> Db.updateNotfication: 6. Request database
+notficationService.post <- Db.updateNotfication: 7. Database response {class: return arrow}
+
+apiGateway.post <- notficationService.post: 8. return 204 status {class: return arrow}
+application.get <- apiGateway.post: 9. return 204 status {class: return arrow}
+User <- application.get: 10. notify update notification status successfully {class: return arrow}
