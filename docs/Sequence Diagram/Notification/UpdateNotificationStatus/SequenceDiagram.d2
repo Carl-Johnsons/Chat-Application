@@ -38,18 +38,18 @@ User: {
 
 application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
-notficationService: <<service>> \n notficationService
+notificationService: <<service>> \n notificationService
 
 DB: DB
 
 User -> application.get: 1. User request with access token
 application.get -> apiGateway.post: 2. User request with access token
 apiGateway.post."3. validate token success"
-apiGateway.post -> notficationService.post: 4. Request update user
+apiGateway.post -> notificationService.post: 4. Request update user
 
-notficationService.post -> Db.updateNotfication: 6. Request database
-notficationService.post <- Db.updateNotfication: 7. Database response {class: return arrow}
+notificationService.post -> Db.updateNotfication: 6. Request database
+notificationService.post <- Db.updateNotfication: 7. Database response {class: return arrow}
 
-apiGateway.post <- notficationService.post: 8. return 204 status {class: return arrow}
+apiGateway.post <- notificationService.post: 8. return 204 status {class: return arrow}
 application.get <- apiGateway.post: 9. return 204 status {class: return arrow}
 User <- application.get: 10. notify update notification status successfully {class: return arrow}
