@@ -34,3 +34,5 @@ dist
 .flaskenv*
 !.env.project
 !.env.vault
+# tinymce
+/public/tinymce/

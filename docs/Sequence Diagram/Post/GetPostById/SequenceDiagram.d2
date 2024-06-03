@@ -1,0 +1,66 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+postService: <<service>> \n postService
+
+DB: DB
+
+User -> application.get: 1. User request with access token
+application.get -> apiGateway.get: 2. User request with access token
+apiGateway.get."3. validate token success"
+apiGateway.get -> postService.get: 4. Request get post by id
+
+alt: "alt" {
+  class: frame
+  If tag code not exist: "[If post id not exist]" {
+    class: frame
+    apiGateway.get <- postService.get: 5A. Return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 5A.1. Return 400 status {class: return arrow}
+    User <- application.get: 5A.2. Display error {class: return arrow}
+  }
+  If tag code exist: "[If post id exist]" {
+    class: frame
+    postService.get -> DB.get: 5. Request database
+    postService.get <- DB.get: 6. Database response {class: return arrow}
+    apiGateway.get <- postService.get: 7. return post {class: return arrow}
+    application.get <- apiGateway.get: 8. return post {class: return arrow}
+    User <- application.get: 9. return post {class: return arrow}
+  }
+}
