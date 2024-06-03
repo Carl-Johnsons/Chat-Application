@@ -88,8 +88,8 @@ internal static class HostingExtensions
                 // register your IdentityServer with Google at https://console.developers.google.com
                 // enable the Google+ API
                 // set the redirect URI to https://localhost:5001/signin-google
-                options.ClientId = "1058685860534-cb6gsns7v19aqvbb8rgb438kf03i4jhf.apps.googleusercontent.com";
-                options.ClientSecret = "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";
+                options.ClientId = "";
+                options.ClientSecret = "";
             });
 
         services.AddLocalApiAuthentication();

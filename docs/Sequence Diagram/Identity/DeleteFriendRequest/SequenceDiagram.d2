@@ -45,9 +45,9 @@ DB: DB
 User -> application.post: 1. User request with access token
 application.post -> apiGateway.post: 2. User request with access token
 apiGateway.post."3. validate token success"
-apiGateway.post -> identityService.get: 4. Request delete friend request
+apiGateway.post -> identityService.post: 4. Request delete friend request
 
-identityService.get -> identityService.post.deleteFriendRequest: 5. Get friend request
+identityService.post -> identityService.post.deleteFriendRequest: 5. Get friend request
 identityService.post.deleteFriendRequest -> Db.unblockUser: 6. Request database
 identityService.post.deleteFriendRequest <- Db.unblockUser: 7. Database response {class: return arrow}
 
