@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Interaction> Interactions { get; set; }
     public DbSet<PostInteract> PostInteracts { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
+    public DbSet<PostReport> PostReports { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

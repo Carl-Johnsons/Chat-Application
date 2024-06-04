@@ -28,7 +28,8 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, Tag>
                     .SingleOrDefault();
         if (tag != null)
         {
-            _context.Tags.Add(tag);
+            tag.Value = request.Value;
+            tag.Code = request.Value.ToUpper();
         }
         await _unitOfWork.SaveChangeAsync(cancellationToken);
 
