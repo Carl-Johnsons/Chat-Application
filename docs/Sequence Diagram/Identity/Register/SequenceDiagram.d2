@@ -1,0 +1,68 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+Customer: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+
+DB: DB
+
+Customer -> application.get: 1. navigate to register page
+application.get -> apiGateway.get: 2. request register page
+apiGateWay.get -> identityService.get: 3. request register page
+apiGateWay.get <- identityService.get: 4. return register page {class: return arrow}
+application.get <- apiGateway.get: 5. return register page {class: return arrow}
+Customer <- application.get: 6. return register page {class: return arrow}
+
+# Register
+Customer -> application.post: 7. register new account
+application.post -> apiGateWay.post: 8. request register new account
+apiGateWay.post.register -> identityService.post.register: 9. request register new account
+identityService.post.register -> DB.register: 10. request database
+identityService.post.register <- DB.register: 11. database response {class: return arrow}
+apiGateWay.post.register <- identityService.post.register: 12. response 201 status {class: return arrow}
+
+application.post <- apiGateway.post: 13. return authorization code {class: return arrow}
+
+# Request token
+application.post.requestToken -> apiGateway.post.requestToken: 14. request token
+apiGateway.post.requestToken -> identityService.post.requestToken: 15. request token
+apiGateway.post.requestToken <- identityService.post.requestToken: 16. return access_token {class: return arrow}
+application.post.requestToken <- apiGateway.post.requestToken: 17. return access_token {class: return arrow}
+
+application.post.requestToken."18. Validate token"

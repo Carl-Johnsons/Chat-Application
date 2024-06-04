@@ -1,0 +1,122 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+
+DB: DB
+
+User -> application.get: 1. User request with access token
+application.get -> apiGateway.get: 2. User request with access token
+apiGateway.get."3. validate token success"
+apiGateway.get -> identityService.get: 4. Request block user
+
+identityService.get -> identityService.get.getUser: 5. GetUserByOd
+identityService.get.getUser -> Db.getUser: 6. Request database
+identityService.get.getUser <- Db.getUser: 7. Database response {class: return arrow}
+
+alt1: "alt" {
+  class: frame
+
+  if user not exist: "[if user not exist]" {
+    class: frame
+
+    apiGateway.get <- identityService.get: 8A. return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 8A.1. return 400 status {class: return arrow}
+    User <- application.get: 8A.2. Display error {class: return arrow}
+  }
+
+  if block user not exist: "[if block user not exist]" {
+    class: frame
+
+    apiGateway.get <- identityService.get: 8B. return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 8B.1. return 400 status {class: return arrow}
+    User <- application.get: 8B.2. Display error {class: return arrow}
+  }
+
+  if block user is user itself: "[if block user is user itself]" {
+    class: frame
+
+    apiGateway.get <- identityService.get: 8C. return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 8C.1. return 400 status {class: return arrow}
+    User <- application.get: 8C.2. Display error {class: return arrow}
+  }
+
+  if data validation success: "[if data validation success]" {
+    class: frame
+
+    identityService.get.getUser -> identityService.get.getUser.getUserBlock: 9. Get UserBlock relationship
+
+    identityService.get.getUser.getUserBlock -> DB.get: 10. Request database
+    identityService.get.getUser.getUserBlock <- DB.get: 11. Database response {class: return arrow}
+
+    alt3: "alt" {
+      class: frame
+      if user and block user relationship already existed: "[if user and block user relationship already existed]" {
+        class: frame
+        apiGateway.get <- identityService.get.getUser.getUserBlock: 12A. return 400 status {class: return arrow}
+        application.get <- apiGateway.get: 12A.1. return 400 status {class: return arrow}
+        User <- application.get: 12A.2. Display error {class: return arrow}
+      }
+      if user and block user relationship not existed: "[if user and block user relationship not existed]" {
+        class: frame
+        identityService.get.getUser.getUserBlock -> identityService.get.getUser: 13. Block user {class: return arrow}
+      }
+    }
+  }
+}
+
+identityService.get -> DB.get: 14. Request database
+identityService.get <- DB.get: 15. Database response {class: return arrow}
+
+alt2: "alt" {
+  class: frame
+  if name not exist: "[if name not exist]" {
+    class: frame
+    apiGateway.get <- identityService.get: 16A. return 404 status {class: return arrow}
+    application.get <- apiGateway.get: 16A.1 return 404 status {class: return arrow}
+    User <- application.get: 16A.2 return 404 status {class: return arrow}
+  }
+  if name exist: "[if name exist]" {
+    class: frame
+    apiGateway.get <- identityService.get: 16. return User {class: return arrow}
+    application.get <- apiGateway.get: 17. return User {class: return arrow}
+    User <- application.get: 18. return User {class: return arrow}
+  }
+}

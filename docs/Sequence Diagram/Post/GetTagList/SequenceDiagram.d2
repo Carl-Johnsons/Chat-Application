@@ -1,0 +1,55 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+Admin: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+conversationService: <<service>> \n postService
+
+DB: DB
+
+Admin -> application.get: 1. Admin request with access token
+application.get -> apiGateway.get: 2. Admin request with access token
+apiGateway.get."3. validate token success"
+apiGateway.get -> conversationService.get: 4. Request tag list
+
+conversationService.get -> DB.get: 5. Request database
+conversationService.get <- DB.get: 6. Database response {class: return arrow}
+
+apiGateWay.get <- conversationService.get: 7. return Tag list {class: return arrow}
+application.get <- apiGateway.get: 8. return Tag list {class: return arrow}
+Admin <- application.get: 9. return Tag list {class: return arrow}

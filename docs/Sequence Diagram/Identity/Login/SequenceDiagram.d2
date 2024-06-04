@@ -1,0 +1,86 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+
+DB: DB
+
+application.get."unauthorized": 1. UserUnauthorized
+
+User <- application.get: "2. return login page" {class: return arrow}
+
+opt1: "opt" {
+  class: frame
+
+  User."register": 3A. Register new account
+}
+# Login
+User -> application.post.login: 3. login(username, password)
+application.post.login -> apiGateway.login: 4. login(username, password)
+apiGateway.login -> identityService.post.login: 5. login(username, password)
+identityService.post.login -> DB.login: 6. request database
+identityService.post.login <- DB.login: 7. database response
+
+alt: "alt" {
+  class: frame
+
+  if account not exist: "[if account not exist]" {
+    class: frame
+
+    apiGateway.login <- identityService.post.login: 8A. login failed {class: return arrow}
+    application.post.login <- apiGateway.login: 8A.1. login failed {class: return arrow}
+    User <- application.post.login: 8A.2. notify login failed
+  }
+  if account exist: "[if account exist]" {
+    class: frame
+
+    apiGateway.login <- identityService.post.login: 8. return authorization code {class: return arrow}
+  }
+}
+application.post.login <- apiGateway.login: 9. return authorization code {class: return arrow}
+
+# Request token
+application.post.requestToken -> apiGateway.requestToken: 10. request token
+apiGateway.requestToken -> identityService.post.requestToken: 11. request token
+apiGateway.requestToken <- identityService.post.requestToken: 12. return access_token {class: return arrow}
+application.post.requestToken <- apiGateway.requestToken: 13. return access_token {class: return arrow}
+
+application.post.requestToken."validate": "14. Validate token"
+

@@ -1,0 +1,90 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+signalRService: <<service>> \n signalRService
+
+DB: DB
+
+User -> application.post: 1. User request with access token
+application.post -> apiGateway.post: 2. User request with access token
+apiGateway.post."3. validate token success"
+apiGateway.post -> identityService.post: 4. request send friend request
+identityService.post -> identityService.post.sendfr: 5. Send friend Request
+
+alt1: "alt" {
+  class: frame
+
+  if they are already friend: "[if they are already friend]" {
+    class: frame
+
+    apiGateway.post <- identityService.post.sendfr: 6A. return 400 status {class: return arrow}
+    application.post <- apiGateway.post: 6A.1. return 400 status {class: return arrow}
+    User <- application.post: 6A.2. display error {class: return arrow}
+  }
+
+  if current user already send the friend request: "[if current user already send the friend request]" {
+    class: frame
+
+    apiGateway.post <- identityService.post.sendfr: 6B. return 400 status {class: return arrow}
+    application.post <- apiGateway.post: 6B.1. return 400 status {class: return arrow}
+    User <- application.post: 6B.2. display error {class: return arrow}
+  }
+
+  if current user already have the pending friend request: "[if current user already send the friend request]" {
+    class: frame
+
+    apiGateway.post <- identityService.post.sendfr: 6C. return 400 status {class: return arrow}
+    application.post <- apiGateway.post: 6C.1. return 400 status {class: return arrow}
+    User <- application.post: 6C.2. display error {class: return arrow}
+  }
+
+  if data validate success: "[if data validate success]" {
+    class: frame
+    identityService.post.sendfr -> DB.get: 6. Request database
+  }
+}
+identityService.post.sendfr <- DB.get: 7. Database response {class: return arrow}
+
+identityService.post.sendfr -> signalRService.notification: 8. Notify other user
+
+apiGateway.post <- identityService.post: 9. return friendRequest {class: return arrow}
+application.post <- apiGateway.post: 10. return friendRequest {class: return arrow}
+User <- application.post: 11. return friendRequest {class: return arrow}

@@ -1,0 +1,103 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+User2: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+signalRService: <<coordinator>> \n signalRService
+serviceBus: <<coordinator>> \n serviceBus
+conversationService: <<service>> \n conversationService
+
+User -> application.get: 1. User request to make a call
+application.get -> signalRService.call: 2. Invoke calling action
+signalRService.call -> application.get: 3. Notify to user 2
+application.get -> User2: 4. Notify to user 2
+
+alt1: "alt" {
+  class: frame
+
+  if user2 hang up the call: "[if user2 hang up the call]" {
+    class: frame
+
+    User2 -> application.get: 5A. invoke hangup action
+    application.get -> signalRService.call: 5A.1. invoke hangup action
+
+    signalRService."SendMissCallEvent1": "5A.2. SendMissCallEvent"
+
+    application.get <- signalRService.call: 5A.3. Notify HangUpCall Event {class: return arrow}
+    User <- application.get: 5A.4. Notify user that user2 hang up the call {class: return arrow}
+  }
+
+  if user2 miss the call: "[if user2 miss the call]" {
+    class: frame
+
+    User2 -> application.get: 5B. invoke missCall action
+    application.get -> signalRService.call: 5B.1. invoke missCall action
+    signalRService."SendMissCallEvent2": "5B.2. SendMissCallEvent"
+
+    application.get <- signalRService.call: 5B.3. Notify HangUpCall Event {class: return arrow}
+    User <- application.get: 5B.4. Notify user that user2 miss the call {class: return arrow}
+  }
+
+  if user2 is already in the call: "[if user2 is already in the call]" {
+    class: frame
+
+    User2 -> application.get: 5C. invoke missCall action
+    application.get -> signalRService.call: 5C.1. invoke missCall action
+    signalRService."SendMissCallEvent3": "5C.2. SendMissCallEvent"
+
+    application.get <- signalRService.call: 5C.3. Notify Miss call Event {class: return arrow}
+    User <- application.get: 5C.4. Notify user that user2 miss the call {class: return arrow}
+  }
+
+  if user2 answer call: "[if user2 answer call]" {
+    class: frame
+
+    signalRService."SendSuccefullCallEvent"
+
+    User2 -> application.get: 5. invoke answer call action
+    application.get -> signalRService.call: 6. invoke answer call action
+  }
+}
+application.get <- signalRService.call: 7. Notify answer call Event {class: return arrow}
+User <- application.get: 8. Notify user that user2 that answer the call {class: return arrow}

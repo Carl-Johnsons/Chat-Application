@@ -1,0 +1,73 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+
+DB: DB
+
+User -> application.post: 1. User request with access token
+application.post -> apiGateway.post: 2. User request with access token
+apiGateway.post."3. validate token success"
+apiGateway.post -> identityService.post: 4. Request delete friend
+
+identityService.post -> identityService.post.deleteFriend: 5. Get friend
+identityService.post.deleteFriend -> Db.deleteFriend: 6. Request database
+identityService.post.deleteFriend <- Db.deleteFriend: 7. Database response {class: return arrow}
+
+alt1: "alt" {
+  class: frame
+  if friend not exist: "[if friend not exist]" {
+    class: frame
+    apiGateway.post <- identityService.post.deleteFriend.getUserBlock: 8A. return 400 status {class: return arrow}
+    application.post <- apiGateway.post: 8A.1. return 400 status {class: return arrow}
+    User <- application.post: 8A.2. Display error {class: return arrow}
+  }
+  if friend exist: "[if friend exist]" {
+    class: frame
+    identityService.post.deleteFriend.getUserBlock -> identityService.post.deleteFriend: 8. Delete friend
+  }
+}
+
+identityService.post.deleteFriend -> DB.get: 9. Request database
+identityService.post.deleteFriend <- DB.get: 10. Database response {class: return arrow}
+
+apiGateway.post <- identityService.post.deleteFriend: 11. return 204 status {class: return arrow}
+application.post <- apiGateway.post: 12. return 204 status {class: return arrow}
+User <- application.post: 13. Notify delete friend successfully {class: return arrow}
