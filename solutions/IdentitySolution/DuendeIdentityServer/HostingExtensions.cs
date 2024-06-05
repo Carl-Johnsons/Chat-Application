@@ -90,6 +90,10 @@ internal static class HostingExtensions
                 // set the redirect URI to https://localhost:5001/signin-google
                 options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
                 options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
+
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
             });
 
         services.AddLocalApiAuthentication();
