@@ -18,11 +18,11 @@ RUN dotnet restore "./PostSolution/src/PostService.API/PostService.API.csproj" -
 
 COPY ["PostSolution/src","PostSolution/src"]
 WORKDIR "/src/PostSolution/src/PostService.API"
-RUN dotnet build "./PostService.API.csproj" --no-restore -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./PostService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./PostService.API.csproj" --no-restore --no-build -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./PostService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

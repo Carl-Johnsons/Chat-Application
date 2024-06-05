@@ -6,6 +6,7 @@ USER app
 
 WORKDIR /app
 COPY --chown=app:app package.json package-lock.json* ./
+COPY --chown=app:app postinstall.ts ./
 RUN npm i
 COPY --chown=app:app . .
 CMD [ "npm", "run", "dev" ]

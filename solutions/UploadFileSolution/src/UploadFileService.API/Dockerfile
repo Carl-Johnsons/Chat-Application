@@ -16,11 +16,11 @@ COPY ["UploadFileSolution/src/UploadFileService.Infrastructure/UploadFileService
 RUN dotnet restore "./UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj" --verbosity normal
 COPY ["UploadFileSolution/src/", "UploadFileSolution/src/"]
 WORKDIR "/src/UploadFileSolution/src/UploadFileService.API"
-RUN dotnet build "./UploadFileService.API.csproj" --no-restore -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./UploadFileService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./UploadFileService.API.csproj" --no-restore --no-build -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./UploadFileService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
