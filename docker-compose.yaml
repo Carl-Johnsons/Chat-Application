@@ -66,6 +66,7 @@ services:
       test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
       interval: 10s
       timeout: 10s
+      start_period: 10s  
       retries: 5
 
   api-gateway:
