@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UploadFileService.Domain.Entities;
 using UploadFileService.Domain.Interfaces;
 
-namespace UploadFileService.Application.CoudinaryFiles.Queries;
+namespace UploadFileService.Application.CloudinaryFiles.Queries;
 
 public record GetAllCloudinaryFilesQuery : IRequest<IEnumerable<CloudinaryFile>>
 {

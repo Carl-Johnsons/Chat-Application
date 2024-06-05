@@ -13,6 +13,8 @@ COPY ["UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj
 COPY ["UploadFileSolution/src/UploadFileService.Application/UploadFileService.Application.csproj", "UploadFileSolution/src/UploadFileService.Application/"]
 COPY ["UploadFileSolution/src/UploadFileService.Domain/UploadFileService.Domain.csproj", "UploadFileSolution/src/UploadFileService.Domain/"]
 COPY ["UploadFileSolution/src/UploadFileService.Infrastructure/UploadFileService.Infrastructure.csproj", "UploadFileSolution/src/UploadFileService.Infrastructure/"]
+COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "UploadFileSolution/src/UploadFileService.Application/"]
+
 RUN dotnet restore "./UploadFileSolution/src/UploadFileService.API/UploadFileService.API.csproj" --verbosity normal
 COPY ["UploadFileSolution/src/", "UploadFileSolution/src/"]
 WORKDIR "/src/UploadFileSolution/src/UploadFileService.API"

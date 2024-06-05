@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using UploadFileService.Domain.Interfaces;
 
-namespace UploadFileService.Application.CoudinaryFiles.Commands;
+namespace UploadFileService.Application.CloudinaryFiles.Commands;
 public record DeleteCloudinaryFileCommand : IRequest<string>
 {
     [Required]
@@ -37,7 +37,7 @@ public class DeleteCloudinaryFileCommandHandler : IRequestHandler<DeleteCloudina
                 throw new Exception("Cloudinary File Id is null");
             }
 
-            var cloudinaryFile = await _context.CloudinaryFiles.Where(cf => cf.Id == Id).Include(cf=>cf.ExtensionType).SingleOrDefaultAsync();
+            var cloudinaryFile = await _context.CloudinaryFiles.Where(cf => cf.Id == Id).Include(cf => cf.ExtensionType).SingleOrDefaultAsync();
 
 
             if (cloudinaryFile == null || cloudinaryFile.PublicId == null)
@@ -67,17 +67,18 @@ public class DeleteCloudinaryFileCommandHandler : IRequestHandler<DeleteCloudina
             };
             var deleteResult = _cloudinary.Destroy(deleteParams);
 
-            if (deleteResult.StatusCode == HttpStatusCode.OK) {
+            if (deleteResult.StatusCode == HttpStatusCode.OK)
+            {
                 await Console.Out.WriteLineAsync("deleteok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 _context.CloudinaryFiles.Remove(cloudinaryFile);
                 await _unitOfWork.SaveChangeAsync(cancellationToken);
-                return "Delete file: " +cloudinaryFile.PublicId+" successful!";
+                return "Delete file: " + cloudinaryFile.PublicId + " successful!";
             }
         }
         catch (Exception ex)
         {
             await Console.Out.WriteLineAsync(ex.Message);
-            return "Delete file fail with exeption: "+ ex.Message;
+            return "Delete file fail with exeption: " + ex.Message;
         }
         return "Delete file fail";
     }

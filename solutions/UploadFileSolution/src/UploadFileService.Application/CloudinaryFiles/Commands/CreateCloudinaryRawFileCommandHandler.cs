@@ -9,7 +9,7 @@ using System.Net;
 using UploadFileService.Domain.Entities;
 using UploadFileService.Domain.Interfaces;
 
-namespace UploadFileService.Application.CoudinaryFiles.Commands;
+namespace UploadFileService.Application.CloudinaryFiles.Commands;
 public record CreateCloudinaryRawFileCommand : IRequest<CloudinaryFile?>
 {
     [Required]

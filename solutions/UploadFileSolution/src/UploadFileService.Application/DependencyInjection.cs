@@ -1,8 +1,8 @@
 ﻿using CloudinaryDotNet;
 using MassTransit;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using UploadFileService.Application.CloudinaryFiles.EventHandlers;
 
 namespace UploadFileService.Application;
 
@@ -13,8 +13,7 @@ public static class DependencyInjection
         services.AddMassTransit(busConfig =>
         {
             busConfig.SetKebabCaseEndpointNameFormatter();
-
-
+            busConfig.AddConsumer<UploadMultipleFileConsumer>();
             busConfig.UsingRabbitMq((context, config) =>
             {
                 config.Host(new Uri("amqp://rabbitmq/"), h =>
@@ -23,6 +22,10 @@ public static class DependencyInjection
                     h.Password("pass");
                 });
 
+                config.ReceiveEndpoint("upload-multiple-file-event-queue", e =>
+                {
+                    e.ConfigureConsumer<UploadMultipleFileConsumer>(context);
+                });
                 config.ConfigureEndpoints(context);
             });
         });

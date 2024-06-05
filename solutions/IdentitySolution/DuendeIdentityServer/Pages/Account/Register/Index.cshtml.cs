@@ -1,10 +1,15 @@
+using Contract.DTOs;
+using Contract.Event.UploadEvent;
+using Contract.Event.UploadEvent.EventModel;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using DuendeIdentityServer.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -21,6 +26,7 @@ public class Index : PageModel
     private readonly IEventService _events;
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IIdentityProviderStore _identityProviderStore;
+    private readonly IBus _bus;
 
     public RegisterViewModel View { get; set; } = default!;
 
@@ -33,7 +39,8 @@ public class Index : PageModel
         IIdentityProviderStore identityProviderStore,
         IEventService events,
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        IBus bus)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -41,6 +48,7 @@ public class Index : PageModel
         _schemeProvider = schemeProvider;
         _identityProviderStore = identityProviderStore;
         _events = events;
+        _bus = bus;
     }
 
     public async Task<IActionResult> OnGet(string? returnUrl)
@@ -93,12 +101,44 @@ public class Index : PageModel
 
         if (ModelState.IsValid)
         {
+            var requestClient = _bus.CreateRequestClient<UploadMultipleFileEvent>();
+
+            var avtFileStreamEvent = new FileStreamEvent
+            {
+                FileName = Input.AvatarImage.FileName,
+                ContentType = Input.AvatarImage.ContentType,
+                Stream = new BinaryReader(Input.AvatarImage.OpenReadStream()).ReadBytes((int)Input.AvatarImage.Length)
+            };
+
+            var bgFileStreamEvent = new FileStreamEvent
+            {
+                FileName = Input.BackgroundImage.FileName,
+                ContentType = Input.BackgroundImage.ContentType,
+                Stream = new BinaryReader(Input.BackgroundImage.OpenReadStream()).ReadBytes((int)Input.BackgroundImage.Length)
+            };
+
+            await Console.Out.WriteLineAsync("############################################################################");
+            await Console.Out.WriteLineAsync(avtFileStreamEvent.ContentType+" "+avtFileStreamEvent.FileName + " " + avtFileStreamEvent.Stream.Length);
+            await Console.Out.WriteLineAsync(bgFileStreamEvent.ContentType + " " + bgFileStreamEvent.FileName + " " + bgFileStreamEvent.Stream.Length);
+            await Console.Out.WriteLineAsync("############################################################################");
+            var response = await requestClient.GetResponse<UploadMultipleFileEventResponseDTO>(new UploadMultipleFileEvent
+            {
+                FileStreamEvents = [avtFileStreamEvent, bgFileStreamEvent]
+            });
+
+            if (response == null || response.Message.Files.Count() != 2)
+            {
+                throw new Exception("Invalid upload file response");
+            }
+            var AvtUrl = response.Message.Files.ToList()[0].Url;
+            var BgUrl = response.Message.Files.ToList()[1].Url;
+
             var user = new ApplicationUser
             {
                 UserName = Input.Username,
                 Email = Input.Email,
-                AvatarUrl = Input.AvatarUrl,
-                BackgroundUrl = Input.BackgroundUrl,
+                AvatarUrl = AvtUrl,
+                BackgroundUrl = BgUrl,
                 Dob = Input.Dob,
                 Gender = Input.Gender,
                 Name = Input.Name,

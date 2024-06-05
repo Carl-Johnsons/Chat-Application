@@ -1,7 +1,6 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
@@ -10,38 +9,54 @@ using UploadFileService.Domain.Entities;
 using UploadFileService.Domain.Interfaces;
 
 namespace UploadFileService.Application.CloudinaryFiles.Commands;
-public record CreateCloudinaryImageFileCommand : IRequest<CloudinaryFile?>
+public record CreateCloudinaryImageFileInByteCommand : IRequest<CloudinaryFile?>
 {
     [Required]
-    public IFormFile FormFile { get; init; } = null!;
+    public string FileName { get; init; } = null!; 
+    [Required]
+    public string ContentType { get; init; } = null!;
+    [Required]
+    public byte[] Stream { get; init; } = null!;
 }
-public class CreateCloudinaryImageFileCommandHandler : IRequestHandler<CreateCloudinaryImageFileCommand, CloudinaryFile?>
+public class CreateCloudinaryImageFileInByteCommandHandler : IRequestHandler<CreateCloudinaryImageFileInByteCommand, CloudinaryFile?>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Cloudinary _cloudinary;
 
-    public CreateCloudinaryImageFileCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, Cloudinary cloudinary)
+    public CreateCloudinaryImageFileInByteCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, Cloudinary cloudinary)
     {
         _context = context;
         _unitOfWork = unitOfWork;
         _cloudinary = cloudinary;
     }
 
-    public async Task<CloudinaryFile?> Handle(CreateCloudinaryImageFileCommand request, CancellationToken cancellationToken)
+    public async Task<CloudinaryFile?> Handle(CreateCloudinaryImageFileInByteCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            var formFile = request.FormFile;
+            var stream = request.Stream;
+            var contentType = request.ContentType;
+            var fileName = request.FileName;
 
-            if (formFile == null || formFile.Length == 0)
+            if (stream == null || stream.Length == 0)
             {
                 throw new Exception("File is null exception");
-
             }
 
-            string fileName = formFile.FileName;
-            Stream fileStream = formFile.OpenReadStream();
+
+            if (contentType == null || contentType.Length == 0)
+            {
+                throw new Exception("File content type is null exception");
+            }
+
+
+            if (fileName == null || fileName.Length == 0)
+            {
+                throw new Exception("File name is null exception");
+            }
+
+            Stream fileStream = new MemoryStream(stream);
 
             if (getFileType(fileName) != "Image")
             {
@@ -62,7 +77,7 @@ public class CreateCloudinaryImageFileCommandHandler : IRequestHandler<CreateClo
             {
                 string publicId = uploadResult.PublicId;
                 string name = fileName;
-                long size = formFile.Length;
+                long size = fileStream.Length;
                 string url = uploadResult.Url.ToString();
                 string extensionValue = Path.GetExtension(fileName);
                 var extensionType = await _context.ExtensionTypes.Where(et => et.Value == extensionValue)
@@ -99,14 +114,6 @@ public class CreateCloudinaryImageFileCommandHandler : IRequestHandler<CreateClo
                     _context.CloudinaryFiles.Add(cloudinaryFile);
                 }
             }
-
-            //var extensionType = request.ExtensionType;
-            //extensionType.Code = extensionType.Value.Replace(".", "").ToUpper();
-            //Console.WriteLine(JsonConvert.SerializeObject(extensionType));
-            //_context.ExtensionTypes.Add(request.ExtensionType);
-
-            //var result = JsonConvert.DeserializeObject(uploadResult.JsonObj.ToString());
-
             await _unitOfWork.SaveChangeAsync(cancellationToken);
             return cloudinaryFile;
         }

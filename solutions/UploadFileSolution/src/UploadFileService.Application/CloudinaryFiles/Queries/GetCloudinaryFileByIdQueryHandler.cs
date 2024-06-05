@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using UploadFileService.Domain.Entities;
 using UploadFileService.Domain.Interfaces;
 
-namespace UploadFileService.Application.CoudinaryFiles.Queries;
+namespace UploadFileService.Application.CloudinaryFiles.Queries;
 
 public record GetCloudinaryFileByIdQuery : IRequest<CloudinaryFile?>
 {

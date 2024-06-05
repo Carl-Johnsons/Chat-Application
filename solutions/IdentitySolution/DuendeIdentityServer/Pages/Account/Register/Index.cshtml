@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form asp-page="/Account/Register/Index">
+                        <form asp-page="/Account/Register/Index" enctype="multipart/form-data">
                             <input type="hidden" asp-for="Input.ReturnUrl" />
 
                             <div class="form-group">
@@ -48,15 +48,15 @@
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="Input.AvatarUrl" class="control-label"></label>
-                                <input asp-for="Input.AvatarUrl" class="form-control" />
-                                <span asp-validation-for="Input.AvatarUrl" class="text-danger"></span>
+                                <label asp-for="Input.AvatarImage" class="control-label"></label>
+                                <input asp-for="Input.AvatarImage" class="form-control" type="file" accept="image/*"/>
+                                <span asp-validation-for="Input.AvatarImage" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="Input.BackgroundUrl" class="control-label"></label>
-                                <input asp-for="Input.BackgroundUrl" class="form-control" />
-                                <span asp-validation-for="Input.BackgroundUrl" class="text-danger"></span>
+                                <label asp-for="Input.BackgroundImage" class="control-label"></label>
+                                <input asp-for="Input.BackgroundImage" class="form-control" type="file" accept="image/*"/>
+                                <span asp-validation-for="Input.BackgroundImage" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">

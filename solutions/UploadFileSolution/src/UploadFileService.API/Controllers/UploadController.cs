@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using UploadFileService.Application.CoudinaryFiles.Commands;
-using UploadFileService.Application.CoudinaryFiles.Queries;
+using UploadFileService.Application.CloudinaryFiles.Commands;
+using UploadFileService.Application.CloudinaryFiles.Queries;
 using UploadFileService.Domain.DTOs;
 
 namespace UploadFileService.API.Controllers;
