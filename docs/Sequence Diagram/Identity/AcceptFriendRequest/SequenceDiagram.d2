@@ -1,0 +1,88 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+conversationService: <<service>> \n conversationService
+serviceBus: <<coordinator>> \n serviceBus
+signalRService: <<coordinator>> \n signalRService
+
+DB: DB
+
+User -> application.post: 1. User request with access token
+application.post -> apiGateway.post: 2. User request with access token
+apiGateway.post."3. validate token success"
+apiGateway.post -> identityService.post: 4. Request accept friend request
+
+identityService.post -> identityService.post.GetFriendRequest: 5. Get Friend Request
+identityService.post.GetFriendRequest -> Db.GetFriendRequest: 6. Request database
+identityService.post.GetFriendRequest <- Db.GetFriendRequest: 7. Database response {class: return arrow}
+
+alt1: "alt" {
+  class: frame
+
+  if friend request id not exist: "[if friend request id not exist]" {
+    class: frame
+
+    apiGateway.post <- identityService.post.GetFriendRequest: 8A. return 400 status {class: return arrow}
+    application.post <- apiGateway.post: 8A.1. return 400 status {class: return arrow}
+    User <- application.post: 8A.2. Display error {class: return arrow}
+  }
+
+  if friend request id exist: "[if friend request id exist]" {
+    class: frame
+
+    identityService.post.GetFriendRequest -> identityService.post.GetFriendRequest.acceptFriendRequest: 9. Accept friend request
+
+    identityService.post.GetFriendRequest.acceptFriendRequest -> DB.acceptFriendRequest: 10. Request database
+    identityService.post.GetFriendRequest.acceptFriendRequest <- DB.acceptFriendRequest: 11. Database response {class: return arrow}
+  }
+}
+
+identityService.post -> serviceBus.publishEndpoint: "12. Publish friendCreatedEvent event"
+serviceBus.publishEndpoint -> conversationService.consumeEvent: "13. Create conversation"
+conversationService.consumeEvent -> Db.createConversation: "14. Request database"
+conversationService.consumeEvent <- Db.createConversation: "15. Database response" {class: return arrow}
+conversationService.consumeEvent -> signalRService.notifyConversationEvent: "16. Notify to all member in the conversation"
+
+identityService.post -> signalRService.notifyFriendRequestEvent: "17. Notify to all member to update friend request list"
+
+apiGateway.post <- identityService.post: 18. return Friend {class: return arrow}
+application.post <- apiGateway.post: 19. return Friend {class: return arrow}
+User <- application.post: 20. return Friend {class: return arrow}

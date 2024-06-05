@@ -47,7 +47,7 @@ DB: "DB" {
 User -> application.get: 1. User request with access token
 application.get -> apiGateway.get: 2. User request with access token
 apiGateway.get."3. validate token success"
-apiGateway.get -> identityService.get: 4. Request update user
+apiGateway.get -> identityService.get: 4. Request block user
 
 identityService.get -> identityService.get.getUser: 5. GetUserByOd
 identityService.get.getUser -> Db.getUser: 6. Request database
