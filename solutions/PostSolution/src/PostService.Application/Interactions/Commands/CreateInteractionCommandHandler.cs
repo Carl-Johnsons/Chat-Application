@@ -1,35 +1,34 @@
 ﻿using MediatR;
 
-namespace PostService.Application.Interactions.Commands
+namespace PostService.Application.Interactions.Commands;
+
+public class CreateInteractionCommand : IRequest<Interaction>
 {
-    public class CreateInteractionCommand : IRequest<Interaction>
+    public string Value { get; init; } = null!;
+}
+
+public class CreateInteractionCommandHandler : IRequestHandler<CreateInteractionCommand, Interaction>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateInteractionCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
     {
-        public string Value { get; init; } = null!;
+        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
-    public class CreateInteractionCommandHandler : IRequestHandler<CreateInteractionCommand, Interaction>
+    public async Task<Interaction> Handle(CreateInteractionCommand request, CancellationToken cancellationToken)
     {
-        private readonly IApplicationDbContext _context;
-        private readonly IUnitOfWork _unitOfWork;
-
-        public CreateInteractionCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+        Interaction interaction = new Interaction 
         {
-            _context = context;
-            _unitOfWork = unitOfWork;
-        }
+            Value = request.Value,
+            Code = request.Value.ToUpper()
+        };
 
-        public async Task<Interaction> Handle(CreateInteractionCommand request, CancellationToken cancellationToken)
-        {
-            Interaction interaction = new Interaction 
-            {
-                Value = request.Value,
-                Code = request.Value.ToUpper()
-            };
+        _context.Interactions.Add(interaction);
+        await _unitOfWork.SaveChangeAsync();
 
-            _context.Interactions.Add(interaction);
-            await _unitOfWork.SaveChangeAsync();
-
-            return interaction;
-        }
+        return interaction;
     }
 }

@@ -7,6 +7,8 @@ using PostService.Domain.DTOs;
 
 namespace PostService.API.Controllers;
 
+[Route("api/post/interaction")]
+[ApiController]
 public class InteractionsCotroller : BaseApiController
 {
     public InteractionsCotroller(ISender sender, IHttpContextAccessor httpContextAccessor) : base(sender, httpContextAccessor)
