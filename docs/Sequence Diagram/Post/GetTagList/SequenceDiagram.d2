@@ -40,7 +40,9 @@ application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 conversationService: <<service>> \n postService
 
-DB: DB
+DB: "DB" {
+  shape: cylinder
+}
 
 Admin -> application.get: 1. Admin request with access token
 application.get -> apiGateway.get: 2. Admin request with access token

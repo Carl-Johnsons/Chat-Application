@@ -40,7 +40,9 @@ application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 identityService: <<service>> \n identityService
 
-DB: DB
+DB: "DB" {
+  shape: cylinder
+}
 
 User -> application.post: 1. User request with access token
 application.post -> apiGateway.post: 2. User request with access token
