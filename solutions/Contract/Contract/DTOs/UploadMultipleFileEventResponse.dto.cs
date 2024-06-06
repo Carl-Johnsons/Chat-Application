@@ -7,5 +7,5 @@ public class UploadMultipleFileEventResponseDTO
 {
     [Required]
     [JsonProperty("files")]
-    public IEnumerable<UploadFileEventResponseDTO> Files { get; set; } = null!;
+    public List<UploadFileEventResponseDTO> Files { get; set; } = null!;
 }

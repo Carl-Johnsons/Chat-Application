@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 
 namespace DuendeIdentityServer.Pages.Account.Register;
 
@@ -117,21 +118,19 @@ public class Index : PageModel
                 Stream = new BinaryReader(Input.BackgroundImage.OpenReadStream()).ReadBytes((int)Input.BackgroundImage.Length)
             };
 
-            await Console.Out.WriteLineAsync("############################################################################");
-            await Console.Out.WriteLineAsync(avtFileStreamEvent.ContentType+" "+avtFileStreamEvent.FileName + " " + avtFileStreamEvent.Stream.Length);
-            await Console.Out.WriteLineAsync(bgFileStreamEvent.ContentType + " " + bgFileStreamEvent.FileName + " " + bgFileStreamEvent.Stream.Length);
-            await Console.Out.WriteLineAsync("############################################################################");
             var response = await requestClient.GetResponse<UploadMultipleFileEventResponseDTO>(new UploadMultipleFileEvent
             {
                 FileStreamEvents = [avtFileStreamEvent, bgFileStreamEvent]
             });
 
-            if (response == null || response.Message.Files.Count() != 2)
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(response));
+
+            if (response == null || response.Message.Files.Count != 2)
             {
                 throw new Exception("Invalid upload file response");
             }
-            var AvtUrl = response.Message.Files.ToList()[0].Url;
-            var BgUrl = response.Message.Files.ToList()[1].Url;
+            var AvtUrl = response.Message.Files[0].Url;
+            var BgUrl = response.Message.Files[1].Url;
 
             var user = new ApplicationUser
             {
@@ -182,9 +181,10 @@ public class Index : PageModel
                     throw new ArgumentException("invalid return URL");
                 }
             }
-
+            await Console.Out.WriteLineAsync("InvalidCredentialsErrorMessage ********************************************");
             ModelState.AddModelError(string.Empty, RegisterOptions.InvalidCredentialsErrorMessage);
         }
+        // clear uploaded cloudinary file
 
         // something went wrong, show form with error
         await BuildModelAsync(Input.ReturnUrl);

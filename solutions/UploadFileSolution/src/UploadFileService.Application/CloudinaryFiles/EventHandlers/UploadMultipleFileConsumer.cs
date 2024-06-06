@@ -2,10 +2,11 @@
 using Contract.Event.UploadEvent;
 using MassTransit;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using UploadFileService.Application.CloudinaryFiles.Commands;
-using UploadFileService.Domain.Entities;
 using UploadFileService.Domain.Interfaces;
+
 
 namespace UploadFileService.Application.CloudinaryFiles.EventHandlers;
 
@@ -24,80 +25,71 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
     {
         await Console.Out.WriteLineAsync("======================================");
         await Console.Out.WriteLineAsync("UploadFile-service consume the message-queue");
-        var fileStreamEvent = context.Message.FileStreamEvents.ToList();
-        var responseFiles = new List<CloudinaryFile>(fileStreamEvent.Count());
-        var extensionCodes = new List<string>(fileStreamEvent.Count());
+        var fileStreamEvents = context.Message.FileStreamEvents;
+        List<IFormFile> formFiles = new List<IFormFile>(fileStreamEvents.Count);
 
-        await Console.Out.WriteLineAsync(fileStreamEvent.Count + "list" + fileStreamEvent.Count());
-        for (int i = 0; i < fileStreamEvent.Count(); i++)
+        await Console.Out.WriteLineAsync(fileStreamEvents.Count + "list" + fileStreamEvents.Count);
+        for (int i = 0; i < fileStreamEvents.Count; i++)
         {
-            await Console.Out.WriteLineAsync(fileStreamEvent[i].FileName);
-            await Console.Out.WriteLineAsync(fileStreamEvent[i].ContentType);
-            await Console.Out.WriteLineAsync(fileStreamEvent[i].Stream.Length+"");
+            await Console.Out.WriteLineAsync(fileStreamEvents[i].FileName);
+            await Console.Out.WriteLineAsync(fileStreamEvents[i].ContentType);
+            await Console.Out.WriteLineAsync(fileStreamEvents[i].Stream.Length+"");
             await Console.Out.WriteLineAsync("**********************************************************");
-            responseFiles.Add(new CloudinaryFile());
-            extensionCodes.Add("");
         }
-        await Console.Out.WriteLineAsync(responseFiles.Count + " list "+responseFiles.Count());
 
-        //var tasks = new List<Task>();
-        
-        for (int i = 0; i < fileStreamEvent.Count(); i++)
+        for(int i = 0; i < fileStreamEvents.Count; i++)
         {
-            //var task = Task.Run(async () =>
-            //{
-            //    var response = await _sender.Send(new CreateCloudinaryImageFileInByteCommand
-            //    {
-            //        FileName = fileStreamEvent[i].FileName,
-            //        ContentType = fileStreamEvent[i].ContentType,
-            //        Stream = fileStreamEvent[i].Stream,
-            //    });
-            //    responseFiles[i] = response!;
-            //    extensionCodes[i] = _context.ExtensionTypes.Where(e => e.Id == response!.ExtensionTypeId).SingleOrDefault()!.Code;
-            //    await Console.Out.WriteLineAsync(i+"");
-            //});
-            //tasks.Add(task);
-           
-                var response = await _sender.Send(new CreateCloudinaryImageFileInByteCommand
-                {
-                    FileName = fileStreamEvent[i].FileName,
-                    ContentType = fileStreamEvent[i].ContentType,
-                    Stream = fileStreamEvent[i].Stream,
-                });
-                responseFiles[i] = response!;
-                extensionCodes[i] = (await _context.ExtensionTypes.Where(e => e.Id == response!.ExtensionTypeId).SingleOrDefaultAsync())!.Code;
-          
-
+            var fileStreamEvent = fileStreamEvents[i];
+            var fileStream = new MemoryStream(fileStreamEvent.Stream);
+            IFormFile formFile = new FormFile(fileStream, 0, fileStreamEvent.Stream.Length, fileStreamEvent.FileName, fileStreamEvent.FileName)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = fileStreamEvent.ContentType,
+            };
+            formFiles.Add(formFile);
+            await Console.Out.WriteLineAsync("add to list IfornFile" + i);
         }
-        //await Task.WhenAll(tasks);
+        await Console.Out.WriteLineAsync("FormFile element count:"+formFiles.Count);
+        await Console.Out.WriteLineAsync("Going create multiple image command");
+        var response = await _sender.Send(new CreateMultipleCloudinaryImageFileCommand
+        {
+            FormFiles = formFiles
+        });
 
         var result = new UploadMultipleFileEventResponseDTO();
+        result.Files = new List<UploadFileEventResponseDTO>(fileStreamEvents.Count);
 
-
-        for (int i = 0; i < responseFiles.Count; i++)
+        if (response == null || !response.Any())
         {
-            var fileDTO = new UploadFileEventResponseDTO
-            {
-                Id = responseFiles[i].Id,
-                Name = responseFiles[i].Name,
-                Size = responseFiles[i].Size,
-                Url = responseFiles[i].Url,
-                ExtensionTypeCode = extensionCodes[i]
-            };
-            result.Files.ToList().Add(fileDTO);
+            throw new ArgumentNullException(nameof(response), "The response file list is null or empty.");
         }
 
+        for (int i = 0; i < response.Count; i++)
+        {
+            await Console.Out.WriteLineAsync("extension tple id of :"+i+" "+response[i].ExtensionTypeId);
+            
+            var extensionTypeCode = (await _context.ExtensionTypes.Where(et => et.Id == response[i].ExtensionTypeId).SingleOrDefaultAsync())?.Code!;
+            var fileDTO = new UploadFileEventResponseDTO
+            {
+                Id = response[i].Id,
+                Name = response[i].Name,
+                Size = response[i].Size,
+                Url = response[i].Url,
+                ExtensionTypeCode = extensionTypeCode
+            };
+            result.Files.Add(fileDTO);
+        }
 
+        await Console.Out.WriteLineAsync("$$$$$$$$$$$$$$$$$$$$$$$$result:"+ result.Files.Count);
 
-        for (int i = 0; i < responseFiles.Count; i++)
+        for (int i = 0; i < response.Count; i++)
         {
             await Console.Out.WriteLineAsync("Result:"+i);
-            await Console.Out.WriteLineAsync("id: "+ responseFiles[i].Id);
-            await Console.Out.WriteLineAsync("name: " + responseFiles[i].Name);
-            await Console.Out.WriteLineAsync("size: " + responseFiles[i].Size);
-            await Console.Out.WriteLineAsync("url: " + responseFiles[i].Url);
-            await Console.Out.WriteLineAsync("etCode: " + extensionCodes[i]);
-           
+            await Console.Out.WriteLineAsync("id: "+ result.Files[i].Id);
+            await Console.Out.WriteLineAsync("name: " + result.Files[i].Name);
+            await Console.Out.WriteLineAsync("size: " + result.Files[i].Size);
+            await Console.Out.WriteLineAsync("url: " + result.Files[i].Url);
+            await Console.Out.WriteLineAsync("etCode: " + result.Files[i].ExtensionTypeCode);
         }
 
         await Console.Out.WriteLineAsync("UploadFile-service done the request");
