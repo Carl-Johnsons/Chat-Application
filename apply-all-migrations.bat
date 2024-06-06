@@ -36,6 +36,13 @@ cd .\solutions\UploadFileSolution\src\UploadFileService.Infrastructure &&^
 dotnet ef database update &&^
 cd "%project_root%"
 
+SET DB=%PostDB%
+echo [96mApplying Post Service Migrations ....[0m &&^
+echo [96mDB=[0m'%DB%' &&^
+cd .\solutions\UploadFileSolution\src\UploadFileService.Infrastructure &&^
+dotnet ef database update &&^
+cd "%project_root%"
+
 endlocal
 
 
