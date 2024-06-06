@@ -40,7 +40,9 @@ application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 conversationService: <<service>> \n conversationService
 signalRService: <<service>> \n signalRService
-DB: DB
+DB: "DB" {
+  shape: cylinder
+}
 
 User -> application.get: 1. User request with access token
 application.get -> apiGateway.get: 2. User request with access token
