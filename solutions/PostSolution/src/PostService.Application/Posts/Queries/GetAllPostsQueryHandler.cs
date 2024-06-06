@@ -16,7 +16,8 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, List<Po
 
     public async Task<List<Post>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
-        var posts = await _context.Posts.ToListAsync();
+        var posts = await _context.Posts
+            .ToListAsync();
 
         return posts;
     }

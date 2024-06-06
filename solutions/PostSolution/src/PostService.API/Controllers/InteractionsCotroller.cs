@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PostService.Application.Interactions.Commands;
 using PostService.Application.Interactions.Queries;
-using PostService.Application.Tags.Commands;
 using PostService.Domain.DTOs;
 
 namespace PostService.API.Controllers;
@@ -18,7 +17,7 @@ public class InteractionsCotroller : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateInteractionDTO createInteractionDTO)
     {
-        await _sender.Send(new CreateTagCommand
+        await _sender.Send(new CreateInteractionCommand
         {
             Value = createInteractionDTO.Value
         });
@@ -40,9 +39,9 @@ public class InteractionsCotroller : BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        await _sender.Send(new GetAllInteractionsQuery());
+        var post = await _sender.Send(new GetAllInteractionsQuery());
 
-        return Ok();
+        return Ok(post);
     }
 
     [HttpPut]

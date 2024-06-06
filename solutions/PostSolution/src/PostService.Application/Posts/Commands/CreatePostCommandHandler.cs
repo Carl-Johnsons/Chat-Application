@@ -3,7 +3,7 @@ namespace PostService.Application.Posts.Commands;
 
 public class CreatePostCommand : IRequest
 {
-    public string PostContent { get; init; } = null!;
+    public string Content { get; init; } = null!;
     public Guid UserId { get; init; }
 }
 
@@ -22,7 +22,7 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand>
     {
         Post post = new Post
         {
-            Content = request.PostContent,
+            Content = request.Content,
             UserId = request.UserId
         };
 
