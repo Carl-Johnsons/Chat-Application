@@ -1,9 +1,12 @@
-﻿using Contract.Event.FriendEvent;
+﻿using Contract.Common;
+using Contract.Event.FriendEvent;
 using ConversationService.Application.Conversations.Commands;
 using MassTransit;
+using MediatR;
 
-namespace ConversationService.Application.Conversations.EventHandlers.FriendCreated;
+namespace ConversationService.API.EventHandlers.FriendCreated;
 
+[QueueName("friend-created-event-queue", "friend-created-event")]
 public sealed class FriendCreatedConsumer : IConsumer<FriendCreatedEvent>
 {
     private readonly ISender _sender;

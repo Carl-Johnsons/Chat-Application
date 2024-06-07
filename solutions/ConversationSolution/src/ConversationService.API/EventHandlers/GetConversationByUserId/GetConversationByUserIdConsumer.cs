@@ -1,10 +1,13 @@
-﻿using Contract.DTOs;
+﻿using Contract.Common;
+using Contract.DTOs;
 using Contract.Event.ConversationEvent;
 using ConversationService.Application.Conversations.Queries;
 using MassTransit;
+using MediatR;
 
-namespace ConversationService.Application.Conversations.EventHandlers.GetConversationByUserId;
+namespace ConversationService.API.EventHandlers.GetConversationByUserId;
 
+[QueueName("get-conversation-by-user-id-event-queue")]
 public sealed class GetConversationByUserIdConsumer : IConsumer<GetConversationByUserIdEvent>
 {
     private readonly ISender _sender;
