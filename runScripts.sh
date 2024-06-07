@@ -27,9 +27,11 @@ NC_OCT='\o033[0m' # No Color
 
 # Read the content of scripts.json
 json=$(<scripts.json)
-
-# Extract scripts from the JSON content
-scripts=$(echo "$json" | sed -n '/"scripts": {/,/}/p' | grep -o '".*": ".*"' | tr -d '"')
+# Remove outer object and curly braces
+scripts_content=$(echo "$json" | sed 's/"scripts": //; s/{//; s/}//')
+# Remove quotes, commas, leading/trailing spaces, and empty lines
+scripts=$(echo "$scripts_content" | sed 's/"//g; s/,//g; s/^[[:space:]]*//; s/[[:space:]]*$//' | grep -v '^$')
+echo "$scripts"
 # Extract script keys from the scripts variable
 script_keys=$(echo "$scripts" | cut -d':' -f1)
 
@@ -53,6 +55,7 @@ display
 while true; do
     read -p "Enter the index of the script to run: " idx
     selected_script=$(echo "$scripts" | awk -v idx="$idx" '{ if (NR-1 == idx) print $2 }')
+    echo "$selected_script"
     if [ -n "$selected_script" ]; then
         echo -e "${LIGHT_BLUE}Executing script: $selected_script${NC}"
         bash "$selected_script"

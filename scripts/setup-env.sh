@@ -41,8 +41,3 @@ cd "$project_root"
 echo -e "\e[95mPulling react-app env file ....\e[0m"
 (cd ./solutions/Client/reactapp && npx dotenv-vault@latest pull)
 cd "$project_root"
-
-# Publishing Contract solution
-echo -e "\e[95mPublishing Contract solution ...\e[0m"
-(cd ./solutions/Contract && dotnet publish)
-cd "$project_root"
