@@ -1,5 +1,13 @@
-.btn-like {
-}
 .interaction-container {
-    
+    top: -80%;
+    left: -1%;
+    opacity: 0;
+    transition: all ease-in-out 0.15s;
+    cursor: pointer;
+    &.hover,
+    &:hover {
+        opacity: 1;
+        top: -90%;
+        left: -1%;
+    }
 }

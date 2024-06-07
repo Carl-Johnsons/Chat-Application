@@ -1,0 +1,13 @@
+# Development image, copy all file build from above and run next.js
+FROM node:21-alpine3.18
+# Run as a non-privileged user
+RUN addgroup -g 1001 -S app && adduser -u 1001 -S app  -G app 
+USER app
+
+WORKDIR /app
+COPY --chown=app:app ["./solutions/Client/reactapp/package.json", "."] 
+COPY --chown=app:app ["./solutions/Client/reactapp/package-lock.json*", "."] 
+COPY --chown=app:app ["./solutions/Client/reactapp/postinstall.ts", "."] 
+RUN npm i
+COPY --chown=app:app ["./solutions/Client/reactapp/", "."]
+CMD [ "npm", "run", "dev" ]

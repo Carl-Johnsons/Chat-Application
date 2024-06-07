@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import style from "./PostButton.container.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "@/components/shared/AppButton";
@@ -14,6 +14,7 @@ interface ButtonContent {
 }
 
 const PostButtonContainer = () => {
+  const [isHover, setIsHover] = useState(false);
   const buttonsContent: ButtonContent[] = [
     {
       content: "Like",
@@ -29,9 +30,24 @@ const PostButtonContainer = () => {
     },
   ];
 
+  const handleMouseEnter = () => {
+    setIsHover(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHover(false);
+  };
+  console.log({ isHover });
+
   return (
     <div className={cx("w-100", "d-flex", "position-relative")}>
-      <div className={cx("interaction-container", "position-absolute")}>
+      <div
+        className={cx(
+          "interaction-container",
+          "position-absolute",
+          isHover && "hover"
+        )}
+      >
         <InteractionContainer />
       </div>
       {buttonsContent.map((btnContent, index) => {
@@ -49,6 +65,8 @@ const PostButtonContainer = () => {
               "ms-2",
               "me-2"
             )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <FontAwesomeIcon className={cx("me-2")} icon={iconSrc} />
             {content}
