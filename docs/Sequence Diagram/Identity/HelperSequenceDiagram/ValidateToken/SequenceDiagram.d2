@@ -40,7 +40,9 @@ application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 identityService: <<service>> \n identityService
 
-DB: DB
+DB: "DB" {
+  shape: cylinder
+}
 
 apiGateway.requestResource.validate -> identityService.validateToken: 1. validate token
 
@@ -56,4 +58,3 @@ alt1: "alt" {
     apiGateway.requestResource.validate <- identityService.validateToken: 2. validate success {class: return arrow}
   }
 }
-

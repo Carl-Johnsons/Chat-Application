@@ -40,7 +40,9 @@ application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 identityService: <<service>> \n identityService
 
-DB: DB
+DB: "DB" {
+  shape: cylinder
+}
 
 Customer -> application.get: 1. navigate to register page
 application.get -> apiGateway.get: 2. request register page
