@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { ScreenSectionProvider } from "../../context/ScreenSectionProvider";
-import { AuthGuard } from "@/components/Auth/AuthGuard";
+import { ScreenSectionProvider } from "../../../context/ScreenSectionProvider";
 import { useGlobalState, useSignalRConnection } from "@/hooks";
 import { MemoizedModalContainer } from "@/components/Modal";
 
@@ -13,10 +12,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     connection && setConnection(connection);
   }, [connection, setConnection]);
   return (
-    <AuthGuard>
+    <>
       <ScreenSectionProvider>{children}</ScreenSectionProvider>
       <MemoizedModalContainer />
-    </AuthGuard>
+    </>
   );
 };
 

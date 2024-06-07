@@ -101,7 +101,9 @@ const PostInputContainer = () => {
           )}
         >
           {blobs.length > 0 && (
-            <AppButton variant="app-btn-secondary" onClick={handleCancelAll}>Clear all file</AppButton>
+            <AppButton variant="app-btn-secondary" onClick={handleCancelAll}>
+              Clear all file
+            </AppButton>
           )}
         </div>
         <div

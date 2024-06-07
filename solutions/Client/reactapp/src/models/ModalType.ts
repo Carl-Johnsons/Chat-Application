@@ -4,4 +4,5 @@ export type ModalType =
   | "Stranger"
   | "Group"
   | "CreateGroup"
-  | "PostInput";
+  | "PostInput"
+  | "PostReport";

@@ -6,7 +6,11 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-let accessToken = localStorage?.getItem("access_token");
+let accessToken = undefined;
+
+if (typeof window !== "undefined") {
+  accessToken = localStorage.getItem("access_token");
+}
 
 if (accessToken) {
   accessToken = JSON.parse(accessToken);

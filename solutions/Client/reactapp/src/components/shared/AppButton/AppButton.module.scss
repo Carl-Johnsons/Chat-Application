@@ -36,6 +36,13 @@ $button-variants: (
         text-color: var(--blue),
         bg-hover: var(--light-blue-hover),
         bg-active: var(--light-blue-active)
+    ),
+    danger:
+    (
+        bg-color: var(--light-blue),
+        text-color: var(--danger),
+        bg-hover: var(--danger-hover),
+        bg-active: var(--danger-active)
     )
 );
 @each $variant, $color in $button-variants {

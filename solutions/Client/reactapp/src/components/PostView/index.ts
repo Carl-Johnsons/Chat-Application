@@ -6,3 +6,4 @@ export * from "./InteractionCounterContainer";
 export * from "./PostButtonContainer";
 export * from "./PostInputContainer";
 export * from "./PostViewContainer";
+export * from "./ReportPostContainer";
