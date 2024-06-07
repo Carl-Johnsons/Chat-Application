@@ -4,7 +4,7 @@ namespace PostService.Application.Tags.Commands;
 
 public class CreateTagCommand : IRequest<Tag>
 {
-    public string Value { get; init; }
+    public string Value { get; init; } = null!;
 
 }
 

@@ -3,8 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PostService.Domain.DTOs;
 
-public class CreatePostDTO
+public class CreateCommentDTO
 {
+    [Required]
+    [JsonProperty("postId")]
+    public Guid PostId { get; set; }
+
     [Required]
     [JsonProperty("content")]
     public string Content { get; set; } = null!;
@@ -12,7 +16,4 @@ public class CreatePostDTO
     [Required]
     [JsonProperty("userId")]
     public Guid UserId { get; set; }
-
-    [JsonProperty("tagIds")]
-    public List<Guid> TagIds { get; set; } = null!;
 }

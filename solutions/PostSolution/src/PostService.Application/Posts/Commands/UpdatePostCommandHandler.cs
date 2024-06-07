@@ -23,12 +23,14 @@ public class UpdatePostCommandHanlder : IRequestHandler<UpdatePostCommand>
         var post = _context.Posts
                         .Where(p => p.Id == request.PostId)
                         .SingleOrDefault();
+
+        await Console.Out.WriteLineAsync(request.PostId.ToString());
+
         if (post != null)
         {
             post.Content = request.Content;
         }
-
-        _context.Posts.Add(post);
-        await _unitOfWork.SaveChangeAsync();
+        
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
     }
 }

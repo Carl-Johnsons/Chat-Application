@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using PostService.Application.Interactions.Commands;
 using PostService.Application.Interactions.Queries;
 using PostService.Application.Posts.Commands;
 using PostService.Application.Posts.Queries;
+using PostService.Application.Tags.Commands;
 using PostService.Domain.DTOs;
 
 namespace PostService.API.Controllers;
@@ -19,11 +21,20 @@ public class PostsController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
     {
-        await _sender.Send(new CreatePostCommand
+        var post = await _sender.Send(new CreatePostCommand
         {
-            Content = createPostDTO.content,
-            UserId = createPostDTO.userId
+            Content = createPostDTO.Content,
+            UserId = createPostDTO.UserId,
         });
+
+        foreach (var t in createPostDTO.TagIds)
+        {
+            await _sender.Send(new CreatePostTagCommand
+            {
+                PostId = post.Id,
+                TagId = t
+            });
+        }
 
         return Ok();
     }
@@ -66,6 +77,26 @@ public class PostsController : BaseApiController
             PostId = updatePostDTO.Id,
             Content = updatePostDTO.Content
         });
+
+        await Console.Out.WriteLineAsync(updatePostDTO.TagIds.ToString());
+
+        if (!updatePostDTO.TagIds.IsNullOrEmpty())
+        {
+            await _sender.Send(new DeletePostTagCommand
+            {
+                PostId = updatePostDTO.Id
+            });
+
+            
+            foreach (var t in updatePostDTO.TagIds)
+            {
+                await _sender.Send(new CreatePostTagCommand
+                {
+                    PostId = updatePostDTO.Id,
+                    TagId = t
+                });
+            }            
+        }
 
         return Ok();
     }
