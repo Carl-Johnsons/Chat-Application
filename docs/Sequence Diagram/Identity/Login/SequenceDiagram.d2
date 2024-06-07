@@ -1,3 +1,4 @@
+
 label.style.font-color: black
 
 classes: {
@@ -40,7 +41,9 @@ application: <<user interaction>> \n chat application
 apiGateway: <<coordinator>> \n apiGateway
 identityService: <<service>> \n identityService
 
-DB: DB
+DB: "DB" {
+  shape: cylinder
+}
 
 application.get."unauthorized": 1. UserUnauthorized
 
@@ -83,4 +86,3 @@ apiGateway.requestToken <- identityService.post.requestToken: 12. return access_
 application.post.requestToken <- apiGateway.requestToken: 13. return access_token {class: return arrow}
 
 application.post.requestToken."validate": "14. Validate token"
-

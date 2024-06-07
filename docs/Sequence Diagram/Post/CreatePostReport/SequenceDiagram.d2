@@ -41,7 +41,9 @@ apiGateway: <<coordinator>> \n apiGateway
 chatHub: <<coordinator>> \n chatHub
 postService: <<service>> \n postService
 
-DB: DB
+DB: "DB" {
+  shape: cylinder
+}
 
 User -> application.get: 1. User request with access token
 application.get -> apiGateway.get: 2. User request with access token

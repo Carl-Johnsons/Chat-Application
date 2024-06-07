@@ -20,6 +20,12 @@
     <ProjectReference Include="..\ConversationService.Application\ConversationService.Application.csproj" />
     <ProjectReference Include="..\ConversationService.Infrastructure\ConversationService.Infrastructure.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Contract">
+      <HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>.git\**;$(DefaultItemExcludes)</DefaultItemExcludes>
   </PropertyGroup>
