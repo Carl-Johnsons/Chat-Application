@@ -6,7 +6,7 @@ public class UpdateTagCommand : IRequest<Tag>
 {
 
     public Guid TagId { get; init; }
-    public string Value { get; init; }
+    public string Value { get; init; } = null!;
 
 }
 

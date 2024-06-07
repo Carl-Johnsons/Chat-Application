@@ -12,5 +12,8 @@ namespace PostService.Domain.DTOs
         [Required]
         [JsonProperty("content")]
         public string Content { get; set; } = null!;
+
+        [JsonProperty("tagIds")]
+        public List<Guid> TagIds { get; set; } = null!;
     }
 }
