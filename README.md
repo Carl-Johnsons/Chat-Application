@@ -14,7 +14,8 @@ This project is for education purpose and takes inspiration from Zalo
 
 
 ## Set up project
-- Run "**setup-env.bat**" to init the environment for each service
+- Run "**runScripts.sh**" to view the interface of multiple script 
+- Input script index with "**env_setup**" to init the environment for each service
 - Run docker command at the root of the project to init all services.
     ``` shell
     docker compose up
@@ -23,8 +24,8 @@ This project is for education purpose and takes inspiration from Zalo
     + Navigate to (*http://localhost:15672*) login with account **guest**/**guest**.
     + Go to tab "**Admin**" add new user with username "**admin**" and password "**pass**", set tag "**Admin**".
     + Click new user "**admin**" in user list and click "**Set permission**" button to allow other service to run the message queue
-- Run "**apply-all-migrations.bat**" (To apply all migrations, obviously)
-- Kill all services, then run docker command again in order to let other services to connect to **rabbitmq**
+- Back to the "**runScripts.sh**" UI interface, input script index with "**migrations_apply_all**" (To apply all migrations, obviously)
+- ***Kill*** all services, then run docker command again in order to let other services to connect to **rabbitmq**
     ``` shell
     docker compose up
     ```

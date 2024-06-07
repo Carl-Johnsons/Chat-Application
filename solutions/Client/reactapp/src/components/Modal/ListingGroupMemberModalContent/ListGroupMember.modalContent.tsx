@@ -83,4 +83,4 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
   );
 };
 
-export default ListGroupMemberModalContent;
+export { ListGroupMemberModalContent };

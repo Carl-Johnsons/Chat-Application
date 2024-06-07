@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "env_update": "./scripts/update-env.sh",
+    "env_setup": "./scripts/setup-env.sh",
+    "services_rebuild": "./scripts/rebuild-service.sh",
+    "migrations_apply_all": "./scripts/apply-all-migrations.sh"
+  }
+}

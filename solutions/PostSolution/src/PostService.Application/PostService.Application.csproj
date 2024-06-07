@@ -14,4 +14,12 @@
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.5" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\PostService.Infrastructure\PostService.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Interactions\" />
+	</ItemGroup>
+
 </Project>

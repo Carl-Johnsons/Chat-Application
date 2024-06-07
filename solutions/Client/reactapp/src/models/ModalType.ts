@@ -3,4 +3,5 @@ export type ModalType =
   | "Friend"
   | "Stranger"
   | "Group"
-  | "CreateGroup";
+  | "CreateGroup"
+  | "PostInput";

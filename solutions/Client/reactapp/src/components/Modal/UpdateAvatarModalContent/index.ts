@@ -1,1 +1,1 @@
-export { default } from "./UpdateAvatarModalContent";
+export * from "./UpdateAvatarModalContent";

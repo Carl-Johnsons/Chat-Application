@@ -18,7 +18,7 @@ public static class DependencyInjection
         {
             options.UseSqlServer(connectionString);
         });
-
+        services.AddScoped<IUnitOfWork, UnitOfWork>(); 
         return services;
     }
 }

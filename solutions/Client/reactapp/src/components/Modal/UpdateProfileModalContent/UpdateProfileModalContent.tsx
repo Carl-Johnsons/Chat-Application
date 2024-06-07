@@ -209,4 +209,4 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   );
 };
 
-export default UpdateProfileModalContent;
+export { UpdateProfileModalContent };

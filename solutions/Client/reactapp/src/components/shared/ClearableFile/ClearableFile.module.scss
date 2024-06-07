@@ -1,0 +1,27 @@
+.cancel-btn {
+    width: 20px;
+    height: 20px;
+}
+.cancel-btn-container {
+    justify-self: end;
+}
+.file-display-container {
+    width: 560px;
+    height: 315px;
+    .file {
+        object-fit: cover;
+        transition: all 0.25s ease-in;
+        &:hover {
+            transform: scale(1.015);
+        }
+    }
+}
+.file-container {
+    background-color: var(--light-blue);
+    &:hover {
+        background-color: var(--light-blue-hover);
+    }
+    &:active {
+        background-color: var(--light-blue-active);
+    }
+}

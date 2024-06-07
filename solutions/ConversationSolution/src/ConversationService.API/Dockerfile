@@ -13,7 +13,8 @@ COPY ["ConversationSolution/src/ConversationService.API/ConversationService.API.
 COPY ["ConversationSolution/src/ConversationService.Application/ConversationService.Application.csproj", "ConversationSolution/src/ConversationService.Application/"]
 COPY ["ConversationSolution/src/ConversationService.Domain/ConversationService.Domain.csproj", "ConversationSolution/src/ConversationService.Domain/"]
 COPY ["ConversationSolution/src/ConversationService.Infrastructure/ConversationService.Infrastructure.csproj", "ConversationSolution/src/ConversationService.Infrastructure/"]
-COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationSolution/src/ConversationService.Application/"]
+COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationSolution/src/ConversationService.API/"]
+COPY ["Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationSolution/src/ConversationService.Infrastructure/"]
 
 # Speed up restore process in WSL
 COPY ["ConversationSolution/ConversationSolution.sln","ConversationSolution/ConversationSolution.sln"]

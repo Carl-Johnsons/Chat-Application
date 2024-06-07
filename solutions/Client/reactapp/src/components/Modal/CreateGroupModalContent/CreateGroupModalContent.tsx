@@ -320,4 +320,4 @@ const CreateGroupModalContent = () => {
   );
 };
 
-export default CreateGroupModalContent;
+export { CreateGroupModalContent };
