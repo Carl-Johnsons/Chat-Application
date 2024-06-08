@@ -29,7 +29,8 @@ public sealed class FriendCreatedConsumer : IConsumer<FriendCreatedEvent>
             OtherUserId = otherUserId,
         };
 
-        await _sender.Send(command);
+        var result = await _sender.Send(command);
+        result.ThrowIfFailure();
         await Console.Out.WriteLineAsync("Conversation-service done the request");
         await Console.Out.WriteLineAsync("======================================");
 

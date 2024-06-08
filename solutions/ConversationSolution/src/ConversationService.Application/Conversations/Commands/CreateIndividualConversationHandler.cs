@@ -2,14 +2,14 @@
 
 namespace ConversationService.Application.Conversations.Commands;
 
-public record CreateIndividualConversationCommand : IRequest
+public record CreateIndividualConversationCommand : IRequest<Result>
 {
     public Guid CurrentUserId { get; init; }
     public Guid OtherUserId { get; init; }
 };
 
 
-public class CreateIndividualConversationHandler : IRequestHandler<CreateIndividualConversationCommand>
+public class CreateIndividualConversationHandler : IRequestHandler<CreateIndividualConversationCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -22,7 +22,7 @@ public class CreateIndividualConversationHandler : IRequestHandler<CreateIndivid
         _signalRService = signalRService;
     }
 
-    public async Task Handle(CreateIndividualConversationCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateIndividualConversationCommand request, CancellationToken cancellationToken)
     {
         var userId = request.CurrentUserId;
         var otherUserId = request.OtherUserId;
@@ -37,8 +37,7 @@ public class CreateIndividualConversationHandler : IRequestHandler<CreateIndivid
                                     .SingleOrDefault() != null;
         if (isConversationExisted)
         {
-            await Console.Out.WriteLineAsync("They already have the conversation, abort adding addition conversation");
-            return;
+            return ConversationError.AlreadyExistConversation;
         }
 
         var conversation = new Conversation
@@ -71,5 +70,7 @@ public class CreateIndividualConversationHandler : IRequestHandler<CreateIndivid
             MemberIds = [userId, otherUserId],
             ConversationId = conversation.Id
         });
+
+        return Result.Success();
     }
 }

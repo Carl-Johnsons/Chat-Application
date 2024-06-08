@@ -2,12 +2,12 @@
 
 namespace ConversationService.Application.Conversations.Queries;
 
-public record GetMemberListByConversationIdQuery : IRequest<List<ConversationUser>>
+public record GetMemberListByConversationIdQuery : IRequest<Result<List<ConversationUser>?>>
 {
     public Guid UserId { get; init; }
     public Guid ConversationId { get; set; }
 };
-public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemberListByConversationIdQuery, List<ConversationUser>>
+public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemberListByConversationIdQuery, Result<List<ConversationUser>?>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,12 +16,12 @@ public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemb
         _context = context;
     }
 
-    public Task<List<ConversationUser>> Handle(GetMemberListByConversationIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<ConversationUser>?>> Handle(GetMemberListByConversationIdQuery request, CancellationToken cancellationToken)
     {
         var conversationId = request.ConversationId;
-        var cuList = _context.ConversationUsers
+        var cuList = await _context.ConversationUsers
                              .Where(cu => cu.ConversationId == conversationId).ToListAsync();
 
-        return cuList;
+        return Result<List<ConversationUser>?>.Success(cuList);
     }
 }

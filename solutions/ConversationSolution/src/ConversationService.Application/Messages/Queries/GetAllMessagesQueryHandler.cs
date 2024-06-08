@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Messages.Queries;
-public record GetAllMessagesQuery : IRequest<List<Message>>;
+public record GetAllMessagesQuery : IRequest<Result<List<Message>>>;
 
-public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, List<Message>>
+public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, Result<List<Message>>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -12,8 +12,10 @@ public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, L
         _context = context;
     }
 
-    public async Task<List<Message>> Handle(GetAllMessagesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<Message>>> Handle(GetAllMessagesQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Messages.ToListAsync(cancellationToken);
+        var result = await _context.Messages.ToListAsync(cancellationToken);
+
+        return Result<List<Message>>.Success(result);
     }
 }

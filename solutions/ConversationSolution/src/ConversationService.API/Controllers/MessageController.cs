@@ -26,13 +26,14 @@ public partial class MessageController : BaseApiController
             return Ok(messagesList);
         }
 
-        var paginatedMessageList = await _sender.Send(new GetMessagesByConversationIdQuery
+        var result = await _sender.Send(new GetMessagesByConversationIdQuery
         {
             ConversationId = (Guid)getByConversationIdDTO.ConversationId!,
             Skip = getByConversationIdDTO.Skip ?? 0
         });
+        result.ThrowIfFailure();
 
-        return Ok(paginatedMessageList);
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -41,12 +42,15 @@ public partial class MessageController : BaseApiController
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
-        var message = await _sender.Send(new SendClientMessageCommand
+        var result = await _sender.Send(new SendClientMessageCommand
         {
             SenderId = Guid.Parse(subjectId!),
             ConversationId = sendClientMessageDTO.ConversationId,
             Content = sendClientMessageDTO.Content
         });
-        return Ok(message);
+
+        result.ThrowIfFailure();
+
+        return Ok(result.Value);
     }
 }

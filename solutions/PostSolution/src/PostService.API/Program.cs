@@ -1,32 +1,10 @@
-using PostService.Application;
-using PostService.Infrastructure;
+using PostService.API;
 
 var builder = WebApplication.CreateBuilder(args);
-var services = builder.Services;
 
-// Add services to the container.
-services.AddApplicationServices();
-services.AddInfrastructureServices();
-services.AddHttpContextAccessor();
+var app = builder.AddAPIServices()
+                 .Build();
 
-services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
+await app.UseAPIServicesAsync();
 
 app.Run();
