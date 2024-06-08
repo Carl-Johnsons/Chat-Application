@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PostService.Application\PostService.Application.csproj" />
     <ProjectReference Include="..\PostService.Infrastructure\PostService.Infrastructure.csproj" />
   </ItemGroup>

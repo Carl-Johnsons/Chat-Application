@@ -13,6 +13,8 @@ COPY ["./solutions/PostSolution/src/PostService.API/PostService.API.csproj", "./
 COPY ["./solutions/PostSolution/src/PostService.Application/PostService.Application.csproj", "./PostService.Application/"]
 COPY ["./solutions/PostSolution/src/PostService.Infrastructure/PostService.Infrastructure.csproj", "./PostService.Infrastructure/"]
 COPY ["./solutions/PostSolution/src/PostService.Domain/PostService.Domain.csproj", "./PostService.Domain/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.API/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.Infrastructure/"]
 
 WORKDIR /src/PostService.API
 # Copy pre-build lib
