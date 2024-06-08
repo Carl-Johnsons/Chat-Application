@@ -2,12 +2,12 @@
 
 namespace ConversationService.Application.Conversations.Queries;
 
-public record GetConversationListByUserIdQuery : IRequest<ConversationsResponseDTO>
+public record GetConversationListByUserIdQuery : IRequest<Result<ConversationsResponseDTO>>
 {
     public Guid UserId { get; init; }
 };
 
-public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConversationListByUserIdQuery, ConversationsResponseDTO>
+public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConversationListByUserIdQuery, Result<ConversationsResponseDTO>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConver
         _context = context;
     }
 
-    public async Task<ConversationsResponseDTO> Handle(GetConversationListByUserIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ConversationsResponseDTO>> Handle(GetConversationListByUserIdQuery request, CancellationToken cancellationToken)
     {
         var conversations = await _context.Conversations
             .Include(c => c.Users)
@@ -68,7 +68,7 @@ public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConver
                 var gc = c as GroupConversation;
                 return new GroupConversationResponseDTO
                 {
-                    Id = gc.Id,
+                    Id = gc!.Id,
                     Name = gc.Name,
                     CreatedAt = gc.CreatedAt,
                     UpdatedAt = gc.UpdatedAt,
@@ -80,11 +80,14 @@ public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConver
             })
             .ToList();
 
-        return new ConversationsResponseDTO
+        var dto = new ConversationsResponseDTO
         {
             Conversations = conversationList,
             GroupConversations = groupConversationList
         };
+
+
+        return Result<ConversationsResponseDTO>.Success(dto);
     }
 
 }

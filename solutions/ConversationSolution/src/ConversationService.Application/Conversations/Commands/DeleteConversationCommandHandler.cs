@@ -1,11 +1,11 @@
 ﻿
 namespace ConversationService.Application.Conversations.Commands;
-public record DeleteConversationCommand : IRequest
+public record DeleteConversationCommand : IRequest<Result>
 {
     public Guid ConversationId { get; init; }
 };
 
-public class DeleteConversationCommandHandler : IRequestHandler<DeleteConversationCommand>
+public class DeleteConversationCommandHandler : IRequestHandler<DeleteConversationCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -16,15 +16,19 @@ public class DeleteConversationCommandHandler : IRequestHandler<DeleteConversati
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(DeleteConversationCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteConversationCommand request, CancellationToken cancellationToken)
     {
         var conversation = _context.Conversations
                                    .Where(c => c.Id == request.ConversationId)
                                    .SingleOrDefault();
-        if (conversation != null)
+        if (conversation == null)
         {
-            _context.Conversations.Remove(conversation);
+            return ConversationError.NotFound;
         }
+        
+        _context.Conversations.Remove(conversation);
         await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+        return Result.Success();
     }
 }
