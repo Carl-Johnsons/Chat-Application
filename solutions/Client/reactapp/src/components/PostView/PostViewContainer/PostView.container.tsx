@@ -13,8 +13,9 @@ const cx = classNames.bind(style);
 
 interface Props {
   className?: string;
+  disableInput?: boolean;
 }
-const PostViewContainer = ({ className }: Props) => {
+const PostViewContainer = ({ className, disableInput = false }: Props) => {
   const { data: userData } = useGetCurrentUser();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -110,32 +111,34 @@ const PostViewContainer = ({ className }: Props) => {
         "align-items-center"
       )}
     >
-      <div
-        className={cx(
-          "post-input",
-          "w-100",
-          "d-flex",
-          "justify-content-center"
-        )}
-      >
-        <div className={cx("input-group", "w-75", "mt-3", "mb-3")}>
-          <div className={cx("me-3")}>
-            <Avatar
-              avatarClassName={cx("rounded-circle", "shadow")}
-              src={userData?.avatarUrl ?? images.defaultAvatarImg.src}
-              alt="user avatar"
+      {!disableInput && (
+        <div
+          className={cx(
+            "post-input",
+            "w-100",
+            "d-flex",
+            "justify-content-center"
+          )}
+        >
+          <div className={cx("input-group", "w-75", "mt-3", "mb-3")}>
+            <div className={cx("me-3")}>
+              <Avatar
+                avatarClassName={cx("rounded-circle", "shadow")}
+                src={userData?.avatarUrl ?? images.defaultAvatarImg.src}
+                alt="user avatar"
+              />
+            </div>
+            <input
+              type="text"
+              ref={inputRef}
+              className={cx("form-control", "rounded-3", "shadow")}
+              placeholder="Write your thought"
+              onClick={() => handleShowModal({ modalType: "PostInput" })}
+              onFocus={handleFocus}
             />
           </div>
-          <input
-            type="text"
-            ref={inputRef}
-            className={cx("form-control", "rounded-3", "shadow")}
-            placeholder="Write your thought"
-            onClick={() => handleShowModal({ modalType: "PostInput" })}
-            onFocus={handleFocus}
-          />
         </div>
-      </div>
+      )}
 
       <div
         className={cx(

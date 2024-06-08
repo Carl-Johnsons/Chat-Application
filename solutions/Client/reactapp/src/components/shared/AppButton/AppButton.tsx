@@ -8,8 +8,9 @@ type VariantType<T extends string> = `${T}` | `${T}-transparent`;
 type Primary = VariantType<"app-btn-primary">;
 type Secondary = VariantType<"app-btn-secondary">;
 type Tertiary = VariantType<"app-btn-tertiary">;
+type Danger = VariantType<"app-btn-danger">;
 interface Props extends ButtonProps {
-  variant?: Primary | Secondary | Tertiary;
+  variant?: Primary | Secondary | Tertiary | Danger;
   type?: "button" | "reset" | "submit";
   className?: string;
   children?: React.ReactNode;

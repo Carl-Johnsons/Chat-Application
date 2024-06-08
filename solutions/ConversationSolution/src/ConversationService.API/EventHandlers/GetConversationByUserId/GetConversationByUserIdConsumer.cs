@@ -20,11 +20,14 @@ public sealed class GetConversationByUserIdConsumer : IConsumer<GetConversationB
     public async Task Consume(ConsumeContext<GetConversationByUserIdEvent> context)
     {
         await Console.Out.WriteLineAsync("=======================Conversation consuming the message");
-        var conversations = await _sender.Send(new GetConversationListByUserIdQuery
+        var result = await _sender.Send(new GetConversationListByUserIdQuery
         {
             UserId = context.Message.UserId,
         });
 
+        result.ThrowIfFailure();
+
+        var conversations = result.Value;
         List<ConversationEventResponseDTO> responses = [];
         foreach (var conversation in conversations.Conversations)
         {

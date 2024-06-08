@@ -8,7 +8,6 @@ import classNames from "classnames/bind";
 import AsideContainer from "@/components/Aside/AsideContainer";
 import ChatViewContainer from "@/components/ChatView/ChatViewContainer";
 import ContactContainer from "@/components/ContactView/ContactContainer";
-import { MemoizedModalContainer } from "@/components/Modal/ModalContainer";
 import NavigationBar from "@/components/Nav/NavigationBar";
 import SidebarContent from "@/components/SideBar/SidebarContent";
 import { PostViewContainer } from "@/components/PostView";
@@ -60,7 +59,6 @@ const Home = () => {
           <AsideContainer />
         </div>
       </div>
-      <MemoizedModalContainer />
     </div>
   );
 };

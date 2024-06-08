@@ -5,6 +5,7 @@ import {
   ListGroupMemberModalContent,
   PostInputModalContent,
   ProfileModalContent,
+  ReportPostModalContent,
   UpdateAvatarModalContent,
   UpdateProfileModalContent,
 } from "../..";
@@ -26,10 +27,10 @@ const ModalContentMapper = (): ModalContent[] => {
   const updateProfileRef = useRef<HTMLElement>();
   const updateAvatarRef = useRef<HTMLElement>();
   const postInputRef = useRef<HTMLElement>();
+  const reportPostRef = useRef<HTMLElement>();
 
   const memberIdRef = useRef<string>();
   const content = useMemo(() => {
-    
     const handleClick = (index: number) => {
       setActiveModal(index);
     };
@@ -144,6 +145,14 @@ const ModalContentMapper = (): ModalContent[] => {
             title: "Viết cảm nghĩ của bạn",
             ref: postInputRef,
             modalContent: <PostInputModalContent />,
+          },
+        ];
+      case "PostReport":
+        return [
+          {
+            title: "Báo cáo bài viết",
+            ref: reportPostRef,
+            modalContent: <ReportPostModalContent />,
           },
         ];
       default:
