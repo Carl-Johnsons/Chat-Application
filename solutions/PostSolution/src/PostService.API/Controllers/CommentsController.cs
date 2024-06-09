@@ -6,6 +6,7 @@ using PostService.Application.Posts.Commands;
 using PostService.Application.Posts.Queries;
 using PostService.Application.Tags.Commands;
 using PostService.Domain.DTOs;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PostService.API.Controllers;
 
@@ -20,10 +21,13 @@ public class CommentsController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCommentDTO createCommentDTO)
     {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
         var comment = await _sender.Send(new CreateCommentCommand
         {
             Content = createCommentDTO.Content,
-            UserId = createCommentDTO.UserId,
+            UserId = Guid.Parse(subjectId!)
         });
 
         await _sender.Send(new CreatePostCommentCommand

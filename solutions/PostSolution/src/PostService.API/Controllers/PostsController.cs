@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PostService.Application.Interactions.Commands;
@@ -7,11 +8,13 @@ using PostService.Application.Posts.Commands;
 using PostService.Application.Posts.Queries;
 using PostService.Application.Tags.Commands;
 using PostService.Domain.DTOs;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PostService.API.Controllers;
 
 [Route("api/post")]
 [ApiController]
+[Authorize]
 public class PostsController : BaseApiController
 {
     public PostsController(ISender sender, IHttpContextAccessor httpContextAccessor) : base(sender, httpContextAccessor)
@@ -21,10 +24,13 @@ public class PostsController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
     {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
         var post = await _sender.Send(new CreatePostCommand
         {
             Content = createPostDTO.Content,
-            UserId = createPostDTO.UserId,
+            UserId = Guid.Parse(subjectId!)
         });
 
         foreach (var t in createPostDTO.TagIds)
@@ -42,13 +48,12 @@ public class PostsController : BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetById([FromQuery] Guid id)
     {
-        await Console.Out.WriteLineAsync("====" + id.ToString());
-        var post = await _sender.Send(new GetPostByIdQuery
+        var result = await _sender.Send(new GetPostByIdQuery
         {
             Id = id
         });
-
-        return Ok(post);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpGet("all")]
@@ -102,11 +107,14 @@ public class PostsController : BaseApiController
     [Route("post-interaction")]
     public async Task<IActionResult> CreateInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
     {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
         await _sender.Send(new CreatePostInteractionCommand
         {
             PostId = createPostInteractionDTO.PostId,
             InteractionId = createPostInteractionDTO.InteractionId,
-            UserId = createPostInteractionDTO.UserId
+            UserId = Guid.Parse(subjectId!)
         });
 
         return Ok();
