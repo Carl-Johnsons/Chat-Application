@@ -7,6 +7,8 @@ import defaultBackgroundImg from "./images/default_background_img.png";
 import envelopeOpenRegular from "./images/envelope-open-regular.svg";
 import logOutIcon from "./images/logout.png";
 import peopleMessaging from "./images/people-messaging.png";
+import phoneCallActiveIcon from "./images/phone-call-active.png";
+import phoneCallIcon from "./images/phone-call.png";
 import post from "./images/post.png";
 import sidebarIcon from "./images/sidebarIcon.png";
 import sidebarIconActive from "./images/sidebarIconActive.png";
@@ -25,6 +27,8 @@ const images = {
   envelopeOpenRegular,
   logOutIcon,
   peopleMessaging,
+  phoneCallActiveIcon,
+  phoneCallIcon,
   post,
   sidebarIcon,
   sidebarIconActive,

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
 
 import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
@@ -23,17 +23,20 @@ const ChatViewHeader = () => {
   const [showAside, setShowAside] = useGlobalState("showAside");
   const [conversationType] = useGlobalState("conversationType");
   const [activeConversationId] = useGlobalState("activeConversationId");
+  const [isCalling, setIsCalling] = useState(false);
   // hook
   const { data: currentUserData } = useGetCurrentUser();
   const { handleShowModal } = useModal();
   const isGroup = conversationType === "GROUP";
 
   const handleToggleAside = () => setShowAside(!showAside);
-  const handleClickAvatar = () => {
+  const handleClickAvatar = useCallback(() => {
     const modalType: ModalType =
       conversationType === "GROUP" ? "Group" : "Friend";
+
     handleShowModal({ entityId: activeConversationId, modalType });
-  };
+  }, [activeConversationId, conversationType, handleShowModal]);
+  
   const { data: conversationUsersData } =
     useGetMemberListByConversationId(activeConversationId);
 
@@ -97,7 +100,31 @@ const ChatViewHeader = () => {
         </div>
         <UserStatus type={conversationType} />
       </div>
-      <div className={cx("icon-container", "ps")}>
+      <div className={cx("icon-container", "ps", "d-flex")}>
+        <AppButton
+          variant="app-btn-tertiary-transparent"
+          className={cx(
+            "icon-btn",
+            "d-flex",
+            isCalling && "active",
+            "justify-content-center",
+            "align-items-center"
+          )}
+        >
+          {isCalling ? (
+            <Avatar
+              variant="avatar-img-20px"
+              src={images.phoneCallActiveIcon.src}
+              alt="sidebar icon"
+            />
+          ) : (
+            <Avatar
+              variant="avatar-img-20px"
+              src={images.phoneCallIcon.src}
+              alt="sidebar icon"
+            />
+          )}
+        </AppButton>
         <AppButton
           variant="app-btn-tertiary-transparent"
           className={cx(

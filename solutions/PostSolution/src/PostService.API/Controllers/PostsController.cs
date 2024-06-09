@@ -39,9 +39,10 @@ public class PostsController : BaseApiController
         return Ok();
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id) 
+    [HttpGet]
+    public async Task<IActionResult> GetById([FromQuery] Guid id)
     {
+        await Console.Out.WriteLineAsync("====" + id.ToString());
         var post = await _sender.Send(new GetPostByIdQuery
         {
             Id = id
@@ -50,7 +51,7 @@ public class PostsController : BaseApiController
         return Ok(post);
     }
 
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
         var posts = await _sender.Send(new GetAllPostsQuery());
@@ -59,7 +60,7 @@ public class PostsController : BaseApiController
     }
 
     [HttpGet("user")]
-    public async Task<IActionResult> GetByUserId([FromQuery]Guid userId)
+    public async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
     {
         var post = await _sender.Send(new GetPostsByUserIdQuery
         {
@@ -70,7 +71,7 @@ public class PostsController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody]UpdatePostDTO updatePostDTO)
+    public async Task<IActionResult> Update([FromBody] UpdatePostDTO updatePostDTO)
     {
         await _sender.Send(new UpdatePostCommand
         {
@@ -80,22 +81,18 @@ public class PostsController : BaseApiController
 
         await Console.Out.WriteLineAsync(updatePostDTO.TagIds.ToString());
 
-        if (!updatePostDTO.TagIds.IsNullOrEmpty())
+        await _sender.Send(new DeletePostTagCommand
         {
-            await _sender.Send(new DeletePostTagCommand
-            {
-                PostId = updatePostDTO.Id
-            });
+            PostId = updatePostDTO.Id
+        });
 
-            
-            foreach (var t in updatePostDTO.TagIds)
+        foreach (var t in updatePostDTO.TagIds)
+        {
+            await _sender.Send(new CreatePostTagCommand
             {
-                await _sender.Send(new CreatePostTagCommand
-                {
-                    PostId = updatePostDTO.Id,
-                    TagId = t
-                });
-            }            
+                PostId = updatePostDTO.Id,
+                TagId = t
+            });
         }
 
         return Ok();

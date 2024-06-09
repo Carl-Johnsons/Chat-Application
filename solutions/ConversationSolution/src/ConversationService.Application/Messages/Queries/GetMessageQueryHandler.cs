@@ -2,13 +2,13 @@
 
 namespace ConversationService.Application.Messages.Queries;
 
-public record GetMessageQuery : IRequest<Message?>
+public record GetMessageQuery : IRequest<Result<Message?>>
 {
     public Guid MessageId { get; init; }
 
 };
 
-public class GetMessageQueryHandler : IRequestHandler<GetMessageQuery, Message?>
+public class GetMessageQueryHandler : IRequestHandler<GetMessageQuery, Result<Message?>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -17,8 +17,10 @@ public class GetMessageQueryHandler : IRequestHandler<GetMessageQuery, Message?>
         _context = context;
     }
 
-    public async Task<Message?> Handle(GetMessageQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Message?>> Handle(GetMessageQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Messages.Where(m => m.Id == request.MessageId).SingleOrDefaultAsync(cancellationToken);
+        var result = await _context.Messages.Where(m => m.Id == request.MessageId).SingleOrDefaultAsync(cancellationToken);
+
+        return Result<Message?>.Success(result);
     }
 }
