@@ -1,6 +1,6 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using PostService.Application.Interactions.Commands;
 using PostService.Application.Interactions.Queries;
 using PostService.Application.Posts.Commands;
@@ -12,6 +12,7 @@ namespace PostService.API.Controllers;
 
 [Route("api/post")]
 [ApiController]
+[Authorize]
 public class PostsController : BaseApiController
 {
     public PostsController(ISender sender, IHttpContextAccessor httpContextAccessor) : base(sender, httpContextAccessor)
