@@ -1,10 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostService.Application.Comments.Commands;
 using PostService.Application.Comments.Queries;
-using PostService.Application.Posts.Commands;
-using PostService.Application.Posts.Queries;
-using PostService.Application.Tags.Commands;
 using PostService.Domain.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -12,6 +10,7 @@ namespace PostService.API.Controllers;
 
 [Route("/api/post/comment")]
 [ApiController]
+[Authorize]
 public class CommentsController : BaseApiController
 {
     public CommentsController(ISender sender, IHttpContextAccessor httpContextAccessor) : base(sender, httpContextAccessor)
