@@ -5,6 +5,12 @@ import { ConversationResponseDTO } from "@/models/DTOs";
 
 interface FetchPropsByConversationId {
   conversationId: string | undefined;
+  other: boolean;
+}
+
+interface GetMemberListByConversationIdProps {
+  conversationId: string;
+  other?: boolean;
 }
 
 const getConversationList =
@@ -17,11 +23,13 @@ const getConversationList =
   };
 const getMemberListByConversationId = async ({
   conversationId,
+  other = false,
 }: FetchPropsByConversationId): Promise<ConversationUser[] | null> => {
   const url = `/api/conversation/member`;
   const response = await protectedAxiosInstance.get(url, {
     params: {
       conversationId: conversationId,
+      other: other,
     },
   });
   return response.data;
@@ -46,7 +54,7 @@ const useGetConversationList = (
 };
 
 const useGetMemberListByConversationId = (
-  conversationId: string,
+  { conversationId, other = false }: GetMemberListByConversationIdProps,
   queryOptions: Omit<
     UseQueryOptions<
       ConversationUser[] | null,
@@ -61,7 +69,7 @@ const useGetMemberListByConversationId = (
     ...queryOptions,
     queryKey: ["conversation", "member", conversationId],
     queryFn: () =>
-      getMemberListByConversationId({ conversationId: conversationId }),
+      getMemberListByConversationId({ conversationId: conversationId, other }),
   });
 };
 

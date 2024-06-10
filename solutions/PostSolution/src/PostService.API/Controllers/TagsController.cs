@@ -1,14 +1,15 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostService.Application.Tags.Commands;
 using PostService.Application.Tags.Queries;
 using PostService.Domain.DTOs;
-using PostService.Domain.Entities;
 
 namespace PostService.API.Controllers;
 
 [Route("api/post/tag")]
 [ApiController]
+[Authorize]
 public class TagsController : BaseApiController
 {
     public TagsController(ISender sender, IHttpContextAccessor httpContextAccessor) : base(sender, httpContextAccessor)

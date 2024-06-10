@@ -35,13 +35,15 @@ const ContactRow = ({
   const [activeContactType] = useGlobalState("activeContactType");
   const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
 
-  const { data: userData } = useGetUser(entityId, {});
+  const { data: userData } = useGetUser(entityId, {
+    enabled: !isGroup && !!entityId,
+  });
   const { data: conversationData } = useGetConversation(
     {
       conversationId: entityId,
     },
     {
-      enabled: isGroup,
+      enabled: isGroup && !!entityId,
     }
   );
 
@@ -51,7 +53,7 @@ const ContactRow = ({
     (isGroup
       ? (entityData as GroupConversation)?.imageURL
       : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
-      
+
   const name =
     (isGroup
       ? (entityData as GroupConversation)?.name

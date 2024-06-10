@@ -23,7 +23,9 @@ const MessageContainer = ({
   userId,
   messageList,
 }: Props) => {
-  const user = useGetUser(userId);
+  const user = useGetUser(userId, {
+    enabled: !!userId,
+  });
   return (
     <div className={cx("d-flex", "mb-3", isSender && "sender")}>
       {!isSender && conversationType === "GROUP" && user.data?.avatarUrl && (

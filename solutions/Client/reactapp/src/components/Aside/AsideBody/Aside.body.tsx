@@ -33,12 +33,21 @@ const AsideBody = () => {
   const [conversationType] = useGlobalState("conversationType");
 
   const isGroup = conversationType === "GROUP";
-  const { data: conversation } = useGetConversation({
-    conversationId: activeConversationId,
-  });
-  const { data: conversationUsersData } =
-    useGetMemberListByConversationId(activeConversationId);
-  const otherUserId = conversationUsersData && conversationUsersData[0].userId;
+  const { data: conversation } = useGetConversation(
+    {
+      conversationId: activeConversationId,
+    },
+    {
+      enabled: !!activeConversationId,
+    }
+  );
+  const { data: conversationUsersData } = useGetMemberListByConversationId(
+    { conversationId: activeConversationId, other: true },
+    {
+      enabled: !!activeConversationId,
+    }
+  );
+  const otherUserId = conversationUsersData?.[0].userId;
   const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });

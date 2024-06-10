@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostService.Application.Interactions.Commands;
 using PostService.Application.Interactions.Queries;
@@ -8,6 +9,7 @@ namespace PostService.API.Controllers;
 
 [Route("api/post/interaction")]
 [ApiController]
+[Authorize]
 public class InteractionsCotroller : BaseApiController
 {
     public InteractionsCotroller(ISender sender, IHttpContextAccessor httpContextAccessor) : base(sender, httpContextAccessor)

@@ -3,7 +3,12 @@ import { memo, useCallback, useState } from "react";
 import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
-import { useGlobalState, useModal } from "@/hooks";
+import {
+  signalRCall,
+  useGlobalState,
+  useModal,
+  useSignalREvents,
+} from "@/hooks";
 
 import { GroupConversation, ModalType } from "@/models";
 
@@ -14,7 +19,7 @@ import {
   useGetConversation,
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
-import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import { useGetUser } from "@/hooks/queries/user";
 import UserStatus from "../UserStatus";
 
 const cx = classNames.bind(style);
@@ -25,36 +30,57 @@ const ChatViewHeader = () => {
   const [activeConversationId] = useGlobalState("activeConversationId");
   const [isCalling, setIsCalling] = useState(false);
   // hook
-  const { data: currentUserData } = useGetCurrentUser();
+  const { invokeAction } = useSignalREvents();
   const { handleShowModal } = useModal();
   const isGroup = conversationType === "GROUP";
 
+  const { data: conversationUsersData } = useGetMemberListByConversationId(
+    { conversationId: activeConversationId, other: true },
+    {
+      enabled: !!activeConversationId,
+    }
+  );
   const handleToggleAside = () => setShowAside(!showAside);
+  const handleCall = useCallback(() => {
+    console.log("Active conversation id is " + activeConversationId);
+
+    invokeAction(
+      signalRCall({
+        targetConversationId: activeConversationId,
+      })
+    );
+  }, [activeConversationId, invokeAction]);
+
   const handleClickAvatar = useCallback(() => {
     const modalType: ModalType =
       conversationType === "GROUP" ? "Group" : "Friend";
-
-    handleShowModal({ entityId: activeConversationId, modalType });
-  }, [activeConversationId, conversationType, handleShowModal]);
-  
-  const { data: conversationUsersData } =
-    useGetMemberListByConversationId(activeConversationId);
-
-  const otherUserId =
-    conversationUsersData &&
-    (conversationUsersData[0].userId == currentUserData?.id
-      ? conversationUsersData[1].userId
-      : conversationUsersData[0].userId);
+    if (modalType === "Group") {
+      handleShowModal({ entityId: activeConversationId, modalType });
+    } else {
+      handleShowModal({
+        entityId: conversationUsersData?.[0]?.userId,
+        modalType,
+      });
+    }
+  }, [
+    activeConversationId,
+    conversationType,
+    conversationUsersData,
+    handleShowModal,
+  ]);
 
   const { data: conversationData } = useGetConversation(
     { conversationId: activeConversationId },
     {
-      enabled: isGroup,
+      enabled: isGroup && !!activeConversationId,
     }
   );
-  const { data: otherUserData } = useGetUser(otherUserId ?? "", {
-    enabled: !!otherUserId,
-  });
+  const { data: otherUserData } = useGetUser(
+    conversationUsersData?.[0]?.userId ?? "",
+    {
+      enabled: !isGroup && !!conversationUsersData?.[0]?.userId,
+    }
+  );
   const avatar =
     (isGroup
       ? (conversationData as GroupConversation)?.imageURL
@@ -110,6 +136,7 @@ const ChatViewHeader = () => {
             "justify-content-center",
             "align-items-center"
           )}
+          onClick={handleCall}
         >
           {isCalling ? (
             <Avatar
