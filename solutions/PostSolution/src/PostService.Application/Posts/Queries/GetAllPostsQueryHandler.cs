@@ -64,19 +64,22 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<
             {
                 interacts.Add(t.Value);
             }
-
-            var postReponse = new PostDTO
+            if (post != null)
             {
-                PostId = p.Id,
-                Content = post.Content,
-                UserId = post.UserId,
-                CreatedAt = post.CreatedAt,
-                InteractTotal = countInteract,
-                Interactions = interacts,
-                Tags = tags
-            };
+                var postReponse = new PostDTO
+                {
+                    PostId = p.Id,
+                    Content = post.Content,
+                    UserId = post.UserId,
+                    CreatedAt = post.CreatedAt,
+                    InteractTotal = countInteract,
+                    Interactions = interacts,
+                    Tags = tags
+                };
 
-            result.Add(postReponse);
+                result.Add(postReponse);
+            }         
+            
         }
 
         return Result<List<PostDTO>>.Success(result);

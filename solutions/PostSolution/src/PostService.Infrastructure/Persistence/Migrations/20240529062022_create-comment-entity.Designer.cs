@@ -13,7 +13,7 @@ namespace PostService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20240529062022_create-comment-entity")]
-    partial class createcommententity
+    partial class Createcommententity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

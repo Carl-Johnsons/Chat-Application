@@ -7,12 +7,12 @@ using PostService.Domain.Entities;
 using PostService.Domain.Errors;
 namespace PostService.Application.Posts.Queries;
 
-public class GetPostByIdQuery : IRequest<Result<PostDTO>>
+public class GetPostByIdQuery : IRequest<Result<PostDTO?>>
 {
     public Guid Id { get; set; }
 }
 
-public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<PostDTO>>
+public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<PostDTO?>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -21,7 +21,7 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<
         _context = context;
     }
 
-    public async Task<Result<PostDTO>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PostDTO?>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
     {
         var post = await _context.Posts
                     .Where(p => p.Id == request.Id)
@@ -79,6 +79,6 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<
             Tags = tags
         };
 
-        return Result<PostDTO>.Success(postReponse);
+        return Result<PostDTO?>.Success(postReponse);
     }
 }

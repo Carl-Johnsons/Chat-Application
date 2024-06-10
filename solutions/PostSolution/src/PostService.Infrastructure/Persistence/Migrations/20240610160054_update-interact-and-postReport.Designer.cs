@@ -12,8 +12,8 @@ using PostService.Infrastructure.Persistence;
 namespace PostService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240529123930_create-tag-and-interaction-entity")]
-    partial class Createtagandinteractionentity
+    [Migration("20240610160054_update-interact-and-postReport")]
+    partial class UpdateinteractandpostReport
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,10 @@ namespace PostService.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gif")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -103,9 +107,6 @@ namespace PostService.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("CommentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("PostId", "CommentId");
 
                     b.HasIndex("CommentId");
@@ -129,6 +130,35 @@ namespace PostService.Infrastructure.Persistence.Migrations
                     b.HasIndex("InteractionId");
 
                     b.ToTable("PostInteract");
+                });
+
+            modelBuilder.Entity("PostService.Domain.Entities.PostReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("PostReport");
                 });
 
             modelBuilder.Entity("PostService.Domain.Entities.PostTag", b =>
@@ -199,6 +229,17 @@ namespace PostService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Interaction");
+
+                    b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("PostService.Domain.Entities.PostReport", b =>
+                {
+                    b.HasOne("PostService.Domain.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Post");
                 });

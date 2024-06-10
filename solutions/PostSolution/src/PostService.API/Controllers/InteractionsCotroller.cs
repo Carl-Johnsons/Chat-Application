@@ -21,7 +21,9 @@ public class InteractionsCotroller : BaseApiController
     {
         var result = await _sender.Send(new CreateInteractionCommand
         {
-            Value = createInteractionDTO.Value
+            Value = createInteractionDTO.Value,
+            Code = createInteractionDTO.Code,
+            Gif = createInteractionDTO.Gif
         });
 
         result.ThrowIfFailure();

@@ -7,6 +7,9 @@ namespace PostService.Application.Interactions.Commands;
 public class CreateInteractionCommand : IRequest<Result>
 {
     public string Value { get; init; } = null!;
+    public string Gif { get; init; } = null!;
+    public string Code { get; init; } = null!;
+
 }
 
 public class CreateInteractionCommandHandler : IRequestHandler<CreateInteractionCommand, Result>
@@ -35,7 +38,8 @@ public class CreateInteractionCommandHandler : IRequestHandler<CreateInteraction
         Interaction result = new Interaction 
         {
             Value = request.Value,
-            Code = request.Value.ToUpper()
+            Code = request.Code,
+            Gif = request.Gif
         }; 
 
         _context.Interactions.Add(result);

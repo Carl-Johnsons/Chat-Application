@@ -16,6 +16,10 @@ public class PostReport : BaseAuditableEntity
     [JsonProperty("reason")]
     public string Reason { get; set; } = null!;
 
+    [Required]
+    [JsonProperty("userId")]
+    public Guid UserId { get; set; }
+
     public virtual Post Post { get; set; } = null!;
 
 }

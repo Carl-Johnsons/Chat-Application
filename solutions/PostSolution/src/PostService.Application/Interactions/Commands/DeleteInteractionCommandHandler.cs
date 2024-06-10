@@ -32,7 +32,7 @@ public class DeleteInteractionCommandHandler : IRequestHandler<DeleteInteraction
         }
         
         _context.Interactions.Remove(interaction);
-        
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
 
         return Result.Success();
     }

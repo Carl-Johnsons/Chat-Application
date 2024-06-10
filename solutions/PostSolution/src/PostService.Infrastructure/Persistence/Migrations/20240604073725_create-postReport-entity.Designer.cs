@@ -13,7 +13,7 @@ namespace PostService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20240604073725_create-postReport-entity")]
-    partial class createpostReportentity
+    partial class CreatepostReportentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

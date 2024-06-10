@@ -7,12 +7,12 @@ using Sprache;
 using static MassTransit.ValidationResultExtensions;
 namespace PostService.Application.Posts.Queries;
 
-public class GetPostsByUserIdQuery : IRequest<Result<List<PostDTO>>>
+public class GetPostsByUserIdQuery : IRequest<Result<List<PostDTO>?>>
 {
     public Guid UserId { get; init; }
 }
 
-public class GetPostsByUserIdQueryHandler : IRequestHandler<GetPostsByUserIdQuery, Result<List<PostDTO>>>
+public class GetPostsByUserIdQueryHandler : IRequestHandler<GetPostsByUserIdQuery, Result<List<PostDTO>?>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -21,7 +21,7 @@ public class GetPostsByUserIdQueryHandler : IRequestHandler<GetPostsByUserIdQuer
         _context = context;
     }
 
-    public async Task<Result<List<PostDTO>>> Handle(GetPostsByUserIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<PostDTO>?>> Handle(GetPostsByUserIdQuery request, CancellationToken cancellationToken)
     {
         var posts = await _context.Posts
                         .Where(p => p.UserId == request.UserId)
@@ -76,20 +76,24 @@ public class GetPostsByUserIdQueryHandler : IRequestHandler<GetPostsByUserIdQuer
                 interacts.Add(t.Value);
             }
 
-            var postReponse = new PostDTO
+            if (post != null)
             {
-                PostId = p.Id,
-                Content = post.Content,
-                UserId = post.UserId,
-                CreatedAt = post.CreatedAt,
-                InteractTotal = countInteract,
-                Interactions = interacts,
-                Tags = tags
-            };
+                var postReponse = new PostDTO
+                {
+                    PostId = p.Id,
+                    Content = post.Content,
+                    UserId = post.UserId,
+                    CreatedAt = post.CreatedAt,
+                    InteractTotal = countInteract,
+                    Interactions = interacts,
+                    Tags = tags
+                };
 
-            result.Add(postReponse);
+                result.Add(postReponse);
+            }
+            
         }
 
-        return Result<List<PostDTO>>.Success(result);
+        return Result<List<PostDTO>?>.Success(result);
     }
 }

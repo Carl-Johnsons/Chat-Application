@@ -5,12 +5,12 @@ using PostService.Domain.Errors;
 
 namespace PostService.Application.Comments.Queries;
 
-public class GetCommentByPostIdQuery : IRequest<Result<List<PostComment>>>
+public class GetCommentByPostIdQuery : IRequest<Result<List<PostComment>?>>
 {
     public Guid PostId { get; init; }
 }
 
-public class GetCommentByPostIdQueryHandler : IRequestHandler<GetCommentByPostIdQuery, Result<List<PostComment>>>
+public class GetCommentByPostIdQueryHandler : IRequestHandler<GetCommentByPostIdQuery, Result<List<PostComment>?>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -19,7 +19,7 @@ public class GetCommentByPostIdQueryHandler : IRequestHandler<GetCommentByPostId
         _context = context;
     }
 
-    public async Task<Result<List<PostComment>>> Handle(GetCommentByPostIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<PostComment>?>> Handle(GetCommentByPostIdQuery request, CancellationToken cancellationToken)
     {
         var post = _context.Posts
                             .Where(p => p.Id == request.PostId)
@@ -27,7 +27,7 @@ public class GetCommentByPostIdQueryHandler : IRequestHandler<GetCommentByPostId
 
         if (post == null)
         {
-            return Result<List<PostComment>>.Failure(PostError.NotFound);
+            return Result<List<PostComment>?>.Failure(PostError.NotFound);
         }
 
         var comments = await _context.PostComments
@@ -37,6 +37,6 @@ public class GetCommentByPostIdQueryHandler : IRequestHandler<GetCommentByPostId
 
         
 
-        return Result<List<PostComment>>.Success(comments);
+        return Result<List<PostComment>?>.Success(comments);
     }
 }
