@@ -1,3 +1,4 @@
+export * from "./AxiosProps";
 export * from "./Comment";
 export * from "./Conversation";
 export * from "./ConversationType";

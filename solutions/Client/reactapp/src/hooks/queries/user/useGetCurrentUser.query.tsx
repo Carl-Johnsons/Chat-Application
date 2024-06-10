@@ -1,5 +1,5 @@
-import { protectedAxiosInstance } from "@/utils";
-import { User } from "@/models";
+import { useAxios } from "@/hooks";
+import { AxiosProps, User } from "@/models";
 import {
   QueryKey,
   useQuery,
@@ -12,10 +12,13 @@ const QUERY_KEY = "currentUser";
 type UserClaimResponse = User & {
   sub: string;
 };
+interface Props extends AxiosProps {}
 
-const getUserProfile = async (): Promise<User | null> => {
+const getUserProfile = async ({
+  axiosInstance,
+}: Props): Promise<User | null> => {
   const url = "http://localhost:5001/connect/userinfo";
-  const response = await protectedAxiosInstance.get(url);
+  const response = await axiosInstance.get(url);
   // The json response from identity server 4 is snake_case by default
   const transformedUserClaimResponseData = camelcaseKeysDeep(
     response.data
@@ -38,10 +41,11 @@ const useGetCurrentUser = (
   > = {}
 ) => {
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
   return useQuery({
     ...queryOptions,
     queryKey: [QUERY_KEY],
-    queryFn: () => getUserProfile(),
+    queryFn: () => getUserProfile({ axiosInstance: protectedAxiosInstance }),
     initialData: () => {
       return queryClient.getQueryData<User | null>([QUERY_KEY]);
     },

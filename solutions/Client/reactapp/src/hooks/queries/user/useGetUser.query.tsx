@@ -1,5 +1,5 @@
-import { protectedAxiosInstance } from "@/utils";
-import { DefaultUser, User } from "@/models";
+import { useAxios } from "@/hooks";
+import { AxiosProps, DefaultUser, User } from "@/models";
 import {
   QueryKey,
   UseQueryOptions,
@@ -8,14 +8,17 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-/**
- * @param {number} userId
- * @returns {User}
- */
-const getUser = async (userId: string): Promise<User | null> => {
+interface Props extends AxiosProps {
+  userId: string;
+}
+
+const getUser = async ({
+  userId,
+  axiosInstance,
+}: Props): Promise<User | null> => {
   const url = "http://localhost:5001/api/users";
 
-  const response = await protectedAxiosInstance.get(url, {
+  const response = await axiosInstance.get(url, {
     params: {
       id: userId,
     },
@@ -33,11 +36,11 @@ const useGetUser = (
   > = {}
 ) => {
   const queryClient = useQueryClient();
-
+  const { protectedAxiosInstance } = useAxios();
   return useQuery({
     ...queryOptions,
     queryKey: ["users", userId],
-    queryFn: () => getUser(userId),
+    queryFn: () => getUser({ userId, axiosInstance: protectedAxiosInstance }),
     initialData: () => {
       return queryClient.getQueryData<User | null>(["users", userId]);
     },
@@ -52,13 +55,14 @@ const useGetUsers = (
   > = {}
 ) => {
   const queryClient = useQueryClient();
-
+  const { protectedAxiosInstance } = useAxios();
   const queries = useQueries({
     queries: userIds.map((userId) => {
       return {
         ...queryOptions,
         queryKey: ["users", userId],
-        queryFn: () => getUser(userId),
+        queryFn: () =>
+          getUser({ userId, axiosInstance: protectedAxiosInstance }),
         initialData: () => {
           return queryClient.getQueryData<User | null>(["users", userId]);
         },

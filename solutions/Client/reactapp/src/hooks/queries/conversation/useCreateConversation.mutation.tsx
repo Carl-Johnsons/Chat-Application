@@ -1,12 +1,13 @@
-import { axiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ConversationWithMembersId,
   GroupConversationWithMembersId,
 } from "@/models";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
+import { AxiosProps } from "models/AxiosProps";
+import { useAxios } from "@/hooks";
 
-interface Props {
+interface Props extends AxiosProps {
   conversationWithMembersId:
     | ConversationWithMembersId
     | GroupConversationWithMembersIdDTO
@@ -14,6 +15,7 @@ interface Props {
 }
 const createConversation = async ({
   conversationWithMembersId,
+  axiosInstance,
 }: Props): Promise<ConversationWithMembersId | null> => {
   if (!conversationWithMembersId) {
     return null;
@@ -24,6 +26,7 @@ const createConversation = async ({
 };
 const createGroupConversation = async ({
   conversationWithMembersId,
+  axiosInstance,
 }: Props): Promise<GroupConversationWithMembersId | null> => {
   if (!conversationWithMembersId) {
     return null;
@@ -34,9 +37,14 @@ const createGroupConversation = async ({
 };
 const useCreateConversation = () => {
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
+
   return useMutation<ConversationWithMembersId | null, Error, Props, unknown>({
     mutationFn: ({ conversationWithMembersId }) =>
-      createConversation({ conversationWithMembersId }),
+      createConversation({
+        conversationWithMembersId,
+        axiosInstance: protectedAxiosInstance,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],
@@ -49,8 +57,8 @@ const useCreateConversation = () => {
   });
 };
 const useCreateGroupConversation = () => {
-
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
   return useMutation<
     GroupConversationWithMembersId | null,
     Error,
@@ -58,7 +66,10 @@ const useCreateGroupConversation = () => {
     unknown
   >({
     mutationFn: ({ conversationWithMembersId }) =>
-      createGroupConversation({ conversationWithMembersId }),
+      createGroupConversation({
+        conversationWithMembersId,
+        axiosInstance: protectedAxiosInstance,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],

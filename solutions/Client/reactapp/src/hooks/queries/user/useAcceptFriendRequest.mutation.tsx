@@ -1,25 +1,26 @@
-import { protectedAxiosInstance } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ConversationWithMembersId } from "@/models";
+import { AxiosProps, ConversationWithMembersId } from "@/models";
+import { useAxios } from "@/hooks";
 
-/**
- *
- * @param frId
- * @returns
- */
-const acceptFriendRequest = async (
-  frId: string
-): Promise<ConversationWithMembersId | null> => {
+interface Props extends AxiosProps {
+  friendId: string;
+}
+
+const acceptFriendRequest = async ({
+  friendId,
+  axiosInstance,
+}: Props): Promise<ConversationWithMembersId | null> => {
   const data = {
-    friendRequestId: frId,
+    friendRequestId: friendId,
   };
   const url = "http://localhost:5001/api/users/friend-request/accept";
-  const response = await protectedAxiosInstance.post(url, data);
+  const response = await axiosInstance.post(url, data);
   return response.data;
 };
 
 const useAcceptFriendRequest = () => {
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
   return useMutation<
     ConversationWithMembersId | null,
     Error,
@@ -29,7 +30,10 @@ const useAcceptFriendRequest = () => {
     unknown
   >({
     mutationFn: ({ frId }) => {
-      return acceptFriendRequest(frId);
+      return acceptFriendRequest({
+        friendId: frId,
+        axiosInstance: protectedAxiosInstance,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
