@@ -23,4 +23,10 @@
 		<ProjectReference Include="..\UploadFileService.Infrastructure\UploadFileService.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Reference Include="Contract">
+	    <HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
 </Project>

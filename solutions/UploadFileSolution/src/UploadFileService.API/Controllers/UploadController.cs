@@ -1,8 +1,6 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using UploadFileService.Application.CoudinaryFiles.Commands;
-using UploadFileService.Application.CoudinaryFiles.Queries;
-using UploadFileService.Domain.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using UploadFileService.Application.CloudinaryFiles.Commands;
+using UploadFileService.Application.CloudinaryFiles.Queries;
 
 namespace UploadFileService.API.Controllers;
 
@@ -18,14 +16,15 @@ public class UploadController : ControllerBase
         _sender = sender;
     }
 
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _sender.Send(new GetAllCloudinaryFilesQuery());
-        return Ok(result);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
-    [HttpGet("id")]
+    [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetCloudinaryFileByIdDTO getCloudinaryFileByIdDTO)
     {
         if(getCloudinaryFileByIdDTO.Id != null)
@@ -34,7 +33,8 @@ public class UploadController : ControllerBase
             { 
                 Id  = getCloudinaryFileByIdDTO.Id
             });
-            return Ok(result);
+            result.ThrowIfFailure();
+            return Ok(result.Value);
         }
         return BadRequest("Get file fail");
     }
@@ -42,43 +42,34 @@ public class UploadController : ControllerBase
     [HttpPost("image")]
     public async Task<IActionResult> UploadImage([FromForm] UploadFileDTO uploadFileDTO)
     {
-        var cloudinaryFile = await _sender.Send(new CreateCloudinaryImageFileCommand
+        var result = await _sender.Send(new CreateCloudinaryImageFileCommand
         {
             FormFile = uploadFileDTO.File
         });
-        if (cloudinaryFile == null)
-        {
-            return BadRequest(cloudinaryFile);
-        }
-        return Ok(cloudinaryFile);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpPost("video")]
     public async Task<IActionResult> UploadVideo([FromForm] UploadFileDTO uploadFileDTO)
     {
-        var cloudinaryFile = await _sender.Send(new CreateCloudinaryVideoFileCommand
+        var result = await _sender.Send(new CreateCloudinaryVideoFileCommand
         {
             FormFile = uploadFileDTO.File
         });
-        if (cloudinaryFile == null)
-        {
-            return BadRequest(cloudinaryFile);
-        }
-        return Ok(cloudinaryFile);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpPost("raw")]
     public async Task<IActionResult> UploadRaw([FromForm] UploadFileDTO uploadFileDTO)
     {
-        var cloudinaryFile = await _sender.Send(new CreateCloudinaryRawFileCommand
+        var result = await _sender.Send(new CreateCloudinaryRawFileCommand
         {
             FormFile = uploadFileDTO.File
         });
-        if (cloudinaryFile == null)
-        {
-            return BadRequest(cloudinaryFile);
-        }
-        return Ok(cloudinaryFile);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpDelete]
@@ -86,11 +77,12 @@ public class UploadController : ControllerBase
     {
         if(deleteCloudinaryFileById.Id != null) {
         
-            var deleteMessage = await _sender.Send(new DeleteCloudinaryFileCommand
+            var result = await _sender.Send(new DeleteCloudinaryFileCommand
             {
                 Id = deleteCloudinaryFileById.Id
             });
-            return Ok(deleteMessage);
+            result?.ThrowIfFailure();
+            return NoContent();
         }
         return BadRequest("Delete fail");
     }

@@ -1,14 +1,11 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using UploadFileService.Domain.Entities;
-using UploadFileService.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace UploadFileService.Application.CoudinaryFiles.Queries;
+namespace UploadFileService.Application.CloudinaryFiles.Queries;
 
-public record GetAllCloudinaryFilesQuery : IRequest<IEnumerable<CloudinaryFile>>
+public record GetAllCloudinaryFilesQuery : IRequest<Result<List<CloudinaryFile>>>
 {
 }
-public class GetAllCloudinaryFilesQueryHandler : IRequestHandler<GetAllCloudinaryFilesQuery, IEnumerable<CloudinaryFile>>
+public class GetAllCloudinaryFilesQueryHandler : IRequestHandler<GetAllCloudinaryFilesQuery, Result<List<CloudinaryFile>>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -17,8 +14,9 @@ public class GetAllCloudinaryFilesQueryHandler : IRequestHandler<GetAllCloudinar
         _context = context;
     }
 
-    public async Task<IEnumerable<CloudinaryFile>> Handle(GetAllCloudinaryFilesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<CloudinaryFile>>> Handle(GetAllCloudinaryFilesQuery request, CancellationToken cancellationToken)
     {
-        return await _context.CloudinaryFiles.Include(cf => cf.ExtensionType).ToListAsync();
+        var result = await _context.CloudinaryFiles.Include(cf => cf.ExtensionType).ToListAsync();
+        return Result<List<CloudinaryFile>>.Success(result);
     }
 }
