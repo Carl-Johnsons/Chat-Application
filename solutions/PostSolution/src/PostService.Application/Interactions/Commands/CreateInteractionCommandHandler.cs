@@ -1,13 +1,15 @@
 ﻿using MediatR;
+using PostService.Domain.Common;
+using PostService.Domain.Errors;
 
 namespace PostService.Application.Interactions.Commands;
 
-public class CreateInteractionCommand : IRequest<Interaction>
+public class CreateInteractionCommand : IRequest<Result>
 {
     public string Value { get; init; } = null!;
 }
 
-public class CreateInteractionCommandHandler : IRequestHandler<CreateInteractionCommand, Interaction>
+public class CreateInteractionCommandHandler : IRequestHandler<CreateInteractionCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -18,17 +20,27 @@ public class CreateInteractionCommandHandler : IRequestHandler<CreateInteraction
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Interaction> Handle(CreateInteractionCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateInteractionCommand request, CancellationToken cancellationToken)
     {
-        Interaction interaction = new Interaction 
+
+        var interaction = _context.Interactions
+                .Where(i => i.Value == request.Value.Trim())
+                .FirstOrDefault();
+
+        if (interaction != null)
+        {
+            return Result.Failure(InteractionError.AlreadyExited);
+        }
+
+        Interaction result = new Interaction 
         {
             Value = request.Value,
             Code = request.Value.ToUpper()
-        };
+        }; 
 
-        _context.Interactions.Add(interaction);
+        _context.Interactions.Add(result);
         await _unitOfWork.SaveChangeAsync();
 
-        return interaction;
+        return Result.Success();
     }
 }

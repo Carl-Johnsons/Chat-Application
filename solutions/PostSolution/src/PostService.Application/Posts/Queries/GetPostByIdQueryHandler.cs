@@ -1,15 +1,18 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
+using PostService.Domain.Common;
 using PostService.Domain.DTOs;
 using PostService.Domain.Entities;
+using PostService.Domain.Errors;
 namespace PostService.Application.Posts.Queries;
 
-public class GetPostByIdQuery : IRequest<PostDTO>
+public class GetPostByIdQuery : IRequest<Result<PostDTO>>
 {
     public Guid Id { get; set; }
 }
 
-public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostDTO>
+public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<PostDTO>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -18,11 +21,16 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostDTO
         _context = context;
     }
 
-    public async Task<PostDTO> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PostDTO>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
     {
         var post = await _context.Posts
                     .Where(p => p.Id == request.Id)
                     .SingleOrDefaultAsync();
+
+        if (post == null)
+        {
+            return Result<PostDTO>.Failure(PostError.NotFound);
+        }
 
         var tag = await _context.PostTags
                     .Where(t => t.PostId == request.Id)
@@ -71,6 +79,6 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostDTO
             Tags = tags
         };
 
-        return postReponse;
+        return Result<PostDTO>.Success(postReponse);
     }
 }

@@ -1,14 +1,16 @@
 ﻿using MediatR;
+using PostService.Domain.Common;
+using PostService.Domain.Errors;
 
 namespace PostService.Application.Tags.Commands;
 
-public class CreateTagCommand : IRequest
+public class CreateTagCommand : IRequest<Result>
 {
     public string Value { get; init; } = null!;
 
 }
 
-public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand>
+public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +21,7 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(CreateTagCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateTagCommand request, CancellationToken cancellationToken)
     {
 
         var tag = _context.Tags
@@ -28,16 +30,22 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand>
 
         if (tag == null)
         {
-            Tag tags = new Tag
+            var tags = new Tag
             {
                 Value = request.Value.Trim(),
                 Code = request.Value.ToUpper()
             };
             _context.Tags.Add(tags);
+            await _unitOfWork.SaveChangeAsync();
+
+            return Result.Success();
+        } else
+        {
+            return Result.Failure(TagError.AlreadyExited);
         }
 
             
-        await _unitOfWork.SaveChangeAsync();
+
 
     }
 }

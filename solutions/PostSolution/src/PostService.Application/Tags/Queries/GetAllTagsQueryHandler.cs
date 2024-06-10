@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using PostService.Domain.Common;
 
 namespace PostService.Application.Tags.Queries;
 
-public record GetAllTagsQuery : IRequest<List<Tag>>;
+public record GetAllTagsQuery : IRequest<Result<List<Tag>>>;
 
-public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, List<Tag>>
+public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, Result<List<Tag>>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -14,10 +15,11 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, List<Tag>
         _context = context;
     }
 
-    public async Task<List<Tag>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<Tag>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
     {
-        var tag = await _context.Tags
+        var tags = await _context.Tags
                     .ToListAsync(cancellationToken);
-        return tag;
+
+        return Result<List<Tag>>.Success(tags);
     }
 }

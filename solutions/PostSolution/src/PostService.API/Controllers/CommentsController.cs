@@ -26,14 +26,11 @@ public class CommentsController : BaseApiController
         var comment = await _sender.Send(new CreateCommentCommand
         {
             Content = createCommentDTO.Content,
-            UserId = Guid.Parse(subjectId!)
+            UserId = Guid.Parse(subjectId!),
+            PostId = createCommentDTO.PostId,
         });
 
-        await _sender.Send(new CreatePostCommentCommand
-        {
-            PostId = createCommentDTO.PostId,
-            CommentId = comment.Id
-        });
+        comment.ThrowIfFailure();
 
         return Ok();
     }
@@ -46,18 +43,20 @@ public class CommentsController : BaseApiController
             PostId = postId
         });
 
+        comments.ThrowIfFailure();
         return Ok(comments);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateCommentDTO updateCommentDTO)
     {
-        await _sender.Send(new UpdateCommetCommand
+        var result = await _sender.Send(new UpdateCommetCommand
         {
             Id = updateCommentDTO.Id,
             Content = updateCommentDTO.Content
         });
 
+        result.ThrowIfFailure();
         return Ok();
     }
 

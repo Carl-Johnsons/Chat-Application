@@ -32,11 +32,13 @@ public class PostsController : BaseApiController
             UserId = Guid.Parse(subjectId!)
         });
 
+        var result = await _sender.Send(new CreatePostTagCommand());
+
         foreach (var t in createPostDTO.TagIds)
         {
-            await _sender.Send(new CreatePostTagCommand
+            result = await _sender.Send(new CreatePostTagCommand
             {
-                PostId = post.Id,
+                PostId = post.Value.Id,
                 TagId = t
             });
         }
@@ -60,43 +62,50 @@ public class PostsController : BaseApiController
     {
         var posts = await _sender.Send(new GetAllPostsQuery());
 
-        return Ok(posts);
+        posts.ThrowIfFailure();
+        return Ok(posts.Value);
     }
 
     [HttpGet("user")]
     public async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
     {
-        var post = await _sender.Send(new GetPostsByUserIdQuery
+        var posts = await _sender.Send(new GetPostsByUserIdQuery
         {
             UserId = userId
         });
 
-        return Ok(post);
+        posts.ThrowIfFailure();
+        return Ok(posts.Value);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdatePostDTO updatePostDTO)
     {
-        await _sender.Send(new UpdatePostCommand
+        var result = await _sender.Send(new UpdatePostCommand
         {
             PostId = updatePostDTO.Id,
             Content = updatePostDTO.Content
         });
 
-        await Console.Out.WriteLineAsync(updatePostDTO.TagIds.ToString());
+        result.ThrowIfFailure();
 
-        await _sender.Send(new DeletePostTagCommand
+        if (result.IsSuccess)
         {
-            PostId = updatePostDTO.Id
-        });
-
-        foreach (var t in updatePostDTO.TagIds)
-        {
-            await _sender.Send(new CreatePostTagCommand
+            await _sender.Send(new DeletePostTagCommand
             {
-                PostId = updatePostDTO.Id,
-                TagId = t
+                PostId = updatePostDTO.Id
             });
+
+            foreach (var t in updatePostDTO.TagIds)
+            {
+                var postTag = await _sender.Send(new CreatePostTagCommand
+                {
+                    PostId = updatePostDTO.Id,
+                    TagId = t
+                });
+
+                postTag.ThrowIfFailure();
+            }
         }
 
         return Ok();
@@ -109,12 +118,14 @@ public class PostsController : BaseApiController
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
-        await _sender.Send(new CreatePostInteractionCommand
+        var result = await _sender.Send(new CreatePostInteractionCommand
         {
             PostId = createPostInteractionDTO.PostId,
             InteractionId = createPostInteractionDTO.InteractionId,
             UserId = Guid.Parse(subjectId!)
         });
+
+        result.ThrowIfFailure();
 
         return Ok();
     }
@@ -127,6 +138,7 @@ public class PostsController : BaseApiController
             PostId = id
         });
 
-        return Ok(interactions);
+        interactions.ThrowIfFailure();
+        return Ok(interactions.Value);
     }
 }

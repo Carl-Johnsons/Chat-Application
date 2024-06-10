@@ -1,14 +1,16 @@
 ﻿using MediatR;
+using PostService.Domain.Common;
+using PostService.Domain.Errors;
 
 namespace PostService.Application.Comments.Commands;
 
-public class UpdateCommetCommand : IRequest
+public class UpdateCommetCommand : IRequest<Result>
 {
     public Guid Id { get; init; }
     public string Content { get; init; } = null!;
 }
 
-public class UpdateCommetCommandHandler : IRequestHandler<UpdateCommetCommand>
+public class UpdateCommetCommandHandler : IRequestHandler<UpdateCommetCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +21,7 @@ public class UpdateCommetCommandHandler : IRequestHandler<UpdateCommetCommand>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(UpdateCommetCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateCommetCommand request, CancellationToken cancellationToken)
     {
         var comment = _context.Comments
                         .Where(p => p.Id == request.Id)
@@ -28,8 +30,14 @@ public class UpdateCommetCommandHandler : IRequestHandler<UpdateCommetCommand>
         if (comment != null)
         {
             comment.Content = request.Content;
+            await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+            return Result.Success();
+        } else
+        {
+            return Result.Failure(CommentError.NotFound);
         }
 
-        await _unitOfWork.SaveChangeAsync(cancellationToken);
+        
     }
 }

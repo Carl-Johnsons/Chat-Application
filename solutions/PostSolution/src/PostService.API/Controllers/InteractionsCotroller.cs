@@ -19,10 +19,12 @@ public class InteractionsCotroller : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateInteractionDTO createInteractionDTO)
     {
-        await _sender.Send(new CreateInteractionCommand
+        var result = await _sender.Send(new CreateInteractionCommand
         {
             Value = createInteractionDTO.Value
         });
+
+        result.ThrowIfFailure();
 
         return Ok();
     }
@@ -30,11 +32,11 @@ public class InteractionsCotroller : BaseApiController
     [HttpDelete]
     public async Task<IActionResult> Delete([FromBody] DeleteInteractionDTO deleteInteractionDTO)
     {
-        await _sender.Send(new DeleteInteractionCommand
+        var result = await _sender.Send(new DeleteInteractionCommand
         {
             Id = deleteInteractionDTO.Id
         });
-
+        result.ThrowIfFailure();
         return Ok();
     }
 
@@ -42,19 +44,19 @@ public class InteractionsCotroller : BaseApiController
     public async Task<IActionResult> GetAll()
     {
         var post = await _sender.Send(new GetAllInteractionsQuery());
-
-        return Ok(post);
+        post.ThrowIfFailure();
+        return Ok(post.Value);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateInteractionDTO updateInteractionDTO)
     {
-        await _sender.Send(new UpdateInteractionCommand
+        var result = await _sender.Send(new UpdateInteractionCommand
         {
             Id = updateInteractionDTO.Id,
             Value = updateInteractionDTO.Value
         });
-
+        result.ThrowIfFailure();
         return Ok();
     }
 }
