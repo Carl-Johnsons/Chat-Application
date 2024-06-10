@@ -1,6 +1,9 @@
 "use client";
 
-import { UserManager, UserManagerSettings } from "oidc-client";
+import {
+  UserManager,
+  UserManagerSettings,
+} from "oidc-client";
 const clientBaseUrl =
   process.env.NEXT_PUBLIC_CLIENT_BASE_URL ?? "http://localhost:3000";
 

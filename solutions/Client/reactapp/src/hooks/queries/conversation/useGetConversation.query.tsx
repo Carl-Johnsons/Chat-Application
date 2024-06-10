@@ -1,23 +1,24 @@
-import { Conversation } from "@/models";
-import { protectedAxiosInstance } from "@/utils";
+import { AxiosProps, Conversation } from "@/models";
 import {
   UseQueryOptions,
   useQueries,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useAxios } from "hooks/useAxios";
 
-interface Props {
+interface Props extends AxiosProps {
   conversationId: string | undefined;
 }
 const getConversation = async ({
   conversationId,
+  axiosInstance,
 }: Props): Promise<Conversation | null> => {
   if (!conversationId) {
     return null;
   }
   const url = `/api/conversation`;
-  const response = await protectedAxiosInstance.get(url, {
+  const response = await axiosInstance.get(url, {
     params: {
       conversationId: conversationId,
     },
@@ -33,10 +34,15 @@ const useGetConversation = (
   > = {}
 ) => {
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
   return useQuery({
     ...queryOptions,
     queryKey: ["conversation", conversationId],
-    queryFn: () => getConversation({ conversationId }),
+    queryFn: () =>
+      getConversation({
+        conversationId,
+        axiosInstance: protectedAxiosInstance,
+      }),
     initialData: () => {
       return queryClient.getQueryData<Conversation | null>([
         "conversation",
@@ -53,12 +59,17 @@ const useGetConversations = (
   > = {}
 ) => {
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
   return useQueries({
     queries: conversationsId.map((conversationId) => {
       return {
         ...queryOptions,
         queryKey: ["conversation", conversationId],
-        queryFn: () => getConversation({ conversationId }),
+        queryFn: () =>
+          getConversation({
+            conversationId,
+            axiosInstance: protectedAxiosInstance,
+          }),
         initialData: () => {
           return queryClient.getQueryData<Conversation | null>([
             "conversation",
