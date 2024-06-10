@@ -1,19 +1,17 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using UploadFileService.Domain.Interfaces;
 
 namespace UploadFileService.Application.CloudinaryFiles.Commands;
-public record DeleteCloudinaryFileCommand : IRequest<string>
+public record DeleteCloudinaryFileCommand : IRequest<Result>
 {
     [Required]
     public Guid? Id { get; init; }
 }
-public class DeleteCloudinaryFileCommandHandler : IRequestHandler<DeleteCloudinaryFileCommand, string>
+public class DeleteCloudinaryFileCommandHandler : IRequestHandler<DeleteCloudinaryFileCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -26,60 +24,55 @@ public class DeleteCloudinaryFileCommandHandler : IRequestHandler<DeleteCloudina
         _cloudinary = cloudinary;
     }
 
-    public async Task<string> Handle(DeleteCloudinaryFileCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteCloudinaryFileCommand request, CancellationToken cancellationToken)
     {
-        try
+        Guid? Id = request.Id;
+
+        if (Id == null)
         {
-            Guid? Id = request.Id;
-
-            if (Id == null)
-            {
-                throw new Exception("Cloudinary File Id is null");
-            }
-
-            var cloudinaryFile = await _context.CloudinaryFiles.Where(cf => cf.Id == Id).Include(cf => cf.ExtensionType).SingleOrDefaultAsync();
-
-
-            if (cloudinaryFile == null || cloudinaryFile.PublicId == null)
-            {
-                throw new Exception("Not found file to delete");
-            }
-
-            ResourceType rst;
-            switch (cloudinaryFile.ExtensionType.Type)
-            {
-                case "IMAGE":
-                    rst = ResourceType.Image;
-                    break;
-                case "VIDEO":
-                    rst = ResourceType.Video;
-                    break;
-                case "RAW":
-                    rst = ResourceType.Raw;
-                    break;
-                default:
-                    throw new Exception("Invalid file type");
-            }
-
-            var deleteParams = new DeletionParams(cloudinaryFile.PublicId)
-            {
-                ResourceType = rst,
-            };
-            var deleteResult = _cloudinary.Destroy(deleteParams);
-
-            if (deleteResult.StatusCode == HttpStatusCode.OK)
-            {
-                await Console.Out.WriteLineAsync("deleteok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                _context.CloudinaryFiles.Remove(cloudinaryFile);
-                await _unitOfWork.SaveChangeAsync(cancellationToken);
-                return "Delete file: " + cloudinaryFile.PublicId + " successful!";
-            }
+            return CloudinaryFileError.NotFound;
         }
-        catch (Exception ex)
+
+        var cloudinaryFile = await _context.CloudinaryFiles.Where(cf => cf.Id == Id).Include(cf => cf.ExtensionType).SingleOrDefaultAsync();
+
+
+        if (cloudinaryFile == null || cloudinaryFile.PublicId == null)
         {
-            await Console.Out.WriteLineAsync(ex.Message);
-            return "Delete file fail with exeption: " + ex.Message;
+            return CloudinaryFileError.NotFound;
+
         }
-        return "Delete file fail";
+
+        ResourceType rst;
+        switch (cloudinaryFile.ExtensionType.Type)
+        {
+            case "IMAGE":
+                rst = ResourceType.Image;
+                break;
+            case "VIDEO":
+                rst = ResourceType.Video;
+                break;
+            case "RAW":
+                rst = ResourceType.Raw;
+                break;
+            default:
+                return CloudinaryFileError.InvalidFile("Image, Video, Raw", Path.GetExtension(cloudinaryFile.Name));
+        }
+
+        var deleteParams = new DeletionParams(cloudinaryFile.PublicId)
+        {
+            ResourceType = rst,
+        };
+        var deleteResult = _cloudinary.Destroy(deleteParams);
+
+        if (deleteResult.StatusCode != HttpStatusCode.OK)
+        {
+            return CloudinaryFileError.DeleteToCloudFail;
+        }
+
+        await Console.Out.WriteLineAsync("deleteok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        _context.CloudinaryFiles.Remove(cloudinaryFile);
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
+        return Result.Success();
+
     }
 }

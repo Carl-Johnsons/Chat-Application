@@ -106,16 +106,16 @@ public class Index : PageModel
 
             var avtFileStreamEvent = new FileStreamEvent
             {
-                FileName = Input.AvatarImage.FileName,
-                ContentType = Input.AvatarImage.ContentType,
-                Stream = new BinaryReader(Input.AvatarImage.OpenReadStream()).ReadBytes((int)Input.AvatarImage.Length)
+                FileName = Input.AvatarFile.FileName,
+                ContentType = Input.AvatarFile.ContentType,
+                Stream = new BinaryReader(Input.AvatarFile.OpenReadStream()).ReadBytes((int)Input.AvatarFile.Length)
             };
 
             var bgFileStreamEvent = new FileStreamEvent
             {
-                FileName = Input.BackgroundImage.FileName,
-                ContentType = Input.BackgroundImage.ContentType,
-                Stream = new BinaryReader(Input.BackgroundImage.OpenReadStream()).ReadBytes((int)Input.BackgroundImage.Length)
+                FileName = Input.BackgroundFile.FileName,
+                ContentType = Input.BackgroundFile.ContentType,
+                Stream = new BinaryReader(Input.BackgroundFile.OpenReadStream()).ReadBytes((int)Input.BackgroundFile.Length)
             };
 
             var response = await requestClient.GetResponse<UploadMultipleFileEventResponseDTO>(new UploadMultipleFileEvent
@@ -181,6 +181,19 @@ public class Index : PageModel
                     throw new ArgumentException("invalid return URL");
                 }
             }
+
+            var requestClientDelete = _bus.CreateRequestClient<DeleteMultipleFileEvent>();
+
+            var responseClientDelete = await requestClientDelete.GetResponse<DeleteMultipleFileEventResponseDTO>(new DeleteMultipleFileEvent
+            {
+                FileIds = [response.Message.Files[0].Id, response.Message.Files[1].Id]
+            });
+
+            if (responseClientDelete == null)
+            {
+                throw new Exception("Invalid delete file response");
+            }
+
             await Console.Out.WriteLineAsync("InvalidCredentialsErrorMessage ********************************************");
             ModelState.AddModelError(string.Empty, RegisterOptions.InvalidCredentialsErrorMessage);
         }

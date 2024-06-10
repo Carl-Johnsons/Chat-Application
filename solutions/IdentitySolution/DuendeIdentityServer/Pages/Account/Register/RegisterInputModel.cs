@@ -19,10 +19,10 @@ public class RegisterInputModel
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public IFormFile AvatarImage { get; set; } = null!;
+    public IFormFile AvatarFile { get; set; } = null!;
 
     [Required]
-    public IFormFile BackgroundImage { get; set; } = null!;
+    public IFormFile BackgroundFile { get; set; } = null!;
 
     [Required]
     public DateTime Dob { get; set; }

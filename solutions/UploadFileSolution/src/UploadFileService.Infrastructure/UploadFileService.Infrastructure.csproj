@@ -14,10 +14,18 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="MassTransit" Version="8.2.2" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\UploadFileService.Domain\UploadFileService.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Contract">
+	    <HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>

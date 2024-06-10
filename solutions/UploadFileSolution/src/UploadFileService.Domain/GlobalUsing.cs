@@ -1,1 +1,1 @@
-﻿
+﻿global using UploadFileService.Domain.Common;

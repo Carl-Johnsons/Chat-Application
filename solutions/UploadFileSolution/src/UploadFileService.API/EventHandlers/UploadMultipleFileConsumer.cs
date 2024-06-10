@@ -1,15 +1,13 @@
-﻿using Contract.DTOs;
+﻿using Contract.Common;
+using Contract.DTOs;
 using Contract.Event.UploadEvent;
 using MassTransit;
-using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using UploadFileService.Application.CloudinaryFiles.Commands;
-using UploadFileService.Domain.Interfaces;
 
 
-namespace UploadFileService.Application.CloudinaryFiles.EventHandlers;
-
+namespace UploadFileService.API.EventHandlers;
+[QueueName("upload-multiple-file-event-queue")]
 public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEvent>
 {
     private readonly ISender _sender;
@@ -33,11 +31,11 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
         {
             await Console.Out.WriteLineAsync(fileStreamEvents[i].FileName);
             await Console.Out.WriteLineAsync(fileStreamEvents[i].ContentType);
-            await Console.Out.WriteLineAsync(fileStreamEvents[i].Stream.Length+"");
+            await Console.Out.WriteLineAsync(fileStreamEvents[i].Stream.Length + "");
             await Console.Out.WriteLineAsync("**********************************************************");
         }
 
-        for(int i = 0; i < fileStreamEvents.Count; i++)
+        for (int i = 0; i < fileStreamEvents.Count; i++)
         {
             var fileStreamEvent = fileStreamEvents[i];
             var fileStream = new MemoryStream(fileStreamEvent.Stream);
@@ -47,9 +45,9 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
                 ContentType = fileStreamEvent.ContentType,
             };
             formFiles.Add(formFile);
-            await Console.Out.WriteLineAsync("add to list IfornFile" + i);
         }
-        await Console.Out.WriteLineAsync("FormFile element count:"+formFiles.Count);
+
+        await Console.Out.WriteLineAsync("FormFile element count:" + formFiles.Count);
         await Console.Out.WriteLineAsync("Going create multiple image command");
         var response = await _sender.Send(new CreateMultipleCloudinaryImageFileCommand
         {
@@ -58,34 +56,29 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
 
         var result = new UploadMultipleFileEventResponseDTO();
         result.Files = new List<UploadFileEventResponseDTO>(fileStreamEvents.Count);
-
-        if (response == null || !response.Any())
+        response.ThrowIfFailure();
+        for (int i = 0; i < response.Value.Count; i++)
         {
-            throw new ArgumentNullException(nameof(response), "The response file list is null or empty.");
-        }
+            await Console.Out.WriteLineAsync("extension tple id of :" + i + " " + response.Value[i].ExtensionTypeId);
 
-        for (int i = 0; i < response.Count; i++)
-        {
-            await Console.Out.WriteLineAsync("extension tple id of :"+i+" "+response[i].ExtensionTypeId);
-            
-            var extensionTypeCode = (await _context.ExtensionTypes.Where(et => et.Id == response[i].ExtensionTypeId).SingleOrDefaultAsync())?.Code!;
+            var extensionTypeCode = (await _context.ExtensionTypes.Where(et => et.Id == response.Value[i].ExtensionTypeId).SingleOrDefaultAsync())?.Code!;
             var fileDTO = new UploadFileEventResponseDTO
             {
-                Id = response[i].Id,
-                Name = response[i].Name,
-                Size = response[i].Size,
-                Url = response[i].Url,
+                Id = response.Value[i].Id,
+                Name = response.Value[i].Name,
+                Size = response.Value[i].Size,
+                Url = response.Value[i].Url,
                 ExtensionTypeCode = extensionTypeCode
             };
             result.Files.Add(fileDTO);
         }
 
-        await Console.Out.WriteLineAsync("$$$$$$$$$$$$$$$$$$$$$$$$result:"+ result.Files.Count);
+        await Console.Out.WriteLineAsync("$$$$$$$$$$$$$$$$$$$$$$$$result:" + result.Files.Count);
 
-        for (int i = 0; i < response.Count; i++)
+        for (int i = 0; i < response.Value.Count; i++)
         {
-            await Console.Out.WriteLineAsync("Result:"+i);
-            await Console.Out.WriteLineAsync("id: "+ result.Files[i].Id);
+            await Console.Out.WriteLineAsync("Result:" + i);
+            await Console.Out.WriteLineAsync("id: " + result.Files[i].Id);
             await Console.Out.WriteLineAsync("name: " + result.Files[i].Name);
             await Console.Out.WriteLineAsync("size: " + result.Files[i].Size);
             await Console.Out.WriteLineAsync("url: " + result.Files[i].Url);
@@ -96,4 +89,5 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
         await Console.Out.WriteLineAsync("======================================");
         await context.RespondAsync(result);
     }
+
 }

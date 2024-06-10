@@ -13,8 +13,10 @@ COPY ["./solutions/UploadFileSolution/src/UploadFileService.API/UploadFileServic
 COPY ["./solutions/UploadFileSolution/src/UploadFileService.Application/UploadFileService.Application.csproj", "./UploadFileService.Application/"]
 COPY ["./solutions/UploadFileSolution/src/UploadFileService.Domain/UploadFileService.Domain.csproj", "./UploadFileService.Domain/"]
 COPY ["./solutions/UploadFileSolution/src/UploadFileService.Infrastructure/UploadFileService.Infrastructure.csproj", "./UploadFileService.Infrastructure/"]
-
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "UploadFileService.API/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "UploadFileService.Infrastructure/"]
 WORKDIR /src/UploadFileService.API
+
 RUN dotnet restore "./UploadFileService.API.csproj" --packages "./nuget" --verbosity normal
 COPY ["./solutions/UploadFileSolution/src/", "/src/"]
 RUN dotnet build "./UploadFileService.API.csproj" --packages "./nuget" -c $BUILD_CONFIGURATION -o /app/build

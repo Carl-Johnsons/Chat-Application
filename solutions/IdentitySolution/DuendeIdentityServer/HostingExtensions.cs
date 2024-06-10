@@ -56,6 +56,8 @@ internal static class HostingExtensions
             });
 
             busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:upload-multiple-file-event-queue"));
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:delete-multiple-file-event-queue"));
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:update-file-event-queue"));
 
         });
 

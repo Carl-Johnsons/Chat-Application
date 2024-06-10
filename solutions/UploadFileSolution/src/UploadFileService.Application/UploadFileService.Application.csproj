@@ -9,8 +9,6 @@
 	<ItemGroup>
 		<PackageReference Include="DotNetEnv" Version="3.0.0" />
 		<PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
-		<PackageReference Include="MassTransit" Version="8.2.2" />
-		<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
 		<PackageReference Include="MediatR" Version="12.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
 	</ItemGroup>
@@ -26,12 +24,6 @@
 	<ItemGroup>
 	  <Folder Include="ExtensionTypes\Commands\" />
 	  <Folder Include="ExtensionTypes\Queries\" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="Contract">
-	    <HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
-	  </Reference>
 	</ItemGroup>
 
 </Project>
