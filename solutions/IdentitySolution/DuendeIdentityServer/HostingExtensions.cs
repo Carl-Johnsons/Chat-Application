@@ -1,5 +1,7 @@
 using AutoMapper;
+using Contract.Event.ConversationEvent;
 using Contract.Event.FriendEvent;
+using Contract.Event.UploadEvent;
 using Duende.IdentityServer;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
@@ -52,6 +54,11 @@ internal static class HostingExtensions
                 });
 
             });
+
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:upload-multiple-file-event-queue"));
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:delete-multiple-file-event-queue"));
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:update-file-event-queue"));
+
         });
 
         services.AddDbContext<ApplicationDbContext>(options =>

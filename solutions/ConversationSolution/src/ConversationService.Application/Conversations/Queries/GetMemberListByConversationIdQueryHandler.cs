@@ -6,6 +6,7 @@ public record GetMemberListByConversationIdQuery : IRequest<Result<List<Conversa
 {
     public Guid UserId { get; init; }
     public Guid ConversationId { get; set; }
+    public bool Other { get; set; } = false;
 };
 public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemberListByConversationIdQuery, Result<List<ConversationUser>?>>
 {
@@ -19,8 +20,18 @@ public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemb
     public async Task<Result<List<ConversationUser>?>> Handle(GetMemberListByConversationIdQuery request, CancellationToken cancellationToken)
     {
         var conversationId = request.ConversationId;
-        var cuList = await _context.ConversationUsers
-                             .Where(cu => cu.ConversationId == conversationId).ToListAsync();
+        var query = _context.ConversationUsers.AsQueryable();
+
+        if (request.Other)
+        {
+            query = query.Where(cu => cu.ConversationId == conversationId && cu.UserId != request.UserId);
+        }
+        else
+        {
+            query = query.Where(cu => cu.ConversationId == conversationId);
+        }
+        var cuList = await query.ToListAsync();
+
 
         return Result<List<ConversationUser>?>.Success(cuList);
     }

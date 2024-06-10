@@ -62,7 +62,8 @@ public partial class ConversationController : BaseApiController
         var query = new GetMemberListByConversationIdQuery
         {
             UserId = Guid.Parse(subjectId!),
-            ConversationId = getMemberListByConversationIdDTO.ConversationId
+            ConversationId = getMemberListByConversationIdDTO.ConversationId,
+            Other = getMemberListByConversationIdDTO.Other
         };
         var result = await _sender.Send(query);
         result.ThrowIfFailure();
