@@ -61,8 +61,8 @@ const ContactContainer = ({ className }: Props) => {
         />
       </div>
       <div className={cx("contact-list-container")}>
-        {friendList &&
-          activeContactType === MenuContactIndex.FRIEND_LIST &&
+        {activeContactType === MenuContactIndex.FRIEND_LIST &&
+          friendList &&
           friendList.map((f) => {
             return (
               <ContactRow
@@ -73,8 +73,8 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {conversationResponse?.groupConversations &&
-          activeContactType === MenuContactIndex.GROUP_LIST &&
+        {activeContactType === MenuContactIndex.GROUP_LIST &&
+          conversationResponse?.groupConversations &&
           conversationResponse?.groupConversations.map((gc) => {
             return (
               <ContactRow
@@ -84,28 +84,27 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {friendRequestList &&
-          activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
-          friendRequestList.map((friendRequest, index) => {
+        {activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
+          friendRequestList &&
+          friendRequestList.map((friendRequest) => {
             const { id, senderId } = friendRequest;
             return (
-              <>
-                {id && senderId && (
-                  <ContactRow
-                    key={index}
-                    entityId={senderId}
-                    onClickBtnAcceptFriendRequest={() =>
-                      handleClickAcpFriend(id)
-                    }
-                    onClickBtnDetail={() =>
-                      handleClickBtnDetail(senderId, "Stranger")
-                    }
-                    onClickBtnDelFriendRequest={() =>
-                      handleClickDelFriendRequest(id)
-                    }
-                  />
-                )}
-              </>
+              id &&
+              senderId && (
+                <ContactRow
+                  key={id}
+                  entityId={senderId}
+                  onClickBtnAcceptFriendRequest={() =>
+                    id && handleClickAcpFriend(id)
+                  }
+                  onClickBtnDetail={() =>
+                    senderId && handleClickBtnDetail(senderId, "Stranger")
+                  }
+                  onClickBtnDelFriendRequest={() =>
+                    id && handleClickDelFriendRequest(id)
+                  }
+                />
+              )
             );
           })}
       </div>

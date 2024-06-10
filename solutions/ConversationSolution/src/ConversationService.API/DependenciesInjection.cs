@@ -35,7 +35,6 @@ public static class DependenciesInjection
             .AddJwtBearer("Bearer", options =>
             {
                 var IdentityServerEndpoint = "http://identity-api";
-                //var IdentityServerEndpoint = "https://localhost:5001";
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
                 // Clear default Microsoft's JWT claim mapping
