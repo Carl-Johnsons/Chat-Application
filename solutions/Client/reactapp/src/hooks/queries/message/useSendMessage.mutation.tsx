@@ -1,7 +1,7 @@
-import { Message } from "@/models";
-import { protectedAxiosInstance } from "@/utils";
+import { AxiosProps, Message } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-interface Props {
+import { useAxios } from "@/hooks";
+interface Props extends AxiosProps {
   conversationId: string;
   messageContent: string;
 }
@@ -9,9 +9,10 @@ interface Props {
 const sendMessage = async ({
   conversationId,
   messageContent,
+  axiosInstance,
 }: Props): Promise<Message | null> => {
   const url = "/api/conversation/message";
-  const respone = await protectedAxiosInstance.post(url, {
+  const respone = await axiosInstance.post(url, {
     conversationId,
     content: messageContent,
   });
@@ -20,10 +21,14 @@ const sendMessage = async ({
 
 const useSendMessage = () => {
   const queryClient = useQueryClient();
-
+  const { protectedAxiosInstance } = useAxios();
   const mutation = useMutation<Message | null, Error, Props, unknown>({
     mutationFn: ({ conversationId, messageContent }: Props) =>
-      sendMessage({ conversationId, messageContent }),
+      sendMessage({
+        conversationId,
+        messageContent,
+        axiosInstance: protectedAxiosInstance,
+      }),
     onSuccess: (im, { conversationId }) => {
       console.log("success sending message " + im);
 

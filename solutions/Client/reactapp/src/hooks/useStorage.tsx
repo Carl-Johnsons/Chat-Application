@@ -1,32 +1,38 @@
+import { useState } from "react";
+
 const isBrowser = () => typeof window !== "undefined";
 
 const useStorage = (key: string, storageObject: Storage | undefined) => {
-  const getItem: () => unknown | null = () => {
-    const storedValue = storageObject?.getItem(key);
-
-    if (storedValue) {
-      return JSON.parse(storedValue);
+  const [storedValue, setStoredValue] = useState(() => {
+    if (storageObject) {
+      const item = storageObject.getItem(key);
+      return item ? JSON.parse(item) : null;
     }
     return null;
-  };
+  });
+
   const setItem = (value: unknown) => {
-    if (!storageObject) {
-      return;
+    if (storageObject) {
+      if (value === null || value === undefined) {
+        storageObject.removeItem(key);
+        setStoredValue(null);
+      } else {
+        storageObject.setItem(key, JSON.stringify(value));
+        setStoredValue(value);
+      }
     }
-    if (!value) {
-      return storageObject.removeItem(key);
-    }
-    storageObject.setItem(key, JSON.stringify(value));
   };
+
   const removeItem = () => {
-    if (!storageObject) {
-      return;
+    if (storageObject) {
+      storageObject.removeItem(key);
+      setStoredValue(null);
     }
-    storageObject.removeItem(key);
   };
-  return [getItem, setItem, removeItem] as const;
+
+  return [storedValue, setItem, removeItem] as const;
 };
-//window is undefined in the server
+
 const useLocalStorage = (key: string) => {
   return useStorage(key, isBrowser() ? window.localStorage : undefined);
 };

@@ -9,10 +9,6 @@ public class CreatePostDTO
     [JsonProperty("content")]
     public string Content { get; set; } = null!;
 
-    [Required]
-    [JsonProperty("userId")]
-    public Guid UserId { get; set; }
-
     [JsonProperty("tagIds")]
     public List<Guid> TagIds { get; set; } = null!;
 }

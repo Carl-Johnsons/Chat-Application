@@ -1,5 +1,6 @@
 "use client";
 import userManager from "app/oidc-client";
+import { useAxios } from "hooks/useAxios";
 import { useLocalStorage } from "hooks/useStorage";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -11,16 +12,23 @@ import React, { useEffect } from "react";
  */
 const SignInCallBack = () => {
   const router = useRouter();
-  const [, setAccessToken] = useLocalStorage("access_token");
+  const { setAccessToken } = useAxios();
+  const [localToken, setLocalToken] = useLocalStorage("access_token");
 
   useEffect(() => {
     const handleCallback = async () => {
-      const user = await userManager.signinRedirectCallback();
-      setAccessToken(user.access_token);
-      router.push("/");
+      try {
+        const user = await userManager.signinRedirectCallback();
+        setAccessToken(user.access_token ?? localToken);
+        user.access_token && setLocalToken(user.access_token);
+        console.log(user.access_token);
+        router.push("/");
+      } catch (error) {
+        console.error(error);
+      }
     };
     handleCallback();
-  }, [router, setAccessToken]);
+  }, [localToken, router, setAccessToken, setLocalToken]);
 
   return <div>Redirecting...</div>;
 };

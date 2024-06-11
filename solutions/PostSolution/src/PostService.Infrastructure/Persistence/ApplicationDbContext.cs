@@ -17,7 +17,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<PostComment> PostComments { get; set; }
-    public DbSet<Tag> Tags { get; set; }
+    public DbSet<Domain.Entities.Tag> Tags { get; set; }
     public DbSet<Interaction> Interactions { get; set; }
     public DbSet<PostInteract> PostInteracts { get; set; }
     public DbSet<PostTag> PostTags { get; set; }

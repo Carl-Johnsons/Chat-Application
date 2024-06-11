@@ -1,9 +1,12 @@
-import { protectedAxiosInstance } from "@/utils";
 import { ConversationUser } from "models/ConversationUser";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { ConversationResponseDTO } from "@/models/DTOs";
+import { AxiosProps } from "@/models";
+import { useAxios } from "hooks/useAxios";
 
-interface FetchPropsByConversationId {
+interface FetchConversationListProps extends AxiosProps {}
+
+interface FetchPropsByConversationId extends AxiosProps {
   conversationId: string | undefined;
   other: boolean;
 }
@@ -13,20 +16,22 @@ interface GetMemberListByConversationIdProps {
   other?: boolean;
 }
 
-const getConversationList =
-  async (): Promise<ConversationResponseDTO | null> => {
-    const url = `/api/conversation/user`;
-    const response = await protectedAxiosInstance.get(url);
-    console.log(response.data);
+const getConversationList = async ({
+  axiosInstance,
+}: FetchConversationListProps): Promise<ConversationResponseDTO | null> => {
+  const url = `/api/conversation/user`;
+  const response = await axiosInstance.get(url);
+  console.log(response.data);
 
-    return response.data;
-  };
+  return response.data;
+};
 const getMemberListByConversationId = async ({
   conversationId,
   other = false,
+  axiosInstance,
 }: FetchPropsByConversationId): Promise<ConversationUser[] | null> => {
   const url = `/api/conversation/member`;
-  const response = await protectedAxiosInstance.get(url, {
+  const response = await axiosInstance.get(url, {
     params: {
       conversationId: conversationId,
       other: other,
@@ -46,10 +51,13 @@ const useGetConversationList = (
     "queryKey" | "queryFn" | "enabled" | "initialData"
   > = {}
 ) => {
+  const { protectedAxiosInstance } = useAxios();
+
   return useQuery({
     ...queryOptions,
     queryKey: ["conversationList"],
-    queryFn: getConversationList,
+    queryFn: () =>
+      getConversationList({ axiosInstance: protectedAxiosInstance }),
   });
 };
 
@@ -65,11 +73,17 @@ const useGetMemberListByConversationId = (
     "queryKey" | "queryFn" | "initialData"
   > = {}
 ) => {
+  const { protectedAxiosInstance } = useAxios();
+
   return useQuery({
     ...queryOptions,
     queryKey: ["conversation", "member", conversationId],
     queryFn: () =>
-      getMemberListByConversationId({ conversationId: conversationId, other }),
+      getMemberListByConversationId({
+        conversationId: conversationId,
+        other,
+        axiosInstance: protectedAxiosInstance,
+      }),
   });
 };
 

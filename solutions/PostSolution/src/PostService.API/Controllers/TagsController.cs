@@ -19,11 +19,12 @@ public class TagsController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTagDTO createTagDTO)
     {
-        await _sender.Send(new CreateTagCommand
+        var result = await _sender.Send(new CreateTagCommand
         {
             Value = createTagDTO.Value
         });
 
+        result.ThrowIfFailure();
         return Ok();
     }
 
@@ -32,7 +33,7 @@ public class TagsController : BaseApiController
     {
         var tags = await _sender.Send(new GetAllTagsQuery());
 
-        return Ok(tags);
+        return Ok(tags.Value);
 
     }
 
@@ -44,18 +45,19 @@ public class TagsController : BaseApiController
             TagId = updateTagDTO.Id,
             Value = updateTagDTO.Value
         });
-
-        return Ok(tag);
+        tag.ThrowIfFailure();
+        return Ok();
     }
 
     [HttpDelete]
     public async Task<IActionResult> Delete([FromBody] DeleteTagDTO deleteTagDTO)
     {
-        await _sender.Send(new DeleteTagCommand
+        var result = await _sender.Send(new DeleteTagCommand
         {
             TagId = deleteTagDTO.Id
         });
 
+        result.ThrowIfFailure();
         return Ok();
     }
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PostService.Application.Comments.Commands;
 using PostService.Application.Comments.Queries;
 using PostService.Domain.DTOs;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PostService.API.Controllers;
 
@@ -19,17 +20,17 @@ public class CommentsController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCommentDTO createCommentDTO)
     {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
         var comment = await _sender.Send(new CreateCommentCommand
         {
             Content = createCommentDTO.Content,
-            UserId = createCommentDTO.UserId,
+            UserId = Guid.Parse(subjectId!),
+            PostId = createCommentDTO.PostId,
         });
 
-        await _sender.Send(new CreatePostCommentCommand
-        {
-            PostId = createCommentDTO.PostId,
-            CommentId = comment.Id
-        });
+        comment.ThrowIfFailure();
 
         return Ok();
     }
@@ -42,18 +43,20 @@ public class CommentsController : BaseApiController
             PostId = postId
         });
 
+        comments.ThrowIfFailure();
         return Ok(comments);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateCommentDTO updateCommentDTO)
     {
-        await _sender.Send(new UpdateCommetCommand
+        var result = await _sender.Send(new UpdateCommetCommand
         {
             Id = updateCommentDTO.Id,
             Content = updateCommentDTO.Content
         });
 
+        result.ThrowIfFailure();
         return Ok();
     }
 

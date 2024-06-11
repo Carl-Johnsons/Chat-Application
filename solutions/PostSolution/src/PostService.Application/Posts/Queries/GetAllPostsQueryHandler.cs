@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using PostService.Domain.Common;
 using PostService.Domain.DTOs;
 
 namespace PostService.Application.Posts.Queries;
 
-public class GetAllPostsQuery : IRequest<List<PostDTO>>;
+public class GetAllPostsQuery : IRequest<Result<List<PostDTO>>>;
 
-public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, List<PostDTO>>
+public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<List<PostDTO>>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -15,7 +16,7 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, List<Po
         _context = context;
     }
 
-    public async Task<List<PostDTO>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<PostDTO>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
         var posts = await _context.Posts
                         .ToListAsync();
@@ -63,21 +64,24 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, List<Po
             {
                 interacts.Add(t.Value);
             }
-
-            var postReponse = new PostDTO
+            if (post != null)
             {
-                PostId = p.Id,
-                Content = post.Content,
-                UserId = post.UserId,
-                CreatedAt = post.CreatedAt,
-                InteractTotal = countInteract,
-                Interactions = interacts,
-                Tags = tags
-            };
+                var postReponse = new PostDTO
+                {
+                    PostId = p.Id,
+                    Content = post.Content,
+                    UserId = post.UserId,
+                    CreatedAt = post.CreatedAt,
+                    InteractTotal = countInteract,
+                    Interactions = interacts,
+                    Tags = tags
+                };
 
-            result.Add(postReponse);
+                result.Add(postReponse);
+            }         
+            
         }
 
-        return result;
+        return Result<List<PostDTO>>.Success(result);
     }
 }

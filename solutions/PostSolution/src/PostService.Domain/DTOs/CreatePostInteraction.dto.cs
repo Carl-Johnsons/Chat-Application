@@ -12,8 +12,4 @@ public class CreatePostInteractionDTO
     [Required]
     [JsonProperty("interactionId")]
     public Guid InteractionId { get; set; }
-
-    [Required]
-    [JsonProperty("userId")]
-    public Guid UserId { get; set; }
 }

@@ -1,11 +1,17 @@
-import { protectedAxiosInstance } from "@/utils";
+import { useAxios } from "@/hooks";
+import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const deleteFriend = async (
-  friendId: string
-): Promise<boolean | null> => {
+interface Props extends AxiosProps {
+  friendId: string;
+}
+
+export const deleteFriend = async ({
+  friendId,
+  axiosInstance,
+}: Props): Promise<boolean | null> => {
   const url = "http://localhost:5001/api/friend";
-  const response = await protectedAxiosInstance.delete(url, {
+  const response = await axiosInstance.delete(url, {
     data: {
       friendId,
     },
@@ -15,6 +21,7 @@ export const deleteFriend = async (
 
 const useDeleteFriend = () => {
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
   return useMutation<
     boolean | null,
     Error,
@@ -23,7 +30,8 @@ const useDeleteFriend = () => {
     },
     unknown
   >({
-    mutationFn: ({ friendId }) => deleteFriend(friendId),
+    mutationFn: ({ friendId }) =>
+      deleteFriend({ friendId, axiosInstance: protectedAxiosInstance }),
     onSuccess: () => {
       console.log("delete friend successfully");
 

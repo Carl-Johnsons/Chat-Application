@@ -13,7 +13,7 @@ namespace PostService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20240529125024_edit-postcomment")]
-    partial class editpostcomment
+    partial class Editpostcomment
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
