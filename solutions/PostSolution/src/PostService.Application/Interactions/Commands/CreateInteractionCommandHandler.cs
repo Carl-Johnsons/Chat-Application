@@ -37,9 +37,9 @@ public class CreateInteractionCommandHandler : IRequestHandler<CreateInteraction
 
         Interaction result = new Interaction 
         {
-            Value = request.Value,
-            Code = request.Code,
-            Gif = request.Gif
+            Value = request.Value.Trim(),
+            Code = request.Code.ToUpper().Trim(),
+            Gif = request.Gif.Trim(),
         }; 
 
         _context.Interactions.Add(result);
