@@ -12,8 +12,4 @@ public class CreateCommentDTO
     [Required]
     [JsonProperty("content")]
     public string Content { get; set; } = null!;
-
-    [Required]
-    [JsonProperty("userId")]
-    public Guid UserId { get; set; }
 }

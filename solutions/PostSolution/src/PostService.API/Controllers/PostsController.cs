@@ -7,6 +7,7 @@ using PostService.Application.Posts.Commands;
 using PostService.Application.Posts.Queries;
 using PostService.Application.Tags.Commands;
 using PostService.Domain.DTOs;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PostService.API.Controllers;
 
@@ -22,17 +23,22 @@ public class PostsController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
     {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
         var post = await _sender.Send(new CreatePostCommand
         {
             Content = createPostDTO.Content,
-            UserId = createPostDTO.UserId,
+            UserId = Guid.Parse(subjectId!)
         });
+
+        var result = await _sender.Send(new CreatePostTagCommand());
 
         foreach (var t in createPostDTO.TagIds)
         {
-            await _sender.Send(new CreatePostTagCommand
+            result = await _sender.Send(new CreatePostTagCommand
             {
-                PostId = post.Id,
+                PostId = post.Value.Id,
                 TagId = t
             });
         }
@@ -43,13 +49,12 @@ public class PostsController : BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetById([FromQuery] Guid id)
     {
-        await Console.Out.WriteLineAsync("====" + id.ToString());
-        var post = await _sender.Send(new GetPostByIdQuery
+        var result = await _sender.Send(new GetPostByIdQuery
         {
             Id = id
         });
-
-        return Ok(post);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpGet("all")]
@@ -57,43 +62,50 @@ public class PostsController : BaseApiController
     {
         var posts = await _sender.Send(new GetAllPostsQuery());
 
-        return Ok(posts);
+        posts.ThrowIfFailure();
+        return Ok(posts.Value);
     }
 
     [HttpGet("user")]
     public async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
     {
-        var post = await _sender.Send(new GetPostsByUserIdQuery
+        var posts = await _sender.Send(new GetPostsByUserIdQuery
         {
             UserId = userId
         });
 
-        return Ok(post);
+        posts.ThrowIfFailure();
+        return Ok(posts.Value);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdatePostDTO updatePostDTO)
     {
-        await _sender.Send(new UpdatePostCommand
+        var result = await _sender.Send(new UpdatePostCommand
         {
             PostId = updatePostDTO.Id,
             Content = updatePostDTO.Content
         });
 
-        await Console.Out.WriteLineAsync(updatePostDTO.TagIds.ToString());
+        result.ThrowIfFailure();
 
-        await _sender.Send(new DeletePostTagCommand
+        if (result.IsSuccess)
         {
-            PostId = updatePostDTO.Id
-        });
-
-        foreach (var t in updatePostDTO.TagIds)
-        {
-            await _sender.Send(new CreatePostTagCommand
+            await _sender.Send(new DeletePostTagCommand
             {
-                PostId = updatePostDTO.Id,
-                TagId = t
+                PostId = updatePostDTO.Id
             });
+
+            foreach (var t in updatePostDTO.TagIds)
+            {
+                var postTag = await _sender.Send(new CreatePostTagCommand
+                {
+                    PostId = updatePostDTO.Id,
+                    TagId = t
+                });
+
+                postTag.ThrowIfFailure();
+            }
         }
 
         return Ok();
@@ -103,12 +115,17 @@ public class PostsController : BaseApiController
     [Route("post-interaction")]
     public async Task<IActionResult> CreateInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
     {
-        await _sender.Send(new CreatePostInteractionCommand
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var result = await _sender.Send(new CreatePostInteractionCommand
         {
             PostId = createPostInteractionDTO.PostId,
             InteractionId = createPostInteractionDTO.InteractionId,
-            UserId = createPostInteractionDTO.UserId
+            UserId = Guid.Parse(subjectId!)
         });
+
+        result.ThrowIfFailure();
 
         return Ok();
     }
@@ -121,6 +138,7 @@ public class PostsController : BaseApiController
             PostId = id
         });
 
-        return Ok(interactions);
+        interactions.ThrowIfFailure();
+        return Ok(interactions.Value);
     }
 }

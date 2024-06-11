@@ -1,13 +1,14 @@
 ﻿using MediatR;
+using PostService.Domain.Common;
 namespace PostService.Application.Posts.Commands;
 
-public class CreatePostCommand : IRequest<Post>
+public class CreatePostCommand : IRequest<Result<Post>>
 {
     public string Content { get; init; } = null!;
     public Guid UserId { get; init; }
 }
 
-public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Post>
+public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Result<Post>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -18,7 +19,7 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Post>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Post>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
         Post post = new Post
         {
@@ -27,8 +28,9 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Post>
         };
 
         _context.Posts.Add(post);
+
         await _unitOfWork.SaveChangeAsync();
 
-        return post;
+        return Result<Post>.Success(post);
     }
 }

@@ -1,13 +1,15 @@
 ﻿using MediatR;
+using PostService.Domain.Common;
+using PostService.Domain.Errors;
 namespace PostService.Application.Posts.Commands;
 
-public class UpdatePostCommand : IRequest
+public class UpdatePostCommand : IRequest<Result>
 {
     public Guid PostId { get; init;}
     public string Content { get; init; } = null!;
 }
 
-public class UpdatePostCommandHanlder : IRequestHandler<UpdatePostCommand>
+public class UpdatePostCommandHanlder : IRequestHandler<UpdatePostCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -18,19 +20,23 @@ public class UpdatePostCommandHanlder : IRequestHandler<UpdatePostCommand>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(UpdatePostCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
     {
         var post = _context.Posts
                         .Where(p => p.Id == request.PostId)
                         .SingleOrDefault();
 
-        await Console.Out.WriteLineAsync(request.PostId.ToString());
-
         if (post != null)
         {
             post.Content = request.Content;
+            await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+            return Result.Success();
+        } else
+        {
+            return Result.Failure(PostError.NotFound);
         }
         
-        await _unitOfWork.SaveChangeAsync(cancellationToken);
+        
     }
 }

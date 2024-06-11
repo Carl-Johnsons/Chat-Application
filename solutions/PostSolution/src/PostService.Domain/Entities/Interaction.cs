@@ -20,4 +20,8 @@ public class Interaction : BaseEntity
     [Required]
     [JsonProperty("code")]
     public string Code { get; set; } = null!;
+
+    [Required]
+    [JsonProperty("gif")]
+    public string Gif { get; set; } = null!;
 }

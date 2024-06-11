@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PostService.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class createtagandinteractionentity : Migration
+    public partial class Createtagandinteractionentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

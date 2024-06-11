@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PostService.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class createpostcommententity : Migration
+    public partial class Createpostcommententity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

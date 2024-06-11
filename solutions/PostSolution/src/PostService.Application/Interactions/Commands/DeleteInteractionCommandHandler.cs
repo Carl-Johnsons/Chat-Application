@@ -1,13 +1,15 @@
 ﻿using MediatR;
+using PostService.Domain.Common;
+using PostService.Domain.Errors;
 
 namespace PostService.Application.Interactions.Commands;
 
-public class DeleteInteractionCommand : IRequest
+public class DeleteInteractionCommand : IRequest<Result>
 {
     public Guid Id { get; set; }
 }
 
-public class DeleteInteractionCommandHandler : IRequestHandler<DeleteInteractionCommand>
+public class DeleteInteractionCommandHandler : IRequestHandler<DeleteInteractionCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -18,17 +20,20 @@ public class DeleteInteractionCommandHandler : IRequestHandler<DeleteInteraction
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(DeleteInteractionCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteInteractionCommand request, CancellationToken cancellationToken)
     {
         var interaction = _context.Interactions
                             .Where(it => it.Id == request.Id)
                             .SingleOrDefault();
 
-        if (interaction != null)
+        if (interaction == null)
         {
-            _context.Interactions.Remove(interaction);
+            return Result.Failure(InteractionError.NotFound);
         }
+        
+        _context.Interactions.Remove(interaction);
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
 
-        await _unitOfWork.SaveChangeAsync();
+        return Result.Success();
     }
 }
