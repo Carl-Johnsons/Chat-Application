@@ -84,7 +84,8 @@ public class PostsController : BaseApiController
         var result = await _sender.Send(new UpdatePostCommand
         {
             PostId = updatePostDTO.Id,
-            Content = updatePostDTO.Content
+            Content = updatePostDTO.Content,
+            Active = updatePostDTO.Active
         });
 
         result.ThrowIfFailure();
@@ -140,5 +141,41 @@ public class PostsController : BaseApiController
 
         interactions.ThrowIfFailure();
         return Ok(interactions.Value);
+    }
+
+    [HttpPost("report-post")]
+    public async Task<IActionResult> CreateReportPost([FromBody]CreatePostReport createPostReport)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var post = await _sender.Send(new CreatePostReportCommand
+        {
+            PostId = createPostReport.PostId,
+            UserId = Guid.Parse(subjectId!),
+            Reason = createPostReport.Reason
+        });
+
+        post.ThrowIfFailure();
+        return Ok();
+    }
+
+    [HttpGet("all-post-report")]
+    public async Task<IActionResult> GetAllReportPost()
+    {
+        var posts = await _sender.Send(new GetListReportPostQuery { });
+
+        return Ok(posts.Value);
+    }
+
+    [HttpGet("post-report")]
+    public async Task<IActionResult> GetReportPost([FromQuery] Guid id)
+    {
+        var post = await _sender.Send(new GetPostReportByPostIdCommand
+        {
+            PostId = id
+        });
+
+        return Ok(post.Value);
     }
 }
