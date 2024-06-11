@@ -23,7 +23,7 @@ internal class MockupData
             var code = tag.Code;
 
             var isTagExisteed = _context.Tags
-                                        .Where(t => t.Id == id && t.Value == value)
+                                        .Where(t => t.Id == id || t.Value == value)
                                         .SingleOrDefault() != null;
 
             if (isTagExisteed)
