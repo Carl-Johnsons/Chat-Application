@@ -29,6 +29,10 @@ public static class DependencyInjection
         {
             var mockupData = serviceProvider.GetRequiredService<MockupData>();
             mockupData.SeedTagData().Wait();
+            mockupData.SeedInteractionData().Wait();
+            mockupData.SeedPostData().Wait();
+            mockupData.SeedCommentData().Wait();
+            mockupData.SeedPostInteractData().Wait();
         }
 
         services.AddMassTransitService();
