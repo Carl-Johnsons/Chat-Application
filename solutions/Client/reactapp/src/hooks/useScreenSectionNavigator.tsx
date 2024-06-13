@@ -1,5 +1,5 @@
+import { ScreenSectionContext } from "@/contexts";
 import { useContext } from "react";
-import { ScreenSectionContext } from "../context/ScreenSectionProvider";
 
 const useScreenSectionNavigator = () => {
   const context = useContext(ScreenSectionContext);

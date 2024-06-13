@@ -19,7 +19,7 @@ public static class DependenciesInjection
 
         services.AddApplicationServices();
         services.AddInfrastructureServices(config);
-
+        
         services.AddControllers()
                 // Prevent circular JSON reach max depth of the object when serialization
                 .AddJsonOptions(options =>

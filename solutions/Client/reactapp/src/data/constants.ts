@@ -21,6 +21,7 @@ enum SignalREvent {
   RECEIVE_JOIN_CONVERSATION = "ReceiveJoinConversation",
   RECEIVE_MESSAGE = "ReceiveMessage",
   RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",
+  RECEIVE_CALL = "ReceiveCall"
 }
 const menuContacts: MenuContact[] = [
   { image: images.userSolid.src, name: "Danh sách bạn bè" },

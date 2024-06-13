@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using PostService.Infrastructure.EventPublishing;
+using PostService.Infrastructure.Persistence.Mockup;
 using System.Reflection;
 
 
@@ -22,6 +23,18 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString);
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<MockupData>();
+        using (var serviceProvider = services.BuildServiceProvider())
+        {
+            var mockupData = serviceProvider.GetRequiredService<MockupData>();
+            mockupData.SeedTagData().Wait();
+            mockupData.SeedInteractionData().Wait();
+            mockupData.SeedPostData().Wait();
+            mockupData.SeedCommentData().Wait();
+            mockupData.SeedPostInteractData().Wait();
+        }
+
         services.AddMassTransitService();
         return services;
     }
