@@ -16,6 +16,8 @@ import userGroupSolid from "./images/user-group-solid.svg";
 import userIcon from "./images/user.png";
 import userSolid from "./images/user-solid.svg";
 import zaloLogo from "./images/zalo-logo.png";
+import phoneCallBtn from "./images/phone-call-button.png";
+import phoneCallDeclineBtn from "./images/phone-calll-decline-button.png";
 
 const images = {
   addUserIcon,
@@ -28,6 +30,8 @@ const images = {
   logOutIcon,
   peopleMessaging,
   phoneCallActiveIcon,
+  phoneCallBtn,
+  phoneCallDeclineBtn,
   phoneCallIcon,
   post,
   sidebarIcon,

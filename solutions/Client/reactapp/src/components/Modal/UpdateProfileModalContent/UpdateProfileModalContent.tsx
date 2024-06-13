@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import AppButton from "@/components/shared/AppButton";
 
 import style from "./UpdateProfileModalContent.module.scss";
 import className from "classnames/bind";
 
-import { getMaxDayinMonth, formatDateWithSeparator } from "@/utils";
+import { getMaxDayinMonth } from "@/utils";
 import { useGetCurrentUser, useUpdateUser } from "@/hooks/queries/user";
+import { UpdateUserInputDTO } from "models/DTOs/UpdateUserInput.dto";
 
 const cx = className.bind(style);
 
@@ -18,19 +19,23 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const { data: currentUser } = useGetCurrentUser();
   const { mutate: updateUserMutate } = useUpdateUser();
 
-  const [name, setName] = useState(currentUser?.name ?? "");
-  const [gender, setGender] = useState(() => {
-    const g = currentUser?.gender;
-    if (!g || g === "Male") {
-      return "Male";
-    }
-    return "Nữ";
+  const [formData, setFormData] = useState<UpdateUserInputDTO>({
+    name: currentUser?.name ?? "",
+    gender: currentUser?.gender === "Male" ? "M" : "F",
+    dob: currentUser?.dob ?? "1-1-2024",
+    introduction: currentUser?.introduction,
   });
-  const date = new Date(currentUser?.dob ?? "1-1-2024");
+  const [day, setDay] = useState(new Date(formData.dob!).getDate());
+  const [month, setMonth] = useState(new Date(formData.dob!).getMonth() + 1); // Get month (0-11, so +1)
+  const [year, setYear] = useState(new Date(formData.dob!).getFullYear());
 
-  const [day, setDay] = useState(date.getDate());
-  const [month, setMonth] = useState(date.getMonth() + 1); // Get month (0-11, so +1)
-  const [year, setYear] = useState(date.getFullYear());
+  useEffect(() => {
+    const newDob = `${day}-${month}-${year}`;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      dob: newDob,
+    }));
+  }, [day, month, year]);
 
   const currentYear = 2024;
 
@@ -40,19 +45,7 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const dateLimit: number = getMaxDayinMonth(month, year);
 
   const handleClickUpdate = async () => {
-    if (!currentUser) {
-      return;
-    }
-    const updatedUser = structuredClone(currentUser);
-    //Call API below
-    updatedUser.name = name;
-    updatedUser.gender = gender;
-    const formatedDob = formatDateWithSeparator(
-      new Date(year, month - 1, day),
-      "-"
-    );
-    updatedUser.dob = formatedDob;
-    updateUserMutate({ user: updatedUser });
+    updateUserMutate({ user: formData });
     onClickCancel();
   };
 
@@ -69,8 +62,8 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
         <input
           className={cx("form-control", "p-2", "w-100")}
           type="text"
-          defaultValue={name}
-          onBlur={(e) => setName(e.target.value)}
+          defaultValue={formData.name}
+          onBlur={(e) => setFormData({ ...formData, name: e.target.value })}
           name="txtUsername"
         />
       </div>
@@ -93,8 +86,10 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
               value="Nam"
               name="rdoGender"
               id="radio-gender-male"
-              defaultChecked={gender === "Nam"}
-              onChange={(e) => setGender(e.target.value)}
+              defaultChecked={formData.gender === "M"}
+              onChange={(e) =>
+                setFormData({ ...formData, gender: e.target.value })
+              }
             />
             <label
               className={cx("form-check-label")}
@@ -110,8 +105,10 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
               value="Nữ"
               name="rdoGender"
               id="radio-gender-female"
-              defaultChecked={gender === "Nữ"}
-              onChange={(e) => setGender(e.target.value)}
+              defaultChecked={formData.gender === "F"}
+              onChange={(e) =>
+                setFormData({ ...formData, gender: e.target.value })
+              }
             />
             <label
               className={cx("form-check-label")}
