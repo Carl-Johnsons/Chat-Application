@@ -38,7 +38,13 @@ $color-variables: (
     --white: #fff,
     --danger: #e76161,
     --danger-hover: #fde2da,
-    --danger-active: #8e3948
+    --danger-active: #8e3948,
+    --phone-call: rgb(7, 181, 7),
+    --phone-call-hover: rgb(45, 165, 45),
+    --phone-call-active: rgb(5, 144, 5),
+    --phone-call-decline: rgb(177, 6, 6),
+    --phone-call-decline-hover: rgb(194, 54, 54),
+    --phone-call-decline-active: rgb(115, 1, 1)
 );
 
 :root {

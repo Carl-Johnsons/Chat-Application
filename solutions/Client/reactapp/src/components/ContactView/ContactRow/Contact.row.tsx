@@ -3,6 +3,8 @@ import {
   faCheck,
   faClose,
   faEllipsis,
+  faBan,
+  faUnblock
 } from "@fortawesome/free-solid-svg-icons";
 
 import AppButton from "@/components/shared/AppButton";
@@ -24,6 +26,8 @@ interface Props {
   onClickBtnDetail?: (userId: string) => void;
   onClickBtnDelFriend?: (userId: string) => void;
   onClickBtnDelFriendRequest?: (userId: string) => void;
+  onClickBtnBlock?: (userId: string) => void;
+  onClickBtnUnblock?: (userId: string) => void;
 }
 const ContactRow = ({
   entityId,
@@ -31,6 +35,8 @@ const ContactRow = ({
   onClickBtnDetail = () => {},
   onClickBtnDelFriend = () => {},
   onClickBtnDelFriendRequest = () => {},
+   onClickBtnBlock = () => {},
+  onClickBtnUnblock = () => {} 
 }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
   const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
@@ -137,6 +143,33 @@ const ContactRow = ({
         >
           <FontAwesomeIcon icon={faClose} />
         </AppButton>
+        {activeContactType === MenuContactIndex.USER_BLACK_LIST && (
+          <AppButton
+            variant="app-btn-primary-transparent"
+            className={cx(
+              "btn btn-accept-friend-request",
+              "d-flex",
+              "align-items-center",
+              "fw-bold"
+            )}
+            onClick={() => {onClickBtnUnblock(entityId)}}
+          >
+            <FontAwesomeIcon icon={faUnlock} />
+          </AppButton>
+        ) || (
+        <AppButton
+        variant="app-btn-primary-transparent"
+          className={cx(
+            "btn btn-detail",
+            "d-flex",
+            "align-items-center",
+            "fw-bold"
+          )}
+          onClick={() =>  onClickBtnBlock(entityId)}
+        >          
+          <FontAwesomeIcon icon={faBan} />
+          </AppButton>
+        )}
       </div>
     </div>
   );

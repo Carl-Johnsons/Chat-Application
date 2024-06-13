@@ -33,7 +33,7 @@ const ModalContainer = () => {
 
   const observedDiv = useRef<HTMLElement>();
 
-  //  Update the initialize width, height of the element. 
+  //  Update the initialize width, height of the element.
   // But didn't update when the div update dimension
   useEffect(() => {
     modalContentsRef.current = modalContents;
@@ -81,18 +81,22 @@ const ModalContainer = () => {
   return (
     <Modal
       show={showModal}
-      onHide={handleHideModal}
+      onHide={
+        !modalContents[activeModal]?.disableHideModal ? handleHideModal : () => {}
+      }
       className={cx("info-modal")}
       centered
       dialogClassName={cx("modal-dialog")}
       contentClassName={cx("modal-content")}
       role="dialog"
     >
-      <MemoizedAppModalHeader
-        title={modalContents[activeModal]?.title}
-        handleHideModal={handleHideModal}
-        modalBodyDimension={modalBodyDimension}
-      />
+      {!modalContents[activeModal]?.disableHeader && (
+        <MemoizedAppModalHeader
+          title={modalContents[activeModal]?.title}
+          handleHideModal={handleHideModal}
+          modalBodyDimension={modalBodyDimension}
+        />
+      )}
       <MemoizedAppModalBody
         modalContents={modalContents}
         modalBodyDimension={modalBodyDimension}

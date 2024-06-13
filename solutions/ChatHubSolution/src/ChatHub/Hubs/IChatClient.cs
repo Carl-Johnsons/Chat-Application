@@ -12,4 +12,5 @@ public interface IChatClient
     Task ReceiveJoinConversation(Guid conversationId);
     Task ReceiveNotifyUserTyping(UserTypingNotificationDTO model);
     Task ReceiveDisableNotifyUserTyping();
+    Task ReceiveCall(Guid callerId);
 }

@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from "react";
 import { useGlobalState } from "@/hooks";
 import {
+  CallingModalContent,
   CreateGroupModalContent,
   ListGroupMemberModalContent,
   PostInputModalContent,
@@ -28,6 +29,7 @@ const ModalContentMapper = (): ModalContent[] => {
   const updateAvatarRef = useRef<HTMLElement>();
   const postInputRef = useRef<HTMLElement>();
   const reportPostRef = useRef<HTMLElement>();
+  const callingRef = useRef<HTMLElement>();
 
   const memberIdRef = useRef<string>();
   const content = useMemo(() => {
@@ -153,6 +155,15 @@ const ModalContentMapper = (): ModalContent[] => {
             title: "Báo cáo bài viết",
             ref: reportPostRef,
             modalContent: <ReportPostModalContent />,
+          },
+        ];
+      case "Calling":
+        return [
+          {
+            ref: callingRef,
+            modalContent: <CallingModalContent />,
+            disableHeader: true,
+            disableHideModal: true,
           },
         ];
       default:

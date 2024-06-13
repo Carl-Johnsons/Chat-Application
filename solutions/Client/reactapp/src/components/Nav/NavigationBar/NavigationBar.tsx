@@ -9,7 +9,6 @@ import { useGlobalState, useModal, useScreenSectionNavigator } from "@/hooks";
 import styles from "./NavigationBar.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
-import { useLogout } from "@/hooks/queries/auth";
 import { useGetCurrentUser } from "@/hooks/queries/user";
 import { useCallback } from "react";
 const cx = classNames.bind(styles);
@@ -24,12 +23,10 @@ type NavItem = {
 
 const NavigationBar = () => {
   const [activeNav, setActiveNav] = useGlobalState("activeNav");
-
   const { handleShowModal } = useModal();
   const { handleClickScreenSection } = useScreenSectionNavigator();
   const { data: currentUser } = useGetCurrentUser();
 
-  const { mutate: logoutMutate } = useLogout();
   const userProfileQuery = useGetCurrentUser();
 
   const items: NavItem[] = [
@@ -77,20 +74,9 @@ const NavigationBar = () => {
         });
         return;
       }
-      if (linkId === items.length - 1) {
-        logoutMutate();
-        return;
-      }
       setActiveNav(linkId);
     },
-    [
-      currentUser,
-      handleClickScreenSection,
-      handleShowModal,
-      items.length,
-      logoutMutate,
-      setActiveNav,
-    ]
+    [currentUser, handleClickScreenSection, handleShowModal, setActiveNav]
   );
 
   return (
