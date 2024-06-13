@@ -50,6 +50,20 @@ const ContactContainer = ({ className }: Props) => {
   const handleClickDelFriendRequest = async (frId: string) => {
     deleteFriendRequestMutate({ frId });
   };
+  const userBlockList = [
+    {
+      avt: "avt1",
+      userName: "block1"
+    },
+    {
+      avt: "avt2",
+      userName: "block2"
+    },
+    {
+      avt: "avt3",
+      userName: "block3"
+    }
+  ];
   return (
     <div className={cx(className)}>
       <div
@@ -105,6 +119,30 @@ const ContactContainer = ({ className }: Props) => {
                   }
                 />
               )
+            );
+          })}
+          {activeContactType === MenuContactIndex.USER_BLACK_LIST && 
+          userBlockList.map((a)=> {
+             return (
+              <>
+                <>
+                {a.avt && a.userName && (
+                  <ContactRow
+                    key={a.avt}
+                    entityId={a.userName}                    
+                    onClickBtnDetail={() =>
+                      handleClickBtnDetail(a.avt, "Stranger")
+                    }
+                    onClickBtnDelFriendRequest={() =>
+                      handleClickDelFriendRequest(a.avt)
+                    }            
+                    onClickBtnUnblock={() =>
+                      handleClickAcpFriend(a.avt)
+                    }      
+                  />
+                )}
+              </>
+              </>
             );
           })}
       </div>

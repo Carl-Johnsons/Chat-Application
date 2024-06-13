@@ -16,6 +16,9 @@ import userGroupSolid from "./images/user-group-solid.svg";
 import userIcon from "./images/user.png";
 import userSolid from "./images/user-solid.svg";
 import zaloLogo from "./images/zalo-logo.png";
+import blockList from "./images/block-list.png";
+import block from "./images/block.png"
+import unblock from "./images/unblock.png"
 
 const images = {
   addUserIcon,
@@ -36,5 +39,8 @@ const images = {
   userIcon,
   userSolid,
   zaloLogo,
+  blockList,
+  block, 
+  unblock
 };
 export default images;
