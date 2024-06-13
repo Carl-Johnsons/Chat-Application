@@ -17,10 +17,13 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<Reference Include="Contract">
 			<HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
 		</Reference>
+	</ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include ="ChatHub.Tests"/>
 	</ItemGroup>
 </Project>
