@@ -187,13 +187,11 @@ public class PostsController : BaseApiController
 
         var result = await _sender.Send(new UninteractionPostCommand
         {
-
-            InteractionId = uninteractionPostDTO.InteractionId,
             PostId = uninteractionPostDTO.PostId,
             UserId = Guid.Parse(subjectId!)
         });
 
-
+        result.ThrowIfFailure();
 
         return Ok();
     }
