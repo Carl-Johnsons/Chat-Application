@@ -23,7 +23,6 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, Result>
 
     public async Task<Result> Handle(CreateTagCommand request, CancellationToken cancellationToken)
     {
-
         var tag = _context.Tags
                 .Where(t =>  t.Value == request.Value.Trim())
                 .FirstOrDefault();
@@ -33,7 +32,7 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, Result>
             var tags = new Tag
             {
                 Value = request.Value.Trim(),
-                Code = request.Value.ToUpper()
+                Code = request.Value.ToUpper().Trim()
             };
             _context.Tags.Add(tags);
             await _unitOfWork.SaveChangeAsync();
@@ -42,10 +41,6 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, Result>
         } else
         {
             return Result.Failure(TagError.AlreadyExited);
-        }
-
-            
-
-
+        }   
     }
 }

@@ -1,4 +1,3 @@
-import { HubConnection, HubConnectionState } from "@microsoft/signalr";
 import { ConversationType, ModalType, User } from "../../models";
 import { createGlobalState } from "react-hooks-global-state";
 
@@ -24,10 +23,6 @@ const initialState = {
   showModal: false,
   // ModalType
   modalType: null as unknown as ModalType,
-  // HubConnection
-  connection: null as unknown as HubConnection,
-  // HubConnectionState
-  connectionState: HubConnectionState.Disconnected as HubConnectionState,
 };
 
 const { useGlobalState, setGlobalState } = createGlobalState(initialState);
