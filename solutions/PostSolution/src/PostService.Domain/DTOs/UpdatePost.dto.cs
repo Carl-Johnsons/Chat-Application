@@ -15,5 +15,8 @@ namespace PostService.Domain.DTOs
 
         [JsonProperty("tagIds")]
         public List<Guid> TagIds { get; set; } = null!;
+
+        [JsonProperty("active")]
+        public bool Active { get; set; }
     }
 }

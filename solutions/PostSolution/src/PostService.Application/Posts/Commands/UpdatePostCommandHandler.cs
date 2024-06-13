@@ -7,6 +7,7 @@ public class UpdatePostCommand : IRequest<Result>
 {
     public Guid PostId { get; init;}
     public string Content { get; init; } = null!;
+    public bool Active { get; init; }
 }
 
 public class UpdatePostCommandHanlder : IRequestHandler<UpdatePostCommand, Result>
@@ -29,6 +30,7 @@ public class UpdatePostCommandHanlder : IRequestHandler<UpdatePostCommand, Resul
         if (post != null)
         {
             post.Content = request.Content;
+            post.Active = request.Active;
             await _unitOfWork.SaveChangeAsync(cancellationToken);
 
             return Result.Success();
