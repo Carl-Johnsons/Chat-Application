@@ -16,6 +16,8 @@ import userGroupSolid from "./images/user-group-solid.svg";
 import userIcon from "./images/user.png";
 import userSolid from "./images/user-solid.svg";
 import zaloLogo from "./images/zalo-logo.png";
+import phoneCallBtn from "./images/phone-call-button.png";
+import phoneCallDeclineBtn from "./images/phone-calll-decline-button.png";
 import blockList from "./images/block-list.png";
 import block from "./images/block.png"
 import unblock from "./images/unblock.png"
@@ -31,6 +33,8 @@ const images = {
   logOutIcon,
   peopleMessaging,
   phoneCallActiveIcon,
+  phoneCallBtn,
+  phoneCallDeclineBtn,
   phoneCallIcon,
   post,
   sidebarIcon,
