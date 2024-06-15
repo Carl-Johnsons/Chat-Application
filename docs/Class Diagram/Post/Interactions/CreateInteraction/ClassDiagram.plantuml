@@ -7,7 +7,7 @@ class BaseApiController {
 }
 
 class InteractionsController {
-    +public async Task<IActionResult> Create([FromBody] CreateInteractionDTO createInteractionDTO)
+    +async Task<IActionResult> Create([FromBody] CreateInteractionDTO createInteractionDTO)
 }
 
 class CreateInteractionCommand {

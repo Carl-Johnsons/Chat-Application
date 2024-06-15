@@ -7,7 +7,7 @@ class BaseApiController {
 }
 
 class PostsController {
-    +public async Task<IActionResult> CreateInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
+    +async Task<IActionResult> CreateInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
 }
 
 class CreatePostInteractionCommand {
