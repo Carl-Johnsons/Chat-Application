@@ -1,0 +1,120 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class PostsController {
+    +async Task<IActionResult> UninteractionPost([FromBody] UninteractionPostDTO uninteractionPostDTO)
+}
+
+class UninteractionPostCommand {
+    +Guid PostId
+    +Guid UserId
+}
+
+class UninteractionPostCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(UninteractionPostCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Post> Posts
+    +DbSet<PostReport> PostReports
+}
+
+class ApplicationDbContext {
+    +DbSet<Post> Posts
+    +DbSet<PostReport> PostReports
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class PostError {
+    +static Error NotFound
+    +static Error UserNotFound
+    +static Error AlreadyInteractedPost
+    +static Error NotInteractedPost
+}
+
+class UninteractionPostDTO {
+    +Guid PostId
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Post {
+    +string Content
+    +bool Active
+    +Guid UserId
+}
+
+class Interaction {
+    +string Value
+    +string Code
+    +string Gif
+}
+
+class PostInteract {
+    +Guid PostId
+    +Guid InteractionId
+    +Guid UserId
+    +virtual Post Post
+    +virtual Interaction Interaction
+}
+
+PostsController --|> BaseApiController
+PostsController --> UninteractionPostCommand
+PostsController --> UninteractionPostDTO
+UninteractionPostCommandHandler --> UninteractionPostCommand
+UninteractionPostCommandHandler --> Result
+UninteractionPostCommandHandler --> IUnitOfWork
+UninteractionPostCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Error -- PostError
+ApplicationDbContext --> Interaction
+ApplicationDbContext --> Post
+ApplicationDbContext --> PostInteract
+Interaction --|> BaseEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostInteract --* Post
+PostInteract --* Interaction
+@enduml

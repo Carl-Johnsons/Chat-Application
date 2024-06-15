@@ -1,0 +1,168 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class PostsController {
+    +async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
+}
+
+class UpdatePostCommand {
+    +string Content
+    +Guid PostId
+    +bool Active
+}
+
+class UpdatePostCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result<Post>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+}
+
+class DeletePostTagCommand {
+    +Guid PostId
+}
+
+class DeletePostTagCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    async Task Handle(DeletePostTagCommand request, CancellationToken cancellationToken)
+}
+
+class CreatePostTagCommand {
+    +Guid PostId
+    +Guid TagId
+}
+
+class CreatePostTagCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(CreatePostTagCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSer<Post> Posts
+    +DbSet<Tag> Tags
+    +DbSet<PostTag> PostTags
+}
+
+class ApplicationDbContext {
+    +DbSer<Post> Posts
+    +DbSet<Tag> Tags
+    +DbSet<PostTag> PostTags
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class "Result<T>" {
+    +T Value
+    +static Result<T> Success(T value)
+    +static new Result<T?> Failure(Error error)
+    +static new Result<T?> Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class TagError {
+    +static Error NotFound
+    +static Error AlreadyExited
+}
+class PostError {
+    +static Error NotFound
+    +static Error UserNotFound
+    +static Error AlreadyInteractedPost
+    +static Error NotInteractedPost
+}
+
+class UpdatePostDTO {
+    +Guid Id
+    +string Content
+    +List<Guid> TagIds
+    +bool Active
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Tag {
+    +string Value
+    +string Code
+}
+
+class Post {
+    +string Content
+    +bool Active
+    +Guid UserId
+}
+
+class PostTag {
+    +Guid PostId
+    +Guid TagId 
+    +virtual Post Post
+    +virtual Tag Tag
+}
+
+PostsController --|> BaseApiController
+PostsController --> UpdatePostCommand
+PostsController --> UpdatePostDTO
+PostsController --> DeletePostTagCommand
+PostsController --> CreatePostTagCommand
+UpdatePostCommandHandler --> UpdatePostCommand
+UpdatePostCommandHandler --> Result
+UpdatePostCommandHandler --> IUnitOfWork
+UpdatePostCommandHandler --> IApplicationDbContext
+DeletePostTagCommandHandler --> DeletePostTagCommand
+DeletePostTagCommandHandler --> Result
+DeletePostTagCommandHandler --> IUnitOfWork
+DeletePostTagCommandHandler --> IApplicationDbContext
+CreatePostTagCommandHandler --> CreatePostTagCommand
+CreatePostTagCommandHandler --> Result
+CreatePostTagCommandHandler --> IUnitOfWork
+CreatePostTagCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- TagError
+Error -- PostError
+ApplicationDbContext --> Tag
+ApplicationDbContext --> Post
+ApplicationDbContext --> PostTag
+Tag --|> BaseEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostTag --* Post
+PostTag --* Tag
+@enduml

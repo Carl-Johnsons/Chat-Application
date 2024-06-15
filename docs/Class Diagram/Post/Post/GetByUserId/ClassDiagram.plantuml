@@ -1,0 +1,144 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class PostsController {
+    +async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
+}
+
+class GetPostsByUserIdQuery {
+    +Guid UserId
+}
+
+class GetPostsByUserIdQueryHandler {
+    -readonly IApplicationDbContext _context
+    +async Task<Result<List<PostDTO>?>> Handle(GetPostsByUserIdQuery request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSer<Post> Posts
+    +DbSet<Tag> Tags
+    +DbSet<PostTag> PostTags
+    +DbSet<Interaction> Interactions
+    +DbSet<PostInteract> PostInteracts
+}
+
+class ApplicationDbContext {
+    +DbSer<Post> Posts
+    +DbSet<Tag> Tags
+    +DbSet<PostTag> PostTags
+    +DbSet<Interaction> Interactions
+    +DbSet<PostInteraction> PostInteracts
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class "Result<T>" {
+    +T Value
+    +static Result<T> Success(T value)
+    +static new Result<T?> Failure(Error error)
+    +static new Result<T?> Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class PostError {
+    +static Error NotFound
+    +static Error UserNotFound
+    +static Error AlreadyInteractedPost
+    +static Error NotInteractedPost
+}
+
+class PostDTO {
+    +Guid PostId
+    +string Content
+    +Guid UserId
+    +int InteractTotal 
+    +List<string> Interactions
+    +DateTime CreatedAt
+    +List<string> Tags
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Tag {
+    +string Value
+    +string Code
+}
+
+class Post {
+    +string Content
+    +bool Active
+    +Guid UserId
+}
+
+class PostTag {
+    +Guid PostId
+    +Guid TagId 
+    +virtual Post Post
+    +virtual Tag Tag
+}
+
+class Interaction {
+    +string Value
+    +string Code
+    +string Gif
+}
+
+class PostInteract {
+    +Guid PostId
+    +Guid InteractionId
+    +Guid UserId
+    +virtual Post Post
+    +virtual Interaction Interaction
+}
+
+PostsController --|> BaseApiController
+PostsController --> GetPostsByUserIdQuery
+GetPostsByUserIdQueryHandler --> GetPostsByUserIdQuery
+GetPostsByUserIdQueryHandler --> Result
+GetPostsByUserIdQueryHandler --> IApplicationDbContext
+GetPostsByUserIdQueryHandler --> PostDTO
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- PostError
+ApplicationDbContext --> Tag
+ApplicationDbContext --> Post
+ApplicationDbContext --> PostTag
+ApplicationDbContext --> Interaction
+ApplicationDbContext --> PostInteract
+Tag --|> BaseEntity
+Interaction --|> BaseEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostTag --* Post
+PostTag --* Tag
+PostInteract --* Post
+PostInteract --* Interaction
+@enduml

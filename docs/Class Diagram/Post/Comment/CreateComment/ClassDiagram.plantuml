@@ -1,0 +1,122 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class CommentsController {
+    +async Task<IActionResult> Create([FromBody] CreateCommentDTO createCommentDTO)
+}
+
+class CreateCommentCommand {
+    +Guid UserId
+    +string Content
+    +Guid PostId
+}
+
+class CreateCommentCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Comment> Comments
+    +DbSet<Post> Posts
+    +DbSet<PostComment> PostComments
+}
+
+class ApplicationDbContext {
+    +DbSet<Comment> Comments
+    +DbSet<Post> Posts
+    +DbSet<PostComment> PostComments
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class PostError {
+    +static Error NotFound
+    +static Error UserNotFound
+    +static Error AlreadyInteractedPost
+    +static Error NotInteractedPost
+}
+
+class CreateCommentDTO {
+    +Guid PostId
+    +string Content
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Comment {
+    +string Comment
+    +Guid UserId
+}
+
+class PostComment {
+    +Guid PostId
+    +Guid CommentId
+    +virtual Post Post
+    +virtual Comment Comment
+}
+
+class Post {
+    +string Content
+    +bool Active
+    +Guid UserId
+}
+
+CommentsController --|> BaseApiController
+CommentsController --> CreateCommentCommand
+CommentsController --> CreateCommentDTO
+CreateCommentCommandHandler --> CreateCommentCommand
+CreateCommentCommandHandler --> Result
+CreateCommentCommandHandler --> IUnitOfWork
+CreateCommentCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Error -- PostError
+ApplicationDbContext --> Comment
+ApplicationDbContext --> PostComment
+ApplicationDbContext --> Post
+Comment --|> BaseAuditableEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostComment --* Post
+PostComment --* Comment
+@enduml

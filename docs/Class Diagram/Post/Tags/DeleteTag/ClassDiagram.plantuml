@@ -1,0 +1,89 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class TagsController {
+    +async Task<IActionResult> Delete([FromBody] DeleteTagDTO deleteTagDTO)
+}
+
+class DeleteTagCommand {
+    +Guid TagId
+}
+
+class DeleteTagCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(DeleteTagCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Tag> Tags
+}
+
+class ApplicationDbContext {
+    +DbSet<Tag> Tags
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class TagError {
+    +static Error NotFound
+    +static Error AlreadyExited
+}
+
+class DeleteTagDTO {
+    +Guid Id
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class Tag {
+    +string Value
+    +string Code
+}
+
+TagsController --|> BaseApiController
+TagsController --> DeleteTagCommand
+TagsController --> DeleteTagDTO
+DeleteTagCommandHandler --> DeleteTagCommand
+DeleteTagCommandHandler --> Result
+DeleteTagCommandHandler --> IUnitOfWork
+DeleteTagCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Error -- TagError
+ApplicationDbContext --> Tag
+Tag --|> BaseEntity
+@enduml

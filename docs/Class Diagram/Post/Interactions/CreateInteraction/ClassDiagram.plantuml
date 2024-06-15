@@ -1,0 +1,94 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class InteractionsController {
+    +public async Task<IActionResult> Create([FromBody] CreateInteractionDTO createInteractionDTO)
+}
+
+class CreateInteractionCommand {
+    +string Value
+    +string Gif
+    +string Code
+}
+
+class CreateInteractionCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(CreateInteractionCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Interaction> Interactions
+}
+
+class ApplicationDbContext {
+    +DbSet<Interaction> Interactions
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class InteractionError {
+    +static Error NotFound
+    +static Error AlreadyExited
+}
+
+class CreateInteractionDTO {
+    +string Value
+    +string Gif
+    +string Code
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class Interaction {
+    +string Value
+    +string Code
+    +string Gif
+}
+
+InteractionsController --|> BaseApiController
+InteractionsController --> CreateInteractionCommand
+InteractionsController --> CreateInteractionDTO
+CreateInteractionCommandHandler --> CreateInteractionCommand
+CreateInteractionCommandHandler --> Result
+CreateInteractionCommandHandler --> IUnitOfWork
+CreateInteractionCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Error -- InteractionError
+ApplicationDbContext --> Interaction
+Interaction --|> BaseEntity
+@enduml

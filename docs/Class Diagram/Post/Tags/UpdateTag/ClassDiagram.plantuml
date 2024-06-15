@@ -1,0 +1,91 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class TagsController {
+    +Task<IActionResult> Update(UpdateTagDTO updateTagDTO)
+}
+
+class UpdateTagCommand {
+    +Guid TagId
+    +string Value
+}
+
+class UpdateTagCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Tag> Tags
+}
+
+class ApplicationDbContext {
+    +DbSet<Tag> Tags
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class TagError {
+    +static Error NotFound
+    +static Error AlreadyExited
+}
+
+class UpdateTagDTO {
+    +Guid Id
+    +string Value
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class Tag {
+    +string Value
+    +string Code
+}
+
+TagsController --|> BaseApiController
+TagsController --> UpdateTagCommand
+TagsController --> UpdateTagDTO
+UpdateTagCommandHandler --> UpdateTagCommand
+UpdateTagCommandHandler --> Result
+UpdateTagCommandHandler --> IUnitOfWork
+UpdateTagCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Error -- TagError
+ApplicationDbContext --> Tag
+Tag --|> BaseEntity
+@enduml

@@ -1,0 +1,130 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class PostsController {
+    +public async Task<IActionResult> CreateInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
+}
+
+class CreatePostInteractionCommand {
+    +string Value
+    +string Gif
+    +string Code
+}
+
+class CreatePostInteractionCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(CreatePostInteractionCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Post> Posts
+    +DbSet<Interaction> Interactions
+    +DbSet<PostInteract> PostInteracts
+}
+
+class ApplicationDbContext {
+    +DbSet<Post> Posts
+    +DbSet<Interaction> Interactions
+    +DbSet<PostInteract> PostInteracts
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class InteractionError {
+    +static Error NotFound
+    +static Error AlreadyExited
+}
+
+class PostError {
+    +static Error NotFound
+    +static Error UserNotFound
+    +static Error AlreadyInteractedPost
+    +static Error NotInteractedPost
+}
+
+class CreatePostInteractionDTO {
+    +Guid PostId
+    +Guid InteractionId
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Interaction {
+    +string Value
+    +string Code
+    +string Gif
+}
+
+class Post {
+    +string Content
+    +bool Active
+    +Guid UserId
+}
+
+class PostInteract {
+    +Guid PostId
+    +Guid InteractionId
+    +Guid UserId
+    +virtual Post Post
+    +virtual Interaction Interaction
+}
+
+PostsController --|> BaseApiController
+PostsController --> CreatePostInteractionCommand
+PostsController --> CreatePostInteractionDTO
+CreatePostInteractionCommandHandler --> CreatePostInteractionCommand
+CreatePostInteractionCommandHandler --> Result
+CreatePostInteractionCommandHandler --> IUnitOfWork
+CreatePostInteractionCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Error -- InteractionError
+Error -- PostError
+ApplicationDbContext --> Interaction
+ApplicationDbContext --> PostInteract
+ApplicationDbContext --> Post
+Interaction --|> BaseEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostInteract --* Post
+PostInteract --* Interaction
+@enduml

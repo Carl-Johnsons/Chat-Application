@@ -1,0 +1,110 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class CommentsController {
+    +async Task<IActionResult> GetByPostId([FromQuery]Guid postId)
+}
+
+class GetCommentByPostIdQuery {
+    +Guid PostId
+}
+
+class GetCommentByPostIdQueryHandler {
+    -readonly IApplicationDbContext _context
+    +async Task<Result<List<PostComment>?>> Handle(GetCommentByPostIdQuery request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Comment> Comments
+    +DbSet<Post> Posts
+    +DbSet<PostComment> PostComments
+}
+
+class ApplicationDbContext {
+    +DbSet<Comment> Comments
+    +DbSet<Post> Posts
+    +DbSet<PostComment> PostComments
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class "Result<T>" {
+    +T Value
+    +static Result<T> Success(T value)
+    +static new Result<T?> Failure(Error error)
+    +static new Result<T?> Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class PostError {
+    +static Error NotFound
+    +static Error UserNotFound
+    +static Error AlreadyInteractedPost
+    +static Error NotInteractedPost
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Comment {
+    +string Comment
+    +Guid UserId
+}
+
+class PostComment {
+    +Guid PostId
+    +Guid CommentId
+    +virtual Post Post
+    +virtual Comment Comment
+}
+
+class Post {
+    +string Content
+    +bool Active
+    +Guid UserId
+}
+
+CommentsController --|> BaseApiController
+CommentsController --> GetCommentByPostIdQuery
+GetCommentByPostIdQueryHandler --> GetCommentByPostIdQuery
+GetCommentByPostIdQueryHandler --> Result
+GetCommentByPostIdQueryHandler --> IApplicationDbContext
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- PostError
+ApplicationDbContext --> Comment
+ApplicationDbContext --> PostComment
+ApplicationDbContext --> Post
+Comment --|> BaseAuditableEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostComment --* Post
+PostComment --* Comment
+@enduml

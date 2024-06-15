@@ -1,0 +1,68 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class InteractionsController {
+    +public async Task<IActionResult> GetAll()
+}
+
+class GetAllInteractionsQuery {
+}
+
+class GetAllInteractionsQueryHandler {
+    -readonly IApplicationDbContext _context
+    +async Task<Result<List<Interaction>>> Handle(GetAllInteractionsQuery request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Interaction> Interactions
+}
+
+class ApplicationDbContext {
+    +DbSet<Interaction> Interactions
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class "Result<T>" {
+    +T Value
+    +static Result<T> Success(T value)
+    +static new Result<T?> Failure(Error error)
+    +static new Result<T?> Failure(IEnumerable<Error> errs)
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class Interaction {
+    +string Value
+    +string Code
+    +string Gif
+}
+
+InteractionsController --|> BaseApiController
+InteractionsController --> GetAllInteractionsQuery
+GetAllInteractionsQueryHandler --> GetAllInteractionsQuery
+GetAllInteractionsQueryHandler --> Result
+GetAllInteractionsQueryHandler --> IApplicationDbContext
+Result <|-- "Result<T>"
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Interaction
+Interaction --|> BaseEntity
+@enduml

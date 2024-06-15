@@ -1,0 +1,67 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class TagsController {
+    +async Task<IActionResult> GetAll()
+}
+
+class GetAllTagsQuery {
+}
+
+class GetAllTagsQueryHandler {
+    -readonly IApplicationDbContext _context
+    +async Task<Result<List<Tag>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Tag> Tags
+}
+
+class ApplicationDbContext {
+    +DbSet<Tag> Tags
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class "Result<T>" {
+    +T Value
+    +static Result<T> Success(T value)
+    +static new Result<T?> Failure(Error error)
+    +static new Result<T?> Failure(IEnumerable<Error> errs)
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class Tag {
+    +string Value
+    +string Code
+}
+
+TagsController --|> BaseApiController
+TagsController --> GetAllTagsQuery
+GetAllTagsQueryHandler --> GetAllTagsQuery
+GetAllTagsQueryHandler --> Result
+GetAllTagsQueryHandler --> IApplicationDbContext
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- "Result<T>"
+ApplicationDbContext --> Tag
+Tag --|> BaseEntity
+@enduml
