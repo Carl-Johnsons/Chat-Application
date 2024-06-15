@@ -43,6 +43,15 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
             return Result.Failure(InteractionError.NotFound);
         }
 
+       var postInteraction = _context.PostInteracts
+                            .Where(pi => pi.UserId == request.PostId && pi.UserId == request.UserId)
+                            .FirstOrDefault();
+
+        if (postInteraction != null)
+        {
+            return Result.Failure(PostError.AlreadyInteractedPost);
+        }
+
         PostInteract postInteract = new PostInteract
         {
             PostId = request.PostId,

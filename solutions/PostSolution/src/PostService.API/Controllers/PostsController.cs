@@ -178,4 +178,21 @@ public class PostsController : BaseApiController
 
         return Ok(post.Value);
     }
+
+    [HttpDelete("uninteraction")]
+    public async Task<IActionResult> UninteractionPost([FromBody] UninteractionPostDTO uninteractionPostDTO)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var result = await _sender.Send(new UninteractionPostCommand
+        {
+            PostId = uninteractionPostDTO.PostId,
+            UserId = Guid.Parse(subjectId!)
+        });
+
+        result.ThrowIfFailure();
+
+        return Ok();
+    }
 }
