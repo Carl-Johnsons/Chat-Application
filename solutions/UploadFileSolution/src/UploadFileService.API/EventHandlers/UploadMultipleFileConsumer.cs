@@ -57,7 +57,7 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
         var result = new UploadMultipleFileEventResponseDTO();
         result.Files = new List<UploadFileEventResponseDTO>(fileStreamEvents.Count);
         response.ThrowIfFailure();
-        for (int i = 0; i < response.Value.Count; i++)
+        for (int i = 0; i < response.Value!.Count; i++)
         {
             await Console.Out.WriteLineAsync("extension tple id of :" + i + " " + response.Value[i].ExtensionTypeId);
 

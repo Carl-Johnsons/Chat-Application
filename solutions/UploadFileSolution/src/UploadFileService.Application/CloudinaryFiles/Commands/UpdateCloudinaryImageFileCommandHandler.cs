@@ -32,7 +32,7 @@ public class UpdateCloudinaryImageFileCommandHandler : IRequestHandler<UpdateClo
     public async Task<Result<CloudinaryFile?>> Handle(UpdateCloudinaryImageFileCommand request, CancellationToken cancellationToken)
     {
         CloudinaryFile? cloudinaryFile;
-
+        ExtensionType? extensionType;
         var formFile = request.FormFile;
         var Url = request.Url;
         if (formFile == null || formFile.Length == 0)
@@ -60,7 +60,6 @@ public class UpdateCloudinaryImageFileCommandHandler : IRequestHandler<UpdateClo
         await Console.Out.WriteLineAsync("Going upload file to cloud");
         await Console.Out.WriteLineAsync(uploadParams.Folder);
         await Console.Out.WriteLineAsync(uploadParams.PublicId);
-
         await Console.Out.WriteLineAsync(uploadParams.File.FileName);
 
 
@@ -73,7 +72,7 @@ public class UpdateCloudinaryImageFileCommandHandler : IRequestHandler<UpdateClo
             long size = formFile.Length;
             string url = uploadResult.Url.ToString();
             string extensionValue = Path.GetExtension(fileName);
-            var extensionType = await _context.ExtensionTypes.Where(et => et.Value == extensionValue)
+            extensionType = await _context.ExtensionTypes.Where(et => et.Value == extensionValue)
                 .SingleOrDefaultAsync(cancellationToken);
             if (extensionType == null)
             {
@@ -114,7 +113,7 @@ public class UpdateCloudinaryImageFileCommandHandler : IRequestHandler<UpdateClo
 
         }
         await _unitOfWork.SaveChangeAsync(cancellationToken);
-
+        cloudinaryFile.ExtensionType = extensionType;
         return Result<CloudinaryFile?>.Success(cloudinaryFile);
     }
 }

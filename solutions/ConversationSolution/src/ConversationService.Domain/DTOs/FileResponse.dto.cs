@@ -1,9 +1,14 @@
-﻿using Contract.Common;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-namespace Contract.DTOs;
 
-public class UploadFileEventResponseDTO : BaseEntity
+namespace ConversationService.Domain.DTOs;
+
+public class FileResponseDTO
+{
+    public List<FileDTO> AttachedFileDTOs { get; set; } = null!;
+}
+
+public class FileDTO
 {
     [Required]
     [MaxLength(200)]
