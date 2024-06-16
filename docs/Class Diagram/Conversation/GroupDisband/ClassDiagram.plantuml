@@ -7,21 +7,23 @@ class BaseApiController {
     #_httpContextAccessor: HttpContextAccessor
 }
 
-class ConversationController {
-    +GetAll(): async Task<IActionResult>
-    +GetById([FromQuery] GetConversationByIdDTO getConversationByIdDTO): async Task<IActionResult>
-    +GetConversationListByUserId(): async Task<IActionResult>
-    +GetMemberListByConversationId([FromQuery] GetMemberListByConversationIdDTO getMemberListByConversationIdDTO): async Task<IActionResult>
-    +Delete([FromBody] DeleteConversationDTO deleteConversationDTO): async Task<IActionResult>
+class GroupConversationController {
+    +CreateGroupConversation([FromBody] CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
+    +UpdateGroupConversation([FromBody] UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
+    +DisbandGroupConversation([FromBody] DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
+    +UserJoinGroupConversation([FromBody] UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
+
 }
 
-class DeleteConversationCommand{
-    +ConversationId: Guid
+class UserJoinGroupConversationCommand {
+    +UserJoinGroupConversationDTO: UserJoinGroupConversationDTO
+    +CurrentUserID: Guid
 }
 
-class DeleteConversationCommandHandler{
+class UserJoinGroupConversationCommandHandler {
     -readonly _context: IApplicationDbContext
     -readonly _unitOfWork: IUnitOfWork
+    +Handle(UserJoinGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
 }
 
 class IApplicationDbContext {
@@ -63,10 +65,9 @@ class Error {
     {static} +implicit operator Result(Error err): Result
 }
 
-class DeleteConversationDTO{
+class UserJoinGroupConversationDTO{
     +Id: Guid
 }
-
 
 class IUnitOfWork {
     Task SaveChangeAsync(CancellationToken cancellationToken = default)
@@ -77,9 +78,9 @@ class UnitOfWork {
     +Task SaveChangeAsync(CancellationToken cancellationToken = default)
 }
 
-class ConversationError{
+class GroupConversationError {
+    {static} +NotEnoughMember: Error
     {static} +NotFound: Error
-    {static} +AlreadyExistConversation: Error
 }
 
 class BaseEntity {
@@ -120,25 +121,19 @@ class Message {
     +virtual Conversation: Conversations
 }
 
-ConversationController --|> BaseApiController
-ConversationController --> DeleteConversationCommand
 
-ConversationController --> DeleteConversationDTO
-
-DeleteConversationCommandHandler --> DeleteConversationCommand
-DeleteConversationCommandHandler --> Result
-DeleteConversationCommandHandler --> IUnitOfWork
-DeleteConversationCommandHandler --> IApplicationDbContext
-DeleteConversationCommandHandler --> ConversationError
-
-
+GroupConversationController --|> BaseApiController
+GroupConversationController --> UserJoinGroupConversationDTO
+GroupConversationController --> UserJoinGroupConversationCommand
+UserJoinGroupConversationCommandHandler --> UserJoinGroupConversationCommand
+UserJoinGroupConversationCommandHandler --> Result
+UserJoinGroupConversationCommandHandler --> IUnitOfWork
+UserJoinGroupConversationCommandHandler --> IApplicationDbContext
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
 Result <|-- Error
 Result <|-- "Result<T>"
-
-Error -- ConversationError
-
+Error -- GroupConversationError
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation
 ApplicationDbContext --> ConversationUser

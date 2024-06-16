@@ -15,13 +15,30 @@ class ConversationController {
     +Delete([FromBody] DeleteConversationDTO deleteConversationDTO): async Task<IActionResult>
 }
 
-class DeleteConversationCommand{
+class GetAllConversationsQuery{
+
+}
+class GetAllConversationsQueryHandler {
+    -readonly _context: IApplicationDbContext
+    +Handle(GetAllConversationsQuery request, CancellationToken cancellationToken): async Task<Result<List<Conversation>>>
+}
+
+class GetConversationByIdQuery{
     +ConversationId: Guid
 }
 
-class DeleteConversationCommandHandler{
+class GetConversationByIdQueryHandler{
     -readonly _context: IApplicationDbContext
-    -readonly _unitOfWork: IUnitOfWork
+    +Handle(GetConversationByIdQuery request, CancellationToken cancellationToken): async Task<Result<Conversation?>>
+}
+
+class GetConversationListByUserIdQuery{
+    +UserId: Guid
+}
+
+class GetConversationListByUserIdQueryHandler{
+    -readonly _context: IApplicationDbContext
+    +Handle(GetConversationListByUserIdQuery request, CancellationToken cancellationToken): async Task<Result<ConversationsResponseDTO>>
 }
 
 class IApplicationDbContext {
@@ -63,18 +80,33 @@ class Error {
     {static} +implicit operator Result(Error err): Result
 }
 
-class DeleteConversationDTO{
+class GetConversationByIdDTO{
+    +ConversationId: Guid
+}
+
+class ConversationsResponseDTO{
+    +Conversations: List<ConversationResponseDTO>
+    +GroupConversations: List<GroupConversationResponseDTO>
+}
+
+class ConversationResponseDTO{
     +Id: Guid
+    +Type: string
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+    +virtual Users: List<ConversationUserResponseDTO>
 }
 
-
-class IUnitOfWork {
-    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+class ConversationUserResponseDTO{
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
 }
 
-class UnitOfWork {
-    -readonly ApplicationDbContext _context
-    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+class GroupConversationResponseDTO{
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
 }
 
 class ConversationError{
@@ -121,22 +153,34 @@ class Message {
 }
 
 ConversationController --|> BaseApiController
-ConversationController --> DeleteConversationCommand
+ConversationController --> GetAllConversationsQuery
+ConversationController --> GetConversationByIdQuery
+ConversationController --> GetConversationListByUserIdQuery
 
-ConversationController --> DeleteConversationDTO
+ConversationController --> GetConversationByIdDTO
 
-DeleteConversationCommandHandler --> DeleteConversationCommand
-DeleteConversationCommandHandler --> Result
-DeleteConversationCommandHandler --> IUnitOfWork
-DeleteConversationCommandHandler --> IApplicationDbContext
-DeleteConversationCommandHandler --> ConversationError
+GetAllConversationsQueryHandler --> GetAllConversationsQuery
+GetAllConversationsQueryHandler --> Result
+GetAllConversationsQueryHandler --> IApplicationDbContext
 
+GetConversationByIdQueryHandler --> GetConversationByIdQuery
+GetConversationByIdQueryHandler --> Result
+GetConversationByIdQueryHandler --> IApplicationDbContext
 
-IUnitOfWork <|.. UnitOfWork
+GetConversationListByUserIdQueryHandler --> GetConversationListByUserIdQuery
+GetConversationListByUserIdQueryHandler --> Result
+GetConversationListByUserIdQueryHandler --> IApplicationDbContext
+GetConversationListByUserIdQueryHandler --> ConversationsResponseDTO
+
+ConversationsResponseDTO --> ConversationResponseDTO
+ConversationsResponseDTO --> GroupConversationResponseDTO
+
+ConversationResponseDTO --> ConversationUserResponseDTO
+GroupConversationResponseDTO --|> ConversationResponseDTO
+
 IApplicationDbContext <|.. ApplicationDbContext
 Result <|-- Error
 Result <|-- "Result<T>"
-
 Error -- ConversationError
 
 ApplicationDbContext --> Conversation
