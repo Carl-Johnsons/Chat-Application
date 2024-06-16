@@ -1,0 +1,63 @@
+@startuml updateUser
+hide circle
+skinparam classAttributeIconSize 0
+class UsersController {
+    - _context: ApplicationDbContext
+    - _userManager: UserManager<ApplicationUser>
+    - _httpContextAccessor: IHttpContextAccessor
+    - _bus: IBus
+    + Put(UpdateUserDTO updateUserDTO): Task<IActionResult>
+}
+
+class ApplicationDbContext {
+    +FriendRequests: DbSet<FriendRequest>
+    +Friends: DbSet<Friend>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+
+class SendFriendRequestDTO {
+    +ReceiverId: string
+    +Content: string
+}
+
+class FileStreamEvent
+{
+    +FileName: string
+    +ContentType: string
+    +Stream:byte[]
+}
+class BinaryReader
+class UpdateFileEvent{
+    +Url: string
+    +FileStreamEvent:FileStreamEvent
+}
+
+class UploadFileEventResponseDTO{
+    +Name: string
+    +ExtensionTypeCode: string
+    +Size: long
+    +Url: string
+}
+
+class ApplicationUser {
+    +Name: string
+    +AvatarUrl: string
+    +BackgroundUrl: string
+    +Introduction: string
+    +Dob: DateTime
+    +Gender: string
+    +Active: bool
+}
+
+class IdentityUser
+
+UsersController --> ApplicationDbContext
+UsersController --> SendFriendRequestDTO
+UsersController --> BinaryReader
+UsersController --> FileStreamEvent
+UsersController --> UpdateFileEvent
+UsersController --> UploadFileEventResponseDTO
+ApplicationDbContext --> ApplicationUser
+ApplicationUser --|> IdentityUser
+@enduml

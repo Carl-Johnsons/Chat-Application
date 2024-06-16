@@ -1,0 +1,34 @@
+@startuml sendFriendRequest
+hide circle
+skinparam classAttributeIconSize 0
+class FriendRequestController {
+    + Post(SendFriendRequestDTO sendFriendRequestDTO): Task<IActionResult>
+}
+
+class ApplicationDbContext {
+    +FriendRequests: DbSet<FriendRequest> 
+    +Friends: DbSet<Friend> 
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+
+class SendFriendRequestDTO {
+    +ReceiverId: string
+    +Content: string
+}
+
+class FriendRequest {
+    +Id: Guid
+    +SenderId: string
+    +ReceiverId: string
+    +Content: string
+    +Status: string
+    +CreatedAt: DateTime
+    +Sender: ApplicationUser
+    +Receiver: ApplicationUser
+}
+
+FriendRequestController --> ApplicationDbContext
+FriendRequestController --> SendFriendRequestDTO
+ApplicationDbContext --> FriendRequest
+@enduml
