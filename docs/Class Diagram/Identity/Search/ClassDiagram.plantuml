@@ -1,0 +1,35 @@
+@startuml search
+hide circle
+skinparam classAttributeIconSize 0
+class UsersController {
+    +Search(): IActionResult
+}
+
+class ApplicationDbContext {
+    +ApplicationUsers: DbSet<ApplicationUser>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+
+class SendFriendRequestDTO {
+    +ReceiverId: string
+    +Content: string
+}
+
+class ApplicationUser {
+    +Name: string
+    +AvatarUrl: string
+    +BackgroundUrl: string
+    +Introduction: string
+    +Dob: DateTime
+    +Gender: string
+    +Active: bool
+}
+
+class IdentityUser
+
+UsersController --> ApplicationDbContext
+UsersController --> SendFriendRequestDTO
+ApplicationDbContext --> ApplicationUser
+ApplicationUser --|> IdentityUser
+@enduml

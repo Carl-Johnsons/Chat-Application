@@ -1,0 +1,81 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class ConversationController {
+    +async Task<IActionResult> GetAll()
+}
+
+class GetAllConversationsQuery {}
+
+class GetAllConversationsQueryHandler {
+    -readonly IApplicationDbContext _context
+    +async Task<Result<List<Conversation>>> Handle(GetAllConversationsQuery request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Conversation> Conversations
+}
+
+class ApplicationDbContext {
+    +DbSet<Conversation> Conversations
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +string Type
+    +virtual List<ConversationUser> Users
+}
+
+class ConversationUser {
+    +Guid ConversationId
+    +Guid UserId
+    +string Role 
+    +DateTime? ReadTime
+    +virtual Conversation Conversation
+}
+
+ConversationController --|> BaseApiController
+ConversationController --> GetAllConversationsQuery
+GetAllConversationsQueryHandler --> GetAllConversationsQuery
+GetAllConversationsQueryHandler --> Result
+GetAllConversationsQueryHandler --> IApplicationDbContext
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Conversation
+ConversationUser --|> BaseEntity
+Conversation --|> BaseAuditableEntity
+Conversation *-- ConversationUser
+BaseAuditableEntity --|>BaseEntity
+@enduml
