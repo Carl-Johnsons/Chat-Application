@@ -1,0 +1,28 @@
+@startuml unblockUser
+hide circle
+skinparam classAttributeIconSize 0
+class UsersController {
+    - _context: ApplicationDbContext
+    - _httpContextAccessor: IHttpContextAccessor
+    + Unblock(UnblockUserDTO unblockUserDTO): Task<IActionResult>
+}
+
+class ApplicationDbContext {
+    + UserBlocks: DbSet<UserBlock>
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+class UserBlock{
+    + UserId: string
+    + BlockUserId: string
+    + User: ApplicationUser
+    + BlockUser: ApplicationUser
+}
+
+class UnblockUserDTO {
+    UnblockUserId: string
+}
+
+UsersController --> ApplicationDbContext
+UsersController --> UnblockUserDTO
+ApplicationDbContext --> UserBlock
+@enduml

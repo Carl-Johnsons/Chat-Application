@@ -1,9 +1,11 @@
-@startuml deleteFriendRequest
+@startuml getFriendRequestListByUserId
 hide circle
 skinparam classAttributeIconSize 0
+
 class FriendRequestController {
     - _context: ApplicationDbContext
-    + Delete(DeleteFriendRequestDTO deleteFriendRequestDTO): Task<IActionResult>
+    - _httpContextAccessor: IHttpContextAccessor
+    + Get(): Task<IActionResult>
 }
 
 class ApplicationDbContext {
@@ -11,10 +13,6 @@ class ApplicationDbContext {
     # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
-
-class DeleteFriendRequestDTO {
-    + FriendRequestId: string
-}
 
 class FriendRequest {
     + Id: Guid
@@ -27,7 +25,15 @@ class FriendRequest {
     + Receiver: ApplicationUser 
 }
 
+class FriendRequestResponseDTO{
+    + Id: Guid
+    + SenderId: string
+    + Content: string
+    + Status: string
+    + CreatedAt: DateTime
+}
+
 FriendRequestController --> ApplicationDbContext
-FriendRequestController --> DeleteFriendRequestDTO
+FriendRequestController --> FriendRequestResponseDTO
 ApplicationDbContext --> FriendRequest
 @enduml

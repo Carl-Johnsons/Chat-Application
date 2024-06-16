@@ -7,7 +7,6 @@ class FriendRequestController {
 
 class ApplicationDbContext {
     +FriendRequests: DbSet<FriendRequest> 
-    +Friends: DbSet<Friend> 
     #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 

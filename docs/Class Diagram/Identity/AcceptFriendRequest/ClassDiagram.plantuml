@@ -2,38 +2,53 @@
 hide circle
 skinparam classAttributeIconSize 0
 class FriendRequestController {
-    +AcceptFriendRequest(AcceptFriendRequestDTO accecptFriendRequestDTO): Task<IActionResult>
+    - _signalRService: SignalRService
+    - _publishEndpoint: IPublishEndpoint
+    + AcceptFriendRequest(AcceptFriendRequestDTO accecptFriendRequestDTO): Task<IActionResult>
 }
 
 class ApplicationDbContext {
-    +FriendRequests: DbSet<FriendRequest>
-    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+    + FriendRequests: DbSet<FriendRequest>
+    + Friends: DbSet<Friend>
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 
 class AcceptFriendRequestDTO {
-    +FriendRequestId: string
+    + FriendRequestId: string
+}
+
+class Friend{
+    + UserId: string
+    + FriendId: string
+    + User: ApplicationUser
 }
 
 class FriendRequest {
-    +Id: Guid
-    +SenderId: string
-    +ReceiverId: string
-    +Content: string
-    +Status: string
-    +CreatedAt: DateTime
-    +Sender: ApplicationUser
-    +Receiver: ApplicationUser
+    + Id: Guid
+    + SenderId: string
+    + ReceiverId: string
+    + Content: string
+    + Status: string
+    + CreatedAt: DateTime
+    + Sender: ApplicationUser
+    + Receiver: ApplicationUser
 }
 
+class FriendCreatedEvent{
+    + UserId: Guid
+    + OtherUserId: Guid
+}
 
 class SignalRService {
-    +HubConnection: HubConnection
-    +InvokeAction<T>(string action, T obj): Task
+    + HubConnection: HubConnection
+    + InvokeAction<T>(string action, T obj): Task
 }
 
 FriendRequestController --> ApplicationDbContext
 FriendRequestController --> AcceptFriendRequestDTO
 FriendRequestController --> SignalRService
+FriendRequestController --> FriendCreatedEvent
 ApplicationDbContext --> FriendRequest
+ApplicationDbContext --> Friend
 @enduml

@@ -10,15 +10,18 @@ class UsersController {
 }
 
 class ApplicationDbContext {
-    +FriendRequests: DbSet<FriendRequest>
-    +Friends: DbSet<Friend>
+    +Users: DbSet<ApplicationUser>
     #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 
-class SendFriendRequestDTO {
-    +ReceiverId: string
-    +Content: string
+class UpdateUserDTO {
+    +Name: string?
+    +AvatarFile: IFormFile?
+    +BackgroundFile: IFormFile?
+    +Introduction: string?
+    +Gender: string?
+    +Dob: DateTime?
 }
 
 class FileStreamEvent
@@ -53,7 +56,7 @@ class ApplicationUser {
 class IdentityUser
 
 UsersController --> ApplicationDbContext
-UsersController --> SendFriendRequestDTO
+UsersController --> UpdateUserDTO
 UsersController --> BinaryReader
 UsersController --> FileStreamEvent
 UsersController --> UpdateFileEvent

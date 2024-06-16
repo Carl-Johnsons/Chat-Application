@@ -1,0 +1,29 @@
+@startuml deleteFriend
+hide circle
+skinparam classAttributeIconSize 0
+class FriendController {
+    - _context: ApplicationDbContext
+    - _httpContextAccessor: IHttpContextAccessor
+    + Delete(DeleteFriendDTO deleteFriendDTO): Task<IActionResult>
+}
+
+class ApplicationDbContext {
+    + Friends: DbSet<Friend>
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class DeleteFriendDTO {
+    + FriendId: string
+}
+
+
+class Friend{
+    + UserId: string
+    + FriendId: string
+}
+
+
+FriendController --> ApplicationDbContext
+FriendController --> DeleteFriendDTO
+ApplicationDbContext --> Friend
+@enduml
