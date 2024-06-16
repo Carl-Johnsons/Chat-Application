@@ -1,0 +1,101 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class ConversationController {
+    +async Task<IActionResult> GetMemberListByConversationId([FromQuery] GetMemberListByConversationIdDTO getMemberListByConversationIdDTO)
+}
+
+class GetMemberListByConversationIdQuery {
+    +Guid UserId
+    +Guid ConversationId
+    +bool Other
+}
+
+class GetMemberListByConversationIdQueryHandler {
+    -readonly IApplicationDbContext _context
+    +async Task<Result<List<ConversationUser>?>> Handle(GetMemberListByConversationIdQuery request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Conversation> Conversations
+    +DbSet<ConversationUser> ConversationUsers
+}
+
+class ApplicationDbContext {
+    +DbSet<Conversation> Conversations
+    +DbSet<ConversationUser> ConversationUsers
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class "Result<T>" {
+    +T Value
+    +static Result<T> Success(T value)
+    +static new Result<T?> Failure(Error error)
+    +static new Result<T?> Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class GetMemberListByConversationIdDTO {
+    +Guid ConversationId
+    +bool Other
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +string Type
+    +virtual List<ConversationUser> Users
+}
+
+class ConversationUser {
+    +Guid ConversationId
+    +Guid UserId
+    +string Role 
+    +DateTime? ReadTime
+    +virtual Conversation Conversation
+}
+
+ConversationController --|> BaseApiController
+ConversationController --> GetMemberListByConversationIdQuery
+ConversationController --> GetMemberListByConversationIdDTO
+GetMemberListByConversationIdQueryHandler --> GetMemberListByConversationIdQuery
+GetMemberListByConversationIdQueryHandler --> Result
+GetMemberListByConversationIdQueryHandler --> IApplicationDbContext
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Conversation
+ConversationUser --|> BaseEntity
+Conversation --|> BaseAuditableEntity
+Conversation *-- ConversationUser
+BaseAuditableEntity --|>BaseEntity
+@enduml

@@ -1,0 +1,120 @@
+@startuml 
+hide circle
+
+class BaseApiController {
+    #ISender _sender
+    #HttpContextAccessor _httpContextAccessor
+}
+
+class GroupConversationController {
+    +async Task<IActionResult> CreateGroupConversation([FromBody] CreateGroupConversationDTO createGroupConversationDTO)
+}
+
+class CreateGroupConversationCommand {
+    +Guid CurrentUserID
+    +CreateGroupConversationDTO CreateGroupConversationDTO
+}
+
+class CreateGroupConversationCommandHandler {
+    -readonly IApplicationDbContext _context
+    -readonly IUnitOfWork _unitOfWork
+    +async Task<Result> Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
+}
+
+class IApplicationDbContext {
+    +DbSet<Conversation> Conversations
+    +DbSet<ConversationUser> ConversationUsers
+    +DbSet<GroupConversation> GroupConversations
+}
+
+class ApplicationDbContext {
+    +DbSet<Conversation> Conversations
+    +DbSet<ConversationUser> ConversationUsers
+    +DbSet<GroupConversation> GroupConversations
+    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +static Result Success()
+    +static Result Failure(Error err)
+    +static Result Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +static readonly Error None
+    +static implicit operator Result(Error err)
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class GroupConversationError {
+    +static Error NotEnoughMember
+}
+
+class CreateGroupConversationDTO {
+    +List<Guid> MembersId
+    +string Name
+    +string? ImageURL
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class ConversationUser {
+    +Guid ConversationId
+    +Guid UserId
+    +string Role 
+    +DateTime? ReadTime
+    +virtual Conversation Conversation
+}
+
+class Conversation {
+    +string Type
+    +virtual List<ConversationUser> Users
+}
+
+class GroupConversation {
+    +string Name
+    +string? ImageURL
+    +string? InviteURL
+}
+
+GroupConversationController --|> BaseApiController
+GroupConversationController --> CreateGroupConversationCommand
+GroupConversationController --> CreateGroupConversationDTO
+CreateGroupConversationCommandHandler --> CreateGroupConversationCommand
+CreateGroupConversationCommandHandler --> Result
+CreateGroupConversationCommandHandler --> IUnitOfWork
+CreateGroupConversationCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Error -- GroupConversationError
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Conversation
+ApplicationDbContext --> GroupConversation
+GroupConversation --|> Conversation
+ConversationUser --|> BaseEntity
+Conversation --|> BaseAuditableEntity
+Conversation *-- ConversationUser
+BaseAuditableEntity --|>BaseEntity
+@enduml
