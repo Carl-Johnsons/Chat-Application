@@ -1,0 +1,147 @@
+@startuml 
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class GroupConversationController {
+    +CreateGroupConversation([FromBody] CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
+    +UpdateGroupConversation([FromBody] UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
+    +DisbandGroupConversation([FromBody] DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
+}
+
+class DisbandGroupConversationCommand {
+    +DisbandGroupConversationDTO: DisbandGroupConversationDTO
+    +CurrentUserID: Guid
+}
+
+class DisbandGroupConversationCommandHandler {
+    -readonly _context: IApplicationDbContext
+    -readonly _unitOfWork: IUnitOfWork
+    +Handle(DisbandGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    {static} +Success(): Result
+    {static} +Failure(Error err): Result
+    {static} +Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +T Value
+    {static} +Success(T value): Result<T>
+    {static} +Failure(Error error): Result<T?>
+    {static} +Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    {static} +readonly None: Error
+    {static} +implicit operator Result(Error err): Result
+}
+
+class DisbandGroupConversationDTO{
+    +Id: Guid
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class GroupConversationError {
+    {static} +NotEnoughMember: Error
+    {static} +NotFound: Error
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +Type: string
+    +virtual Users: List<ConversationUser>
+}
+
+class GroupConversation {
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+    +virtual Conversation: Conversation
+}
+
+class Message {
+    +SenderId: Guid?
+    +ConversationId: Guid
+    +Content: string
+    +Source: string
+    +AttachedFilesURL: string?
+    +Active: bool?
+    +virtual Conversation: Conversations
+}
+
+
+GroupConversationController --|> BaseApiController
+GroupConversationController --> DisbandGroupConversationDTO
+GroupConversationController --> DisbandGroupConversationCommand
+DisbandGroupConversationCommandHandler --> DisbandGroupConversationCommand
+DisbandGroupConversationCommandHandler --> Result
+DisbandGroupConversationCommandHandler --> IUnitOfWork
+DisbandGroupConversationCommandHandler --> IApplicationDbContext
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- GroupConversationError
+ApplicationDbContext --> Conversation
+ApplicationDbContext --> GroupConversation
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Message
+
+Conversation --|> BaseAuditableEntity
+GroupConversation --|> Conversation
+ConversationUser --|> BaseEntity
+ConversationUser --* Conversation
+Message --|> BaseAuditableEntity
+Message --* Conversation
+BaseAuditableEntity --|> BaseEntity
+@enduml

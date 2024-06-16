@@ -1,0 +1,154 @@
+@startuml 
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class ConversationController {
+    +GetAll(): async Task<IActionResult>
+    +GetById([FromQuery] GetConversationByIdDTO getConversationByIdDTO): async Task<IActionResult>
+    +GetConversationListByUserId(): async Task<IActionResult>
+    +GetMemberListByConversationId([FromQuery] GetMemberListByConversationIdDTO getMemberListByConversationIdDTO): async Task<IActionResult>
+    +Delete([FromBody] DeleteConversationDTO deleteConversationDTO): async Task<IActionResult>
+}
+
+class DeleteConversationCommand{
+    +ConversationId: Guid
+}
+
+class DeleteConversationCommandHandler{
+    -readonly _context: IApplicationDbContext
+    -readonly _unitOfWork: IUnitOfWork
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    {static} +Success(): Result
+    {static} +Failure(Error err): Result
+    {static} +Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +T Value
+    {static} +Success(T value): Result<T>
+    {static} +Failure(Error error): Result<T?>
+    {static} +Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    {static} +readonly None: Error
+    {static} +implicit operator Result(Error err): Result
+}
+
+class DeleteConversationDTO{
+    +Id: Guid
+}
+
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -readonly ApplicationDbContext _context
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class ConversationError{
+    {static} +NotFound: Error
+    {static} +AlreadyExistConversation: Error
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +Type: string
+    +virtual Users: List<ConversationUser>
+}
+
+class GroupConversation {
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+    +virtual Conversation: Conversation
+}
+
+class Message {
+    +SenderId: Guid?
+    +ConversationId: Guid
+    +Content: string
+    +Source: string
+    +AttachedFilesURL: string?
+    +Active: bool?
+    +virtual Conversation: Conversations
+}
+
+ConversationController --|> BaseApiController
+ConversationController --> DeleteConversationCommand
+
+ConversationController --> DeleteConversationDTO
+
+DeleteConversationCommandHandler --> DeleteConversationCommand
+DeleteConversationCommandHandler --> Result
+DeleteConversationCommandHandler --> IUnitOfWork
+DeleteConversationCommandHandler --> IApplicationDbContext
+DeleteConversationCommandHandler --> ConversationError
+
+
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+
+Error -- ConversationError
+
+ApplicationDbContext --> Conversation
+ApplicationDbContext --> GroupConversation
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Message
+
+Conversation --|> BaseAuditableEntity
+GroupConversation --|> Conversation
+ConversationUser --|> BaseEntity
+ConversationUser --* Conversation
+Message --|> BaseAuditableEntity
+Message --* Conversation
+BaseAuditableEntity --|> BaseEntity
+@enduml
