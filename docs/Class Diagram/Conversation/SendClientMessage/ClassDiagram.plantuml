@@ -1,0 +1,191 @@
+@startuml 
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class MessageController {
+    +GetByConversationId(GetByConversationIdDTO getByConversationIdDTO): async Task<IActionResult>
+    +SendClientMessage(SendClientMessageDTO sendClientMessageDTO): async Task<IActionResult>
+}
+
+class SendClientMessageCommand {
+    +SenderId: Guid
+    +ConversationId: Guid
+    +Content: string
+}
+
+class SendClientMessageCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    -_signalRService: ISignalRService
+    -_bus: IBus
+    +Handle(SendClientMessageCommand request, CancellationToken cancellationToken): async Task<Result<Message>>
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    {static} +Success(): Result
+    {static} +Failure(Error err): Result
+    {static} +Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +T Value
+    {static} +Success(T value): Result<T>
+    {static} +Failure(Error error): Result<T?>
+    {static} +Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    {static} +None: Error
+    {static} +implicit operator Result(Error err): Result
+}
+
+class SendClientMessageDTO{
+    +ConversationId: Guid
+    +Content: string
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class ISignalRService{
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
+class ConversationError {
+    {static} +AlreadyExistConversation: Error
+    {static} +NotFound: Error
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +Type: string
+    +Users: List<ConversationUser>
+}
+
+class GroupConversation {
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+    +Conversation: Conversation
+}
+
+class Message {
+    +SenderId: Guid?
+    +ConversationId: Guid
+    +Content: string
+    +Source: string
+    +AttachedFilesURL: string?
+    +Active: bool?
+    +Conversation: Conversations
+}
+
+class UploadMultipleFileEvent{
+    +FileStreamEvents: List<FileStreamEvent>
+}
+
+class FileStreamEvent{
+    +FileName: string
+    +ContentType: string
+    +Stream: byte[]
+}
+
+class UploadMultipleFileEventResponseDTO{
+    +Files: List<UploadFileEventResponseDTO>
+}
+
+class UploadFileEventResponseDTO{
+    +Name: string
+    +ExtensionTypeCode: string
+    +Size: long 
+    +Url: string
+}
+
+
+MessageController --|> BaseApiController
+MessageController --> SendClientMessageDTO
+MessageController --> SendClientMessageCommand
+
+SendClientMessageCommandHandler --> SendClientMessageCommand
+SendClientMessageCommandHandler --> ConversationError
+SendClientMessageCommandHandler --> ISignalRService
+SendClientMessageCommandHandler --> UploadMultipleFileEvent
+SendClientMessageCommandHandler --> UploadMultipleFileEventResponseDTO
+SendClientMessageCommandHandler --> Result
+SendClientMessageCommandHandler --> IUnitOfWork
+SendClientMessageCommandHandler --> IApplicationDbContext
+
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- GroupConversationError
+
+ApplicationDbContext --> Conversation
+ApplicationDbContext --> GroupConversation
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Message
+
+Conversation --|> BaseAuditableEntity
+GroupConversation --|> Conversation
+ConversationUser --|> BaseEntity
+ConversationUser --* Conversation
+Message --|> BaseAuditableEntity
+Message --* Conversation
+BaseAuditableEntity --|> BaseEntity
+
+UploadMultipleFileEvent --> FileStreamEvent
+
+UploadMultipleFileEventResponseDTO --> UploadFileEventResponseDTO
+
+UploadFileEventResponseDTO --|> BaseEntity
+@enduml
