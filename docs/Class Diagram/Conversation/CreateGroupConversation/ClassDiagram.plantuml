@@ -8,7 +8,13 @@ class BaseApiController {
 }
 
 class GroupConversationController {
-    +CreateGroupConversation([FromBody] CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
+    +CreateGroupConversation(CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
+    +UpdateGroupConversation(UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
+    +DisbandGroupConversation(DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
+    +UserJoinGroupConversation(UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
+    +UserExitGroupConversation(UserExitGroupConversationDTO userExitGroupConversationDTO): async Task<IActionResult>
+    +AddUserGroupConversation(AddUserGroupConversationDTO addUserGroupConversationDTO): async Task<IActionResult>
+    +BlockUserGroupConversation(BlockUserGroupConversationDTO blockUserGroupConversationDTO): async Task<IActionResult>
 }
 
 class CreateGroupConversationCommand {
@@ -17,8 +23,8 @@ class CreateGroupConversationCommand {
 }
 
 class CreateGroupConversationCommandHandler {
-    -readonly _context: IApplicationDbContext
-    -readonly _unitOfWork: IUnitOfWork
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
     +Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
 }
 
@@ -57,7 +63,7 @@ class "Result<T>" {
 }
 
 class Error {
-    {static} +readonly None: Error
+    {static} +None: Error
     {static} +implicit operator Result(Error err): Result
 }
 
@@ -72,7 +78,7 @@ class IUnitOfWork {
 }
 
 class UnitOfWork {
-    -readonly ApplicationDbContext _context
+    -_context: ApplicationDbContext
     +Task SaveChangeAsync(CancellationToken cancellationToken = default)
 }
 
@@ -92,7 +98,7 @@ class BaseAuditableEntity{
 
 class Conversation {
     +Type: string
-    +virtual Users: List<ConversationUser>
+    +Users: List<ConversationUser>
 }
 
 class GroupConversation {
@@ -106,7 +112,7 @@ class ConversationUser {
     +UserId: Guid
     +Role: string
     +ReadTime: DateTime?
-    +virtual Conversation: Conversation
+    +Conversation: Conversation
 }
 
 class Message {
@@ -116,7 +122,7 @@ class Message {
     +Source: string
     +AttachedFilesURL: string?
     +Active: bool?
-    +virtual Conversation: Conversations
+    +Conversation: Conversations
 }
 
 

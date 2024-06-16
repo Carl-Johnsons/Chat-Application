@@ -8,22 +8,24 @@ class BaseApiController {
 }
 
 class GroupConversationController {
-    +CreateGroupConversation([FromBody] CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
-    +UpdateGroupConversation([FromBody] UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
-    +DisbandGroupConversation([FromBody] DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
-    +UserJoinGroupConversation([FromBody] UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
-
+    +CreateGroupConversation(CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
+    +UpdateGroupConversation(UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
+    +DisbandGroupConversation(DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
+    +UserJoinGroupConversation(UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
+    +UserExitGroupConversation(UserExitGroupConversationDTO userExitGroupConversationDTO): async Task<IActionResult>
+    +AddUserGroupConversation(AddUserGroupConversationDTO addUserGroupConversationDTO): async Task<IActionResult>
+    +BlockUserGroupConversation(BlockUserGroupConversationDTO blockUserGroupConversationDTO): async Task<IActionResult>
 }
 
-class UserJoinGroupConversationCommand {
-    +UserJoinGroupConversationDTO: UserJoinGroupConversationDTO
+class DisbandGroupConversationCommand {
+    +disbandGroupConversationDTO: DisbandGroupConversationDTO
     +CurrentUserID: Guid
 }
 
-class UserJoinGroupConversationCommandHandler {
-    -readonly _context: IApplicationDbContext
-    -readonly _unitOfWork: IUnitOfWork
-    +Handle(UserJoinGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
+class DisbandGroupConversationCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(DisbandGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
 }
 
 class IApplicationDbContext {
@@ -61,7 +63,7 @@ class "Result<T>" {
 }
 
 class Error {
-    {static} +readonly None: Error
+    {static} +None: Error
     {static} +implicit operator Result(Error err): Result
 }
 
@@ -74,7 +76,7 @@ class IUnitOfWork {
 }
 
 class UnitOfWork {
-    -readonly ApplicationDbContext _context
+    -_context: ApplicationDbContext
     +Task SaveChangeAsync(CancellationToken cancellationToken = default)
 }
 
@@ -94,7 +96,7 @@ class BaseAuditableEntity{
 
 class Conversation {
     +Type: string
-    +virtual Users: List<ConversationUser>
+    +Users: List<ConversationUser>
 }
 
 class GroupConversation {
@@ -108,7 +110,7 @@ class ConversationUser {
     +UserId: Guid
     +Role: string
     +ReadTime: DateTime?
-    +virtual Conversation: Conversation
+    +Conversation: Conversation
 }
 
 class Message {
@@ -118,22 +120,25 @@ class Message {
     +Source: string
     +AttachedFilesURL: string?
     +Active: bool?
-    +virtual Conversation: Conversations
+    +Conversation: Conversations
 }
 
 
 GroupConversationController --|> BaseApiController
-GroupConversationController --> UserJoinGroupConversationDTO
-GroupConversationController --> UserJoinGroupConversationCommand
-UserJoinGroupConversationCommandHandler --> UserJoinGroupConversationCommand
-UserJoinGroupConversationCommandHandler --> Result
-UserJoinGroupConversationCommandHandler --> IUnitOfWork
-UserJoinGroupConversationCommandHandler --> IApplicationDbContext
+GroupConversationController --> DisbandGroupConversationDTO
+GroupConversationController --> DisbandGroupConversationCommand
+
+DisbandGroupConversationCommandHandler --> DisbandGroupConversationCommand
+DisbandGroupConversationCommandHandler --> Result
+DisbandGroupConversationCommandHandler --> IUnitOfWork
+DisbandGroupConversationCommandHandler --> IApplicationDbContext
+
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
 Result <|-- Error
 Result <|-- "Result<T>"
 Error -- GroupConversationError
+
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation
 ApplicationDbContext --> ConversationUser

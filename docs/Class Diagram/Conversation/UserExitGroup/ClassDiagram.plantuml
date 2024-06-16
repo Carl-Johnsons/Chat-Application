@@ -17,15 +17,15 @@ class GroupConversationController {
     +BlockUserGroupConversation(BlockUserGroupConversationDTO blockUserGroupConversationDTO): async Task<IActionResult>
 }
 
-class UserJoinGroupConversationCommand {
-    +UserJoinGroupConversationDTO: UserJoinGroupConversationDTO
+class UserExitGroupConversationCommand {
+    +UserExitGroupConversationDTO: UserExitGroupConversationDTO
     +CurrentUserID: Guid
 }
 
-class UserJoinGroupConversationCommandHandler {
+class UserExitGroupConversationCommandHandler {
     -_context: IApplicationDbContext
     -_unitOfWork: IUnitOfWork
-    +Handle(UserJoinGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
+    +Handle(UserExitGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
 }
 
 class IApplicationDbContext {
@@ -125,13 +125,13 @@ class Message {
 
 
 GroupConversationController --|> BaseApiController
-GroupConversationController --> UserJoinGroupConversationDTO
-GroupConversationController --> UserJoinGroupConversationCommand
+GroupConversationController --> UserExitGroupConversationDTO
+GroupConversationController --> UserExitGroupConversationCommand
 
-UserJoinGroupConversationCommandHandler --> UserJoinGroupConversationCommand
-UserJoinGroupConversationCommandHandler --> Result
-UserJoinGroupConversationCommandHandler --> IUnitOfWork
-UserJoinGroupConversationCommandHandler --> IApplicationDbContext
+UserExitGroupConversationCommandHandler --> UserExitGroupConversationCommand
+UserExitGroupConversationCommandHandler --> Result
+UserExitGroupConversationCommandHandler --> IUnitOfWork
+UserExitGroupConversationCommandHandler --> IApplicationDbContext
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
