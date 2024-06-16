@@ -1,67 +1,73 @@
 @startuml 
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class TagsController {
-    +async Task<IActionResult> GetAll()
+    +GetAll(): Task<IActionResult>
 }
 
 class GetAllTagsQuery {
 }
 
 class GetAllTagsQueryHandler {
-    -readonly IApplicationDbContext _context
-    +async Task<Result<List<Tag>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    +Handle(GetAllTagsQuery request, CancellationToken cancellationToken): Task<Result<List<Tag>>>
 }
 
 class IApplicationDbContext {
-    +DbSet<Tag> Tags
+    +Tags: DbSet<Tag>
 }
 
 class ApplicationDbContext {
-    +DbSet<Tag> Tags
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Tags: DbSet<Tag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class "Result<T>" {
-    +T Value
-    +static Result<T> Success(T value)
-    +static new Result<T?> Failure(Error error)
-    +static new Result<T?> Failure(IEnumerable<Error> errs)
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid 
 }
 
 class Tag {
-    +string Value
-    +string Code
+    +Value: string
+    +Code: string
 }
 
+'==== Get All Post ====
+'API Layer
 TagsController --|> BaseApiController
 TagsController --> GetAllTagsQuery
+'Application Layer
 GetAllTagsQueryHandler --> GetAllTagsQuery
 GetAllTagsQueryHandler --> Result
 GetAllTagsQueryHandler --> IApplicationDbContext
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- "Result<T>"
-ApplicationDbContext --> Tag
 Tag --|> BaseEntity
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Tag
 @enduml

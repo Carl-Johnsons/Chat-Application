@@ -1,136 +1,135 @@
 @startuml 
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class PostsController {
-    +async Task<IActionResult> GetAll()
+    +GetAll(): Task<IActionResult>
 }
 
 class GetAllPostsQuery {}
 
 class GetAllPostsQueryHandler {
-    -readonly IApplicationDbContext _context
-    +async Task<Result<List<PostDTO>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    +Handle(GetAllPostsQuery request, CancellationToken cancellationToken): Task<Result<List<PostDTO>>>
 }
 
 class IApplicationDbContext {
-    +DbSer<Post> Posts
-    +DbSet<Tag> Tags
-    +DbSet<PostTag> PostTags
-    +DbSet<Interaction> Interactions
-    +DbSet<PostInteract> PostInteracts
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
+    +Interactions: DbSet<Interaction>
+    +PostInteracts: DbSet<PostInteract>
 }
 
 class ApplicationDbContext {
-    +DbSer<Post> Posts
-    +DbSet<Tag> Tags
-    +DbSet<PostTag> PostTags
-    +DbSet<Interaction> Interactions
-    +DbSet<PostInteraction> PostInteracts
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
+    +Interactions: DbSet<Interaction>
+    +PostInteracts: DbSet<PostInteract>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class "Result<T>" {
-    +T Value
-    +static Result<T> Success(T value)
-    +static new Result<T?> Failure(Error error)
-    +static new Result<T?> Failure(IEnumerable<Error> errs)
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
 }
 
 class PostError {
-    +static Error NotFound
-    +static Error UserNotFound
-    +static Error AlreadyInteractedPost
-    +static Error NotInteractedPost
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
 }
 
 class PostDTO {
-    +Guid PostId
-    +string Content
-    +Guid UserId
-    +int InteractTotal 
-    +List<string> Interactions
-    +DateTime CreatedAt
-    +List<string> Tags
+    +PostId: Guid
+    +Content: string
+    +UserId: Guid
+    +InteractTotal: int
+    +Interactions: List<string>
+    +CreatedAt: DateTime
+    +Tags: List<string>
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid
 }
 
 class BaseAuditableEntity{
-    +DateTime CreatedAt
-    +DateTime UpdatedAt
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
 }
 
 class Tag {
-    +string Value
-    +string Code
+    +Value: string
+    +Code: string
 }
 
 class Post {
-    +string Content
-    +bool Active
-    +Guid UserId
+    +Content: string
+    +Active: bool
+    +UserId: Guid
 }
 
 class PostTag {
-    +Guid PostId
-    +Guid TagId 
-    +virtual Post Post
-    +virtual Tag Tag
+    +PostId: Guid
+    +TagId: Guid 
+    +Post: Post
+    +Tag: Tag
 }
 
 class Interaction {
-    +string Value
-    +string Code
-    +string Gif
+    +Value: string
+    +Code: string
+    +Gif: string
 }
 
 class PostInteract {
     +Guid PostId
     +Guid InteractionId
     +Guid UserId
-    +virtual Post Post
-    +virtual Interaction Interaction
+    +Post: Post
+    +Interaction: Interaction
 }
 
+'==== Get All Post ====
+'API Layer
 PostsController --|> BaseApiController
 PostsController --> GetAllPostsQuery
+'Application Layer
 GetAllPostsQueryHandler --> GetAllPostsQuery
 GetAllPostsQueryHandler --> Result
 GetAllPostsQueryHandler --> IApplicationDbContext
 GetAllPostsQueryHandler --> PostDTO
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
 Error -- PostError
-ApplicationDbContext --> Tag
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostTag
-ApplicationDbContext --> Interaction
-ApplicationDbContext --> PostInteract
 Tag --|> BaseEntity
 Interaction --|> BaseEntity
 Post --|> BaseAuditableEntity
@@ -139,4 +138,11 @@ PostTag --* Post
 PostTag --* Tag
 PostInteract --* Post
 PostInteract --* Interaction
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Tag
+ApplicationDbContext --> Post
+ApplicationDbContext --> PostTag
+ApplicationDbContext --> Interaction
+ApplicationDbContext --> PostInteract
 @enduml

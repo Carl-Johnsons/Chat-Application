@@ -1,101 +1,107 @@
 @startuml 
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class PostsController {
-    +async Task<IActionResult> GetReportPost([FromQuery] Guid id)
+    +GetReportPost(Guid id): Task<IActionResult>
 }
 
 class GetPostReportByPostIdQuery {
-    +Guid PostId
+    +PostId: Guid
 }
 
 class GetPostReportByPostIdQueryHandler {
-    -readonly IApplicationDbContext _context
-    +async Task<Result<List<PostReport>?>> Handle(GetPostReportByPostIdCommand request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    +Handle(GetPostReportByPostIdCommand request, CancellationToken cancellationToken): Task<Result<List<PostReport>?>> 
 }
 
 class IApplicationDbContext {
-    +DbSer<Post> Posts
-    +DbSet<PostReport> PostReports
+    +Posts: DbSer<Post> 
+    +PostReports: DbSet<PostReport>
 }
 
 class ApplicationDbContext {
-    +DbSer<Post> Posts
-    +DbSet<PostReport> PostReports
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Posts: DbSer<Post> 
+    +PostReports: DbSet<PostReport>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class "Result<T>" {
-    +T Value
-    +static Result<T> Success(T value)
-    +static new Result<T?> Failure(Error error)
-    +static new Result<T?> Failure(IEnumerable<Error> errs)
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error 
+    +{static} Result(Error err): implicit operator
 }
 
 class PostError {
-    +static Error NotFound
-    +static Error UserNotFound
-    +static Error AlreadyInteractedPost
-    +static Error NotInteractedPost
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid 
 }
 
 class BaseAuditableEntity{
-    +DateTime CreatedAt
-    +DateTime UpdatedAt
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime 
 }
 
 class Post {
-    +string Content
-    +bool Active
-    +Guid UserId
+    +Content: string
+    +Active: bool
+    +UserId: Guid
 }
 
 class PostReport {
-    +Guid PostId
-    +string Reason
-    +Guid UserId
-    +virtual Post Post
+    +PostId: Guid 
+    +Reason: string 
+    +UserId: Guid 
+    +Post: Post
 } 
 
+'==== Get Post Report By Post Id ====
+'API Layer
 PostsController --|> BaseApiController
 PostsController --> GetPostReportByPostIdQuery
+'Application Layer
 GetPostReportByPostIdQueryHandler --> GetPostReportByPostIdQuery
 GetPostReportByPostIdQueryHandler --> Result
 GetPostReportByPostIdQueryHandler --> IApplicationDbContext
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
 Error -- PostError
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostReport
 PostReport --|> BaseAuditableEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
 PostReport --* Post
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Post
+ApplicationDbContext --> PostReport
 @enduml

@@ -1,144 +1,137 @@
 @startuml 
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class PostsController {
-    +async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
+    +Create(CreatePostDTO createPostDTO): Task<IActionResult>
 }
 
 class UpdatePostCommand {
-    +string Content
-    +Guid PostId
-    +bool Active
+    +Content: string
+    +PostId: Guid
+    +Active: bool 
 }
 
 class UpdatePostCommandHandler {
-    -readonly IApplicationDbContext _context
-    -readonly IUnitOfWork _unitOfWork
-    +async Task<Result<Post>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(CreatePostCommand request, CancellationToken cancellationToken): Task<Result<Post>>
 }
 
 class DeletePostTagCommand {
-    +Guid PostId
+    +PostId: Guid 
 }
 
 class DeletePostTagCommandHandler {
-    -readonly IApplicationDbContext _context
-    -readonly IUnitOfWork _unitOfWork
-    async Task Handle(DeletePostTagCommand request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(DeletePostTagCommand request, CancellationToken cancellationToken) Task
 }
 
 class CreatePostTagCommand {
-    +Guid PostId
-    +Guid TagId
+    +PostId: Guid
+    +TagId: Guid
 }
 
 class CreatePostTagCommandHandler {
-    -readonly IApplicationDbContext _context
-    -readonly IUnitOfWork _unitOfWork
-    +async Task<Result> Handle(CreatePostTagCommand request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork 
+    +Handle(CreatePostTagCommand request, CancellationToken cancellationToken): Task<Result>
 }
 
 class IApplicationDbContext {
-    +DbSer<Post> Posts
-    +DbSet<Tag> Tags
-    +DbSet<PostTag> PostTags
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
 }
 
 class ApplicationDbContext {
-    +DbSer<Post> Posts
-    +DbSet<Tag> Tags
-    +DbSet<PostTag> PostTags
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error> 
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
-}
-
-class "Result<T>" {
-    +T Value
-    +static Result<T> Success(T value)
-    +static new Result<T?> Failure(Error error)
-    +static new Result<T?> Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
 }
 
 class IUnitOfWork {
-    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
 class UnitOfWork {
-    -readonly ApplicationDbContext _context
-    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
-class TagError {
-    +static Error NotFound
-    +static Error AlreadyExited
-}
 class PostError {
-    +static Error NotFound
-    +static Error UserNotFound
-    +static Error AlreadyInteractedPost
-    +static Error NotInteractedPost
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
 }
 
 class UpdatePostDTO {
-    +Guid Id
-    +string Content
-    +List<Guid> TagIds
-    +bool Active
+    +Id: Guid
+    +Content: string
+    +TagIds: List<Guid> 
+    +Active: bool
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid
 }
 
 class BaseAuditableEntity{
-    +DateTime CreatedAt
-    +DateTime UpdatedAt
+    +CreatedAt: DateTime 
+    +UpdatedAt: DateTime 
 }
 
 class Tag {
-    +string Value
-    +string Code
+    +Value: string 
+    +Code: string 
 }
 
 class Post {
-    +string Content
-    +bool Active
-    +Guid UserId
+    +Content: string
+    +Active: bool
+    +UserId: Guid 
 }
 
 class PostTag {
-    +Guid PostId
-    +Guid TagId 
-    +virtual Post Post
-    +virtual Tag Tag
+    +PostId: Guid
+    +TagId: Guid 
+    +Post: Post
+    +Tag: Tag
 }
 
+'==== Update Post ====
+'API Layer
 PostsController --|> BaseApiController
 PostsController --> UpdatePostCommand
 PostsController --> UpdatePostDTO
 PostsController --> DeletePostTagCommand
 PostsController --> CreatePostTagCommand
+'Application Layer
 UpdatePostCommandHandler --> UpdatePostCommand
 UpdatePostCommandHandler --> Result
 UpdatePostCommandHandler --> IUnitOfWork
@@ -151,18 +144,20 @@ CreatePostTagCommandHandler --> CreatePostTagCommand
 CreatePostTagCommandHandler --> Result
 CreatePostTagCommandHandler --> IUnitOfWork
 CreatePostTagCommandHandler --> IApplicationDbContext
-IUnitOfWork <|.. UnitOfWork
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
 Error -- TagError
 Error -- PostError
-ApplicationDbContext --> Tag
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostTag
 Tag --|> BaseEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
 PostTag --* Post
 PostTag --* Tag
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Tag
+ApplicationDbContext --> Post
+ApplicationDbContext --> PostTag
 @enduml

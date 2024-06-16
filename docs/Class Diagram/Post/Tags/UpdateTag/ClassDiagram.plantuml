@@ -2,90 +2,95 @@
 hide circle
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class TagsController {
-    +Task<IActionResult> Update(UpdateTagDTO updateTagDTO)
+    +Update(UpdateTagDTO updateTagDTO): Task<IActionResult> 
 }
 
 class UpdateTagCommand {
-    +Guid TagId
-    +string Value
+    +TagId: Guid 
+    +Value: string
 }
 
 class UpdateTagCommandHandler {
-    -readonly IApplicationDbContext _context
-    -readonly IUnitOfWork _unitOfWork
-    +async Task<Result> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(UpdateTagCommand request, CancellationToken cancellationToken): Task<Result>
 }
 
 class IApplicationDbContext {
-    +DbSet<Tag> Tags
+    +Tags: DbSet<Tag>
 }
 
 class ApplicationDbContext {
-    +DbSet<Tag> Tags
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Tags: DbSet<Tag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
 }
 
 class IUnitOfWork {
-    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
 class UnitOfWork {
-    -readonly ApplicationDbContext _context
-    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
 class TagError {
-    +static Error NotFound
-    +static Error AlreadyExited
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
 }
 
 class UpdateTagDTO {
-    +Guid Id
-    +string Value
+    +Id: Guid 
+    +Value: string 
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid 
 }
 
 class Tag {
-    +string Value
-    +string Code
+    +Value: string
+    +Code: string
 }
 
+'==== Update Post ====
+'API Layer
 TagsController --|> BaseApiController
 TagsController --> UpdateTagCommand
 TagsController --> UpdateTagDTO
+'Application Layer
 UpdateTagCommandHandler --> UpdateTagCommand
 UpdateTagCommandHandler --> Result
 UpdateTagCommandHandler --> IUnitOfWork
 UpdateTagCommandHandler --> IApplicationDbContext
-IUnitOfWork <|.. UnitOfWork
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
 Error -- TagError
-ApplicationDbContext --> Tag
 Tag --|> BaseEntity
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Tag
 @enduml
