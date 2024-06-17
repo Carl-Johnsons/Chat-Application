@@ -69,6 +69,13 @@ class Result {
     +{static} Failure(IEnumerable<Error> errs): Result
 }
 
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
 class Error {
     +{static} None: Error
     +{static} Result(Error err): implicit operator
@@ -88,6 +95,11 @@ class PostError {
     +{static} UserNotFound: Error
     +{static} AlreadyInteractedPost: Error
     +{static} NotInteractedPost: Error
+}
+
+class TagError {
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
 }
 
 class UpdatePostDTO {
