@@ -1,4 +1,4 @@
-@startuml 
+@startuml sendClientMessage
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -8,7 +8,6 @@ class BaseApiController {
 }
 
 class MessageController {
-    +GetByConversationId(GetByConversationIdDTO getByConversationIdDTO): async Task<IActionResult>
     +SendClientMessage(SendClientMessageDTO sendClientMessageDTO): async Task<IActionResult>
 }
 
@@ -149,12 +148,22 @@ class UploadFileEventResponseDTO{
     +Size: long 
     +Url: string
 }
+class GroupConversationError {
+    {static} +NotEnoughMember: Error
+    {static} +NotFound: Error
+}
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
 
 MessageController --|> BaseApiController
 MessageController --> SendClientMessageDTO
 MessageController --> SendClientMessageCommand
 
+SendClientMessageCommand ..|> "IRequest<TResponse>"
+SendClientMessageCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 SendClientMessageCommandHandler --> SendClientMessageCommand
 SendClientMessageCommandHandler --> ConversationError
 SendClientMessageCommandHandler --> ISignalRService
@@ -163,12 +172,13 @@ SendClientMessageCommandHandler --> UploadMultipleFileEventResponseDTO
 SendClientMessageCommandHandler --> Result
 SendClientMessageCommandHandler --> IUnitOfWork
 SendClientMessageCommandHandler --> IApplicationDbContext
+SendClientMessageCommandHandler --> GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <|-- Error
+Result <-- Error
 Result <|-- "Result<T>"
-Error -- GroupConversationError
+Error --> GroupConversationError
 
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation

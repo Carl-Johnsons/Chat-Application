@@ -1,4 +1,4 @@
-@startuml 
+@startuml GetMemberListByConversationId
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -8,11 +8,7 @@ class BaseApiController {
 }
 
 class ConversationController {
-    +GetAll(): async Task<IActionResult>
-    +GetById(GetConversationByIdDTO getConversationByIdDTO): async Task<IActionResult>
-    +GetConversationListByUserId(): async Task<IActionResult>
     +GetMemberListByConversationId(GetMemberListByConversationIdDTO getMemberListByConversationIdDTO): async Task<IActionResult>
-    +Delete(DeleteConversationDTO deleteConversationDTO): async Task<IActionResult>
 }
 
 class GetMemberListByConversationIdQuery{
@@ -113,19 +109,28 @@ class Message {
     +Conversation: Conversations
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 ConversationController --|> BaseApiController
 ConversationController --> GetMemberListByConversationIdQuery
 
 ConversationController --> GetMemberListByConversationIdDTO
 
+GetMemberListByConversationIdQuery ..|> "IRequest<TResponse>"
+GetMemberListByConversationIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetMemberListByConversationIdQueryHandler --> GetMemberListByConversationIdQuery
 GetMemberListByConversationIdQueryHandler --> ConversationUser
 GetMemberListByConversationIdQueryHandler --> Result
 GetMemberListByConversationIdQueryHandler --> IApplicationDbContext
+GetMemberListByConversationIdQueryHandler --> ConversationError
 
 IApplicationDbContext <|.. ApplicationDbContext
-Result <|-- Error
+Result <-- Error
 Result <|-- "Result<T>"
+ConversationError --> Error
 
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation

@@ -1,4 +1,4 @@
-@startuml 
+@startuml deleteConversation
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -8,10 +8,6 @@ class BaseApiController {
 }
 
 class ConversationController {
-    +GetAll(): async Task<IActionResult>
-    +GetById(GetConversationByIdDTO getConversationByIdDTO): async Task<IActionResult>
-    +GetConversationListByUserId(): async Task<IActionResult>
-    +GetMemberListByConversationId(GetMemberListByConversationIdDTO getMemberListByConversationIdDTO): async Task<IActionResult>
     +Delete(DeleteConversationDTO deleteConversationDTO): async Task<IActionResult>
 }
 
@@ -22,6 +18,7 @@ class DeleteConversationCommand{
 class DeleteConversationCommandHandler{
     -_context: IApplicationDbContext
     -_unitOfWork: IUnitOfWork
+    +Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken): Task<Result>
 }
 
 class IApplicationDbContext {
@@ -120,11 +117,18 @@ class Message {
     +Conversation: Conversations
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 ConversationController --|> BaseApiController
 ConversationController --> DeleteConversationCommand
 
 ConversationController --> DeleteConversationDTO
 
+DeleteConversationCommand ..|> "IRequest<TResponse>"
+DeleteConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 DeleteConversationCommandHandler --> DeleteConversationCommand
 DeleteConversationCommandHandler --> Result
 DeleteConversationCommandHandler --> IUnitOfWork

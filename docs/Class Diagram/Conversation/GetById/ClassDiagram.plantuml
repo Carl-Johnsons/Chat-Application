@@ -1,4 +1,4 @@
-@startuml 
+@startuml getConversationById
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -81,12 +81,19 @@ class ConversationUser {
     +Conversation: Conversation
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Get Conversation By Id ====
 'API Layer
 ConversationController --|> BaseApiController
 ConversationController --> GetConversationByIdQuery
 ConversationController --> GetConversationByIdDTO
 'Application Layer
+GetConversationByIdQuery ..|> "IRequest<TResponse>"
+GetConversationByIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetConversationByIdQueryHandler --> GetConversationByIdQuery
 GetConversationByIdQueryHandler --> Result
 GetConversationByIdQueryHandler --> IApplicationDbContext

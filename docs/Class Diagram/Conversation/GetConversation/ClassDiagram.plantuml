@@ -1,4 +1,4 @@
-@startuml 
+@startuml  getConversationListByUserId
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -8,11 +8,7 @@ class BaseApiController {
 }
 
 class ConversationController {
-    +GetAll(): async Task<IActionResult>
-    +GetById(GetConversationByIdDTO getConversationByIdDTO): async Task<IActionResult>
     +GetConversationListByUserId(): async Task<IActionResult>
-    +GetMemberListByConversationId(GetMemberListByConversationIdDTO getMemberListByConversationIdDTO): async Task<IActionResult>
-    +Delete(DeleteConversationDTO deleteConversationDTO): async Task<IActionResult>
 }
 
 class GetAllConversationsQuery{
@@ -162,15 +158,18 @@ ConversationController --> GetConversationByIdDTO
 GetAllConversationsQueryHandler --> GetAllConversationsQuery
 GetAllConversationsQueryHandler --> Result
 GetAllConversationsQueryHandler --> IApplicationDbContext
+GetAllConversationsQueryHandler --> ConversationError
 
 GetConversationByIdQueryHandler --> GetConversationByIdQuery
 GetConversationByIdQueryHandler --> Result
 GetConversationByIdQueryHandler --> IApplicationDbContext
+GetConversationByIdQueryHandler --> ConversationError
 
 GetConversationListByUserIdQueryHandler --> GetConversationListByUserIdQuery
 GetConversationListByUserIdQueryHandler --> Result
 GetConversationListByUserIdQueryHandler --> IApplicationDbContext
 GetConversationListByUserIdQueryHandler --> ConversationsResponseDTO
+GetConversationListByUserIdQueryHandler --> ConversationError
 
 ConversationsResponseDTO --> ConversationResponseDTO
 ConversationsResponseDTO --> GroupConversationResponseDTO
@@ -179,9 +178,9 @@ ConversationResponseDTO --> ConversationUserResponseDTO
 GroupConversationResponseDTO --|> ConversationResponseDTO
 
 IApplicationDbContext <|.. ApplicationDbContext
-Result <|-- Error
+Result <-- Error
 Result <|-- "Result<T>"
-Error -- ConversationError
+Error --> ConversationError
 
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation
