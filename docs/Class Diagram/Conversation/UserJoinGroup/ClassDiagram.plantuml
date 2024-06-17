@@ -1,4 +1,4 @@
-@startuml 
+@startuml userJoinGroup
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -8,13 +8,7 @@ class BaseApiController {
 }
 
 class GroupConversationController {
-    +CreateGroupConversation(CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
-    +UpdateGroupConversation(UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
-    +DisbandGroupConversation(DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
     +UserJoinGroupConversation(UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
-    +UserExitGroupConversation(UserExitGroupConversationDTO userExitGroupConversationDTO): async Task<IActionResult>
-    +AddUserGroupConversation(AddUserGroupConversationDTO addUserGroupConversationDTO): async Task<IActionResult>
-    +BlockUserGroupConversation(BlockUserGroupConversationDTO blockUserGroupConversationDTO): async Task<IActionResult>
 }
 
 class UserJoinGroupConversationCommand {
@@ -123,21 +117,28 @@ class Message {
     +Conversation: Conversations
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
 
 GroupConversationController --|> BaseApiController
 GroupConversationController --> UserJoinGroupConversationDTO
 GroupConversationController --> UserJoinGroupConversationCommand
 
+UserJoinGroupConversationCommand ..|> "IRequest<TResponse>"
+UserJoinGroupConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 UserJoinGroupConversationCommandHandler --> UserJoinGroupConversationCommand
 UserJoinGroupConversationCommandHandler --> Result
 UserJoinGroupConversationCommandHandler --> IUnitOfWork
 UserJoinGroupConversationCommandHandler --> IApplicationDbContext
+UserJoinGroupConversationCommandHandler --> GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <|-- Error
+Result <-- Error
 Result <|-- "Result<T>"
-Error -- GroupConversationError
+Error --> GroupConversationError
 
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation

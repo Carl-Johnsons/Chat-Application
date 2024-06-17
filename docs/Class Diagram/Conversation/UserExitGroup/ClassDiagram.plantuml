@@ -1,4 +1,4 @@
-@startuml 
+@startuml userExitGroup
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -8,24 +8,21 @@ class BaseApiController {
 }
 
 class GroupConversationController {
-    +CreateGroupConversation(CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
-    +UpdateGroupConversation(UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
-    +DisbandGroupConversation(DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
-    +UserJoinGroupConversation(UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
     +UserExitGroupConversation(UserExitGroupConversationDTO userExitGroupConversationDTO): async Task<IActionResult>
-    +AddUserGroupConversation(AddUserGroupConversationDTO addUserGroupConversationDTO): async Task<IActionResult>
-    +BlockUserGroupConversation(BlockUserGroupConversationDTO blockUserGroupConversationDTO): async Task<IActionResult>
 }
 
 class UserExitGroupConversationCommand {
     +UserExitGroupConversationDTO: UserExitGroupConversationDTO
     +CurrentUserID: Guid
 }
+class UserExitGroupConversationDTO{
+    +GroupId:Guid
+}
 
 class UserExitGroupConversationCommandHandler {
     -_context: IApplicationDbContext
     -_unitOfWork: IUnitOfWork
-    +Handle(UserExitGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
+    +Handle(UserExitGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result>
 }
 
 class IApplicationDbContext {
@@ -123,21 +120,28 @@ class Message {
     +Conversation: Conversations
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
 
 GroupConversationController --|> BaseApiController
 GroupConversationController --> UserExitGroupConversationDTO
 GroupConversationController --> UserExitGroupConversationCommand
 
+UserExitGroupConversationCommand ..|> "IRequest<TResponse>"
+UserExitGroupConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 UserExitGroupConversationCommandHandler --> UserExitGroupConversationCommand
 UserExitGroupConversationCommandHandler --> Result
 UserExitGroupConversationCommandHandler --> IUnitOfWork
 UserExitGroupConversationCommandHandler --> IApplicationDbContext
+UserExitGroupConversationCommandHandler --> GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <|-- Error
+Result <-- Error
 Result <|-- "Result<T>"
-Error -- GroupConversationError
+Error --> GroupConversationError
 
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation

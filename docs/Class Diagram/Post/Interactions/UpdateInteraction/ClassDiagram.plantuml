@@ -1,96 +1,109 @@
-@startuml 
+@startuml updateInteraction
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class InteractionsController {
-    +async Task<IActionResult> Update([FromBody] UpdateInteractionDTO updateInteractionDTO)
+    +Update(UpdateInteractionDTO updateInteractionDTO): Task<IActionResult>
 }
 
 class UpdateInteractionCommand {
-    +Guid Id
-    +string Value
-    +string Gif
-    +string Code
+    +Id: Guid
+    +Value: string
+    +Gif: string
+    +Code: string
 }
 
 class UpdateInteractionCommandHandler {
-    -readonly IApplicationDbContext _context
-    -readonly IUnitOfWork _unitOfWork
-    +async Task<Result> Handle(UpdateInteractionCommand request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(UpdateInteractionCommand request, CancellationToken cancellationToken): Task<Result>
 }
 
 class IApplicationDbContext {
-    +DbSet<Interaction> Interactions
+    +Interactions: DbSet<Interaction>
 }
 
 class ApplicationDbContext {
-    +DbSet<Interaction> Interactions
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Interactions: DbSet<Interaction>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void 
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
 }
 
 class IUnitOfWork {
-    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
 class UnitOfWork {
-    -readonly ApplicationDbContext _context
-    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
 class InteractionError {
-    +static Error NotFound
-    +static Error AlreadyExited
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
 }
 
 class UpdateInteractionDTO {
-    +Guid Id
-    +string Value
-    +string Gif
-    +string Code
+    +Id: Guid
+    +Value: string
+    +Gif: string
+    +Code: string
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid
 }
 
 class Interaction {
-    +string Value
-    +string Code
-    +string Gif
+    +Value: string
+    +Code: string
+    +Gif: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Update Interaction ====
+'API Layer
 InteractionsController --|> BaseApiController
 InteractionsController --> UpdateInteractionCommand
 InteractionsController --> UpdateInteractionDTO
+'Application Layer
+UpdateInteractionCommand ..|> "IRequest<TResponse>"
+UpdateInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 UpdateInteractionCommandHandler --> UpdateInteractionCommand
 UpdateInteractionCommandHandler --> Result
 UpdateInteractionCommandHandler --> IUnitOfWork
 UpdateInteractionCommandHandler --> IApplicationDbContext
-IUnitOfWork <|.. UnitOfWork
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
 Error -- InteractionError
-ApplicationDbContext --> Interaction
 Interaction --|> BaseEntity
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Interaction
 @enduml

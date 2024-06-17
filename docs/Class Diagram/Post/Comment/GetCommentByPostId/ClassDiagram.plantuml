@@ -1,110 +1,122 @@
-@startuml 
+@startuml GetCommentByPostId
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class CommentsController {
-    +async Task<IActionResult> GetByPostId([FromQuery]Guid postId)
+    +GetByPostId(Guid postId): Task<IActionResult>
 }
 
 class GetCommentByPostIdQuery {
-    +Guid PostId
+    +PostId: Guid
 }
 
 class GetCommentByPostIdQueryHandler {
-    -readonly IApplicationDbContext _context
-    +async Task<Result<List<PostComment>?>> Handle(GetCommentByPostIdQuery request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    +Handle(GetCommentByPostIdQuery request, CancellationToken cancellationToken): Task<Result<List<PostComment>?>>
 }
 
 class IApplicationDbContext {
-    +DbSet<Comment> Comments
-    +DbSet<Post> Posts
-    +DbSet<PostComment> PostComments
+    +Comments: DbSet<Comment> 
+    +Posts: DbSet<Post> 
+    +PostComments: DbSet<PostComment> 
 }
 
 class ApplicationDbContext {
-    +DbSet<Comment> Comments
-    +DbSet<Post> Posts
-    +DbSet<PostComment> PostComments
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Comments: DbSet<Comment> 
+    +Posts: DbSet<Post> 
+    +PostComments: DbSet<PostComment>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error> 
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class "Result<T>" {
-    +T Value
-    +static Result<T> Success(T value)
-    +static new Result<T?> Failure(Error error)
-    +static new Result<T?> Failure(IEnumerable<Error> errs)
+    +Value: T
+    +{static} Success(T value): Result<T> 
+    +{static} Failure(Error error): Result<T?> 
+    +{static} Failure(IEnumerable<Error> errs): Result<T?> 
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
 }
 
 class PostError {
-    +static Error NotFound
-    +static Error UserNotFound
-    +static Error AlreadyInteractedPost
-    +static Error NotInteractedPost
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid
 }
 
 class BaseAuditableEntity{
-    +DateTime CreatedAt
-    +DateTime UpdatedAt
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
 }
 
 class Comment {
-    +string Comment
-    +Guid UserId
+    +Comment: string
+    +UserId: Guid
 }
 
 class PostComment {
-    +Guid PostId
-    +Guid CommentId
-    +virtual Post Post
-    +virtual Comment Comment
+    +PostId: Guid
+    +CommentId: Guid
+    +Post: Post
+    +Comment: Comment
 }
 
 class Post {
-    +string Content
-    +bool Active
-    +Guid UserId
+    +Content: string
+    +Active: bool 
+    +UserId: Guid
+}
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
 }
 
+'==== Get Comment By Post Id ====
+'API Layer
 CommentsController --|> BaseApiController
 CommentsController --> GetCommentByPostIdQuery
+'Application Layer
+GetCommentByPostIdQuery ..|> "IRequest<TResponse>"
+GetCommentByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetCommentByPostIdQueryHandler --> GetCommentByPostIdQuery
 GetCommentByPostIdQueryHandler --> Result
 GetCommentByPostIdQueryHandler --> IApplicationDbContext
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
 Error -- PostError
-ApplicationDbContext --> Comment
-ApplicationDbContext --> PostComment
-ApplicationDbContext --> Post
 Comment --|> BaseAuditableEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
 PostComment --* Post
 PostComment --* Comment
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> Comment
+ApplicationDbContext --> PostComment
+ApplicationDbContext --> Post
 @enduml

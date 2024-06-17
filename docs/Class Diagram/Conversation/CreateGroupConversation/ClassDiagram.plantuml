@@ -1,4 +1,4 @@
-@startuml 
+@startuml createGroupConversation
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -9,12 +9,6 @@ class BaseApiController {
 
 class GroupConversationController {
     +CreateGroupConversation(CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
-    +UpdateGroupConversation(UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
-    +DisbandGroupConversation(DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
-    +UserJoinGroupConversation(UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
-    +UserExitGroupConversation(UserExitGroupConversationDTO userExitGroupConversationDTO): async Task<IActionResult>
-    +AddUserGroupConversation(AddUserGroupConversationDTO addUserGroupConversationDTO): async Task<IActionResult>
-    +BlockUserGroupConversation(BlockUserGroupConversationDTO blockUserGroupConversationDTO): async Task<IActionResult>
 }
 
 class CreateGroupConversationCommand {
@@ -125,9 +119,6 @@ class Message {
     +Conversation: Conversations
 }
 
-
-
-
 GroupConversationController --|> BaseApiController
 GroupConversationController --> CreateGroupConversationDTO
 GroupConversationController --> CreateGroupConversationCommand
@@ -135,11 +126,14 @@ CreateGroupConversationCommandHandler --> CreateGroupConversationCommand
 CreateGroupConversationCommandHandler --> Result
 CreateGroupConversationCommandHandler --> IUnitOfWork
 CreateGroupConversationCommandHandler --> IApplicationDbContext
+CreateGroupConversationCommandHandler --> GroupConversationError
+
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <|-- Error
+
+Result <-- Error
 Result <|-- "Result<T>"
-Error -- GroupConversationError
+Error --> GroupConversationError
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation
 ApplicationDbContext --> ConversationUser

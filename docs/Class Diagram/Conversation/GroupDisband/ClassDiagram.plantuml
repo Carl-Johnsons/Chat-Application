@@ -1,4 +1,4 @@
-@startuml 
+@startuml groupDisband
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -8,18 +8,16 @@ class BaseApiController {
 }
 
 class GroupConversationController {
-    +CreateGroupConversation(CreateGroupConversationDTO createGroupConversationDTO): async Task<IActionResult>
-    +UpdateGroupConversation(UpdateGroupConversationDTO updateGroupConversationDTO): async Task<IActionResult>
     +DisbandGroupConversation(DisbandGroupConversationDTO disbandGroupConversationDTO): async Task<IActionResult>
-    +UserJoinGroupConversation(UserJoinGroupConversationDTO userJoinGroupConversationDTO): async Task<IActionResult>
-    +UserExitGroupConversation(UserExitGroupConversationDTO userExitGroupConversationDTO): async Task<IActionResult>
-    +AddUserGroupConversation(AddUserGroupConversationDTO addUserGroupConversationDTO): async Task<IActionResult>
-    +BlockUserGroupConversation(BlockUserGroupConversationDTO blockUserGroupConversationDTO): async Task<IActionResult>
 }
 
 class DisbandGroupConversationCommand {
     +disbandGroupConversationDTO: DisbandGroupConversationDTO
     +CurrentUserID: Guid
+}
+
+class DisbandGroupConversationDTO{
+    + GroupId: Guid    
 }
 
 class DisbandGroupConversationCommandHandler {
@@ -123,21 +121,28 @@ class Message {
     +Conversation: Conversations
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
 
 GroupConversationController --|> BaseApiController
 GroupConversationController --> DisbandGroupConversationDTO
 GroupConversationController --> DisbandGroupConversationCommand
 
+DisbandGroupConversationCommand ..|> "IRequest<TResponse>"
+DisbandGroupConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 DisbandGroupConversationCommandHandler --> DisbandGroupConversationCommand
 DisbandGroupConversationCommandHandler --> Result
 DisbandGroupConversationCommandHandler --> IUnitOfWork
 DisbandGroupConversationCommandHandler --> IApplicationDbContext
+DisbandGroupConversationCommandHandler --> GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <|-- Error
+Result <-- Error
 Result <|-- "Result<T>"
-Error -- GroupConversationError
+Error --> GroupConversationError
 
 ApplicationDbContext --> Conversation
 ApplicationDbContext --> GroupConversation

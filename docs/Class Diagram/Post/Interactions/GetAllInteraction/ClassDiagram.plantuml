@@ -1,68 +1,81 @@
-@startuml 
+@startuml GetAllInteractions
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class InteractionsController {
-    +async Task<IActionResult> GetAll()
+    +GetAll(): Task<IActionResult>
 }
 
 class GetAllInteractionsQuery {
 }
 
 class GetAllInteractionsQueryHandler {
-    -readonly IApplicationDbContext _context
-    +async Task<Result<List<Interaction>>> Handle(GetAllInteractionsQuery request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    +Handle(GetAllInteractionsQuery request, CancellationToken cancellationToken): Task<Result<List<Interaction>>>
 }
 
 class IApplicationDbContext {
-    +DbSet<Interaction> Interactions
+    +Interactions: DbSet<Interaction>
 }
 
 class ApplicationDbContext {
-    +DbSet<Interaction> Interactions
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Interactions: DbSet<Interaction>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result 
+    +{static} Failure(IEnumerable<Error> errs): Result 
 }
 
 class "Result<T>" {
-    +T Value
-    +static Result<T> Success(T value)
-    +static new Result<T?> Failure(Error error)
-    +static new Result<T?> Failure(IEnumerable<Error> errs)
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid
 }
 
 class Interaction {
-    +string Value
-    +string Code
-    +string Gif
+    +Value: string
+    +Code: string
+    +Gif: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Delete Interaction ====
+'API Layer
 InteractionsController --|> BaseApiController
 InteractionsController --> GetAllInteractionsQuery
+'Application Layer
+GetAllInteractionsQuery ..|> "IRequest<TResponse>"
+GetAllInteractionsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetAllInteractionsQueryHandler --> GetAllInteractionsQuery
 GetAllInteractionsQueryHandler --> Result
 GetAllInteractionsQueryHandler --> IApplicationDbContext
+'Domain Layer
 Result <|-- "Result<T>"
+Interaction --|> BaseEntity
+'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
 ApplicationDbContext --> Interaction
-Interaction --|> BaseEntity
 @enduml

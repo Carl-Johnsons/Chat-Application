@@ -1,81 +1,104 @@
-@startuml 
+@startuml getAllConversation
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor 
 }
 
 class ConversationController {
-    +async Task<IActionResult> GetAll()
+    +GetAll(): Task<IActionResult>
 }
 
 class GetAllConversationsQuery {}
 
 class GetAllConversationsQueryHandler {
-    -readonly IApplicationDbContext _context
-    +async Task<Result<List<Conversation>>> Handle(GetAllConversationsQuery request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext
+    +Handle(GetAllConversationsQuery request, CancellationToken cancellationToken): Task<Result<List<Conversation>>>
 }
 
 class IApplicationDbContext {
-    +DbSet<Conversation> Conversations
+    +Conversations: DbSet<Conversation>
+    +ConversationUsers: DbSet<ConversationUser>
 }
 
 class ApplicationDbContext {
-    +DbSet<Conversation> Conversations
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Conversations: DbSet<Conversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid
 }
 
 class BaseAuditableEntity{
-    +DateTime CreatedAt
-    +DateTime UpdatedAt
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
 }
 
 class Conversation {
-    +string Type
-    +virtual List<ConversationUser> Users
+    +Type: string
+    +Users: List<ConversationUser>
 }
 
 class ConversationUser {
-    +Guid ConversationId
-    +Guid UserId
-    +string Role 
-    +DateTime? ReadTime
-    +virtual Conversation Conversation
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string 
+    +ReadTime: DateTime?
+    +Conversation: Conversation
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Get All Conversation ====
+'API Layer
 ConversationController --|> BaseApiController
 ConversationController --> GetAllConversationsQuery
+'Application Layer
+GetAllConversationsQuery ..|> "IRequest<TResponse>"
+GetAllConversationsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetAllConversationsQueryHandler --> GetAllConversationsQuery
 GetAllConversationsQueryHandler --> Result
 GetAllConversationsQueryHandler --> IApplicationDbContext
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Conversation
+Result <|-- "Result<T>"
 ConversationUser --|> BaseEntity
 Conversation --|> BaseAuditableEntity
 Conversation *-- ConversationUser
 BaseAuditableEntity --|>BaseEntity
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Conversation
 @enduml

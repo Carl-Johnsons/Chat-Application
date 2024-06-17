@@ -1,113 +1,126 @@
-@startuml 
+@startuml createReportPost
 hide circle
+skinparam classAttributeIconSize 0
 
 class BaseApiController {
-    #ISender _sender
-    #HttpContextAccessor _httpContextAccessor
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
 }
 
 class PostsController {
-    +async Task<IActionResult> CreateReportPost([FromBody]CreatePostReportDTO createPostReport)
+    +CreateReportPost(CreatePostReportDTO createPostReport): Task<IActionResult>
 }
 
 class CreatePostReportCommand {
-    +Guid PostId
-    +Guid UserId
-    +string Reason
+    +PostId: Guid
+    +UserId: Guid
+    +Reason: string
 }
 
 class CreatePostReportCommandHandler {
-    -readonly IApplicationDbContext _context
-    -readonly IUnitOfWork _unitOfWork
-    +async Task<Result> Handle(CreatePostReportCommand request, CancellationToken cancellationToken)
+    -_context: IApplicationDbContext 
+    -_unitOfWork: IUnitOfWork
+    +Handle(CreatePostReportCommand request, CancellationToken cancellationToken): Task<Result> 
 }
 
 class IApplicationDbContext {
-    +DbSet<Post> Posts
-    +DbSet<PostReport> PostReports
+    +Posts: DbSet<Post> 
+    +PostReports: DbSet<PostReport>
 }
 
 class ApplicationDbContext {
-    +DbSet<Post> Posts
-    +DbSet<PostReport> PostReports
-    #override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    +Posts: DbSet<Post>
+    +PostReports: DbSet<PostReport>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
 }
 
 class Result {
-    +bool IsFailure
-    +bool IsSuccess
-    +IEnumerable<Error> Errors
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
     #Result(bool isSuccess, IEnumerable<Error> errors)
     #Result(bool isSuccess, Error error)
-    +void ThrowIfFailure()
-    +static Result Success()
-    +static Result Failure(Error err)
-    +static Result Failure(IEnumerable<Error> errs)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
 }
 
 class Error {
-    +static readonly Error None
-    +static implicit operator Result(Error err)
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
 }
 
 class IUnitOfWork {
-    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
 class UnitOfWork {
-    -readonly ApplicationDbContext _context
-    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
 }
 
 class PostError {
-    +static Error NotFound
-    +static Error UserNotFound
-    +static Error AlreadyInteractedPost
-    +static Error NotInteractedPost
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
 }
 
 class CreatePostReportDTO {
-    +Guid PostId
-    +string Reason
+    +PostId: Guid
+    +Reason: string
 }
 
 class BaseEntity {
-    +Guid Id
+    +Id: Guid 
 }
 
 class BaseAuditableEntity{
-    +DateTime CreatedAt
-    +DateTime UpdatedAt
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
 }
 
 class Post {
-    +string Content
-    +bool Active
-    +Guid UserId
+    +Content: string
+    +Active: bool
+    +UserId: Guid
 }
 
 class PostReport {
-    +Guid PostId
-    +string Reason
-    +Guid UserId
-    +virtual Post Post
+    +PostId: Guid
+    +Reason: string
+    +UserId: Guid
+    +Post: Post
 } 
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Create PostInteract ====
+'API Layer
 PostsController --|> BaseApiController
 PostsController --> CreatePostReportCommand
 PostsController --> CreatePostReportDTO
+'Application Layer
+CreatePostReportCommand ..|> "IRequest<TResponse>"
+CreatePostReportCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreatePostReportCommandHandler --> CreatePostReportCommand
 CreatePostReportCommandHandler --> Result
 CreatePostReportCommandHandler --> IUnitOfWork
 CreatePostReportCommandHandler --> IApplicationDbContext
-IUnitOfWork <|.. UnitOfWork
-IApplicationDbContext <|.. ApplicationDbContext
+'Domain Layer
 Result <|-- Error
 Error -- PostError
-ApplicationDbContext --> PostReport
-ApplicationDbContext --> Post
 PostReport --|> BaseAuditableEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
 PostReport --* Post
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext --> PostReport
+ApplicationDbContext --> Post
 @enduml
