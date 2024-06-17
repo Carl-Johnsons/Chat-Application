@@ -1,4 +1,4 @@
-@startuml 
+@startuml createInteraction
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -79,12 +79,19 @@ class Interaction {
     +Gif: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Create Interaction ====
 'API Layer
 InteractionsController --|> BaseApiController
 InteractionsController --> CreateInteractionCommand
 InteractionsController --> CreateInteractionDTO
 'Application Layer
+CreateInteractionCommand ..|> "IRequest<TResponse>"
+CreateInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreateInteractionCommandHandler --> CreateInteractionCommand
 CreateInteractionCommandHandler --> Result
 CreateInteractionCommandHandler --> IUnitOfWork

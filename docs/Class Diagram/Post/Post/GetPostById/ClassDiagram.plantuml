@@ -1,4 +1,4 @@
-@startuml 
+@startuml getPostById
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -119,11 +119,18 @@ class PostInteract {
     +Interaction: Interaction
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Get Post By User Id====
 'API Layer
 PostsController --|> BaseApiController
 PostsController --> GetPostByIdQuery
 'Application Layer
+GetPostByIdQuery ..|> "IRequest<TResponse>"
+GetPostByIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetPostByIdQueryHandler --> GetPostByIdQuery
 GetPostByIdQueryHandler --> Result
 GetPostByIdQueryHandler --> IApplicationDbContext

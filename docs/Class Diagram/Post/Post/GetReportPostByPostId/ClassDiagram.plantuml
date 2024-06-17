@@ -1,4 +1,4 @@
-@startuml 
+@startuml getReportPostByPostId
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -84,11 +84,18 @@ class PostReport {
     +Post: Post
 } 
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Get Post Report By Post Id ====
 'API Layer
 PostsController --|> BaseApiController
 PostsController --> GetPostReportByPostIdQuery
 'Application Layer
+GetPostReportByPostIdQuery ..|> "IRequest<TResponse>"
+GetPostReportByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetPostReportByPostIdQueryHandler --> GetPostReportByPostIdQuery
 GetPostReportByPostIdQueryHandler --> Result
 GetPostReportByPostIdQueryHandler --> IApplicationDbContext

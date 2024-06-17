@@ -1,4 +1,4 @@
-@startuml 
+@startuml getAllTag
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -56,11 +56,18 @@ class Tag {
     +Code: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Get All Post ====
 'API Layer
 TagsController --|> BaseApiController
 TagsController --> GetAllTagsQuery
 'Application Layer
+GetAllTagsQuery ..|> "IRequest<TResponse>"
+GetAllTagsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetAllTagsQueryHandler --> GetAllTagsQuery
 GetAllTagsQueryHandler --> Result
 GetAllTagsQueryHandler --> IApplicationDbContext

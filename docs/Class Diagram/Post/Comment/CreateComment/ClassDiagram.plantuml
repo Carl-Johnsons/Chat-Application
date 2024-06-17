@@ -1,4 +1,4 @@
-@startuml 
+@startuml createComment
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -100,16 +100,24 @@ class Post {
     +Active: bool
     +UserId: Guid
 }
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 ' ==== Create Comment ====
 'API Layer
 CommentsController --|> BaseApiController
 CommentsController --> CreateCommentCommand
 CommentsController --> CreateCommentDTO
 'Application Layer
+CreateCommentCommand ..|> "IRequest<TResponse>"
 CreateCommentCommandHandler --> CreateCommentCommand
 CreateCommentCommandHandler --> Result
 CreateCommentCommandHandler --> IUnitOfWork
 CreateCommentCommandHandler --> IApplicationDbContext
+CreateCommentCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 'Domain Layer
 Result <|-- Error
 Error -- PostError

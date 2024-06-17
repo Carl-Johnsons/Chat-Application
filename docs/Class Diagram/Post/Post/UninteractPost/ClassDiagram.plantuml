@@ -1,4 +1,4 @@
-@startuml 
+@startuml uninteractPost
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -99,12 +99,19 @@ class PostInteract {
     +Interaction: Interaction
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Uninteraction Post ====
 'API Layer
 PostsController --|> BaseApiController
 PostsController --> UninteractionPostCommand
 PostsController --> UninteractionPostDTO
 'Application Layer
+UninteractionPostCommand ..|> "IRequest<TResponse>"
+UninteractionPostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 UninteractionPostCommandHandler --> UninteractionPostCommand
 UninteractionPostCommandHandler --> Result
 UninteractionPostCommandHandler --> IUnitOfWork
