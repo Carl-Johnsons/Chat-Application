@@ -1,4 +1,4 @@
-@startuml 
+@startuml updateInteraction
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -81,12 +81,19 @@ class Interaction {
     +Gif: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Update Interaction ====
 'API Layer
 InteractionsController --|> BaseApiController
 InteractionsController --> UpdateInteractionCommand
 InteractionsController --> UpdateInteractionDTO
 'Application Layer
+UpdateInteractionCommand ..|> "IRequest<TResponse>"
+UpdateInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 UpdateInteractionCommandHandler --> UpdateInteractionCommand
 UpdateInteractionCommandHandler --> Result
 UpdateInteractionCommandHandler --> IUnitOfWork

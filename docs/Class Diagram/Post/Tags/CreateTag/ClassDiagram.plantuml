@@ -1,4 +1,4 @@
-@startuml 
+@startuml createTag
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -74,12 +74,19 @@ class Tag {
     +Code: string 
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Create Tag Post ====
 'API Layer
 TagsController --|> BaseApiController
 TagsController --> CreateTagCommand
 TagsController --> CreateTagDTO
 'Application Layer
+CreateTagCommand ..|> "IRequest<TResponse>"
+CreateTagCommandHandler ..|>  "IRequestHandler<TRequest, TResponse>"
 CreateTagCommandHandler --> CreateTagCommand
 CreateTagCommandHandler --> Result
 CreateTagCommandHandler --> IUnitOfWork

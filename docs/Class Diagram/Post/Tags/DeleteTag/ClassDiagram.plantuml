@@ -1,4 +1,4 @@
-@startuml 
+@startuml deleteTag
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -74,12 +74,19 @@ class Tag {
     +Code: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Delete Tag Post ====
 'API Layer
 TagsController --|> BaseApiController
 TagsController --> DeleteTagCommand
 TagsController --> DeleteTagDTO
 'Application Layer
+DeleteTagCommand ..|> "IRequest<TResponse>"
+DeleteTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 DeleteTagCommandHandler --> DeleteTagCommand
 DeleteTagCommandHandler --> Result
 DeleteTagCommandHandler --> IUnitOfWork

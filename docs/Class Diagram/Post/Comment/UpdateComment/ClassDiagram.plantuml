@@ -1,4 +1,4 @@
-@startuml 
+@startuml updateComment
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -104,12 +104,19 @@ class Post {
     +UserId: Guid
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Update Comment ====
 'API Layer
 CommentsController --|> BaseApiController
 CommentsController --> UpdateCommentCommand
 CommentsController --> UpdateCommentDTO
 'Application Layer
+UpdateCommentCommand ..|> "IRequest<TResponse>"
+UpdateCommentCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 UpdateCommentCommandHandler --> UpdateCommentCommand
 UpdateCommentCommandHandler --> Result
 UpdateCommentCommandHandler --> IUnitOfWork

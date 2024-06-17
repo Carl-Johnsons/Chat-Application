@@ -1,4 +1,4 @@
-@startuml 
+@startuml GetCommentByPostId
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -90,11 +90,18 @@ class Post {
     +Active: bool 
     +UserId: Guid
 }
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Get Comment By Post Id ====
 'API Layer
 CommentsController --|> BaseApiController
 CommentsController --> GetCommentByPostIdQuery
 'Application Layer
+GetCommentByPostIdQuery ..|> "IRequest<TResponse>"
+GetCommentByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
 GetCommentByPostIdQueryHandler --> GetCommentByPostIdQuery
 GetCommentByPostIdQueryHandler --> Result
 GetCommentByPostIdQueryHandler --> IApplicationDbContext

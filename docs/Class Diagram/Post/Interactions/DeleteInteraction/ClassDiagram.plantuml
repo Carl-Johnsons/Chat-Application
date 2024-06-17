@@ -1,4 +1,4 @@
-@startuml 
+@startuml deleteInteraction
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -75,12 +75,19 @@ class Interaction {
     +Gif: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Delete Interaction ====
 'API Layer
 InteractionsController --|> BaseApiController
 InteractionsController --> DeleteInteractionCommand
 InteractionsController --> DeleteInteractionDTO
 'Application Layer
+DeleteInteractionCommand ..|> "IRequest<TResponse>"
+DeleteInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 DeleteInteractionCommandHandler --> DeleteInteractionCommand
 DeleteInteractionCommandHandler --> Result
 DeleteInteractionCommandHandler --> IUnitOfWork

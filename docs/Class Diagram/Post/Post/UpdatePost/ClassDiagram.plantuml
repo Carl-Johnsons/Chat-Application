@@ -1,4 +1,4 @@
-@startuml 
+@startuml updatePost
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -124,6 +124,11 @@ class PostTag {
     +Tag: Tag
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Update Post ====
 'API Layer
 PostsController --|> BaseApiController
@@ -132,6 +137,13 @@ PostsController --> UpdatePostDTO
 PostsController --> DeletePostTagCommand
 PostsController --> CreatePostTagCommand
 'Application Layer
+UpdatePostCommand ..|> "IRequest<TResponse>"
+UpdatePostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+DeletePostTagCommand ..|> "IRequest<TResponse>"
+DeletePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+CreatePostTagCommand ..|> "IRequest<TResponse>"
+CreatePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+
 UpdatePostCommandHandler --> UpdatePostCommand
 UpdatePostCommandHandler --> Result
 UpdatePostCommandHandler --> IUnitOfWork

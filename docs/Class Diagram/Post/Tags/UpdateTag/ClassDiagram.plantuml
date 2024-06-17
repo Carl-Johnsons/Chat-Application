@@ -1,4 +1,4 @@
-@startuml 
+@startuml updateTag
 hide circle
 
 class BaseApiController {
@@ -75,12 +75,19 @@ class Tag {
     +Code: string
 }
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Update Post ====
 'API Layer
 TagsController --|> BaseApiController
 TagsController --> UpdateTagCommand
 TagsController --> UpdateTagDTO
 'Application Layer
+UpdateTagCommand ..|> "IRequest<TResponse>"
+UpdateTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 UpdateTagCommandHandler --> UpdateTagCommand
 UpdateTagCommandHandler --> Result
 UpdateTagCommandHandler --> IUnitOfWork

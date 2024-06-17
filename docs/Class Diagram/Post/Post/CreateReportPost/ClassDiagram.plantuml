@@ -1,4 +1,4 @@
-@startuml 
+@startuml createReportPost
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -94,12 +94,19 @@ class PostReport {
     +Post: Post
 } 
 
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
 '==== Create PostInteract ====
 'API Layer
 PostsController --|> BaseApiController
 PostsController --> CreatePostReportCommand
 PostsController --> CreatePostReportDTO
 'Application Layer
+CreatePostReportCommand ..|> "IRequest<TResponse>"
+CreatePostReportCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreatePostReportCommandHandler --> CreatePostReportCommand
 CreatePostReportCommandHandler --> Result
 CreatePostReportCommandHandler --> IUnitOfWork
