@@ -127,6 +127,7 @@ class CreateMultipleCloudinaryImageFileCommandHandler{
     - _unitOfWork: IUnitOfWork
     - _fileUtility: IFileUtility
     - _cloudinary: Cloudinary
+    + Handle(CreateCloudinaryImageFileCommand request, CancellationToken cancellationToken): Task<Result<CloudinaryFile?>>
 }
 
 class CloudinaryFile{
@@ -175,7 +176,9 @@ class Cloudinary{
 }
 
 interface "IRequest<TResponse>"
-interface "IRequestHandler<TRequest, TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
 
 Index ----> IIdentityServerInteractionService
 Index ----> "SignInManager<TUser>"
@@ -198,10 +201,10 @@ UploadMultipleFileConsumer --> IApplicationDbContext
 UploadMultipleFileConsumer ----|> "IConsumer<TMessage>"
 UploadMultipleFileConsumer ----> FormFile
 ' Application Layer
-CreateMultipleCloudinaryImageFileCommand --|> "IRequest<TResponse>"
+CreateMultipleCloudinaryImageFileCommand ..|> "IRequest<TResponse>"
 UploadMultipleFileConsumer --> CreateMultipleCloudinaryImageFileCommand
 CreateMultipleCloudinaryImageFileCommandHandler ---> IUnitOfWork
-CreateMultipleCloudinaryImageFileCommandHandler --|> "IRequestHandler<TRequest, TResponse>"
+CreateMultipleCloudinaryImageFileCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreateMultipleCloudinaryImageFileCommandHandler --> CreateMultipleCloudinaryImageFileCommand
 CreateMultipleCloudinaryImageFileCommandHandler --> "Result<T>"
 CreateMultipleCloudinaryImageFileCommandHandler --> CloudinaryFile
@@ -214,9 +217,10 @@ ExtensionType --|> BaseEntity
 CloudinaryFile --|> BaseEntity
 Result --> Error
 "Result<T>" --|> Result
+CloudinaryFileError --- Error
 ' Infrastructure Layer
-FileUtility --|> IFileUtility
-UnitOfWork --|> IUnitOfWork
-ApplicationDbContext --|> IApplicationDbContext
+FileUtility ..|> IFileUtility
+UnitOfWork ..|> IUnitOfWork
+ApplicationDbContext ..|> IApplicationDbContext
 IApplicationDbContext --|> IDbContext
 @enduml
