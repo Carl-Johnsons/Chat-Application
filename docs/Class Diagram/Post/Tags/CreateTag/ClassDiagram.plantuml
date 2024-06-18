@@ -82,8 +82,8 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Create Tag Post ====
 'API Layer
 TagsController --|> BaseApiController
-TagsController --> CreateTagCommand
-TagsController --> CreateTagDTO
+TagsController -- CreateTagCommand
+TagsController -- CreateTagDTO
 'Application Layer
 CreateTagCommand ..|> "IRequest<TResponse>"
 CreateTagCommandHandler ..|>  "IRequestHandler<TRequest, TResponse>"
@@ -98,5 +98,5 @@ Tag --|> BaseEntity
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
+ApplicationDbContext --* Tag
 @enduml

@@ -107,15 +107,15 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Uninteraction Post ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> UninteractionPostCommand
-PostsController --> UninteractionPostDTO
+PostsController -- UninteractionPostCommand
+PostsController -- UninteractionPostDTO
 'Application Layer
 UninteractionPostCommand ..|> "IRequest<TResponse>"
 UninteractionPostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-UninteractionPostCommandHandler --> UninteractionPostCommand
-UninteractionPostCommandHandler --> Result
-UninteractionPostCommandHandler --> IUnitOfWork
-UninteractionPostCommandHandler --> IApplicationDbContext
+UninteractionPostCommandHandler -- UninteractionPostCommand
+UninteractionPostCommandHandler -- Result
+UninteractionPostCommandHandler -- IUnitOfWork
+UninteractionPostCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- PostError
@@ -127,7 +127,7 @@ PostInteract --* Interaction
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Interaction
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostInteract
+ApplicationDbContext --* Interaction
+ApplicationDbContext --* Post
+ApplicationDbContext --* PostInteract
 @enduml

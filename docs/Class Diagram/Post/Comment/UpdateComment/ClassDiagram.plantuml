@@ -112,15 +112,15 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Update Comment ====
 'API Layer
 CommentsController --|> BaseApiController
-CommentsController --> UpdateCommentCommand
-CommentsController --> UpdateCommentDTO
+CommentsController -- UpdateCommentCommand
+CommentsController -- UpdateCommentDTO
 'Application Layer
 UpdateCommentCommand ..|> "IRequest<TResponse>"
 UpdateCommentCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-UpdateCommentCommandHandler --> UpdateCommentCommand
-UpdateCommentCommandHandler --> Result
-UpdateCommentCommandHandler --> IUnitOfWork
-UpdateCommentCommandHandler --> IApplicationDbContext
+UpdateCommentCommandHandler -- UpdateCommentCommand
+UpdateCommentCommandHandler -- Result
+UpdateCommentCommandHandler -- IUnitOfWork
+UpdateCommentCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- PostError
@@ -133,7 +133,7 @@ PostComment --* Comment
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Comment
-ApplicationDbContext --> PostComment
-ApplicationDbContext --> Post
+ApplicationDbContext --* Comment
+ApplicationDbContext --* PostComment
+ApplicationDbContext --* Post
 @enduml

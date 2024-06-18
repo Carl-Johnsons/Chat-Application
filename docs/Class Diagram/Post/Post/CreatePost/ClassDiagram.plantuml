@@ -130,22 +130,22 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Create Post ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> CreatePostCommand
-PostsController --> CreatePostDTO
-PostsController --> CreatePostTagCommand
+PostsController -- CreatePostCommand
+PostsController -- CreatePostDTO
+PostsController -- CreatePostTagCommand
 'Application Layer
 CreatePostCommand ..|> "IRequest<TResponse>"
 CreatePostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreatePostTagCommand ..|> "IRequest<TResponse>"
 CreatePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-CreatePostTagCommandHandler --> CreatePostTagCommand
-CreatePostTagCommandHandler --> Result
-CreatePostTagCommandHandler --> IUnitOfWork
-CreatePostTagCommandHandler --> IApplicationDbContext
-CreatePostCommandHandler --> CreatePostCommand
-CreatePostCommandHandler --> Result
-CreatePostCommandHandler --> IUnitOfWork
-CreatePostCommandHandler --> IApplicationDbContext
+CreatePostTagCommandHandler -- CreatePostTagCommand
+CreatePostTagCommandHandler -- Result
+CreatePostTagCommandHandler -- IUnitOfWork
+CreatePostTagCommandHandler -- IApplicationDbContext
+CreatePostCommandHandler -- CreatePostCommand
+CreatePostCommandHandler -- Result
+CreatePostCommandHandler -- IUnitOfWork
+CreatePostCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -159,7 +159,7 @@ PostTag --* Tag
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostTag
+ApplicationDbContext --* Tag
+ApplicationDbContext --* Post
+ApplicationDbContext --* PostTag
 @enduml

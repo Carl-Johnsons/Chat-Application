@@ -83,15 +83,15 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Update Post ====
 'API Layer
 TagsController --|> BaseApiController
-TagsController --> UpdateTagCommand
-TagsController --> UpdateTagDTO
+TagsController -- UpdateTagCommand
+TagsController -- UpdateTagDTO
 'Application Layer
 UpdateTagCommand ..|> "IRequest<TResponse>"
 UpdateTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-UpdateTagCommandHandler --> UpdateTagCommand
-UpdateTagCommandHandler --> Result
-UpdateTagCommandHandler --> IUnitOfWork
-UpdateTagCommandHandler --> IApplicationDbContext
+UpdateTagCommandHandler -- UpdateTagCommand
+UpdateTagCommandHandler -- Result
+UpdateTagCommandHandler -- IUnitOfWork
+UpdateTagCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- TagError
@@ -99,5 +99,5 @@ Tag --|> BaseEntity
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
+ApplicationDbContext --* Tag
 @enduml

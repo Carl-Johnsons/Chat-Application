@@ -109,14 +109,14 @@ interface "IRequestHandler<TRequest, TResponse>"{
 ' ==== Create Comment ====
 'API Layer
 CommentsController --|> BaseApiController
-CommentsController --> CreateCommentCommand
-CommentsController --> CreateCommentDTO
+CommentsController -- CreateCommentCommand
+CommentsController -- CreateCommentDTO
 'Application Layer
 CreateCommentCommand ..|> "IRequest<TResponse>"
-CreateCommentCommandHandler --> CreateCommentCommand
-CreateCommentCommandHandler --> Result
-CreateCommentCommandHandler --> IUnitOfWork
-CreateCommentCommandHandler --> IApplicationDbContext
+CreateCommentCommandHandler -- CreateCommentCommand
+CreateCommentCommandHandler -- Result
+CreateCommentCommandHandler -- IUnitOfWork
+CreateCommentCommandHandler -- IApplicationDbContext
 CreateCommentCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 'Domain Layer
 Result <|-- Error
@@ -129,7 +129,7 @@ PostComment --* Comment
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Comment
-ApplicationDbContext --> PostComment
-ApplicationDbContext --> Post
+ApplicationDbContext --* Comment
+ApplicationDbContext --* PostComment
+ApplicationDbContext --* Post
 @enduml

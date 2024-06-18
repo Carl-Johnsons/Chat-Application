@@ -101,13 +101,13 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Post Interaction====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> GetInteractionByPostIdQuery
+PostsController -- GetInteractionByPostIdQuery
 'Application Layer
 GetInteractionByPostIdQuery ..|> "IRequest<TResponse>"
 GetInteractionByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetInteractionByPostIdQueryHandler --> GetInteractionByPostIdQuery
-GetInteractionByPostIdQueryHandler --> Result
-GetInteractionByPostIdQueryHandler --> IApplicationDbContext
+GetInteractionByPostIdQueryHandler -- GetInteractionByPostIdQuery
+GetInteractionByPostIdQueryHandler -- Result
+GetInteractionByPostIdQueryHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -119,7 +119,7 @@ PostInteract --* Post
 PostInteract --* Interaction
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Post
-ApplicationDbContext --> Interaction
-ApplicationDbContext --> PostInteract
+ApplicationDbContext --* Post
+ApplicationDbContext --* Interaction
+ApplicationDbContext --* PostInteract
 @enduml

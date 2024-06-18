@@ -98,13 +98,13 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Comment By Post Id ====
 'API Layer
 CommentsController --|> BaseApiController
-CommentsController --> GetCommentByPostIdQuery
+CommentsController -- GetCommentByPostIdQuery
 'Application Layer
 GetCommentByPostIdQuery ..|> "IRequest<TResponse>"
 GetCommentByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetCommentByPostIdQueryHandler --> GetCommentByPostIdQuery
-GetCommentByPostIdQueryHandler --> Result
-GetCommentByPostIdQueryHandler --> IApplicationDbContext
+GetCommentByPostIdQueryHandler -- GetCommentByPostIdQuery
+GetCommentByPostIdQueryHandler -- Result
+GetCommentByPostIdQueryHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -116,7 +116,7 @@ PostComment --* Post
 PostComment --* Comment
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Comment
-ApplicationDbContext --> PostComment
-ApplicationDbContext --> Post
+ApplicationDbContext --* Comment
+ApplicationDbContext --* PostComment
+ApplicationDbContext --* Post
 @enduml

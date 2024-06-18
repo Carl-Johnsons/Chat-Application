@@ -92,13 +92,13 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Post Report By Post Id ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> GetPostReportByPostIdQuery
+PostsController -- GetPostReportByPostIdQuery
 'Application Layer
 GetPostReportByPostIdQuery ..|> "IRequest<TResponse>"
 GetPostReportByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetPostReportByPostIdQueryHandler --> GetPostReportByPostIdQuery
-GetPostReportByPostIdQueryHandler --> Result
-GetPostReportByPostIdQueryHandler --> IApplicationDbContext
+GetPostReportByPostIdQueryHandler -- GetPostReportByPostIdQuery
+GetPostReportByPostIdQueryHandler -- Result
+GetPostReportByPostIdQueryHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -109,6 +109,6 @@ BaseAuditableEntity --|> BaseEntity
 PostReport --* Post
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostReport
+ApplicationDbContext --* Post
+ApplicationDbContext --* PostReport
 @enduml

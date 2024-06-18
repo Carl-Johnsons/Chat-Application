@@ -131,10 +131,10 @@ PostsController --> GetPostsByUserIdQuery
 'Application Layer
 GetPostsByUserIdQuery ..|> "IRequest<TResponse>"
 GetPostsByUserIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetPostsByUserIdQueryHandler --> GetPostsByUserIdQuery
-GetPostsByUserIdQueryHandler --> Result
-GetPostsByUserIdQueryHandler --> IApplicationDbContext
-GetPostsByUserIdQueryHandler --> PostDTO
+GetPostsByUserIdQueryHandler -- GetPostsByUserIdQuery
+GetPostsByUserIdQueryHandler -- Result
+GetPostsByUserIdQueryHandler -- IApplicationDbContext
+GetPostsByUserIdQueryHandler -- PostDTO
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -149,9 +149,9 @@ PostInteract --* Post
 PostInteract --* Interaction
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostTag
-ApplicationDbContext --> Interaction
-ApplicationDbContext --> PostInteract
+ApplicationDbContext --* Tag
+ApplicationDbContext --* Post
+ApplicationDbContext --* PostTag
+ApplicationDbContext --* Interaction
+ApplicationDbContext --* PostInteract
 @enduml

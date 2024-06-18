@@ -65,17 +65,17 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Delete Interaction ====
 'API Layer
 InteractionsController --|> BaseApiController
-InteractionsController --> GetAllInteractionsQuery
+InteractionsController -- GetAllInteractionsQuery
 'Application Layer
 GetAllInteractionsQuery ..|> "IRequest<TResponse>"
 GetAllInteractionsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetAllInteractionsQueryHandler --> GetAllInteractionsQuery
-GetAllInteractionsQueryHandler --> Result
-GetAllInteractionsQueryHandler --> IApplicationDbContext
+GetAllInteractionsQueryHandler -- GetAllInteractionsQuery
+GetAllInteractionsQueryHandler -- Result
+GetAllInteractionsQueryHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- "Result<T>"
 Interaction --|> BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Interaction
+ApplicationDbContext --* Interaction
 @enduml

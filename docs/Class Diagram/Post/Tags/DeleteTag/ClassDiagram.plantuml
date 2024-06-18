@@ -82,15 +82,15 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Delete Tag Post ====
 'API Layer
 TagsController --|> BaseApiController
-TagsController --> DeleteTagCommand
-TagsController --> DeleteTagDTO
+TagsController -- DeleteTagCommand
+TagsController -- DeleteTagDTO
 'Application Layer
 DeleteTagCommand ..|> "IRequest<TResponse>"
 DeleteTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-DeleteTagCommandHandler --> DeleteTagCommand
-DeleteTagCommandHandler --> Result
-DeleteTagCommandHandler --> IUnitOfWork
-DeleteTagCommandHandler --> IApplicationDbContext
+DeleteTagCommandHandler -- DeleteTagCommand
+DeleteTagCommandHandler -- Result
+DeleteTagCommandHandler -- IUnitOfWork
+DeleteTagCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- TagError
@@ -98,5 +98,5 @@ Tag --|> BaseEntity
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
+ApplicationDbContext --* Tag
 @enduml

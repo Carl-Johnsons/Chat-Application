@@ -64,17 +64,17 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get All Post ====
 'API Layer
 TagsController --|> BaseApiController
-TagsController --> GetAllTagsQuery
+TagsController -- GetAllTagsQuery
 'Application Layer
 GetAllTagsQuery ..|> "IRequest<TResponse>"
 GetAllTagsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetAllTagsQueryHandler --> GetAllTagsQuery
-GetAllTagsQueryHandler --> Result
-GetAllTagsQueryHandler --> IApplicationDbContext
+GetAllTagsQueryHandler -- GetAllTagsQuery
+GetAllTagsQueryHandler -- Result
+GetAllTagsQueryHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- "Result<T>"
 Tag --|> BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
+ApplicationDbContext --* Tag
 @enduml

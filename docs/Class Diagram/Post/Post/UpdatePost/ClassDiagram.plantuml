@@ -144,10 +144,10 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Update Post ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> UpdatePostCommand
-PostsController --> UpdatePostDTO
-PostsController --> DeletePostTagCommand
-PostsController --> CreatePostTagCommand
+PostsController -- UpdatePostCommand
+PostsController -- UpdatePostDTO
+PostsController -- DeletePostTagCommand
+PostsController -- CreatePostTagCommand
 'Application Layer
 UpdatePostCommand ..|> "IRequest<TResponse>"
 UpdatePostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
@@ -156,18 +156,18 @@ DeletePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreatePostTagCommand ..|> "IRequest<TResponse>"
 CreatePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 
-UpdatePostCommandHandler --> UpdatePostCommand
-UpdatePostCommandHandler --> Result
-UpdatePostCommandHandler --> IUnitOfWork
-UpdatePostCommandHandler --> IApplicationDbContext
-DeletePostTagCommandHandler --> DeletePostTagCommand
-DeletePostTagCommandHandler --> Result
-DeletePostTagCommandHandler --> IUnitOfWork
-DeletePostTagCommandHandler --> IApplicationDbContext
-CreatePostTagCommandHandler --> CreatePostTagCommand
-CreatePostTagCommandHandler --> Result
-CreatePostTagCommandHandler --> IUnitOfWork
-CreatePostTagCommandHandler --> IApplicationDbContext
+UpdatePostCommandHandler -- UpdatePostCommand
+UpdatePostCommandHandler -- Result
+UpdatePostCommandHandler -- IUnitOfWork
+UpdatePostCommandHandler -- IApplicationDbContext
+DeletePostTagCommandHandler -- DeletePostTagCommand
+DeletePostTagCommandHandler -- Result
+DeletePostTagCommandHandler -- IUnitOfWork
+DeletePostTagCommandHandler -- IApplicationDbContext
+CreatePostTagCommandHandler -- CreatePostTagCommand
+CreatePostTagCommandHandler -- Result
+CreatePostTagCommandHandler -- IUnitOfWork
+CreatePostTagCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -181,7 +181,7 @@ PostTag --* Tag
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostTag
+ApplicationDbContext --* Tag
+ApplicationDbContext --* Post
+ApplicationDbContext --* PostTag
 @enduml

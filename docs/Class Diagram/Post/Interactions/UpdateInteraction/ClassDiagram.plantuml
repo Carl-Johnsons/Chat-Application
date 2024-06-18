@@ -89,15 +89,15 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Update Interaction ====
 'API Layer
 InteractionsController --|> BaseApiController
-InteractionsController --> UpdateInteractionCommand
-InteractionsController --> UpdateInteractionDTO
+InteractionsController -- UpdateInteractionCommand
+InteractionsController -- UpdateInteractionDTO
 'Application Layer
 UpdateInteractionCommand ..|> "IRequest<TResponse>"
 UpdateInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-UpdateInteractionCommandHandler --> UpdateInteractionCommand
-UpdateInteractionCommandHandler --> Result
-UpdateInteractionCommandHandler --> IUnitOfWork
-UpdateInteractionCommandHandler --> IApplicationDbContext
+UpdateInteractionCommandHandler -- UpdateInteractionCommand
+UpdateInteractionCommandHandler -- Result
+UpdateInteractionCommandHandler -- IUnitOfWork
+UpdateInteractionCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- InteractionError
@@ -105,5 +105,5 @@ Interaction --|> BaseEntity
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Interaction
+ApplicationDbContext --* Interaction
 @enduml

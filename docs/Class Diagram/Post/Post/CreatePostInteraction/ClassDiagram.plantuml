@@ -116,15 +116,15 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Create PostInteract ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> CreatePostInteractionCommand
-PostsController --> CreatePostInteractionDTO
+PostsController -- CreatePostInteractionCommand
+PostsController -- CreatePostInteractionDTO
 'Application Layer
 CreatePostInteractionCommand ..|> "IRequest<TResponse>"
 CreatePostInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-CreatePostInteractionCommandHandler --> CreatePostInteractionCommand
-CreatePostInteractionCommandHandler --> Result
-CreatePostInteractionCommandHandler --> IUnitOfWork
-CreatePostInteractionCommandHandler --> IApplicationDbContext
+CreatePostInteractionCommandHandler -- CreatePostInteractionCommand
+CreatePostInteractionCommandHandler -- Result
+CreatePostInteractionCommandHandler -- IUnitOfWork
+CreatePostInteractionCommandHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- InteractionError
@@ -137,7 +137,7 @@ PostInteract --* Interaction
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Interaction
-ApplicationDbContext --> PostInteract
-ApplicationDbContext --> Post
+ApplicationDbContext --* Interaction
+ApplicationDbContext --* PostInteract
+ApplicationDbContext --* Post
 @enduml
