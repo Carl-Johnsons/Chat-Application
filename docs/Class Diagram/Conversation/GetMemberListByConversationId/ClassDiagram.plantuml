@@ -115,27 +115,27 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 ConversationController --|> BaseApiController
-ConversationController --> GetMemberListByConversationIdQuery
+ConversationController -- GetMemberListByConversationIdQuery
 
-ConversationController --> GetMemberListByConversationIdDTO
+ConversationController -- GetMemberListByConversationIdDTO
 
 GetMemberListByConversationIdQuery ..|> "IRequest<TResponse>"
 GetMemberListByConversationIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetMemberListByConversationIdQueryHandler --> GetMemberListByConversationIdQuery
-GetMemberListByConversationIdQueryHandler --> ConversationUser
-GetMemberListByConversationIdQueryHandler --> Result
-GetMemberListByConversationIdQueryHandler --> IApplicationDbContext
-GetMemberListByConversationIdQueryHandler --> ConversationError
+GetMemberListByConversationIdQueryHandler -- GetMemberListByConversationIdQuery
+GetMemberListByConversationIdQueryHandler -- ConversationUser
+GetMemberListByConversationIdQueryHandler -- Result
+GetMemberListByConversationIdQueryHandler -- IApplicationDbContext
+GetMemberListByConversationIdQueryHandler -- ConversationError
 
 IApplicationDbContext <|.. ApplicationDbContext
-Result <-- Error
+Result -- Error
 Result <|-- "Result<T>"
-ConversationError --> Error
+ConversationError -- Error
 
-ApplicationDbContext --> Conversation
-ApplicationDbContext --> GroupConversation
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Message
+ApplicationDbContext --* Conversation
+ApplicationDbContext --* GroupConversation
+ApplicationDbContext --* ConversationUser
+ApplicationDbContext --* Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation

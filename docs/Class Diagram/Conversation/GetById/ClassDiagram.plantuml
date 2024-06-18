@@ -89,14 +89,14 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Conversation By Id ====
 'API Layer
 ConversationController --|> BaseApiController
-ConversationController --> GetConversationByIdQuery
-ConversationController --> GetConversationByIdDTO
+ConversationController -- GetConversationByIdQuery
+ConversationController -- GetConversationByIdDTO
 'Application Layer
 GetConversationByIdQuery ..|> "IRequest<TResponse>"
 GetConversationByIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetConversationByIdQueryHandler --> GetConversationByIdQuery
-GetConversationByIdQueryHandler --> Result
-GetConversationByIdQueryHandler --> IApplicationDbContext
+GetConversationByIdQueryHandler -- GetConversationByIdQuery
+GetConversationByIdQueryHandler -- Result
+GetConversationByIdQueryHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -106,6 +106,6 @@ Conversation *-- ConversationUser
 BaseAuditableEntity --|>BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Conversation
+ApplicationDbContext --* ConversationUser
+ApplicationDbContext --* Conversation
 @enduml

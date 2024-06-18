@@ -105,16 +105,16 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Conversation List By User Id ====
 'API Layer
 ConversationController --|> BaseApiController
-ConversationController --> GetConversationListByUserIdQuery
+ConversationController -- GetConversationListByUserIdQuery
 'Application Layer
-GetConversationListByUserId ..|> "IRequest<TResponse>"
+GetConversationListByUserIdQuery ..|> "IRequest<TResponse>"
 GetConversationListByUserIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetConversationListByUserIdQueryHandler --> GetConversationListByUserIdQuery
-GetConversationListByUserIdQueryHandler --> Result
-GetConversationListByUserIdQueryHandler --> IApplicationDbContext
-GetConversationListByUserIdQueryHandler --> ConversationUserResponseDTO
-GetConversationListByUserIdQueryHandler --> ConversationResponseDTO
-GetConversationListByUserIdQueryHandler --> GroupConversationResponseDTO
+GetConversationListByUserIdQueryHandler -- GetConversationListByUserIdQuery
+GetConversationListByUserIdQueryHandler -- Result
+GetConversationListByUserIdQueryHandler -- IApplicationDbContext
+GetConversationListByUserIdQueryHandler -- ConversationUserResponseDTO
+GetConversationListByUserIdQueryHandler -- ConversationResponseDTO
+GetConversationListByUserIdQueryHandler -- GroupConversationResponseDTO
 'Domain Layer
 GroupConversationResponseDTO --|> ConversationResponseDTO
 Result <|-- Error
@@ -125,6 +125,6 @@ Conversation *-- ConversationUser
 BaseAuditableEntity --|>BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Conversation
+ApplicationDbContext --* ConversationUser
+ApplicationDbContext --* Conversation
 @enduml

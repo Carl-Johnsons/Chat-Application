@@ -123,17 +123,17 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 ConversationController --|> BaseApiController
-ConversationController --> DeleteConversationCommand
+ConversationController -- DeleteConversationCommand
 
-ConversationController --> DeleteConversationDTO
+ConversationController -- DeleteConversationDTO
 
 DeleteConversationCommand ..|> "IRequest<TResponse>"
 DeleteConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-DeleteConversationCommandHandler --> DeleteConversationCommand
-DeleteConversationCommandHandler --> Result
-DeleteConversationCommandHandler --> IUnitOfWork
-DeleteConversationCommandHandler --> IApplicationDbContext
-DeleteConversationCommandHandler --> ConversationError
+DeleteConversationCommandHandler -- DeleteConversationCommand
+DeleteConversationCommandHandler -- Result
+DeleteConversationCommandHandler -- IUnitOfWork
+DeleteConversationCommandHandler -- IApplicationDbContext
+DeleteConversationCommandHandler -- ConversationError
 
 
 IUnitOfWork <|.. UnitOfWork
@@ -143,10 +143,10 @@ Result <|-- "Result<T>"
 
 Error -- ConversationError
 
-ApplicationDbContext --> Conversation
-ApplicationDbContext --> GroupConversation
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Message
+ApplicationDbContext --* Conversation
+ApplicationDbContext --* GroupConversation
+ApplicationDbContext --* ConversationUser
+ApplicationDbContext --* Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation

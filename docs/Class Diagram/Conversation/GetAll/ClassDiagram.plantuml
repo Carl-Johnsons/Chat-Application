@@ -83,13 +83,13 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get All Conversation ====
 'API Layer
 ConversationController --|> BaseApiController
-ConversationController --> GetAllConversationsQuery
+ConversationController -- GetAllConversationsQuery
 'Application Layer
 GetAllConversationsQuery ..|> "IRequest<TResponse>"
 GetAllConversationsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetAllConversationsQueryHandler --> GetAllConversationsQuery
-GetAllConversationsQueryHandler --> Result
-GetAllConversationsQueryHandler --> IApplicationDbContext
+GetAllConversationsQueryHandler -- GetAllConversationsQuery
+GetAllConversationsQueryHandler -- Result
+GetAllConversationsQueryHandler -- IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -99,6 +99,6 @@ Conversation *-- ConversationUser
 BaseAuditableEntity --|>BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Conversation
+ApplicationDbContext --* ConversationUser
+ApplicationDbContext --* Conversation
 @enduml

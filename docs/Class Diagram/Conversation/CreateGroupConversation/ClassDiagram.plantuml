@@ -120,24 +120,24 @@ class Message {
 }
 
 GroupConversationController --|> BaseApiController
-GroupConversationController --> CreateGroupConversationDTO
-GroupConversationController --> CreateGroupConversationCommand
-CreateGroupConversationCommandHandler --> CreateGroupConversationCommand
-CreateGroupConversationCommandHandler --> Result
-CreateGroupConversationCommandHandler --> IUnitOfWork
-CreateGroupConversationCommandHandler --> IApplicationDbContext
-CreateGroupConversationCommandHandler --> GroupConversationError
+GroupConversationController -- CreateGroupConversationDTO
+GroupConversationController -- CreateGroupConversationCommand
+CreateGroupConversationCommandHandler -- CreateGroupConversationCommand
+CreateGroupConversationCommandHandler -- Result
+CreateGroupConversationCommandHandler -- IUnitOfWork
+CreateGroupConversationCommandHandler -- IApplicationDbContext
+CreateGroupConversationCommandHandler -- GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
 
-Result <-- Error
+Result -- Error
 Result <|-- "Result<T>"
-Error --> GroupConversationError
-ApplicationDbContext --> Conversation
-ApplicationDbContext --> GroupConversation
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Message
+Error -- GroupConversationError
+ApplicationDbContext --* Conversation
+ApplicationDbContext --* GroupConversation
+ApplicationDbContext --* ConversationUser
+ApplicationDbContext --* Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
