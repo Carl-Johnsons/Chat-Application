@@ -27,7 +27,7 @@ class FriendRequest {
     + Receiver: ApplicationUser 
 }
 
-FriendRequestController --> ApplicationDbContext
-FriendRequestController --> DeleteFriendRequestDTO
-ApplicationDbContext --> FriendRequest
+FriendRequestController -- ApplicationDbContext
+FriendRequestController -- DeleteFriendRequestDTO
+ApplicationDbContext --* FriendRequest
 @enduml

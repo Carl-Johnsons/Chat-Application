@@ -41,11 +41,13 @@ class ApplicationUser {
     + Active: bool
 }
 
-class IdentityUser
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
 
-FriendController --> ApplicationDbContext
-FriendController --> ApplicationUserResponseDTO
-ApplicationDbContext --> Friend
-ApplicationDbContext --> ApplicationUser
+FriendController -- ApplicationDbContext
+FriendController -- ApplicationUserResponseDTO
+ApplicationDbContext --* Friend
+ApplicationDbContext --* ApplicationUser
 ApplicationUser --|> IdentityUser
 @enduml

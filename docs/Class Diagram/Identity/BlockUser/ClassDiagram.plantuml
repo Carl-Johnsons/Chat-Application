@@ -40,13 +40,15 @@ class Friend{
     + FriendId: string
 }
 
-class IdentityUser
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
 
-UsersController --> ApplicationDbContext
-UsersController --> BlockUserDTO
-ApplicationDbContext --> ApplicationUser
-UsersController --> UserBlock
-ApplicationDbContext --> UserBlock
-ApplicationDbContext --> Friend
+UsersController -- ApplicationDbContext
+UsersController -- BlockUserDTO
+ApplicationDbContext --* ApplicationUser
+UsersController --o UserBlock
+ApplicationDbContext --* UserBlock
+ApplicationDbContext --* Friend
 ApplicationUser --|> IdentityUser
 @enduml

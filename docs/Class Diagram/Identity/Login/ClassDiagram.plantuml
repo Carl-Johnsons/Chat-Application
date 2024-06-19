@@ -35,11 +35,11 @@ interface IEventService{
 
 class PageModel
 
-Index --> IIdentityServerInteractionService
-Index --> "SignInManager<TUser>"
-Index ---> IEventService
-Index ---> UserLoginFailureEvent
-Index ---> UserLoginSuccessEvent
+Index -- IIdentityServerInteractionService
+Index -- "SignInManager<TUser>"
+Index --- IEventService
+Index --- UserLoginFailureEvent
+Index -- UserLoginSuccessEvent
 Index --|> PageModel
 
 @enduml

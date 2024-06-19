@@ -45,10 +45,10 @@ class SignalRService {
     + InvokeAction<T>(string action, T obj): Task
 }
 
-FriendRequestController --> ApplicationDbContext
-FriendRequestController --> AcceptFriendRequestDTO
-FriendRequestController --> SignalRService
-FriendRequestController --> FriendCreatedEvent
-ApplicationDbContext --> FriendRequest
-ApplicationDbContext --> Friend
+FriendRequestController -- ApplicationDbContext
+FriendRequestController -- AcceptFriendRequestDTO
+FriendRequestController -- SignalRService
+FriendRequestController -- FriendCreatedEvent
+ApplicationDbContext --* FriendRequest
+ApplicationDbContext --* Friend
 @enduml

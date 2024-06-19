@@ -33,7 +33,7 @@ class FriendRequestResponseDTO{
     + CreatedAt: DateTime
 }
 
-FriendRequestController --> ApplicationDbContext
-FriendRequestController --> FriendRequestResponseDTO
-ApplicationDbContext --> FriendRequest
+FriendRequestController -- ApplicationDbContext
+FriendRequestController -- FriendRequestResponseDTO
+ApplicationDbContext --* FriendRequest
 @enduml
