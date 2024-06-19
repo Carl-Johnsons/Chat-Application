@@ -31,7 +31,8 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         [
             new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
-            new ApiScope("conversation-api")
+            new ApiScope("conversation-api"),
+            new ApiScope("post-api")
         ];
 
     public static IEnumerable<Client> Clients =>
@@ -70,7 +71,8 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Phone,
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.LocalApi.ScopeName,
-                    "conversation-api"
+                    "conversation-api",
+                    "post-api"
                 },
             }
         ];
