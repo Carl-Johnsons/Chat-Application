@@ -173,18 +173,28 @@ public class UsersController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest, "You already block this user!");
         }
 
+        _context.UserBlocks.Add(buInput);
+
         var friend = _context.Friends
                              .Where(f => (f.UserId == buInput.UserId && f.FriendId == buInput.BlockUserId) ||
-                             (f.FriendId == buInput.BlockUserId && f.UserId == buInput.UserId))
+                             (f.FriendId == buInput.UserId && f.UserId == buInput.BlockUserId))
                              .SingleOrDefault();
 
-        _context.UserBlocks.Add(buInput);
         if (friend != null)
         {
-            _context.Remove(friend);
+            _context.Friends.Remove(friend);
+        }
+
+        var friendReq = _context.FriendRequests
+                                .Where(fq => (fq.SenderId == buInput.BlockUserId && fq.ReceiverId == buInput.UserId) ||
+                                (fq.SenderId == buInput.UserId && fq.ReceiverId == buInput.BlockUserId))
+                                .SingleOrDefault();
+        
+        if(friendReq != null)
+        {
+            _context.FriendRequests.Remove(friendReq);
         }
         var result = _context.SaveChanges();
-
 
         if (result == 0)
         {
