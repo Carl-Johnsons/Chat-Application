@@ -11,6 +11,7 @@ using MassTransit.Clients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Sprache;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
@@ -218,5 +219,21 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("block")]
+    public async Task<IActionResult> GetBlockList()
+    {
+        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
 
+        var result = _context.UserBlocks
+                        .Where(u =>  u.UserId == userId)
+                        .Select(u => u.BlockUserId)
+                        .ToList();
+
+        BlockUserListDTO blockUserListDTO = new BlockUserListDTO
+        {
+            BlockUserId = result
+        };   
+
+        return Ok(blockUserListDTO);
+    }
 }
