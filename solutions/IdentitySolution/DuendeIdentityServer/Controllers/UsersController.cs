@@ -2,6 +2,7 @@
 using Contract.DTOs;
 using Contract.Event.UploadEvent;
 using Contract.Event.UploadEvent.EventModel;
+using Contract.Event.UserEvent;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
@@ -30,14 +31,16 @@ public class UsersController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint)
     {
         _context = context;
         _userManager = userManager;
         _mapper = mapper;
         _httpContextAccessor = httpContextAccessor;
         _bus = bus;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -200,6 +203,14 @@ public class UsersController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
         }
+
+        await _publishEndpoint.Publish(
+                new UserBlockedEvent
+                {
+                    UserId = Guid.Parse(buInput.UserId),
+                    BlockUserId = Guid.Parse(buInput.BlockUserId),
+                }
+            );
 
         return Ok(); 
     }
