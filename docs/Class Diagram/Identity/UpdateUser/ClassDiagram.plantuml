@@ -53,14 +53,16 @@ class ApplicationUser {
     +Active: bool
 }
 
-class IdentityUser
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
 
-UsersController --> ApplicationDbContext
-UsersController --> UpdateUserDTO
-UsersController --> BinaryReader
-UsersController --> FileStreamEvent
-UsersController --> UpdateFileEvent
-UsersController --> UploadFileEventResponseDTO
-ApplicationDbContext --> ApplicationUser
+UsersController -- ApplicationDbContext
+UsersController -- UpdateUserDTO
+UsersController -- BinaryReader
+UsersController -- FileStreamEvent
+UsersController -- UpdateFileEvent
+UsersController -- UploadFileEventResponseDTO
+ApplicationDbContext --* ApplicationUser
 ApplicationUser --|> IdentityUser
 @enduml
