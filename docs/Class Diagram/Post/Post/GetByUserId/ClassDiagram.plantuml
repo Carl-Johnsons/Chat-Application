@@ -127,7 +127,7 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Post By User Id====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> GetPostsByUserIdQuery
+PostsController -- GetPostsByUserIdQuery
 'Application Layer
 GetPostsByUserIdQuery ..|> "IRequest<TResponse>"
 GetPostsByUserIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
