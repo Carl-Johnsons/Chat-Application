@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
 /**
- * This page will handle the callback after the user logs in
- * and then redirect them to the home page.
+ * This page will automatically renew expiry token make a seamlessly 
+ * experience for user
  * @returns
  */
-const SignInCallBack = () => {
+const SilentSignInCallBack = () => {
   const router = useRouter();
   const { setAccessToken } = useAxios();
   const [localToken, setLocalToken] = useLocalStorage("access_token");
@@ -18,10 +18,7 @@ const SignInCallBack = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        const user = await userManager.signinRedirectCallback();
-        setAccessToken(user.access_token ?? localToken);
-        user.access_token && setLocalToken(user.access_token);
-        console.log(user.access_token);
+        await userManager.signinSilentCallback();
       } catch (error) {
         console.error(error);
       }
@@ -33,4 +30,4 @@ const SignInCallBack = () => {
   return <div>Redirecting...</div>;
 };
 
-export default SignInCallBack;
+export default SilentSignInCallBack;

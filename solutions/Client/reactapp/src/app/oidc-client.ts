@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  UserManager,
-  UserManagerSettings,
-} from "oidc-client";
+import { UserManager, UserManagerSettings } from "oidc-client";
 const clientBaseUrl =
   process.env.NEXT_PUBLIC_CLIENT_BASE_URL ?? "http://localhost:3000";
 
@@ -13,7 +10,10 @@ const userManagerConfig: UserManagerSettings = {
   redirect_uri: `${clientBaseUrl}/signin-callback`,
   response_type: "id_token token",
   post_logout_redirect_uri: clientBaseUrl,
-  scope: "openid profile phone email IdentityServerApi conversation-api post-api",
+  scope:
+    "openid profile phone email IdentityServerApi conversation-api post-api",
+  automaticSilentRenew: true,
+  loadUserInfo: true,
 };
 
 const userManager = new UserManager(userManagerConfig);
