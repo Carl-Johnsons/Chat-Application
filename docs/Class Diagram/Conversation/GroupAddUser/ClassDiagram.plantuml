@@ -18,6 +18,7 @@ class AddUserGroupConversationCommand {
 class AddUserGroupConversationCommandHandler {
     -_context: IApplicationDbContext
     -_unitOfWork: IUnitOfWork
+    -_signalRService: ISignalRService
     +Handle(AddUserGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result> 
 }
 
@@ -73,6 +74,21 @@ class UnitOfWork {
     +Task SaveChangeAsync(CancellationToken cancellationToken = default)
 }
 
+class ISignalRService{
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
+class SignalRService{
+    -_logger: ILogger<SignalRService>
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
 class GroupConversationError {
     {static} +NotEnoughMember: Error
     {static} +NotFound: Error
@@ -122,27 +138,29 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 GroupConversationController --|> BaseApiController
-GroupConversationController --> AddUserGroupConversationDTO
-GroupConversationController --> AddUserGroupConversationCommand
+GroupConversationController -- AddUserGroupConversationDTO
+GroupConversationController -- AddUserGroupConversationCommand
 
 AddUserGroupConversationCommand ..|> "IRequest<TResponse>"
 AddUserGroupConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-AddUserGroupConversationCommandHandler --> AddUserGroupConversationCommand
-AddUserGroupConversationCommandHandler --> Result
-AddUserGroupConversationCommandHandler --> IUnitOfWork
-AddUserGroupConversationCommandHandler --> IApplicationDbContext
-AddUserGroupConversationCommandHandler --> GroupConversationError
+AddUserGroupConversationCommandHandler -- AddUserGroupConversationCommand
+AddUserGroupConversationCommandHandler -- Result
+AddUserGroupConversationCommandHandler -- IUnitOfWork
+AddUserGroupConversationCommandHandler -- IApplicationDbContext
+AddUserGroupConversationCommandHandler -- ISignalRService
+AddUserGroupConversationCommandHandler -- GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <-- Error
+ISignalRService <|.. SignalRService
+Result -- Error
 Result <|-- "Result<T>"
-Error <-- GroupConversationError
+Error --* GroupConversationError
 
-ApplicationDbContext --> Conversation
-ApplicationDbContext --> GroupConversation
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Message
+ApplicationDbContext o-- Conversation
+ApplicationDbContext o-- GroupConversation
+ApplicationDbContext o-- ConversationUser
+ApplicationDbContext o-- Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
