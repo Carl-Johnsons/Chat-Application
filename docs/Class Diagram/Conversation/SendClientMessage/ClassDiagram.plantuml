@@ -85,6 +85,14 @@ class ISignalRService{
     +Task InvokeAction<T>(string action, T obj)
 }
 
+class SignalRService{
+    -_logger: ILogger<SignalRService>
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
 class ConversationError {
     {static} +AlreadyExistConversation: Error
     {static} +NotFound: Error
@@ -159,31 +167,32 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 MessageController --|> BaseApiController
-MessageController --> SendClientMessageDTO
-MessageController --> SendClientMessageCommand
+MessageController -- SendClientMessageDTO
+MessageController -- SendClientMessageCommand
 
 SendClientMessageCommand ..|> "IRequest<TResponse>"
 SendClientMessageCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-SendClientMessageCommandHandler --> SendClientMessageCommand
-SendClientMessageCommandHandler --> ConversationError
-SendClientMessageCommandHandler --> ISignalRService
-SendClientMessageCommandHandler --> UploadMultipleFileEvent
-SendClientMessageCommandHandler --> UploadMultipleFileEventResponseDTO
-SendClientMessageCommandHandler --> Result
-SendClientMessageCommandHandler --> IUnitOfWork
-SendClientMessageCommandHandler --> IApplicationDbContext
-SendClientMessageCommandHandler --> GroupConversationError
+SendClientMessageCommandHandler -- SendClientMessageCommand
+SendClientMessageCommandHandler -- ConversationError
+SendClientMessageCommandHandler -- ISignalRService
+SendClientMessageCommandHandler -- UploadMultipleFileEvent
+SendClientMessageCommandHandler -- UploadMultipleFileEventResponseDTO
+SendClientMessageCommandHandler -- Result
+SendClientMessageCommandHandler -- IUnitOfWork
+SendClientMessageCommandHandler -- IApplicationDbContext
+SendClientMessageCommandHandler -- GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <-- Error
+ISignalRService <|.. SignalRService
+Result -- Error
 Result <|-- "Result<T>"
-Error --> GroupConversationError
+Error --* GroupConversationError
 
-ApplicationDbContext --> Conversation
-ApplicationDbContext --> GroupConversation
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Message
+ApplicationDbContext o-- Conversation
+ApplicationDbContext o-- GroupConversation
+ApplicationDbContext o-- ConversationUser
+ApplicationDbContext o-- Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
@@ -193,9 +202,9 @@ Message --|> BaseAuditableEntity
 Message --* Conversation
 BaseAuditableEntity --|> BaseEntity
 
-UploadMultipleFileEvent --> FileStreamEvent
+UploadMultipleFileEvent *-- FileStreamEvent
 
-UploadMultipleFileEventResponseDTO --> UploadFileEventResponseDTO
+UploadMultipleFileEventResponseDTO *-- UploadFileEventResponseDTO
 
 UploadFileEventResponseDTO --|> BaseEntity
 @enduml
