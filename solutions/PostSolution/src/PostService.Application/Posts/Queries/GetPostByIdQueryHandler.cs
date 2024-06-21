@@ -70,7 +70,7 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<
 
         var postReponse = new PostDTO
         {
-            PostId = request.Id,
+            Id = request.Id,
             Content = post.Content,
             UserId = post.UserId,
             CreatedAt = post.CreatedAt,

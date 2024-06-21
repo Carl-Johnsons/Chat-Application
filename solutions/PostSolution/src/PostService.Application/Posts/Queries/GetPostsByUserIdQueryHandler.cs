@@ -80,7 +80,7 @@ public class GetPostsByUserIdQueryHandler : IRequestHandler<GetPostsByUserIdQuer
             {
                 var postReponse = new PostDTO
                 {
-                    PostId = p.Id,
+                    Id = p.Id,
                     Content = post.Content,
                     UserId = post.UserId,
                     CreatedAt = post.CreatedAt,

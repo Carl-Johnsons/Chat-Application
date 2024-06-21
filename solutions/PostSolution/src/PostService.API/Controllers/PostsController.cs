@@ -58,9 +58,12 @@ public class PostsController : BaseApiController
     }
 
     [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] PaginatedPostListDTO paginatedPostListDTO)
     {
-        var posts = await _sender.Send(new GetAllPostsQuery());
+        var posts = await _sender.Send(new GetAllPostsQuery
+        {
+            Skip = paginatedPostListDTO.Skip
+        });
 
         posts.ThrowIfFailure();
         return Ok(posts.Value);

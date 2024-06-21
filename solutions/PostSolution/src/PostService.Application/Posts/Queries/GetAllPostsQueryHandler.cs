@@ -1,25 +1,38 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PostService.Domain.Common;
+using PostService.Domain.Constants;
 using PostService.Domain.DTOs;
 
 namespace PostService.Application.Posts.Queries;
 
-public class GetAllPostsQuery : IRequest<Result<List<PostDTO>>>;
+public class GetAllPostsQuery : BasePaginatedDTO, IRequest<Result<PaginatedPostListResponseDTO>>
+{
 
-public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<List<PostDTO>>>
+};
+
+public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<PaginatedPostListResponseDTO>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IPaginateDataUtility<Post, PostListMetadata> _paginateDataUtility;
 
-    public GetAllPostsQueryHandler(IApplicationDbContext context)
+    public GetAllPostsQueryHandler(IApplicationDbContext context, IPaginateDataUtility<Post, PostListMetadata> paginateDataUtility)
     {
         _context = context;
+        _paginateDataUtility = paginateDataUtility;
     }
 
-    public async Task<Result<List<PostDTO>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginatedPostListResponseDTO>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
-        var posts = await _context.Posts
-                        .ToListAsync();
+        var postQuery = _context.Posts.AsQueryable();
+
+        postQuery = _paginateDataUtility.PaginateQuery(postQuery, new PaginateParam
+        {
+            Offset = request.Skip * POST_CONSTANTS.LIMIT,
+            Limit = POST_CONSTANTS.LIMIT
+        });
+
+        var posts = await postQuery.OrderByDescending(p => p.CreatedAt).ToListAsync();
 
         List<PostDTO> result = new List<PostDTO>();
 
@@ -68,7 +81,7 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<
             {
                 var postReponse = new PostDTO
                 {
-                    PostId = p.Id,
+                    Id = p.Id,
                     Content = post.Content,
                     UserId = post.UserId,
                     CreatedAt = post.CreatedAt,
@@ -78,10 +91,18 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<
                 };
 
                 result.Add(postReponse);
-            }         
-            
+            }
+
         }
 
-        return Result<List<PostDTO>>.Success(result);
+        var paginatedResponse = new PaginatedPostListResponseDTO
+        {
+            PaginatedData = result,
+            Metadata = new PostListMetadata
+            {
+            }
+        };
+
+        return Result<PaginatedPostListResponseDTO>.Success(paginatedResponse);
     }
 }

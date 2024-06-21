@@ -1,8 +1,10 @@
 ﻿using Contract.Common;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+using PostService.Domain.Interfaces;
 using PostService.Infrastructure.EventPublishing;
 using PostService.Infrastructure.Persistence.Mockup;
+using PostService.Infrastructure.Utilities;
 using System.Reflection;
 
 
@@ -23,8 +25,9 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString);
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+        services.AddScoped(typeof(IPaginateDataUtility<,>), typeof(PaginateDataUtility<,>));
         services.AddScoped<MockupData>();
+
         using (var serviceProvider = services.BuildServiceProvider())
         {
             var mockupData = serviceProvider.GetRequiredService<MockupData>();

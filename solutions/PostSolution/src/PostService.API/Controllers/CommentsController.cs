@@ -36,15 +36,16 @@ public class CommentsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetByPostId([FromQuery]Guid postId)
+    public async Task<IActionResult> GetByPostId([FromQuery] PaginatedCommentListDTO paginatedCommentListDTO)
     {
-        var comments = await _sender.Send(new GetCommentByPostIdQuery
+        var result = await _sender.Send(new GetCommentByPostIdQuery
         {
-            PostId = postId
+            PostId = paginatedCommentListDTO.PostId,
+            Skip = paginatedCommentListDTO.Skip
         });
 
-        comments.ThrowIfFailure();
-        return Ok(comments);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpPut]
