@@ -1,4 +1,4 @@
-@startuml getAllConversation
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -87,18 +87,18 @@ ConversationController -- GetAllConversationsQuery
 'Application Layer
 GetAllConversationsQuery ..|> "IRequest<TResponse>"
 GetAllConversationsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetAllConversationsQueryHandler -- GetAllConversationsQuery
-GetAllConversationsQueryHandler -- Result
-GetAllConversationsQueryHandler -- IApplicationDbContext
+GetAllConversationsQueryHandler "1" --"1..*" GetAllConversationsQuery
+GetAllConversationsQueryHandler "1" --"1..*" Result
+GetAllConversationsQueryHandler "1" o--"1..*" IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
 ConversationUser --|> BaseEntity
 Conversation --|> BaseAuditableEntity
-Conversation *-- ConversationUser
+Conversation "1..*"*-- ConversationUser
 BaseAuditableEntity --|>BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --* ConversationUser
-ApplicationDbContext --* Conversation
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Conversation
 @enduml

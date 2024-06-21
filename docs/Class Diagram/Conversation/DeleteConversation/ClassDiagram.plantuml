@@ -1,4 +1,4 @@
-@startuml deleteConversation
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -123,17 +123,17 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 ConversationController --|> BaseApiController
-ConversationController -- DeleteConversationCommand
+ConversationController "1" --"1..*" DeleteConversationCommand
 
-ConversationController -- DeleteConversationDTO
+ConversationController "1" --"1..*" DeleteConversationDTO
 
 DeleteConversationCommand ..|> "IRequest<TResponse>"
 DeleteConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-DeleteConversationCommandHandler -- DeleteConversationCommand
-DeleteConversationCommandHandler -- Result
-DeleteConversationCommandHandler -- IUnitOfWork
-DeleteConversationCommandHandler -- IApplicationDbContext
-DeleteConversationCommandHandler -- ConversationError
+DeleteConversationCommandHandler "1" --"1..*" DeleteConversationCommand
+DeleteConversationCommandHandler "1" --"1..*" Result
+DeleteConversationCommandHandler "1" o--"1..*" IUnitOfWork
+DeleteConversationCommandHandler "1" o--"1..*" IApplicationDbContext
+DeleteConversationCommandHandler "1" --"1..*" ConversationError
 
 
 IUnitOfWork <|.. UnitOfWork
@@ -141,18 +141,18 @@ IApplicationDbContext <|.. ApplicationDbContext
 Result <|-- Error
 Result <|-- "Result<T>"
 
-Error -- ConversationError
+Error "1" --"1..*" ConversationError
 
-ApplicationDbContext --* Conversation
-ApplicationDbContext --* GroupConversation
-ApplicationDbContext --* ConversationUser
-ApplicationDbContext --* Message
+ApplicationDbContext "1" o--"1..*" Conversation
+ApplicationDbContext "1" o--"1..*" GroupConversation
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
 ConversationUser --|> BaseEntity
-ConversationUser --* Conversation
+ConversationUser "1..*"--* Conversation
 Message --|> BaseAuditableEntity
-Message --* Conversation
+Message "1..*"--* Conversation
 BaseAuditableEntity --|> BaseEntity
 @enduml
