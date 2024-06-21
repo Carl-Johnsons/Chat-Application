@@ -154,20 +154,20 @@ UserJoinGroupConversationCommandHandler "1" o-- "1" GroupConversationError
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
 ISignalRService <|.. SignalRService
-Result "1" -- "1.*" Error
+Result "1" -- "1..*" Error
 Result <|-- "Result<T>"
-Error "1.*" --* "1" GroupConversationError
+Error "1..*" --* "1" GroupConversationError
 
-ApplicationDbContext "1" o-- "1.*" Conversation
-ApplicationDbContext "1" o-- "1.*" GroupConversation
-ApplicationDbContext "1" o-- "1.*" ConversationUser
-ApplicationDbContext "1" o-- "1.*" Message
+ApplicationDbContext "1" o-- "1..*" Conversation
+ApplicationDbContext "1" o-- "1..*" GroupConversation
+ApplicationDbContext "1" o-- "1..*" ConversationUser
+ApplicationDbContext "1" o-- "1..*" Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
 ConversationUser --|> BaseEntity
-ConversationUser "1.*" --* "1" Conversation
+ConversationUser "1..*" --* "1" Conversation
 Message --|> BaseAuditableEntity
-Message "1.*" --* "1" Conversation
+Message "1..*" --* "1" Conversation
 BaseAuditableEntity --|> BaseEntity
 @enduml
