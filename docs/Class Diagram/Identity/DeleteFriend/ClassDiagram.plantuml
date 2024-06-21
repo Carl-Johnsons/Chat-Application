@@ -1,4 +1,4 @@
-@startuml deleteFriend
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 class FriendController {
@@ -23,7 +23,7 @@ class Friend{
 }
 
 
-FriendController -- ApplicationDbContext
-FriendController -- DeleteFriendDTO
-ApplicationDbContext --* Friend
+FriendController "1" -- "1" ApplicationDbContext
+FriendController "1" --"1" DeleteFriendDTO
+ApplicationDbContext "1" o--"1.*" Friend
 @enduml

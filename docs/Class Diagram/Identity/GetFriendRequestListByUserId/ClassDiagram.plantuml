@@ -1,4 +1,4 @@
-@startuml getFriendRequestListByUserId
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -33,7 +33,7 @@ class FriendRequestResponseDTO{
     + CreatedAt: DateTime
 }
 
-FriendRequestController -- ApplicationDbContext
-FriendRequestController -- FriendRequestResponseDTO
-ApplicationDbContext --* FriendRequest
+FriendRequestController "1" -- "1" ApplicationDbContext
+FriendRequestController "1" -- "1" FriendRequestResponseDTO
+ApplicationDbContext "1" o-- "1..*" FriendRequest
 @enduml

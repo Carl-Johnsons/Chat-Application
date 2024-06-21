@@ -1,4 +1,4 @@
-@startuml getFriendListByUserId
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -45,9 +45,9 @@ class IdentityUser {
     + IdentityUser(string userName) 
 }
 
-FriendController -- ApplicationDbContext
-FriendController -- ApplicationUserResponseDTO
-ApplicationDbContext --* Friend
-ApplicationDbContext --* ApplicationUser
+FriendController "1" -- "1" ApplicationDbContext
+FriendController "1" -- "1" ApplicationUserResponseDTO
+ApplicationDbContext "1" o-- "1..*" Friend
+ApplicationDbContext "1" o-- "1..*" ApplicationUser
 ApplicationUser --|> IdentityUser
 @enduml
