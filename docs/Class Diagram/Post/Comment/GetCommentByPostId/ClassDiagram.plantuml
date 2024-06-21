@@ -1,0 +1,122 @@
+@startuml GetCommentByPostId
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class CommentsController {
+    +GetByPostId(Guid postId): Task<IActionResult>
+}
+
+class GetCommentByPostIdQuery {
+    +PostId: Guid
+}
+
+class GetCommentByPostIdQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetCommentByPostIdQuery request, CancellationToken cancellationToken): Task<Result<List<PostComment>?>>
+}
+
+class IApplicationDbContext {
+    +Comments: DbSet<Comment> 
+    +Posts: DbSet<Post> 
+    +PostComments: DbSet<PostComment> 
+}
+
+class ApplicationDbContext {
+    +Comments: DbSet<Comment> 
+    +Posts: DbSet<Post> 
+    +PostComments: DbSet<PostComment>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error> 
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T> 
+    +{static} Failure(Error error): Result<T?> 
+    +{static} Failure(IEnumerable<Error> errs): Result<T?> 
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class PostError {
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class Comment {
+    +Comment: string
+    +UserId: Guid
+}
+
+class PostComment {
+    +PostId: Guid
+    +CommentId: Guid
+    +Post: Post
+    +Comment: Comment
+}
+
+class Post {
+    +Content: string
+    +Active: bool 
+    +UserId: Guid
+}
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Get Comment By Post Id ====
+'API Layer
+CommentsController --|> BaseApiController
+CommentsController "1"--"1" GetCommentByPostIdQuery
+'Application Layer
+GetCommentByPostIdQuery ..|> "IRequest<TResponse>"
+GetCommentByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
+GetCommentByPostIdQueryHandler "1"--"1" GetCommentByPostIdQuery
+GetCommentByPostIdQueryHandler "1"--"1" Result
+GetCommentByPostIdQueryHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- PostError
+Comment --|> BaseAuditableEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostComment "*"--*"1" Post
+PostComment "*"--*"1" Comment
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Comment
+ApplicationDbContext "*" o--"1" PostComment
+ApplicationDbContext "*" o--"1" Post
+@enduml

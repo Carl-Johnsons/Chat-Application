@@ -1,0 +1,81 @@
+@startuml GetAllInteractions
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class InteractionsController {
+    +GetAll(): Task<IActionResult>
+}
+
+class GetAllInteractionsQuery {
+}
+
+class GetAllInteractionsQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetAllInteractionsQuery request, CancellationToken cancellationToken): Task<Result<List<Interaction>>>
+}
+
+class IApplicationDbContext {
+    +Interactions: DbSet<Interaction>
+}
+
+class ApplicationDbContext {
+    +Interactions: DbSet<Interaction>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result 
+    +{static} Failure(IEnumerable<Error> errs): Result 
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class Interaction {
+    +Value: string
+    +Code: string
+    +Gif: string
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Delete Interaction ====
+'API Layer
+InteractionsController --|> BaseApiController
+InteractionsController "1"--"1" GetAllInteractionsQuery
+'Application Layer
+GetAllInteractionsQuery ..|> "IRequest<TResponse>"
+GetAllInteractionsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
+GetAllInteractionsQueryHandler "1"--"1" GetAllInteractionsQuery
+GetAllInteractionsQueryHandler "1"--"1" Result
+GetAllInteractionsQueryHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- "Result<T>"
+Interaction --|> BaseEntity
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Interaction
+@enduml

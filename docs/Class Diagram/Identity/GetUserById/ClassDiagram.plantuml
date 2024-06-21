@@ -1,0 +1,46 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+class UsersController {
+    - _context: ApplicationDbContext
+    + Get(): IActionResult 
+}
+
+class ApplicationDbContext {
+    + UserBlocks: DbSet<UserBlock>
+    + Friends: DbSet<Friend>
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class ApplicationUserResponseDTO{
+    + Id:Guid
+    + Name: string?
+    + AvatarUrl: string?
+    + BackgroundUrl: string?
+    + Introduction: string?
+    + Dob: DateTime?
+    + PhoneNumber: string?
+    + Gender: string?
+    + Active: bool?    
+}
+
+
+class ApplicationUser {
+    + Name: string
+    + AvatarUrl: string
+    + BackgroundUrl: string
+    + Introduction: string
+    + Dob: DateTime
+    + Gender: string
+    + Active: bool
+}
+
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
+
+UsersController "1" o--"1" ApplicationDbContext
+UsersController "1"--"1" ApplicationUserResponseDTO
+ApplicationDbContext "*" o--"1" ApplicationUser
+ApplicationUser --|> IdentityUser
+@enduml

@@ -1,0 +1,228 @@
+@startuml Register
+hide circle
+skinparam classAttributeIconSize 0
+class Index{
+    - _interaction: IIdentityServerInteractionService
+    - _signInManager: SignInManager<ApplicationUser>
+    + View: RegisterViewModel
+    + Input: RegisterInputModel
+    + OnPost(): Task<IActionResult>
+    + _bus: IBus
+    + BuildModelAsync(string? returnUrl): Task
+}
+
+interface IIdentityServerInteractionService{
+    + GetAuthorizationContextAsync(string): Task<AuthorizationRequest?>
+    + DenyAuthorizationAsync(AuthorizationRequest, AuthorizationError)
+}
+
+class "SignInManager<TUser>" {
+    + PasswordSignInAsync(string username, string password, bool isPersistent, bool lockoutOnFailure)
+    + FindByNameAsync(string username)
+    + CreateAsync(AplicationUser user, string Password)
+}
+
+class UploadMultipleFileEvent{
+    + FileStreamEvents: List<FileStreamEvent>
+}
+
+class FileStreamEvent{
+    + FileName:string
+    + ContentType:string
+    + Stream: byte[]
+}
+
+class UploadMultipleFileEventResponseDTO{
+    + Files: List<UploadFileEventResponseDTO>
+}
+
+class UploadFileEventResponseDTO{
+    + Id: Guid
+    + Name: string
+    + ExtensionTypeCode: string
+    + Size: long
+    + Url: string
+}
+
+class ApplicationUser {
+    +Name: string
+    +AvatarUrl: string
+    +BackgroundUrl: string
+    +Introduction: string
+    +Dob: DateTime
+    +Gender: string
+    +Active: bool
+}
+
+class DeleteMultipleFileEvent{
+    + FileIds: List<Guid?>
+}
+
+class DeleteMultipleFileEventResponseDTO{
+    + Result: string
+}
+
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
+
+class PageModel
+
+' Upload Service
+
+class UploadMultipleFileConsumer{
+    - _sender: ISender
+    - _context: IApplicationDbContext
+    + Consume(ConsumeContext<UploadMultipleFileEvent> context): Task
+}
+interface "IConsumer<TMessage>"{
+    + Consume(ConsumeContext<TMessage> context): Task
+}
+interface IApplicationDbContext{
+    + CloudinaryFiles: DbSet<CloudinaryFile>
+    + ExtensionTypes: DbSet<ExtensionType>
+}
+interface IDbContext{
+    + Instance: DbContext
+}
+
+class FormFile{
+    + FormFile(Stream baseStream, long baseStreamOffset, long length, string name, string fileName)
+}
+class ApplicationDbContext{
+    - CloudinaryFiles: DbSet<CloudinaryFile>
+    - ExtensionTypes: DbSet<ExtensionType>
+    - Instance: DbContext
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +void ThrowIfFailure()
+    +{static} Result Success()
+    +{static} Result Failure(Error err)
+    +{static} Result Failure(IEnumerable<Error> errs)
+}
+
+class "Result<T>" {
+    +T Value
+    +{static} Result<T> Success(T value)
+    +{static} new Result<T?> Failure(Error error)
+    +{static} new Result<T?> Failure(IEnumerable<Error> errs)
+}
+
+class Error {
+    +{static} readonly Error None
+    +{static} implicit operator Result(Error err)
+}
+
+class CreateMultipleCloudinaryImageFileCommand{
+    FormFiles: List<IFormFile>
+}
+
+class CreateMultipleCloudinaryImageFileCommandHandler{
+    - _context: IApplicationDbContext
+    - _unitOfWork: IUnitOfWork
+    - _fileUtility: IFileUtility
+    - _cloudinary: Cloudinary
+    + Handle(CreateCloudinaryImageFileCommand request, CancellationToken cancellationToken): Task<Result<CloudinaryFile?>>
+}
+
+class CloudinaryFile{
+    + PublicId: string
+    + Name: string
+    + ExtensionTypeId: Guid
+    + Size: long
+    + Url: string
+    + ExtensionType: ExtensionType
+}
+
+class BaseEntity{
+    + Id: Guid
+}
+
+class UnitOfWork{
+    - _context: ApplicationDbContext
+    + SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+interface IUnitOfWork{
+    + SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class FileUtility{
+    + getFileType(string fileName): string
+
+}
+
+interface IFileUtility{
+    + getFileType(string fileName): string
+}
+
+class CloudinaryFileError{
+    + {static} InvalidFile(string Type, string ChosenFileType): Error
+}
+
+class ExtensionType{
+    + Code: string
+    + Value: string
+    + Type: string
+}
+
+class Cloudinary{
+    + UploadAsync(ImageUploadParams parameters, CancellationToken? cancellationToken = null): Task<ImageUploadResult>
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+Index "1" o---"1" IIdentityServerInteractionService
+Index "1" o----"1" "SignInManager<TUser>"
+Index "1"--"1" UploadMultipleFileEvent
+Index "1"--"1" UploadMultipleFileEventResponseDTO
+Index "1" o--"1" ApplicationUser
+Index "1"---"1" DeleteMultipleFileEvent
+Index "1"---"1" DeleteMultipleFileEventResponseDTO
+Index --|> PageModel
+UploadMultipleFileEventResponseDTO "1"--"1" UploadFileEventResponseDTO
+UploadMultipleFileEvent "1"--"1" FileStreamEvent
+ApplicationUser --|> IdentityUser
+
+' ===== Upload service =====
+' Api Layer
+UploadMultipleFileConsumer "1"--"1" UploadMultipleFileEvent
+UploadMultipleFileConsumer "1"--"1" UploadFileEventResponseDTO
+UploadMultipleFileConsumer "1"--"1" UploadMultipleFileEventResponseDTO
+UploadMultipleFileConsumer "1" o--"1" IApplicationDbContext
+UploadMultipleFileConsumer ----|> "IConsumer<TMessage>"
+UploadMultipleFileConsumer "1"----"1" FormFile
+' Application Layer
+CreateMultipleCloudinaryImageFileCommand ..|> "IRequest<TResponse>"
+UploadMultipleFileConsumer -- CreateMultipleCloudinaryImageFileCommand
+CreateMultipleCloudinaryImageFileCommandHandler "1" o---"1" IUnitOfWork
+CreateMultipleCloudinaryImageFileCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" CreateMultipleCloudinaryImageFileCommand
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" "Result<T>"
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" CloudinaryFile
+CreateMultipleCloudinaryImageFileCommandHandler "1" o---"1" IFileUtility
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" ExtensionType
+CreateMultipleCloudinaryImageFileCommandHandler "1"---"1" CloudinaryFileError
+CreateMultipleCloudinaryImageFileCommandHandler "1"---"1" Cloudinary
+' Domain Layer
+ExtensionType --|> BaseEntity
+CloudinaryFile --|> BaseEntity
+Result -- Error
+"Result<T>" --|> Result
+CloudinaryFileError --- Error
+' Infrastructure Layer
+FileUtility ..|> IFileUtility
+UnitOfWork ..|> IUnitOfWork
+ApplicationDbContext ..|> IApplicationDbContext
+IApplicationDbContext --|> IDbContext
+@enduml

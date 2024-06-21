@@ -1,0 +1,125 @@
+@startuml getPostInteraction
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class PostsController {
+    +GetInteraction(Guid id): Task<IActionResult>
+}
+
+class GetInteractionByPostIdQuery {
+    +PostId: Guid
+}
+
+class GetInteractionByPostIdQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetInteractionByPostIdQuery request, CancellationToken cancellationToken): Task<Result<List<PostInteract>?>> 
+}
+
+class IApplicationDbContext {
+    +Posts: DbSer<Post> 
+    +Interactions: DbSet<Interaction>
+    +PostInteracts: DbSet<PostInteract>
+}
+
+class ApplicationDbContext {
+    +Posts: DbSer<Post> 
+    +Interactions: DbSet<Interaction>
+    +PostInteracts: DbSet<PostInteract>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    +{static} None: Error 
+    +{static} Result(Error err): implicit operator
+}
+
+class PostError {
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class Post {
+    +Content: string
+    +Active: bool
+    +UserId: Guid
+}
+
+class Interaction {
+    +Value: string
+    +Code: string
+    +Gif: string
+}
+
+class PostInteract {
+    +PostId: Guid
+    +InteractionId: Guid
+    +UserId: Guid
+    +Post: Post
+    +Interaction: Interaction
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Get Post Interaction====
+'API Layer
+PostsController --|> BaseApiController
+PostsController "1"--"1" GetInteractionByPostIdQuery
+'Application Layer
+GetInteractionByPostIdQuery ..|> "IRequest<TResponse>"
+GetInteractionByPostIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
+GetInteractionByPostIdQueryHandler "1"--"1" GetInteractionByPostIdQuery
+GetInteractionByPostIdQueryHandler "1"--"1" Result
+GetInteractionByPostIdQueryHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- PostError
+Interaction --|> BaseEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostInteract "*"--*"1" Post
+PostInteract "*"--*"1" Interaction
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Post
+ApplicationDbContext "*" o--"1" Interaction
+ApplicationDbContext "*" o--"1" PostInteract
+@enduml

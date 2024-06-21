@@ -1,0 +1,197 @@
+@startuml  getConversationListByUserId
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class ConversationController {
+    +GetConversationListByUserId(): async Task<IActionResult>
+}
+
+class GetAllConversationsQuery{
+
+}
+class GetAllConversationsQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetAllConversationsQuery request, CancellationToken cancellationToken): async Task<Result<List<Conversation>>>
+}
+
+class GetConversationByIdQuery{
+    +ConversationId: Guid
+}
+
+class GetConversationByIdQueryHandler{
+    -_context: IApplicationDbContext
+    +Handle(GetConversationByIdQuery request, CancellationToken cancellationToken): async Task<Result<Conversation?>>
+}
+
+class GetConversationListByUserIdQuery{
+    +UserId: Guid
+}
+
+class GetConversationListByUserIdQueryHandler{
+    -_context: IApplicationDbContext
+    +Handle(GetConversationListByUserIdQuery request, CancellationToken cancellationToken): async Task<Result<ConversationsResponseDTO>>
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    {static} +Success(): Result
+    {static} +Failure(Error err): Result
+    {static} +Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +T Value
+    {static} +Success(T value): Result<T>
+    {static} +Failure(Error error): Result<T?>
+    {static} +Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    {static} +None: Error
+    {static} +implicit operator Result(Error err): Result
+}
+
+class GetConversationByIdDTO{
+    +ConversationId: Guid
+}
+
+class ConversationsResponseDTO{
+    +Conversations: List<ConversationResponseDTO>
+    +GroupConversations: List<GroupConversationResponseDTO>
+}
+
+class ConversationResponseDTO{
+    +Id: Guid
+    +Type: string
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+    +Users: List<ConversationUserResponseDTO>
+}
+
+class ConversationUserResponseDTO{
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+}
+
+class GroupConversationResponseDTO{
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
+}
+
+class ConversationError{
+    {static} +NotFound: Error
+    {static} +AlreadyExistConversation: Error
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +Type: string
+    +Users: List<ConversationUser>
+}
+
+class GroupConversation {
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+    +Conversation: Conversation
+}
+
+class Message {
+    +SenderId: Guid?
+    +ConversationId: Guid
+    +Content: string
+    +Source: string
+    +AttachedFilesURL: string?
+    +Active: bool?
+    +Conversation: Conversations
+}
+
+ConversationController --|> BaseApiController
+ConversationController --> GetAllConversationsQuery
+ConversationController --> GetConversationByIdQuery
+ConversationController --> GetConversationListByUserIdQuery
+
+ConversationController --> GetConversationByIdDTO
+
+GetAllConversationsQueryHandler --> GetAllConversationsQuery
+GetAllConversationsQueryHandler --> Result
+GetAllConversationsQueryHandler --> IApplicationDbContext
+GetAllConversationsQueryHandler --> ConversationError
+
+GetConversationByIdQueryHandler --> GetConversationByIdQuery
+GetConversationByIdQueryHandler --> Result
+GetConversationByIdQueryHandler --> IApplicationDbContext
+GetConversationByIdQueryHandler --> ConversationError
+
+GetConversationListByUserIdQueryHandler --> GetConversationListByUserIdQuery
+GetConversationListByUserIdQueryHandler --> Result
+GetConversationListByUserIdQueryHandler --> IApplicationDbContext
+GetConversationListByUserIdQueryHandler --> ConversationsResponseDTO
+GetConversationListByUserIdQueryHandler --> ConversationError
+
+ConversationsResponseDTO --> ConversationResponseDTO
+ConversationsResponseDTO --> GroupConversationResponseDTO
+
+ConversationResponseDTO --> ConversationUserResponseDTO
+GroupConversationResponseDTO --|> ConversationResponseDTO
+
+IApplicationDbContext <|.. ApplicationDbContext
+Result <-- Error
+Result <|-- "Result<T>"
+Error --> ConversationError
+
+ApplicationDbContext --> Conversation
+ApplicationDbContext --> GroupConversation
+ApplicationDbContext --> ConversationUser
+ApplicationDbContext --> Message
+
+Conversation --|> BaseAuditableEntity
+GroupConversation --|> Conversation
+ConversationUser --|> BaseEntity
+ConversationUser --* Conversation
+Message --|> BaseAuditableEntity
+Message --* Conversation
+BaseAuditableEntity --|> BaseEntity
+@enduml

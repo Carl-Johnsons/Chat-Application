@@ -1,0 +1,53 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class FriendController {
+    - _context: ApplicationDbContext
+    - _httpContextAccessor: IHttpContextAccessor
+    + Get(): Task<IActionResult> 
+}
+
+class ApplicationDbContext {
+    + Friends: DbSet<Friend>
+    + Users: DbSet<ApplicationUser>
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Friend{
+    + UserId: string
+    + FriendId: string
+}
+
+class ApplicationUserResponseDTO{
+    + Id:Guid
+    + Name: string?
+    + AvatarUrl: string?
+    + BackgroundUrl: string?
+    + Introduction: string?
+    + Dob: DateTime?
+    + PhoneNumber: string?
+    + Gender: string?
+    + Active: bool?    
+}
+
+class ApplicationUser {
+    + Name: string
+    + AvatarUrl: string
+    + BackgroundUrl: string
+    + Introduction: string
+    + Dob: DateTime
+    + Gender: string
+    + Active: bool
+}
+
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
+
+FriendController "1" o-- "1" ApplicationDbContext
+FriendController "1" -- "1" ApplicationUserResponseDTO
+ApplicationDbContext "1" o-- "1..*" Friend
+ApplicationDbContext "1" o-- "1..*" ApplicationUser
+ApplicationUser --|> IdentityUser
+@enduml
