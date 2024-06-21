@@ -167,44 +167,44 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 MessageController --|> BaseApiController
-MessageController -- SendClientMessageDTO
-MessageController -- SendClientMessageCommand
+MessageController "1"--"1" SendClientMessageDTO
+MessageController "1"--"1" SendClientMessageCommand
 
 SendClientMessageCommand ..|> "IRequest<TResponse>"
 SendClientMessageCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-SendClientMessageCommandHandler -- SendClientMessageCommand
-SendClientMessageCommandHandler -- ConversationError
-SendClientMessageCommandHandler -- ISignalRService
-SendClientMessageCommandHandler -- UploadMultipleFileEvent
-SendClientMessageCommandHandler -- UploadMultipleFileEventResponseDTO
-SendClientMessageCommandHandler -- Result
-SendClientMessageCommandHandler -- IUnitOfWork
-SendClientMessageCommandHandler -- IApplicationDbContext
-SendClientMessageCommandHandler -- GroupConversationError
+SendClientMessageCommandHandler "1"--"1" SendClientMessageCommand
+SendClientMessageCommandHandler "1"--"1" ConversationError
+SendClientMessageCommandHandler "1" o-- "1" ISignalRService
+SendClientMessageCommandHandler "1"--"1" UploadMultipleFileEvent
+SendClientMessageCommandHandler "1"--"1" UploadMultipleFileEventResponseDTO
+SendClientMessageCommandHandler "1"--"1" Result
+SendClientMessageCommandHandler "1" o-- "1" IUnitOfWork
+SendClientMessageCommandHandler "1" o-- "1" IApplicationDbContext
+SendClientMessageCommandHandler "1"--"1" GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
 ISignalRService <|.. SignalRService
-Result -- Error
+Result "1" -- "1..*" Error
 Result <|-- "Result<T>"
-Error --* GroupConversationError
+Error "1..*" --* "1" GroupConversationError
 
-ApplicationDbContext o-- Conversation
-ApplicationDbContext o-- GroupConversation
-ApplicationDbContext o-- ConversationUser
-ApplicationDbContext o-- Message
+ApplicationDbContext "1" o-- "1..*" Conversation
+ApplicationDbContext "1" o-- "1..*" GroupConversation
+ApplicationDbContext "1" o-- "1..*" ConversationUser
+ApplicationDbContext "1" o-- "1..*" Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
 ConversationUser --|> BaseEntity
-ConversationUser --* Conversation
+ConversationUser "1..*" --* "1" Conversation
 Message --|> BaseAuditableEntity
-Message --* Conversation
+Message "1..*" --* "1" Conversation
 BaseAuditableEntity --|> BaseEntity
 
-UploadMultipleFileEvent *-- FileStreamEvent
+UploadMultipleFileEvent "1" *-- "1..*" FileStreamEvent
 
-UploadMultipleFileEventResponseDTO *-- UploadFileEventResponseDTO
+UploadMultipleFileEventResponseDTO "1" *-- "1..*" UploadFileEventResponseDTO
 
 UploadFileEventResponseDTO --|> BaseEntity
 @enduml
