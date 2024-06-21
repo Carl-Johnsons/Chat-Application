@@ -1,0 +1,139 @@
+@startuml updateComment
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender 
+    #_httpContextAccessor: HttpContextAccessor 
+}
+
+class CommentsController {
+    +Update(UpdateCommentDTO updateCommentDTO): Task<IActionResult>
+}
+
+class UpdateCommentCommand {
+    +CommentId: Guid 
+    +Content: string
+}
+
+class UpdateCommentCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork 
+    +Handle(UpdateCommentCommand request, CancellationToken cancellationToken): Task<Result>
+}
+
+class IApplicationDbContext {
+    +Comments: DbSet<Comment> 
+    +Posts: DbSet<Post> 
+    +PostComments: DbSet<PostComment> 
+}
+
+class ApplicationDbContext {
+    +Comments: DbSet<Comment> 
+    +Posts: DbSet<Post> 
+    +PostComments: DbSet<PostComment> 
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void 
+}
+
+class Result {
+    +IsFailure: bool 
+    +IsSuccess: bool 
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void 
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class IUnitOfWork {
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class PostError {
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
+}
+
+class CommentError {
+    +{static} NotFound: Error
+}
+
+class UpdateCommentDTO {
+    +CommentId: Guid
+    +Content: string
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class Comment {
+    +Comment: string
+    +UserId: Guid
+}
+
+class PostComment {
+    +PostId: Guid
+    +CommentId: Guid
+    +Post: Post
+    +Comment: Comment
+}
+
+class Post {
+    +Content: string
+    +Active: bool
+    +UserId: Guid
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Update Comment ====
+'API Layer
+CommentsController --|> BaseApiController
+CommentsController "1"--"1" UpdateCommentCommand
+CommentsController "1"--"1" UpdateCommentDTO
+'Application Layer
+UpdateCommentCommand ..|> "IRequest<TResponse>"
+UpdateCommentCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+UpdateCommentCommandHandler "1"--"1" UpdateCommentCommand
+UpdateCommentCommandHandler "1"--"1" Result
+UpdateCommentCommandHandler "1" o--"1" IUnitOfWork
+UpdateCommentCommandHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Error -- PostError
+Error -- CommentError
+Comment --|> BaseAuditableEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostComment "*"--*"1" Post
+PostComment "*"--*"1" Comment
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Comment
+ApplicationDbContext "*" o--"1" PostComment
+ApplicationDbContext "*" o--"1" Post
+@enduml

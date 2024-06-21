@@ -1,0 +1,103 @@
+@startuml updateTag
+hide circle
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class TagsController {
+    +Update(UpdateTagDTO updateTagDTO): Task<IActionResult> 
+}
+
+class UpdateTagCommand {
+    +TagId: Guid 
+    +Value: string
+}
+
+class UpdateTagCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(UpdateTagCommand request, CancellationToken cancellationToken): Task<Result>
+}
+
+class IApplicationDbContext {
+    +Tags: DbSet<Tag>
+}
+
+class ApplicationDbContext {
+    +Tags: DbSet<Tag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class IUnitOfWork {
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class TagError {
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
+}
+
+class UpdateTagDTO {
+    +Id: Guid 
+    +Value: string 
+}
+
+class BaseEntity {
+    +Id: Guid 
+}
+
+class Tag {
+    +Value: string
+    +Code: string
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Update Post ====
+'API Layer
+TagsController --|> BaseApiController
+TagsController -- UpdateTagCommand
+TagsController -- UpdateTagDTO
+'Application Layer
+UpdateTagCommand ..|> "IRequest<TResponse>"
+UpdateTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+UpdateTagCommandHandler "1"--"1" UpdateTagCommand
+UpdateTagCommandHandler "1"--"1" Result
+UpdateTagCommandHandler "1" o--"1" IUnitOfWork
+UpdateTagCommandHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Error -- TagError
+Tag --|> BaseEntity
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Tag
+@enduml

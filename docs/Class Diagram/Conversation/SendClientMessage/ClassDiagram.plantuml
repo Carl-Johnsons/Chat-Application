@@ -1,0 +1,210 @@
+@startuml sendClientMessage
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class MessageController {
+    +SendClientMessage(SendClientMessageDTO sendClientMessageDTO): async Task<IActionResult>
+}
+
+class SendClientMessageCommand {
+    +SenderId: Guid
+    +ConversationId: Guid
+    +Content: string
+}
+
+class SendClientMessageCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    -_signalRService: ISignalRService
+    -_bus: IBus
+    +Handle(SendClientMessageCommand request, CancellationToken cancellationToken): async Task<Result<Message>>
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    {static} +Success(): Result
+    {static} +Failure(Error err): Result
+    {static} +Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +T Value
+    {static} +Success(T value): Result<T>
+    {static} +Failure(Error error): Result<T?>
+    {static} +Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    {static} +None: Error
+    {static} +implicit operator Result(Error err): Result
+}
+
+class SendClientMessageDTO{
+    +ConversationId: Guid
+    +Content: string
+}
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class ISignalRService{
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
+class SignalRService{
+    -_logger: ILogger<SignalRService>
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
+class ConversationError {
+    {static} +AlreadyExistConversation: Error
+    {static} +NotFound: Error
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +Type: string
+    +Users: List<ConversationUser>
+}
+
+class GroupConversation {
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+    +Conversation: Conversation
+}
+
+class Message {
+    +SenderId: Guid?
+    +ConversationId: Guid
+    +Content: string
+    +Source: string
+    +AttachedFilesURL: string?
+    +Active: bool?
+    +Conversation: Conversations
+}
+
+class UploadMultipleFileEvent{
+    +FileStreamEvents: List<FileStreamEvent>
+}
+
+class FileStreamEvent{
+    +FileName: string
+    +ContentType: string
+    +Stream: byte[]
+}
+
+class UploadMultipleFileEventResponseDTO{
+    +Files: List<UploadFileEventResponseDTO>
+}
+
+class UploadFileEventResponseDTO{
+    +Name: string
+    +ExtensionTypeCode: string
+    +Size: long 
+    +Url: string
+}
+class GroupConversationError {
+    {static} +NotEnoughMember: Error
+    {static} +NotFound: Error
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+MessageController --|> BaseApiController
+MessageController "1"--"1" SendClientMessageDTO
+MessageController "1"--"1" SendClientMessageCommand
+
+SendClientMessageCommand ..|> "IRequest<TResponse>"
+SendClientMessageCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+SendClientMessageCommandHandler "1"--"1" SendClientMessageCommand
+SendClientMessageCommandHandler "1"--"1" ConversationError
+SendClientMessageCommandHandler "1" o-- "1" ISignalRService
+SendClientMessageCommandHandler "1"--"1" UploadMultipleFileEvent
+SendClientMessageCommandHandler "1"--"1" UploadMultipleFileEventResponseDTO
+SendClientMessageCommandHandler "1"--"1" Result
+SendClientMessageCommandHandler "1" o-- "1" IUnitOfWork
+SendClientMessageCommandHandler "1" o-- "1" IApplicationDbContext
+SendClientMessageCommandHandler "1"--"1" GroupConversationError
+
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ISignalRService <|.. SignalRService
+Result "1" -- "1..*" Error
+Result <|-- "Result<T>"
+Error "1..*" --* "1" GroupConversationError
+
+ApplicationDbContext "1" o-- "1..*" Conversation
+ApplicationDbContext "1" o-- "1..*" GroupConversation
+ApplicationDbContext "1" o-- "1..*" ConversationUser
+ApplicationDbContext "1" o-- "1..*" Message
+
+Conversation --|> BaseAuditableEntity
+GroupConversation --|> Conversation
+ConversationUser --|> BaseEntity
+ConversationUser "1..*" --* "1" Conversation
+Message --|> BaseAuditableEntity
+Message "1..*" --* "1" Conversation
+BaseAuditableEntity --|> BaseEntity
+
+UploadMultipleFileEvent "1" *-- "1..*" FileStreamEvent
+
+UploadMultipleFileEventResponseDTO "1" *-- "1..*" UploadFileEventResponseDTO
+
+UploadFileEventResponseDTO --|> BaseEntity
+@enduml

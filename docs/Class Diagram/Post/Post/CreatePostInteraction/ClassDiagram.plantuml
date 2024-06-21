@@ -1,0 +1,143 @@
+@startuml createPostInteraction
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class PostsController {
+    +CreateInteraction(CreatePostInteractionDTO createPostInteractionDTO): Task<IActionResult>
+}
+
+class CreatePostInteractionCommand {
+    +Value: string
+    +Gif: string
+    +Code: string
+}
+
+class CreatePostInteractionCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(CreatePostInteractionCommand request, CancellationToken cancellationToken): Task<Result> 
+}
+
+class IApplicationDbContext {
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
+}
+
+class ApplicationDbContext {
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class IUnitOfWork {
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class InteractionError {
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
+}
+
+class PostError {
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
+}
+
+class CreatePostInteractionDTO {
+    +PostId: Guid
+    +InteractionId: Guid
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class Interaction {
+    +Value: string
+    +Code: string
+    +Gif: string
+}
+
+class Post {
+    +Content: string
+    +Active: bool
+    +UserId: Guid
+}
+
+class PostInteract {
+    +PostId: Guid
+    +InteractionId: Guid
+    +UserId: Guid
+    +Post: Post
+    +Interaction: Interaction
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Create PostInteract ====
+'API Layer
+PostsController --|> BaseApiController
+PostsController "1"--"1" CreatePostInteractionCommand
+PostsController "1"--"1" CreatePostInteractionDTO
+'Application Layer
+CreatePostInteractionCommand ..|> "IRequest<TResponse>"
+CreatePostInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+CreatePostInteractionCommandHandler "1"--"1" CreatePostInteractionCommand
+CreatePostInteractionCommandHandler "1"--"1" Result
+CreatePostInteractionCommandHandler "1" o--"1" IUnitOfWork
+CreatePostInteractionCommandHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Error -- InteractionError
+Error -- PostError
+Interaction --|> BaseEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostInteract "*"--*"1" Post
+PostInteract "*"--*"1" Interaction
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Interaction
+ApplicationDbContext "*" o--"1" PostInteract
+ApplicationDbContext "*" o--"1" Post
+@enduml

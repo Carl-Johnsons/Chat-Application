@@ -1,0 +1,130 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor 
+}
+
+class ConversationController {
+    +GetConversationListByUserId(): Task<IActionResult>
+}
+
+class GetConversationListByUserIdQuery {
+    +UserId: Guid
+}
+
+class GetConversationListByUserIdQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetConversationListByUserIdQuery request, CancellationToken cancellationToken): Task<Result<ConversationsResponseDTO>>
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +ConversationUsers: DbSet<ConversationUser>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class ConversationUserResponseDTO {
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+}
+
+class GroupConversationResponseDTO {
+    +Name: string
+    +ImageURL: string? 
+    +InviteURL: string? 
+}
+
+class ConversationResponseDTO {
+    +Id: Guid
+    +Type: string
+    +CreatedAt: DateTime 
+    +UpdatedAt: DateTime
+    +Users: List<ConversationUserResponseDTO>
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class Conversation {
+    +Type: string
+    +Users: List<ConversationUser>
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string 
+    +ReadTime: DateTime?
+    +Conversation: Conversation
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Get Conversation List By User Id ====
+'API Layer
+ConversationController --|> BaseApiController
+ConversationController "1" --"1..*" GetConversationListByUserIdQuery
+'Application Layer
+GetConversationListByUserIdQuery ..|> "IRequest<TResponse>"
+GetConversationListByUserIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
+GetConversationListByUserIdQueryHandler "1" --"1..*" GetConversationListByUserIdQuery
+GetConversationListByUserIdQueryHandler "1" --"1..*" Result
+GetConversationListByUserIdQueryHandler "1" o--"1..*" IApplicationDbContext
+GetConversationListByUserIdQueryHandler "1" --"1..*" ConversationUserResponseDTO
+GetConversationListByUserIdQueryHandler "1" --"1..*" ConversationResponseDTO
+GetConversationListByUserIdQueryHandler "1" --"1..*" GroupConversationResponseDTO
+'Domain Layer
+GroupConversationResponseDTO --|> ConversationResponseDTO
+Result <|-- Error
+Result <|-- "Result<T>"
+ConversationUser --|> BaseEntity
+Conversation --|> BaseAuditableEntity
+Conversation "1..*"*-- ConversationUser
+BaseAuditableEntity --|>BaseEntity
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Conversation
+@enduml

@@ -1,0 +1,68 @@
+@startuml updateUser
+hide circle
+skinparam classAttributeIconSize 0
+class UsersController {
+    - _context: ApplicationDbContext
+    - _userManager: UserManager<ApplicationUser>
+    - _httpContextAccessor: IHttpContextAccessor
+    - _bus: IBus
+    + Put(UpdateUserDTO updateUserDTO): Task<IActionResult>
+}
+
+class ApplicationDbContext {
+    +Users: DbSet<ApplicationUser>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+
+class UpdateUserDTO {
+    +Name: string?
+    +AvatarFile: IFormFile?
+    +BackgroundFile: IFormFile?
+    +Introduction: string?
+    +Gender: string?
+    +Dob: DateTime?
+}
+
+class FileStreamEvent
+{
+    +FileName: string
+    +ContentType: string
+    +Stream:byte[]
+}
+class BinaryReader
+class UpdateFileEvent{
+    +Url: string
+    +FileStreamEvent:FileStreamEvent
+}
+
+class UploadFileEventResponseDTO{
+    +Name: string
+    +ExtensionTypeCode: string
+    +Size: long
+    +Url: string
+}
+
+class ApplicationUser {
+    +Name: string
+    +AvatarUrl: string
+    +BackgroundUrl: string
+    +Introduction: string
+    +Dob: DateTime
+    +Gender: string
+    +Active: bool
+}
+
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
+
+UsersController "1" o--"1" ApplicationDbContext
+UsersController "1"--"1" UpdateUserDTO
+UsersController "1"--"1" BinaryReader
+UsersController "1"--"1" FileStreamEvent
+UsersController "1"--"1" UpdateFileEvent
+UsersController "1"--"1" UploadFileEventResponseDTO
+ApplicationDbContext "*" o--"1" ApplicationUser
+ApplicationUser --|> IdentityUser
+@enduml

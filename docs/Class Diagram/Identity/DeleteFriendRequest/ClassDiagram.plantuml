@@ -1,0 +1,33 @@
+@startuml deleteFriendRequest
+hide circle
+skinparam classAttributeIconSize 0
+class FriendRequestController {
+    - _context: ApplicationDbContext
+    + Delete(DeleteFriendRequestDTO deleteFriendRequestDTO): Task<IActionResult>
+}
+
+class ApplicationDbContext {
+    + FriendRequests: DbSet<FriendRequest> 
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+
+class DeleteFriendRequestDTO {
+    + FriendRequestId: string
+}
+
+class FriendRequest {
+    + Id: Guid
+    + SenderId: string 
+    + ReceiverId: string 
+    + Content: string 
+    + Status: string 
+    + CreatedAt: DateTime
+    + Sender: ApplicationUser 
+    + Receiver: ApplicationUser 
+}
+
+FriendRequestController "1" o-- "1" ApplicationDbContext
+FriendRequestController "1" -- "1" DeleteFriendRequestDTO
+ApplicationDbContext "1" o-- "1..*" FriendRequest
+@enduml

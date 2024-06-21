@@ -1,0 +1,102 @@
+@startuml deleteTag
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class TagsController {
+    +Delete(DeleteTagDTO deleteTagDTO) Task<IActionResult>
+}
+
+class DeleteTagCommand {
+    +TagId: Guid
+}
+
+class DeleteTagCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(DeleteTagCommand request, CancellationToken cancellationToken): Task<Result>
+}
+
+class IApplicationDbContext {
+    +Tags: DbSet<Tag>
+}
+
+class ApplicationDbContext {
+    +Tags: DbSet<Tag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error> 
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class IUnitOfWork {
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class TagError {
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
+}
+
+class DeleteTagDTO {
+    +Id: Guid
+}
+
+class BaseEntity {
+    +Id: Guid 
+}
+
+class Tag {
+    +Value: string
+    +Code: string
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Delete Tag Post ====
+'API Layer
+TagsController --|> BaseApiController
+TagsController "1"--"1" DeleteTagCommand
+TagsController "1"--"1" DeleteTagDTO
+'Application Layer
+DeleteTagCommand ..|> "IRequest<TResponse>"
+DeleteTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+DeleteTagCommandHandler "1"--"1" DeleteTagCommand
+DeleteTagCommandHandler "1"--"1" Result
+DeleteTagCommandHandler "1" o--"1" IUnitOfWork
+DeleteTagCommandHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Error -- TagError
+Tag --|> BaseEntity
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Tag
+@enduml

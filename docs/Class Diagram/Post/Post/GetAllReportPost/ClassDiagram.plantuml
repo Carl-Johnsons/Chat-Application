@@ -1,0 +1,118 @@
+@startuml getAllReportPost
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender 
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class PostsController {
+    +GetAllReportPost(): Task<IActionResult>
+}
+
+class GetListReportPostQuery {}
+
+class GetListReportPostQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetListReportPostQuery request, CancellationToken cancellationToken): Task<Result<List<PostReportListDTO>?>>
+}
+
+class IApplicationDbContext {
+    +Posts: DbSer<Post>
+    +PostReports: DbSet<PostReport>
+}
+
+class ApplicationDbContext {
+    +Posts: DbSer<Post>
+    +PostReports: DbSet<PostReport>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void 
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class PostError {
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
+}
+
+class PostReportListDTO {
+    +PostId: Guid
+    +PostCount: int
+}
+
+class BaseEntity {
+    +Id: Guid 
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime 
+}
+
+class Post {
+    +Content: string
+    +Active: bool
+    +UserId: Guid
+}
+
+class PostReport {
+    +PostId: Guid 
+    +Reason: string 
+    +UserId: Guid 
+    +Post: Post
+} 
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Get All Report Post ====
+'API Layer
+PostsController --|> BaseApiController
+PostsController "1"--"1" GetListReportPostQuery
+'Application Layer
+GetListReportPostQuery ..|> "IRequest<TResponse>"
+GetListReportPostQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
+GetListReportPostQueryHandler "1"--"1" GetListReportPostQuery
+GetListReportPostQueryHandler "1"--"1" Result
+GetListReportPostQueryHandler "*" o--"1" IApplicationDbContext
+GetListReportPostQueryHandler "1"--"1" PostReportListDTO
+'Domain Layer
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- PostError
+PostReport --|> BaseAuditableEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostReport "*"--*"1" Post
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Post
+ApplicationDbContext "*" o--"1" PostReport
+@enduml

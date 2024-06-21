@@ -1,0 +1,126 @@
+@startuml createReportPost
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class PostsController {
+    +CreateReportPost(CreatePostReportDTO createPostReport): Task<IActionResult>
+}
+
+class CreatePostReportCommand {
+    +PostId: Guid
+    +UserId: Guid
+    +Reason: string
+}
+
+class CreatePostReportCommandHandler {
+    -_context: IApplicationDbContext 
+    -_unitOfWork: IUnitOfWork
+    +Handle(CreatePostReportCommand request, CancellationToken cancellationToken): Task<Result> 
+}
+
+class IApplicationDbContext {
+    +Posts: DbSet<Post> 
+    +PostReports: DbSet<PostReport>
+}
+
+class ApplicationDbContext {
+    +Posts: DbSet<Post>
+    +PostReports: DbSet<PostReport>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class IUnitOfWork {
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class PostError {
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
+}
+
+class CreatePostReportDTO {
+    +PostId: Guid
+    +Reason: string
+}
+
+class BaseEntity {
+    +Id: Guid 
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class Post {
+    +Content: string
+    +Active: bool
+    +UserId: Guid
+}
+
+class PostReport {
+    +PostId: Guid
+    +Reason: string
+    +UserId: Guid
+    +Post: Post
+} 
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Create PostInteract ====
+'API Layer
+PostsController --|> BaseApiController
+PostsController "1"--"1" CreatePostReportCommand
+PostsController "1"--"1" CreatePostReportDTO
+'Application Layer
+CreatePostReportCommand ..|> "IRequest<TResponse>"
+CreatePostReportCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+CreatePostReportCommandHandler "1"--"1" CreatePostReportCommand
+CreatePostReportCommandHandler "1"--"1" Result
+CreatePostReportCommandHandler "*" o--"1" IUnitOfWork
+CreatePostReportCommandHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Error -- PostError
+PostReport --|> BaseAuditableEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostReport "*"--*"1" Post
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" PostReport
+ApplicationDbContext "*" o--"1" Post
+@enduml

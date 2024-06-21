@@ -1,0 +1,109 @@
+@startuml updateInteraction
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class InteractionsController {
+    +Update(UpdateInteractionDTO updateInteractionDTO): Task<IActionResult>
+}
+
+class UpdateInteractionCommand {
+    +Id: Guid
+    +Value: string
+    +Gif: string
+    +Code: string
+}
+
+class UpdateInteractionCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(UpdateInteractionCommand request, CancellationToken cancellationToken): Task<Result>
+}
+
+class IApplicationDbContext {
+    +Interactions: DbSet<Interaction>
+}
+
+class ApplicationDbContext {
+    +Interactions: DbSet<Interaction>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void 
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class IUnitOfWork {
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class InteractionError {
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
+}
+
+class UpdateInteractionDTO {
+    +Id: Guid
+    +Value: string
+    +Gif: string
+    +Code: string
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class Interaction {
+    +Value: string
+    +Code: string
+    +Gif: string
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Update Interaction ====
+'API Layer
+InteractionsController --|> BaseApiController
+InteractionsController "1"--"1" UpdateInteractionCommand
+InteractionsController "1"--"1" UpdateInteractionDTO
+'Application Layer
+UpdateInteractionCommand ..|> "IRequest<TResponse>"
+UpdateInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+UpdateInteractionCommandHandler "1"--"1" UpdateInteractionCommand
+UpdateInteractionCommandHandler "1"--"1" Result
+UpdateInteractionCommandHandler "1" o--"1" IUnitOfWork
+UpdateInteractionCommandHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Error -- InteractionError
+Interaction --|> BaseEntity
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Interaction
+@enduml

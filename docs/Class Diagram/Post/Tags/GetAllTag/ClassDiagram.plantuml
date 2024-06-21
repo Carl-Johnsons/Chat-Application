@@ -1,0 +1,80 @@
+@startuml getAllTag
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class TagsController {
+    +GetAll(): Task<IActionResult>
+}
+
+class GetAllTagsQuery {
+}
+
+class GetAllTagsQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetAllTagsQuery request, CancellationToken cancellationToken): Task<Result<List<Tag>>>
+}
+
+class IApplicationDbContext {
+    +Tags: DbSet<Tag>
+}
+
+class ApplicationDbContext {
+    +Tags: DbSet<Tag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class BaseEntity {
+    +Id: Guid 
+}
+
+class Tag {
+    +Value: string
+    +Code: string
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Get All Post ====
+'API Layer
+TagsController --|> BaseApiController
+TagsController -- GetAllTagsQuery
+'Application Layer
+GetAllTagsQuery ..|> "IRequest<TResponse>"
+GetAllTagsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
+GetAllTagsQueryHandler "1"--"1" GetAllTagsQuery
+GetAllTagsQueryHandler "1"--"1" Result
+GetAllTagsQueryHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- "Result<T>"
+Tag --|> BaseEntity
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Tag
+@enduml

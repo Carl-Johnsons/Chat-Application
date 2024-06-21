@@ -1,0 +1,45 @@
+@startuml Login
+hide circle
+skinparam classAttributeIconSize 0
+class Index{
+    - _interaction: IIdentityServerInteractionService
+    - _signInManager: SignInManager<ApplicationUser>
+    + View: ViewModel
+    + Input: InputModel
+    + OnPost(): Task<IActionResult>
+    + BuildModelAsync(string? returnUrl): Task 
+}
+
+interface IIdentityServerInteractionService{
+    + GetAuthorizationContextAsync(string): Task<AuthorizationRequest?>
+    + DenyAuthorizationAsync(AuthorizationRequest, AuthorizationError)
+}
+
+class "SignInManager<TUser>" {
+    + PasswordSignInAsync(string username, string password, bool isPersistent, bool lockoutOnFailure)
+    + FindByNameAsync(string username)
+}
+
+class UserLoginSuccessEvent{
+    + UserLoginSuccessEvent(string username, string subjectId, string name, bool interactive, string clientId)
+}
+
+class UserLoginFailureEvent{
+    + UserLoginFailureEvent(string username, string error, bool interactive = true, string clientId = null)
+}
+
+
+interface IEventService{
+    + RaiseAsync(Event evt): Task
+}
+
+class PageModel
+
+Index "1" o--"1" IIdentityServerInteractionService
+Index "1" o--"1" "SignInManager<TUser>"
+Index "1" o---"1" IEventService
+Index "1"--"1" UserLoginFailureEvent
+Index "1"--"1" UserLoginSuccessEvent
+Index --|> PageModel
+
+@enduml
