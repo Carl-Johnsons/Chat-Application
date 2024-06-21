@@ -23,7 +23,7 @@ class Friend{
 }
 
 
-FriendController "1" -- "1" ApplicationDbContext
+FriendController "1" o-- "1" ApplicationDbContext
 FriendController "1" --"1" DeleteFriendDTO
-ApplicationDbContext "1" o--"1.*" Friend
+ApplicationDbContext "1" o-- "1.*" Friend
 @enduml

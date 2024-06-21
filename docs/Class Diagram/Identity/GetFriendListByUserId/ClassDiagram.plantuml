@@ -45,7 +45,7 @@ class IdentityUser {
     + IdentityUser(string userName) 
 }
 
-FriendController "1" -- "1" ApplicationDbContext
+FriendController "1" o-- "1" ApplicationDbContext
 FriendController "1" -- "1" ApplicationUserResponseDTO
 ApplicationDbContext "1" o-- "1..*" Friend
 ApplicationDbContext "1" o-- "1..*" ApplicationUser
