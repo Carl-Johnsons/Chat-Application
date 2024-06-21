@@ -22,7 +22,7 @@ class UnblockUserDTO {
     UnblockUserId: string
 }
 
-UsersController -- ApplicationDbContext
-UsersController -- UnblockUserDTO
-ApplicationDbContext --* UserBlock
+UsersController "1" o--"1" ApplicationDbContext
+UsersController "1"--"1" UnblockUserDTO
+ApplicationDbContext "*" o--"1" UserBlock
 @enduml
