@@ -131,10 +131,10 @@ PostsController -- GetPostByIdQuery
 'Application Layer
 GetPostByIdQuery ..|> "IRequest<TResponse>"
 GetPostByIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetPostByIdQueryHandler -- GetPostByIdQuery
-GetPostByIdQueryHandler -- Result
-GetPostByIdQueryHandler -- IApplicationDbContext
-GetPostByIdQueryHandler -- PostDTO
+GetPostByIdQueryHandler "1"--"1" GetPostByIdQuery
+GetPostByIdQueryHandler "1"--"1" Result
+GetPostByIdQueryHandler "1" o--"1" IApplicationDbContext
+GetPostByIdQueryHandler "1"--"1" PostDTO
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -143,15 +143,15 @@ Tag --|> BaseEntity
 Interaction --|> BaseEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
-PostTag --* Post
-PostTag --* Tag
-PostInteract --* Post
-PostInteract --* Interaction
+PostTag "*"--*"1" Post
+PostTag "*"--*"1" Tag
+PostInteract "*"--*"1" Post
+PostInteract "*"--*"1" Interaction
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --* Tag
-ApplicationDbContext --* Post
-ApplicationDbContext --* PostTag
-ApplicationDbContext --* Interaction
-ApplicationDbContext --* PostInteract
+ApplicationDbContext "*" o--"1" Tag
+ApplicationDbContext "*" o--"1" Post
+ApplicationDbContext "*" o--"1" PostTag
+ApplicationDbContext "*" o--"1" Interaction
+ApplicationDbContext "*" o--"1" PostInteract
 @enduml

@@ -102,25 +102,25 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Create PostInteract ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController -- CreatePostReportCommand
-PostsController -- CreatePostReportDTO
+PostsController "1"--"1" CreatePostReportCommand
+PostsController "1"--"1" CreatePostReportDTO
 'Application Layer
 CreatePostReportCommand ..|> "IRequest<TResponse>"
 CreatePostReportCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-CreatePostReportCommandHandler -- CreatePostReportCommand
-CreatePostReportCommandHandler -- Result
-CreatePostReportCommandHandler -- IUnitOfWork
-CreatePostReportCommandHandler -- IApplicationDbContext
+CreatePostReportCommandHandler "1"--"1" CreatePostReportCommand
+CreatePostReportCommandHandler "1"--"1" Result
+CreatePostReportCommandHandler "*" o--"1" IUnitOfWork
+CreatePostReportCommandHandler "1" o--"1" IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- PostError
 PostReport --|> BaseAuditableEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
-PostReport --* Post
+PostReport "*"--*"1" Post
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --* PostReport
-ApplicationDbContext --* Post
+ApplicationDbContext "*" o--"1" PostReport
+ApplicationDbContext "*" o--"1" Post
 @enduml

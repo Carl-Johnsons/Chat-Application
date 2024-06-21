@@ -107,27 +107,27 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Uninteraction Post ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController -- UninteractionPostCommand
-PostsController -- UninteractionPostDTO
+PostsController "1"--"1" UninteractionPostCommand
+PostsController "1"--"1" UninteractionPostDTO
 'Application Layer
 UninteractionPostCommand ..|> "IRequest<TResponse>"
 UninteractionPostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-UninteractionPostCommandHandler -- UninteractionPostCommand
-UninteractionPostCommandHandler -- Result
-UninteractionPostCommandHandler -- IUnitOfWork
-UninteractionPostCommandHandler -- IApplicationDbContext
+UninteractionPostCommandHandler "1"--"1" UninteractionPostCommand
+UninteractionPostCommandHandler "1"--"1" Result
+UninteractionPostCommandHandler "1" o--"1" IUnitOfWork
+UninteractionPostCommandHandler "1" o--"1" IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- PostError
 Interaction --|> BaseEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
-PostInteract --* Post
-PostInteract --* Interaction
+PostInteract "*"--*"1" Post
+PostInteract "*"--*"1" Interaction
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --* Interaction
-ApplicationDbContext --* Post
-ApplicationDbContext --* PostInteract
+ApplicationDbContext "*" o--"1" Interaction
+ApplicationDbContext "*" o--"1" Post
+ApplicationDbContext "*" o--"1" PostInteract
 @enduml

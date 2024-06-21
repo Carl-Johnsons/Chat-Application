@@ -109,14 +109,14 @@ interface "IRequestHandler<TRequest, TResponse>"{
 ' ==== Create Comment ====
 'API Layer
 CommentsController --|> BaseApiController
-CommentsController -- CreateCommentCommand
-CommentsController -- CreateCommentDTO
+CommentsController "1"--"1" CreateCommentCommand
+CommentsController "1"--"1" CreateCommentDTO
 'Application Layer
 CreateCommentCommand ..|> "IRequest<TResponse>"
-CreateCommentCommandHandler -- CreateCommentCommand
-CreateCommentCommandHandler -- Result
-CreateCommentCommandHandler -- IUnitOfWork
-CreateCommentCommandHandler -- IApplicationDbContext
+CreateCommentCommandHandler "1"--"1" CreateCommentCommand
+CreateCommentCommandHandler "1"--"1" Result
+CreateCommentCommandHandler "1" o--"1" IUnitOfWork
+CreateCommentCommandHandler "1" o--"1" IApplicationDbContext
 CreateCommentCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 'Domain Layer
 Result <|-- Error
@@ -124,12 +124,12 @@ Error -- PostError
 Comment --|> BaseAuditableEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
-PostComment --* Post
-PostComment --* Comment
+PostComment "*"--*"1" Post
+PostComment "*"--*"1" Comment
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --* Comment
-ApplicationDbContext --* PostComment
-ApplicationDbContext --* Post
+ApplicationDbContext "*" o--"1" Comment
+ApplicationDbContext "*" o--"1" PostComment
+ApplicationDbContext "*" o--"1" Post
 @enduml
