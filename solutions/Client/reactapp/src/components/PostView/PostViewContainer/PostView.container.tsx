@@ -114,6 +114,7 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
       {!disableInput && (
         <div
           className={cx(
+            "shadow",
             "post-input",
             "w-100",
             "d-flex",
@@ -131,7 +132,7 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
             <input
               type="text"
               ref={inputRef}
-              className={cx("form-control", "rounded-3", "shadow")}
+              className={cx("form-control", "rounded-3")}
               placeholder="Write your thought"
               onClick={() => handleShowModal({ modalType: "PostInput" })}
               onFocus={handleFocus}
@@ -146,12 +147,13 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
           "d-flex",
           "flex-column",
           "align-items-center",
-          "overflow-y-scroll"
+          "overflow-y-scroll",
+          "pt-4"
         )}
       >
-        {posts.map((post) => {
+        {posts.map((post, index) => {
           const { id } = post;
-          return <AppPost key={id} post={post}></AppPost>;
+          return <AppPost key={index} post={post}></AppPost>;
         })}
       </div>
     </div>

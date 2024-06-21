@@ -1,16 +1,24 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 
 import style from "./PostInput.container.module.scss";
 import classNames from "classnames/bind";
-import { EditorEvent } from "tinymce";
+import { EditorEvent, Editor as TinyMCEEditor } from "tinymce";
 import AppButton from "@/components/shared/AppButton";
 import { ClearableFile } from "@/components/shared";
+import { TagInputContainer } from "../TagInputContainer";
+import { useCreatePost } from "@/hooks/queries/post";
+import { Tag } from "@/models";
+import { useModal } from "hooks/useModal";
 
 const cx = classNames.bind(style);
 
 const PostInputContainer = () => {
   const [blobs, setBlobs] = useState<File[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const { mutate: createPostMutate } = useCreatePost();
+  const { handleHideModal } = useModal();
+  const editorRef = useRef<TinyMCEEditor | null>(null);
 
   const plugins = ["lists", "code", "table", "codesample", "link"];
   const toolbar =
@@ -65,10 +73,22 @@ const PostInputContainer = () => {
     };
   };
 
+  const handlePost = () => {
+    const tagIds = tags.flatMap((t) => t.id);
+
+    createPostMutate({
+      content: editorRef.current?.getContent() ?? "",
+      tagIds,
+    });
+    
+    handleHideModal();
+  };
+
   return (
     <>
       <div className={cx("text-editor-container")}>
         <Editor
+          onInit={(_evt, editor) => (editorRef.current = editor)}
           apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
           onDragDrop={handleDragDrop}
           init={{
@@ -83,12 +103,16 @@ const PostInputContainer = () => {
             setup: (editor) => {
               editor.on("paste", handlePaste);
             },
+            height: "260px",
           }}
           initialValue="Write your thought!"
           onExecCommand={(e) => {
             console.log(`The ${e.command} command was fired.`);
           }}
         />
+      </div>
+      <div>
+        <TagInputContainer tags={tags} setTags={setTags} />
       </div>
       <div>
         <div
@@ -125,6 +149,15 @@ const PostInputContainer = () => {
             );
           })}
         </div>
+      </div>
+      <div className={cx("d-flex", "justify-content-center", "mt-2", "mb-2")}>
+        <AppButton
+          variant="app-btn-secondary"
+          className={cx("shadow-lg")}
+          onClick={handlePost}
+        >
+          Đăng bài
+        </AppButton>
       </div>
     </>
   );

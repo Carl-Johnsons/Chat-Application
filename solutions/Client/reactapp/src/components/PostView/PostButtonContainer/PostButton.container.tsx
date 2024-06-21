@@ -74,7 +74,7 @@ const PostButtonContainer = () => {
           const { content, iconSrc, handleClick } = btnContent;
           return (
             <AppButton
-              variant={index == 2 ? "app-btn-danger" : "app-btn-tertiary"}
+              variant={index == 2 ? "app-btn-danger" : "app-btn-secondary"}
               key={index}
               className={cx(
                 `btn-${content.toLowerCase()}`,

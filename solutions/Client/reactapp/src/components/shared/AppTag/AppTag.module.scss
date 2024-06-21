@@ -1,0 +1,20 @@
+.tag {
+    background-color: var(--gray-hover);
+    width: min-content;
+    padding: 2px 12px 2px 10px;
+    border-radius: 5px;
+}
+
+.cancel-btn {
+    padding: 0px 2px;
+    background-color: transparent;
+
+    &:hover {
+        background-color: transparent;
+    }
+    &:active,
+    &:focus,
+    &:focus-within {
+        background-color: transparent !important;
+    }
+}

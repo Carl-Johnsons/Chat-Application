@@ -17,3 +17,4 @@ export * from "./ModalContent";
 export * from "./ModalType";
 export * from "./User";
 export * from "./UserInputForm";
+export * from "./Tag";

@@ -29,7 +29,6 @@ const AppComment = ({ comment }: Props) => {
       <div
         className={cx(
           "comment-content",
-          "shadow",
           "rounded-3",
           "pt-2",
           "pb-2",
