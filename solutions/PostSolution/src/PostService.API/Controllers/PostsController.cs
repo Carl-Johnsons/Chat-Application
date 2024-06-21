@@ -26,21 +26,21 @@ public class PostsController : BaseApiController
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
-        var post = await _sender.Send(new CreatePostCommand
+        var postResult = await _sender.Send(new CreatePostCommand
         {
             Content = createPostDTO.Content,
             UserId = Guid.Parse(subjectId!)
         });
-
-        var result = await _sender.Send(new CreatePostTagCommand());
+        postResult.ThrowIfFailure();
 
         foreach (var t in createPostDTO.TagIds)
         {
-            result = await _sender.Send(new CreatePostTagCommand
+            var result = await _sender.Send(new CreatePostTagCommand
             {
-                PostId = post.Value.Id,
+                PostId = postResult.Value.Id,
                 TagId = t
             });
+            result.ThrowIfFailure();
         }
 
         return Ok();
@@ -144,7 +144,7 @@ public class PostsController : BaseApiController
     }
 
     [HttpPost("report-post")]
-    public async Task<IActionResult> CreateReportPost([FromBody]CreatePostReport createPostReport)
+    public async Task<IActionResult> CreateReportPost([FromBody] CreatePostReport createPostReport)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
