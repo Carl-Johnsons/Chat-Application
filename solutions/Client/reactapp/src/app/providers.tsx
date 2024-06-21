@@ -38,7 +38,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     <QueryClientProvider client={queryClient}>
       <AxiosProvider>
         {isExcluded ? children : <ChatHubProvider>{children}</ChatHubProvider>}
-        {/* <ReactQueryDevtools /> */}
+        <ReactQueryDevtools />
       </AxiosProvider>
     </QueryClientProvider>
   );

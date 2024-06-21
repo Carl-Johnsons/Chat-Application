@@ -1,5 +1,13 @@
-import { Message } from "..";
-import { MessageListMetaData } from "./MessageList.metadata";
+import { Message, Post, Comment } from "..";
+/* ============================ Metadata  ============================ */
+export type MessageListMetaData = {
+  lastMessage?: Message;
+};
+
+export type PostListMetadata = {};
+
+export type EmptyMetadata = {};
+/* ============================ Response  ============================ */
 
 export type PaginatedDataResponse<Type, MetadataType> = {
   paginatedData: Type[];
@@ -9,4 +17,14 @@ export type PaginatedDataResponse<Type, MetadataType> = {
 export type PaginatedMessageListResponse = PaginatedDataResponse<
   Message,
   MessageListMetaData
+>;
+
+export type PaginatedPostListResponse = PaginatedDataResponse<
+  Post,
+  EmptyMetadata
+>;
+
+export type PaginatedCommentListResponse = PaginatedDataResponse<
+  Comment,
+  EmptyMetadata
 >;

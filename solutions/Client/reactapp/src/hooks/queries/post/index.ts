@@ -1,2 +1,5 @@
 export * from "./useCreatePost.mutation";
-export * from "./useGetTag";
+export * from "./useGetInfiniteCommentByPostId.query";
+export * from "./useGetInfinitePosts.query";
+export * from "./useGetInfinitePosts.query";
+export * from "./useGetTag.query";

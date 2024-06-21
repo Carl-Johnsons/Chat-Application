@@ -1,5 +1,5 @@
 export * from "./AxiosProps";
-export * from "./Comment";
+export * from "./Comment.model";
 export * from "./Conversation";
 export * from "./ConversationType";
 export * from "./ConversationUser";
@@ -15,6 +15,7 @@ export * from "./JwtToken";
 export * from "./Message";
 export * from "./ModalContent";
 export * from "./ModalType";
+export * from "./Post.model";
+export * from "./Tag";
 export * from "./User";
 export * from "./UserInputForm";
-export * from "./Tag";

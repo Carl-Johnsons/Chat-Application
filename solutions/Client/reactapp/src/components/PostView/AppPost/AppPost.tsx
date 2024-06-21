@@ -1,6 +1,5 @@
 import moment from "moment";
-import { Post } from "models/Post";
-
+import htmlParser from "html-react-parser";
 import style from "./AppPost.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
@@ -11,6 +10,8 @@ import {
   PostButtonContainer,
 } from "../";
 import { AppDivider } from "@/components/shared";
+import { Post } from "@/models";
+import { useGetUser } from "@/hooks/queries/user";
 
 const cx = classNames.bind(style);
 
@@ -19,9 +20,17 @@ interface Props {
 }
 
 const AppPost = ({ post }: Props) => {
-  const { interactions, comments, content, createdAt } = post;
+  const { id, interactions, content, createdAt, interactTotal, userId } = post;
+  const { data: authorData } = useGetUser(userId, {
+    enabled: !!userId,
+  });
+
   const tz = moment.tz.guess();
-  const formattedTime = moment(new Date(createdAt)).tz(tz).format("HH:mm");
+  const formattedTime = moment(new Date(createdAt)).tz(tz).fromNow();
+
+  const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
+  const authorName = authorData?.name ?? "Loading...";
+
   return (
     <div
       className={cx(
@@ -39,23 +48,26 @@ const AppPost = ({ post }: Props) => {
           className={cx("me-2")}
           avatarClassName={cx("rounded-circle")}
           variant="avatar-img-45px"
-          src={images.defaultAvatarImg.src}
+          src={authorAvatar}
           alt="author avatar"
         ></Avatar>
         <div className={cx("author-name", "fw-medium", "me-auto")}>
-          test user
+          {authorName}
         </div>
         <div className={cx("time")}>{formattedTime}</div>
       </div>
-      <div className={cx("ps-2", "pe-2", "text-break")}>{content}</div>
+      <div className={cx("ps-2", "pe-2", "text-break")}>
+        {htmlParser(content)}
+      </div>
       <InteractionCounterContainer
         className={cx("ps-2", "pe-2")}
+        interactTotal={interactTotal}
         interactions={interactions}
       />
       <AppDivider />
       <PostButtonContainer />
       <AppDivider />
-      <CommentContainer comments={comments} />
+      <CommentContainer postId={id} />
     </div>
   );
 };

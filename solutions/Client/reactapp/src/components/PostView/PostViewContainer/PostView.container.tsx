@@ -1,13 +1,13 @@
 import classNames from "classnames/bind";
 import style from "./PostView.container.module.scss";
 
-import { Post } from "models/Post";
 import { AppPost } from "..";
 import { useGetCurrentUser } from "hooks/queries/user/useGetCurrentUser.query";
 import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
 import { useModal } from "hooks/useModal";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { useGetInfinitePost } from "hooks/queries/post/useGetInfinitePosts.query";
 
 const cx = classNames.bind(style);
 
@@ -19,87 +19,43 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
   const { data: userData } = useGetCurrentUser();
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { handleShowModal } = useModal();
   const handleFocus = useCallback(() => {
     inputRef.current?.blur();
   }, []);
 
-  const posts: Post[] = [
-    {
-      id: "1",
-      content:
-        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      createdAt: new Date("2023-2-1"),
-      comments: [],
-      interactions: [],
-    },
-    {
-      id: "1",
-      content: "bbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-      createdAt: new Date(),
-      interactions: [
-        {
-          id: "1",
-          code: "SMILE",
-          value: "🙂",
-        },
-        {
-          id: "1",
-          code: "SMILE",
-          value: "🙂",
-        },
-        {
-          id: "1",
-          code: "SMILE",
-          value: "🙂",
-        },
-        {
-          id: "2",
-          code: "CRY",
-          value: "😭",
-        },
-        {
-          id: "2",
-          code: "CRY",
-          value: "😭",
-        },
-      ],
-      comments: [
-        {
-          id: "1",
-          content: "????",
-          createdAt: new Date(),
-        },
-        {
-          id: "2",
-          content:
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-          createdAt: new Date(),
-        },
-        {
-          id: "3",
-          content: "=))",
-          createdAt: new Date(),
-        },
-        {
-          id: "4",
-          content: ":v",
-          createdAt: new Date(),
-        },
-        {
-          id: "5",
-          content: ":v",
-          createdAt: new Date(),
-        },
-        {
-          id: "6",
-          content: ":v",
-          createdAt: new Date(),
-        },
-      ],
-    },
-  ];
+  const {
+    data: infinitePL,
+    fetchNextPage: fetchNextPL,
+    isLoading: isLoadingNextPL,
+  } = useGetInfinitePost({
+    enabled: true,
+  });
+
+  const posts = [...(infinitePL?.pages ?? [])].flatMap(
+    (page) => page.data.paginatedData
+  );
+
+  const handleScroll = useCallback(() => {
+    if (!containerRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    if (scrollTop + clientHeight >= scrollHeight - 5 && !isLoadingNextPL) {
+      fetchNextPL();
+    }
+  }, [fetchNextPL, isLoadingNextPL]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener("scroll", handleScroll);
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
 
   return (
     <div
@@ -150,9 +106,9 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
           "overflow-y-scroll",
           "pt-4"
         )}
+        ref={containerRef}
       >
         {posts.map((post, index) => {
-          const { id } = post;
           return <AppPost key={index} post={post}></AppPost>;
         })}
       </div>

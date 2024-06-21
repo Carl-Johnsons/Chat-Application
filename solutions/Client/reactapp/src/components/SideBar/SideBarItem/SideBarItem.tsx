@@ -15,7 +15,7 @@ const cx = classNames.bind(style);
 type ConversationVariant = {
   type: "conversation";
   conversation: Conversation;
-  lastMessage?: Message | null;
+  lastMessage?: Partial<Message> | null;
   isActive?: boolean;
   isNewMessage?: boolean;
   onClick?: (conversationId: string) => void;
@@ -24,7 +24,7 @@ type ConversationVariant = {
 type GroupConversationVariant = {
   type: "groupConversation";
   conversation: GroupConversation;
-  lastMessage?: Message | null;
+  lastMessage?: Partial<Message> | null;
   isActive?: boolean;
   isNewMessage?: boolean;
   onClick?: (conversationId: string) => void;
@@ -52,7 +52,7 @@ const SideBarItem = (variant: Variants) => {
   let userId: string = "";
   let conversation: Conversation | GroupConversation | null | undefined;
   let image: string = images.defaultAvatarImg.src;
-  let lastMessage: Message | null | undefined;
+  let lastMessage: Partial<Message> | null | undefined;
   let searchName: string = "";
   let phoneNumber: string = "";
   let isActive: boolean | undefined;
