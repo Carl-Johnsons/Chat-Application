@@ -10,23 +10,26 @@ import {
   PostButtonContainer,
 } from "../";
 import { AppDivider } from "@/components/shared";
-import { Post } from "@/models";
 import { useGetUser } from "@/hooks/queries/user";
+import { useGetPostByd } from "hooks/queries/post/useGetPostById.query";
 
 const cx = classNames.bind(style);
 
 interface Props {
-  post: Post;
+  postId: string;
 }
 
-const AppPost = ({ post }: Props) => {
-  const { id, interactions, content, createdAt, interactTotal, userId } = post;
-  const { data: authorData } = useGetUser(userId, {
-    enabled: !!userId,
+const AppPost = ({ postId }: Props) => {
+  const { data: postData } = useGetPostByd({ postId }, { enabled: !!postId });
+
+  const { data: authorData } = useGetUser(postData?.userId ?? "", {
+    enabled: !!postData?.userId,
   });
 
   const tz = moment.tz.guess();
-  const formattedTime = moment(new Date(createdAt)).tz(tz).fromNow();
+  const formattedTime = moment(new Date(postData?.createdAt ?? ""))
+    .tz(tz)
+    .fromNow();
 
   const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
   const authorName = authorData?.name ?? "Loading...";
@@ -57,17 +60,20 @@ const AppPost = ({ post }: Props) => {
         <div className={cx("time")}>{formattedTime}</div>
       </div>
       <div className={cx("ps-2", "pe-2", "text-break")}>
-        {htmlParser(content)}
+        {htmlParser(postData?.content ?? "")}
       </div>
-      <InteractionCounterContainer
-        className={cx("ps-2", "pe-2")}
-        interactTotal={interactTotal}
-        interactions={interactions}
-      />
+      {postData?.interactions && (
+        <InteractionCounterContainer
+          className={cx("ps-2", "pe-2")}
+          interactTotal={postData.interactTotal}
+          interactions={postData.interactions}
+        />
+      )}
+
       <AppDivider />
-      <PostButtonContainer />
+      <PostButtonContainer postId={postId} />
       <AppDivider />
-      <CommentContainer postId={id} />
+      <CommentContainer postId={postId} />
     </div>
   );
 };

@@ -4,18 +4,16 @@ import style from "./Interaction.container.module.scss";
 import classNames from "classnames/bind";
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
+import { useGetAllInteraction } from "@/hooks/queries/post";
 
 const cx = classNames.bind(style);
 
-const InteractionContainer = () => {
-  const emojis = [
-    "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Slightly%20Smiling%20Face.png",
-    "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face%20with%20Hearts.png",
-    "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Tears%20of%20Joy.png",
-    "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Open%20Mouth.png",
-    "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Crying%20Face.png",
-    "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Angry%20Face.png",
-  ];
+interface Props {
+  onClick?: (emojiId: string) => void;
+}
+
+const InteractionContainer = ({ onClick = () => {} }: Props) => {
+  const { data: emojis } = useGetAllInteraction();
   return (
     <div
       className={cx(
@@ -27,16 +25,18 @@ const InteractionContainer = () => {
         "fs-5"
       )}
     >
-      {emojis.map((emojisrc, index) => {
+      {(emojis ?? []).map((emoji) => {
+        const { id, gif } = emoji;
         return (
           <AppButton
+            key={id}
             variant="app-btn-tertiary-transparent"
             className={cx("emoji-btn")}
-            key={index}
+            onClick={() => onClick(id)}
           >
             <Avatar
               variant="avatar-img-40px"
-              src={emojisrc}
+              src={gif}
               alt="Grinning Squinting Face"
             />
           </AppButton>

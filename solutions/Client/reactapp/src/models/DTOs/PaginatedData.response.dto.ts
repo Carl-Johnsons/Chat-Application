@@ -1,4 +1,4 @@
-import { Message, Post, Comment } from "..";
+import { Message, Comment } from "..";
 /* ============================ Metadata  ============================ */
 export type MessageListMetaData = {
   lastMessage?: Message;
@@ -20,7 +20,7 @@ export type PaginatedMessageListResponse = PaginatedDataResponse<
 >;
 
 export type PaginatedPostListResponse = PaginatedDataResponse<
-  Post,
+  string,
   EmptyMetadata
 >;
 

@@ -34,7 +34,7 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
     enabled: true,
   });
 
-  const posts = [...(infinitePL?.pages ?? [])].flatMap(
+  const postIds = [...(infinitePL?.pages ?? [])].flatMap(
     (page) => page.data.paginatedData
   );
 
@@ -108,8 +108,8 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
         )}
         ref={containerRef}
       >
-        {posts.map((post, index) => {
-          return <AppPost key={index} post={post}></AppPost>;
+        {postIds.map((postId, index) => {
+          return <AppPost key={index} postId={postId}></AppPost>;
         })}
       </div>
     </div>

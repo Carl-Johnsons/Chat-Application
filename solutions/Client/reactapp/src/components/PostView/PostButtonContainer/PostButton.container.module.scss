@@ -7,7 +7,16 @@
     &.hover,
     &:hover {
         opacity: 1;
-        top: -90%;
+        top: -130%;
         left: -1%;
+    }
+}
+.btn-like {
+    transition: 0.25s ease-in-out;
+    &.interacted {
+        background-color: darken(rgb(255, 255, 0), 10%);
+        &:hover{
+        background-color: darken(rgb(255, 255, 0), 5%);
+        }
     }
 }
