@@ -5,7 +5,6 @@ import AppButton from "@/components/shared/AppButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
-  faComment,
   faFlag,
   faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
@@ -72,10 +71,6 @@ const PostButtonContainer = ({ postId }: Props) => {
       handleClick: handleLikeBtnClick,
     },
     {
-      content: "Comment",
-      iconSrc: faComment,
-    },
-    {
       content: "Report",
       iconSrc: faFlag,
       handleClick: handleReportBtnClick,
@@ -110,7 +105,7 @@ const PostButtonContainer = ({ postId }: Props) => {
           const { content, iconSrc, handleClick, emoji } = btnContent;
           return (
             <AppButton
-              variant={index == 2 ? "app-btn-danger" : "app-btn-secondary"}
+              variant={index == 1 ? "app-btn-danger" : "app-btn-secondary"}
               key={index}
               className={cx(
                 `btn-${content.toLowerCase()}`,
