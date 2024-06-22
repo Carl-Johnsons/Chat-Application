@@ -20,32 +20,23 @@ public partial class ConversationController : BaseApiController
     {
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetConversationByIdDTO getConversationByIdDTO)
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll()
     {
-        if (getConversationByIdDTO == null)
-        {
-            var conversations = await _sender.Send(new GetAllConversationsQuery());
-            return Ok(conversations);
+        var result = await _sender.Send(new GetAllConversationsQuery());
+        result.ThrowIfFailure();
+        return Ok(result.Value);
+    }
 
-        }
-
-        var conversation = await _sender.Send(new GetConversationQuery
+    [HttpGet]
+    public async Task<IActionResult> GetById([FromQuery] GetConversationByIdDTO getConversationByIdDTO)
+    {
+        var result = await _sender.Send(new GetConversationByIdQuery
         {
             ConversationId = getConversationByIdDTO.ConversationId
         });
-        return Ok(conversation);
-
-
-    }
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id)
-    {
-        var conversation = await _sender.Send(new GetConversationQuery
-        {
-            ConversationId = id
-        });
-        return Ok(conversation);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
     [HttpGet("user")]
     public async Task<IActionResult> GetConversationListByUserId()
@@ -57,9 +48,10 @@ public partial class ConversationController : BaseApiController
         {
             UserId = Guid.Parse(subjectId!)
         };
-        var cList = await _sender.Send(query);
+        var result = await _sender.Send(query);
+        result.ThrowIfFailure();
 
-        return Ok(cList);
+        return Ok(result.Value);
     }
     [HttpGet("member")]
     public async Task<IActionResult> GetMemberListByConversationId([FromQuery] GetMemberListByConversationIdDTO getMemberListByConversationIdDTO)
@@ -70,10 +62,12 @@ public partial class ConversationController : BaseApiController
         var query = new GetMemberListByConversationIdQuery
         {
             UserId = Guid.Parse(subjectId!),
-            ConversationId = getMemberListByConversationIdDTO.ConversationId
+            ConversationId = getMemberListByConversationIdDTO.ConversationId,
+            Other = getMemberListByConversationIdDTO.Other
         };
-        var cuList = await _sender.Send(query);
-        return Ok(cuList);
+        var result = await _sender.Send(query);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpDelete()]
@@ -83,7 +77,8 @@ public partial class ConversationController : BaseApiController
         {
             ConversationId = deleteConversationDTO.Id
         };
-        await _sender.Send(command);
+        var result = await _sender.Send(command);
+        result.ThrowIfFailure();
         return NoContent();
     }
 }

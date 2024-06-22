@@ -1,0 +1,54 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+class UsersController {
+    - _context: ApplicationDbContext
+    - _userManager: UserManager<ApplicationUser>
+    - _httpContextAccessor: IHttpContextAccessor
+    - _bus: IBus
+    + Block(BlockUserDTO blockUserDTO): Task<IActionResult>
+}
+
+class ApplicationDbContext {
+    + UserBlocks: DbSet<UserBlock>
+    + Friends: DbSet<Friend>
+    # OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+class UserBlock{
+    + UserId: string
+    + BlockUserId: string
+    + User: ApplicationUser
+    + BlockUser: ApplicationUser
+}
+
+class BlockUserDTO {
+    + BlockUserId: string
+}
+
+
+class ApplicationUser {
+    + Name: string
+    + AvatarUrl: string
+    + BackgroundUrl: string
+    + Introduction: string
+    + Dob: DateTime
+    + Gender: string
+    + Active: bool
+}
+class Friend{
+    + UserId: string
+    + FriendId: string
+}
+
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
+
+UsersController "1" o--"1" ApplicationDbContext
+UsersController "1" -- "1" BlockUserDTO
+ApplicationDbContext "1" o--"1..*" ApplicationUser
+UsersController "1" o--"1" UserBlock
+ApplicationDbContext "1" o--"1..*" UserBlock
+ApplicationDbContext "1" o--"1*" Friend
+ApplicationUser --|> IdentityUser
+@enduml

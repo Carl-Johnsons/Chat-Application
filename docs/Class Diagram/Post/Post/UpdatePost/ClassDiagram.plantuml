@@ -1,0 +1,187 @@
+@startuml updatePost
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class PostsController {
+    +Create(CreatePostDTO createPostDTO): Task<IActionResult>
+}
+
+class UpdatePostCommand {
+    +Content: string
+    +PostId: Guid
+    +Active: bool 
+}
+
+class UpdatePostCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(CreatePostCommand request, CancellationToken cancellationToken): Task<Result<Post>>
+}
+
+class DeletePostTagCommand {
+    +PostId: Guid 
+}
+
+class DeletePostTagCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(DeletePostTagCommand request, CancellationToken cancellationToken) Task
+}
+
+class CreatePostTagCommand {
+    +PostId: Guid
+    +TagId: Guid
+}
+
+class CreatePostTagCommandHandler {
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork 
+    +Handle(CreatePostTagCommand request, CancellationToken cancellationToken): Task<Result>
+}
+
+class IApplicationDbContext {
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
+}
+
+class ApplicationDbContext {
+    +Posts: DbSer<Post>
+    +Tags: DbSet<Tag>
+    +PostTags: DbSet<PostTag>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error> 
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class IUnitOfWork {
+    SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +SaveChangeAsync(CancellationToken cancellationToken = default): Task
+}
+
+class PostError {
+    +{static} NotFound: Error
+    +{static} UserNotFound: Error
+    +{static} AlreadyInteractedPost: Error
+    +{static} NotInteractedPost: Error
+}
+
+class TagError {
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
+}
+
+class UpdatePostDTO {
+    +Id: Guid
+    +Content: string
+    +TagIds: List<Guid> 
+    +Active: bool
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime 
+    +UpdatedAt: DateTime 
+}
+
+class Tag {
+    +Value: string 
+    +Code: string 
+}
+
+class Post {
+    +Content: string
+    +Active: bool
+    +UserId: Guid 
+}
+
+class PostTag {
+    +PostId: Guid
+    +TagId: Guid 
+    +Post: Post
+    +Tag: Tag
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Update Post ====
+'API Layer
+PostsController --|> BaseApiController
+PostsController "1"--"1" UpdatePostCommand
+PostsController "1"--"1" UpdatePostDTO
+PostsController "1"--"1" DeletePostTagCommand
+PostsController "1"--"1" CreatePostTagCommand
+'Application Layer
+UpdatePostCommand ..|> "IRequest<TResponse>"
+UpdatePostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+DeletePostTagCommand ..|> "IRequest<TResponse>"
+DeletePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+CreatePostTagCommand ..|> "IRequest<TResponse>"
+CreatePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+
+UpdatePostCommandHandler "1"--"1" UpdatePostCommand
+UpdatePostCommandHandler "1"--"1" Result
+UpdatePostCommandHandler "1" o--"1" IUnitOfWork
+UpdatePostCommandHandler "1" o--"1" IApplicationDbContext
+DeletePostTagCommandHandler "1"--"1" DeletePostTagCommand
+DeletePostTagCommandHandler "1"--"1" Result
+DeletePostTagCommandHandler "1" o--"1" IUnitOfWork
+DeletePostTagCommandHandler "1" o--"1" IApplicationDbContext
+CreatePostTagCommandHandler "1"--"1" CreatePostTagCommand
+CreatePostTagCommandHandler "1"--"1" Result
+CreatePostTagCommandHandler "1" o--"1" IUnitOfWork
+CreatePostTagCommandHandler "1" o--"1" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Result <|-- "Result<T>"
+Error -- TagError
+Error -- PostError
+Tag --|> BaseEntity
+Post --|> BaseAuditableEntity
+BaseAuditableEntity --|> BaseEntity
+PostTag "*"--*"1" Post
+PostTag "*"--*"1" Tag
+'Infrastructure Layer
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "*" o--"1" Tag
+ApplicationDbContext "*" o--"1" Post
+ApplicationDbContext "*" o--"1" PostTag
+@enduml

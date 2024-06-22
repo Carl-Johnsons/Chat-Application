@@ -1,0 +1,79 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+conversationService: <<service>> \n conversationService
+signalRService: <<service>> \n signalRService
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> application.get: 1. User request with access token
+application.get -> apiGateway.get: 2. User request with access token
+apiGateway.get."3. validate token success"
+apiGateway.get -> conversationService.get: 4. User request with access token
+
+opt: {
+  class: frame
+  if user is in group: "[if user is in group]" {
+    class: frame
+    conversationService.get -> conversationService.get.kick: 5A. kick user out of group
+    conversationService.get.kick -> DB.get: 5A.1. Request database
+    conversationService.get.kick <- DB.get: 5A.2. Database response {class: return arrow}
+    conversationService.get.kick -> signalRService.get: 5A.3. notify all group member
+  }
+}
+alt: {
+  class: frame
+  if user is not exist: "[if user is not exist]" {
+    class: frame
+    apiGateway.get <- conversationService.get: 5A. return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 5A.1. return 400 status {class: return arrow}
+    User <- application.get: 5A.2. Display error {class: return arrow}
+  }
+  if user is exist: "[if user is exist]" {
+    class: frame
+    conversationService.get -> DB.get: Request database
+    conversationService.get <- DB.get: Database response {class: return arrow}
+
+    apiGateway.get <- conversationService.get: 10. Return 201 status {class: return arrow}
+    application.get <- apiGateway.get: 11. Return 201 status {class: return arrow}
+    User <- application.get: 12. Return 201 status {class: return arrow}
+  }
+}

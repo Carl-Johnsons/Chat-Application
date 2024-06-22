@@ -19,8 +19,12 @@ const cx = classNames.bind(styles);
 const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
-  const { data: conversationData } =
-    useGetMemberListByConversationId(modalEntityId);
+  const { data: conversationData } = useGetMemberListByConversationId(
+    { conversationId: modalEntityId },
+    {
+      enabled: !!modalEntityId,
+    }
+  );
 
   const userIdList =
     modalType === "Group"
@@ -83,4 +87,4 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
   );
 };
 
-export default ListGroupMemberModalContent;
+export { ListGroupMemberModalContent };

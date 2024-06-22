@@ -1,23 +1,21 @@
-import { protectedAxiosInstance } from "@/utils";
-import { FriendRequest } from "@/models";
+import { AxiosProps, FriendRequest } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { signalRSendFriendRequest, useSignalREvents } from "@/hooks";
+import { signalRSendFriendRequest, useAxios, useSignalREvents } from "@/hooks";
 
-/**
- *
- * @param receiverId
- * @param accessToken
- * @returns
- */
-const sendFriendRequest = async (
-  receiverId: string
-): Promise<FriendRequest | null> => {
+interface Props extends AxiosProps {
+  receiverId: string;
+}
+
+const sendFriendRequest = async ({
+  receiverId,
+  axiosInstance,
+}: Props): Promise<FriendRequest | null> => {
   const data = {
     receiverId: receiverId,
     content: "Hello",
   };
   const url = "http://localhost:5001/api/users/friend-request";
-  const response = await protectedAxiosInstance.post(url, data);
+  const response = await axiosInstance.post(url, data);
   return response.data;
 };
 
@@ -25,13 +23,15 @@ const useSendFriendRequest = () => {
   const { invokeAction } = useSignalREvents();
 
   const queryClient = useQueryClient();
+  const { protectedAxiosInstance } = useAxios();
   return useMutation<
     FriendRequest | null,
     Error,
     { receiverId: string },
     unknown
   >({
-    mutationFn: ({ receiverId }) => sendFriendRequest(receiverId),
+    mutationFn: ({ receiverId }) =>
+      sendFriendRequest({ receiverId, axiosInstance: protectedAxiosInstance }),
     onSuccess: (fr) => {
       queryClient.invalidateQueries({
         queryKey: ["friendRequestList"],

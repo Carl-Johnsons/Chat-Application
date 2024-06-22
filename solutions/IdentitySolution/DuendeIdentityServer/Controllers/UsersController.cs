@@ -1,12 +1,18 @@
 ﻿using AutoMapper;
+using Contract.DTOs;
+using Contract.Event.UploadEvent;
+using Contract.Event.UploadEvent.EventModel;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
+using MassTransit;
+using MassTransit.Clients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Sprache;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
 using static Duende.IdentityServer.IdentityServerConstants;
 
@@ -22,13 +28,15 @@ public class UsersController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IBus _bus;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus)
     {
         _context = context;
         _userManager = userManager;
         _mapper = mapper;
         _httpContextAccessor = httpContextAccessor;
+        _bus = bus;
     }
 
     [HttpGet]
@@ -79,17 +87,54 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Put([FromBody] UpdateUserDTO updateUserDTO)
+    public async Task<IActionResult> Put([FromForm] UpdateUserDTO updateUserDTO)
     {
-        var user = await _userManager.FindByIdAsync(updateUserDTO.Sub);
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var user = await _userManager.FindByIdAsync(subjectId!);
 
         if (user == null)
         {
             return NotFound("User not found");
         }
         if (updateUserDTO.Name != null) user.Name = (string)updateUserDTO.Name;
-        if (updateUserDTO.AvatarUrl != null) user.AvatarUrl = (string)updateUserDTO.AvatarUrl;
-        if (updateUserDTO.BackgroundUrl != null) user.BackgroundUrl = (string)updateUserDTO.BackgroundUrl;
+        if (updateUserDTO.AvatarFile != null)
+        {
+            var avtFileStreamEvent = new FileStreamEvent
+            {
+                FileName = updateUserDTO.AvatarFile.FileName,
+                ContentType = updateUserDTO.AvatarFile.ContentType,
+                Stream = new BinaryReader(updateUserDTO.AvatarFile.OpenReadStream()).ReadBytes((int)updateUserDTO.AvatarFile.Length)
+            };
+            var requestClientUpdate = _bus.CreateRequestClient<UpdateFileEvent>();
+            var response = await requestClientUpdate.GetResponse<UploadFileEventResponseDTO>(new UpdateFileEvent
+            {
+                FileStreamEvent = avtFileStreamEvent,
+                Url = user.AvatarUrl
+            });
+            if(response != null)
+            {
+                user.AvatarUrl = response.Message.Url;
+            }
+        };
+        if (updateUserDTO.BackgroundFile != null) {
+            var bgFileStreamEvent = new FileStreamEvent
+            {
+                FileName = updateUserDTO.BackgroundFile.FileName,
+                ContentType = updateUserDTO.BackgroundFile.ContentType,
+                Stream = new BinaryReader(updateUserDTO.BackgroundFile.OpenReadStream()).ReadBytes((int)updateUserDTO.BackgroundFile.Length)
+            };
+            var requestClientUpdate = _bus.CreateRequestClient<UpdateFileEvent>();
+            var response = await requestClientUpdate.GetResponse<UploadFileEventResponseDTO>(new UpdateFileEvent
+            {
+                FileStreamEvent = bgFileStreamEvent,
+                Url = user.BackgroundUrl
+            });
+            if (response != null)
+            {
+                user.BackgroundUrl = response.Message.Url;
+            }
+        };
         if (updateUserDTO.Introduction != null) user.Introduction = (string)updateUserDTO.Introduction;
         if (updateUserDTO.Gender != null) user.Gender = (string)updateUserDTO.Gender;
         if (updateUserDTO.Dob != null) user.Dob = (DateTime)updateUserDTO.Dob;
@@ -102,7 +147,7 @@ public class UsersController : ControllerBase
 
     [HttpPost("block")]
     public async Task<IActionResult> Block([FromBody] BlockUserDTO blockUserDTO)
-    {        
+    {
         var buInput = _mapper.Map<BlockUserDTO, UserBlock>(blockUserDTO);
         buInput.UserId = _httpContextAccessor.HttpContext.User.GetSubjectId(); 
 
@@ -149,7 +194,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("unblock")]
-    public async Task<IActionResult> Ubblock([FromBody] UnblockUserDTO unblockUserDTO)
+    public async Task<IActionResult> Unblock([FromBody] UnblockUserDTO unblockUserDTO)
     {
         var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
         var blockUserId = unblockUserDTO.UnblockUserId;

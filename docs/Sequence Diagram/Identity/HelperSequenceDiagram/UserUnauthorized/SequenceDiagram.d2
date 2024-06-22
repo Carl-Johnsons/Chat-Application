@@ -1,0 +1,53 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+identityService: <<service>> \n identityService
+
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> application.get: 1. User request resource
+application.get -> apiGateway.get: 2. User request resource
+
+apiGateway.get."3. validateTokenFailed"
+
+application.get <- apiGateway.get: 4. return login page {class: return arrow}
+User <- application.get: 5. return login page {class: return arrow}

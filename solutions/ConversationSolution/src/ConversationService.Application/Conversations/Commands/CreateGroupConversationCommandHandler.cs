@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace ConversationService.Application.Conversations.Commands;
-public record CreateGroupConversationCommand : IRequest
+public record CreateGroupConversationCommand : IRequest<Result>
 {
     [Required]
     public Guid CurrentUserID { get; init; }
@@ -10,7 +10,7 @@ public record CreateGroupConversationCommand : IRequest
     public CreateGroupConversationDTO CreateGroupConversationDTO { get; init; } = null!;
 };
 
-public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroupConversationCommand>
+public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroupConversationCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +21,7 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
         _unitOfWork = unitOfWork;
     }
 
-    async Task IRequestHandler<CreateGroupConversationCommand>.Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
     {
         var conversationWithMembersId = request.CreateGroupConversationDTO;
 
@@ -40,7 +40,7 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
         var membersId = conversationWithMembersId.MembersId;
         if (membersId == null || membersId.Count <= 1)
         {
-            return;
+            return GroupConversationError.NotEnoughMember;
         }
 
         _context.ConversationUsers.Add(new ConversationUser()
@@ -64,5 +64,7 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
             });
         }
         await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+        return Result.Success();
     }
 }

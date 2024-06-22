@@ -37,15 +37,15 @@ public class ProfileService : IProfileService
 
         // Add user claim
         // Standard claim
-        claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName));
-        claims.Add(new Claim(JwtClaimTypes.Name, user.Name));
-        claims.Add(new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber));
-        claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
-        claims.Add(new Claim(JwtClaimTypes.Gender, user.Gender));
+        claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName ?? ""));
+        claims.Add(new Claim(JwtClaimTypes.Name, user.Name ?? ""));
+        claims.Add(new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber ?? ""));
+        claims.Add(new Claim(JwtClaimTypes.Email, user.Email ?? ""));
+        claims.Add(new Claim(JwtClaimTypes.Gender, user.Gender ?? ""));
         // Specific claim
-        claims.Add(new Claim("avatar_url", user.AvatarUrl));
-        claims.Add(new Claim("background_url", user.BackgroundUrl));
-        claims.Add(new Claim("dob", user.Dob.ToString()));
+        claims.Add(new Claim("avatar_url", user.AvatarUrl ?? ""));
+        claims.Add(new Claim("background_url", user.BackgroundUrl ?? ""));
+        claims.Add(new Claim("dob", user.Dob.ToString() ?? ""));
         //claims.Add(new Claim("introduction", user.Introduction));
         //claims.Add(new Claim("active", user?.Active.ToString())); // claim only accept string value
         // Return the claim to client

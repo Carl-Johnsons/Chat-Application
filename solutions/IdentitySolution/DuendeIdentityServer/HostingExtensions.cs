@@ -1,5 +1,7 @@
 using AutoMapper;
+using Contract.Event.ConversationEvent;
 using Contract.Event.FriendEvent;
+using Contract.Event.UploadEvent;
 using Duende.IdentityServer;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
@@ -52,6 +54,11 @@ internal static class HostingExtensions
                 });
 
             });
+
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:upload-multiple-file-event-queue"));
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:delete-multiple-file-event-queue"));
+            busConfig.AddRequestClient<UploadMultipleFileEvent>(new Uri("queue:update-file-event-queue"));
+
         });
 
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -88,8 +95,12 @@ internal static class HostingExtensions
                 // register your IdentityServer with Google at https://console.developers.google.com
                 // enable the Google+ API
                 // set the redirect URI to https://localhost:5001/signin-google
-                options.ClientId = "copy client ID from Google here";
-                options.ClientSecret = "copy client secret from Google here";
+                options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
+                options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
+
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
             });
 
         services.AddLocalApiAuthentication();

@@ -1,0 +1,158 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor
+}
+
+class ConversationController {
+    +Delete(DeleteConversationDTO deleteConversationDTO): async Task<IActionResult>
+}
+
+class DeleteConversationCommand{
+    +ConversationId: Guid
+}
+
+class DeleteConversationCommandHandler{
+    -_context: IApplicationDbContext
+    -_unitOfWork: IUnitOfWork
+    +Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken): Task<Result>
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +GroupConversation: DbSet<GroupConversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    +Messages: DbSet<Message>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +bool IsFailure
+    +bool IsSuccess
+    +IEnumerable<Error> Errors
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    {static} +Success(): Result
+    {static} +Failure(Error err): Result
+    {static} +Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +T Value
+    {static} +Success(T value): Result<T>
+    {static} +Failure(Error error): Result<T?>
+    {static} +Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    {static} +None: Error
+    {static} +Result(Error err): Result
+}
+
+class DeleteConversationDTO{
+    +Id: Guid
+}
+
+
+class IUnitOfWork {
+    Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class UnitOfWork {
+    -_context: ApplicationDbContext
+    +Task SaveChangeAsync(CancellationToken cancellationToken = default)
+}
+
+class ConversationError{
+    {static} +NotFound: Error
+    {static} +AlreadyExistConversation: Error
+}
+
+class BaseEntity {
+    +Guid Id
+}
+
+class BaseAuditableEntity{
+    +DateTime CreatedAt
+    +DateTime UpdatedAt
+}
+
+class Conversation {
+    +Type: string
+    +Users: List<ConversationUser>
+}
+
+class GroupConversation {
+    +Name: string
+    +ImageURL: string?
+    +InviteURL: string?
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string
+    +ReadTime: DateTime?
+    +Conversation: Conversation
+}
+
+class Message {
+    +SenderId: Guid?
+    +ConversationId: Guid
+    +Content: string
+    +Source: string
+    +AttachedFilesURL: string?
+    +Active: bool?
+    +Conversation: Conversations
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+ConversationController --|> BaseApiController
+ConversationController "1" --"1..*" DeleteConversationCommand
+
+ConversationController "1" --"1..*" DeleteConversationDTO
+
+DeleteConversationCommand ..|> "IRequest<TResponse>"
+DeleteConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
+DeleteConversationCommandHandler "1" --"1..*" DeleteConversationCommand
+DeleteConversationCommandHandler "1" --"1..*" Result
+DeleteConversationCommandHandler "1" o--"1..*" IUnitOfWork
+DeleteConversationCommandHandler "1" o--"1..*" IApplicationDbContext
+DeleteConversationCommandHandler "1" --"1..*" ConversationError
+
+
+IUnitOfWork <|.. UnitOfWork
+IApplicationDbContext <|.. ApplicationDbContext
+Result <|-- Error
+Result <|-- "Result<T>"
+
+Error "1" --"1..*" ConversationError
+
+ApplicationDbContext "1" o--"1..*" Conversation
+ApplicationDbContext "1" o--"1..*" GroupConversation
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Message
+
+Conversation --|> BaseAuditableEntity
+GroupConversation --|> Conversation
+ConversationUser --|> BaseEntity
+ConversationUser "1..*"--* Conversation
+Message --|> BaseAuditableEntity
+Message "1..*"--* Conversation
+BaseAuditableEntity --|> BaseEntity
+@enduml

@@ -1,14 +1,14 @@
 ﻿
 namespace ConversationService.Application.Messages.Commands;
 
-public record SendClientMessageCommand : IRequest<Message>
+public record SendClientMessageCommand : IRequest<Result<Message>>
 {
     public Guid SenderId { get; init; }
     public Guid ConversationId { get; init; }
     public string Content { get; init; } = null!;
 };
 
-public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessageCommand, Message>
+public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessageCommand, Result<Message>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
@@ -21,8 +21,16 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
         _signalRService = signalRService;
     }
 
-    public async Task<Message> Handle(SendClientMessageCommand request, CancellationToken cancellationToken)
+
+    public async Task<Result<Message>> Handle(SendClientMessageCommand request, CancellationToken cancellationToken)
     {
+        var isExistedConversation = _context.Conversations.Where(c => c.Id == request.ConversationId).Any();
+
+        if (!isExistedConversation)
+        {
+            return (Result<Message>)ConversationError.NotFound;
+        }
+
         var message = new Message
         {
             SenderId = request.SenderId,
@@ -32,12 +40,15 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
             Active = true,
         };
 
+        //check file array has element
+
         _context.Messages.Add(message);
+        
         await _unitOfWork.SaveChangeAsync(cancellationToken);
 
         await _signalRService.InvokeAction(SignalREvent.SEND_MESSAGE_ACTION, message);
 
-        return message;
+        return Result<Message>.Success(message);
     }
 
 }

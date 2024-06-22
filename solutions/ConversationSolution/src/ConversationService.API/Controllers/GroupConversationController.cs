@@ -24,14 +24,14 @@ public partial class GroupConversationController : BaseApiController
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
-        await _sender.Send(
-             new CreateGroupConversationCommand
-             {
-                 CurrentUserID = Guid.Parse(subjectId!),
-                 CreateGroupConversationDTO = createGroupConversationDTO
-             });
+        var result = await _sender.Send(
+                new CreateGroupConversationCommand
+                {
+                    CurrentUserID = Guid.Parse(subjectId!),
+                    CreateGroupConversationDTO = createGroupConversationDTO
+                });
 
-
+        result.ThrowIfFailure();
         return StatusCode(StatusCodes.Status201Created);
     }
 }

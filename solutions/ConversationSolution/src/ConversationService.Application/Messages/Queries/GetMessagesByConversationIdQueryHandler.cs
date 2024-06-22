@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Messages.Queries;
-public record GetMessagesByConversationIdQuery : IRequest<PaginatedMessageListResponseDTO>
+public record GetMessagesByConversationIdQuery : IRequest<Result<PaginatedMessageListResponseDTO>>
 {
     public Guid ConversationId { get; init; }
     public int Skip { get; init; }
 };
 
-public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessagesByConversationIdQuery, PaginatedMessageListResponseDTO>
+public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessagesByConversationIdQuery, Result<PaginatedMessageListResponseDTO>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IPaginateDataUtility<Message, MessageListMetadata> _paginateDataUtility;
@@ -18,7 +18,7 @@ public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessag
         _paginateDataUtility = paginateDataUtility;
     }
 
-    public async Task<PaginatedMessageListResponseDTO> Handle(GetMessagesByConversationIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginatedMessageListResponseDTO>> Handle(GetMessagesByConversationIdQuery request, CancellationToken cancellationToken)
     {
         var LastMessage = _context.Messages
                         .Where(m => m.ConversationId == request.ConversationId)
@@ -36,10 +36,9 @@ public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessag
             Limit = MESSAGE_CONSTANTS.LIMIT
         });
 
-        var messageList = await query.OrderBy(m => m.Id).ToListAsync();
+        var messageList = await query.OrderBy(m => m.CreatedAt).ToListAsync();
 
-
-        return new PaginatedMessageListResponseDTO
+        var paginatedResponse = new PaginatedMessageListResponseDTO
         {
             PaginatedData = messageList,
             Metadata = new MessageListMetadata
@@ -47,5 +46,6 @@ public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessag
                 LastMessage = LastMessage
             }
         };
+        return Result<PaginatedMessageListResponseDTO>.Success(paginatedResponse);
     }
 }

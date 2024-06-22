@@ -29,6 +29,7 @@
       "@/components/*": ["components/*"],
       "@/hooks": ["hooks/index"],
       "@/hooks/*": ["hooks/*/index"],
+      "@/contexts": ["contexts/index"],
       "@/models": ["models/index"],
       "@/models/DTOs": ["models/DTOs/index"],
       "@/assets": ["assets/index"],
@@ -40,7 +41,8 @@
     "./src",
     "./dist/types/**/*.ts",
     "./next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "postinstall.ts"
   ],
   "exclude": ["./node_modules"]
 }

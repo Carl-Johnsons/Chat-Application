@@ -50,6 +50,20 @@ const ContactContainer = ({ className }: Props) => {
   const handleClickDelFriendRequest = async (frId: string) => {
     deleteFriendRequestMutate({ frId });
   };
+  const userBlockList = [
+    {
+      avt: "avt1",
+      userName: "block1"
+    },
+    {
+      avt: "avt2",
+      userName: "block2"
+    },
+    {
+      avt: "avt3",
+      userName: "block3"
+    }
+  ];
   return (
     <div className={cx(className)}>
       <div
@@ -61,8 +75,8 @@ const ContactContainer = ({ className }: Props) => {
         />
       </div>
       <div className={cx("contact-list-container")}>
-        {friendList &&
-          activeContactType === MenuContactIndex.FRIEND_LIST &&
+        {activeContactType === MenuContactIndex.FRIEND_LIST &&
+          friendList &&
           friendList.map((f) => {
             return (
               <ContactRow
@@ -73,8 +87,8 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {conversationResponse?.groupConversations &&
-          activeContactType === MenuContactIndex.GROUP_LIST &&
+        {activeContactType === MenuContactIndex.GROUP_LIST &&
+          conversationResponse?.groupConversations &&
           conversationResponse?.groupConversations.map((gc) => {
             return (
               <ContactRow
@@ -84,27 +98,50 @@ const ContactContainer = ({ className }: Props) => {
               />
             );
           })}
-        {friendRequestList &&
-          activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
-          friendRequestList.map((friendRequest, index) => {
+        {activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
+          friendRequestList &&
+          friendRequestList.map((friendRequest) => {
             const { id, senderId } = friendRequest;
             return (
+              id &&
+              senderId && (
+                <ContactRow
+                  key={id}
+                  entityId={senderId}
+                  onClickBtnAcceptFriendRequest={() =>
+                    id && handleClickAcpFriend(id)
+                  }
+                  onClickBtnDetail={() =>
+                    senderId && handleClickBtnDetail(senderId, "Stranger")
+                  }
+                  onClickBtnDelFriendRequest={() =>
+                    id && handleClickDelFriendRequest(id)
+                  }
+                />
+              )
+            );
+          })}
+          {activeContactType === MenuContactIndex.USER_BLACK_LIST && 
+          userBlockList.map((a)=> {
+             return (
               <>
-                {id && senderId && (
+                <>
+                {a.avt && a.userName && (
                   <ContactRow
-                    key={index}
-                    entityId={senderId}
-                    onClickBtnAcceptFriendRequest={() =>
-                      handleClickAcpFriend(id)
-                    }
+                    key={a.avt}
+                    entityId={a.userName}                    
                     onClickBtnDetail={() =>
-                      handleClickBtnDetail(senderId, "Stranger")
+                      handleClickBtnDetail(a.avt, "Stranger")
                     }
                     onClickBtnDelFriendRequest={() =>
-                      handleClickDelFriendRequest(id)
-                    }
+                      handleClickDelFriendRequest(a.avt)
+                    }            
+                    onClickBtnUnblock={() =>
+                      handleClickAcpFriend(a.avt)
+                    }      
                   />
                 )}
+              </>
               </>
             );
           })}

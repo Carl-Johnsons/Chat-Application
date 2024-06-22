@@ -126,6 +126,7 @@ public class FriendRequestController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "accept friend request fail");
         }
         await Console.Out.WriteLineAsync("Sending friendCreatedEvent");
+
         await _publishEndpoint.Publish(
             new FriendCreatedEvent
             {

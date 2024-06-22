@@ -35,4 +35,4 @@ const UpdateAvatarModalContent = () => {
   );
 };
 
-export default UpdateAvatarModalContent;
+export { UpdateAvatarModalContent };

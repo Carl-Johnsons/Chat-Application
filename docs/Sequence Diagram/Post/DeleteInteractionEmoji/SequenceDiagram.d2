@@ -1,0 +1,68 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+Admin: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: <<user interaction>> \n chat application
+apiGateway: <<coordinator>> \n apiGateway
+postService: <<service>> \n postService
+
+DB: "DB" {
+  shape: cylinder
+}
+
+Admin -> application.get: 1. Admin request with access token
+application.get -> apiGateway.get: 2. Admin request with access token
+apiGateway.get."3. validate token success"
+apiGateway.get -> postService.get: 4. Request delete interaction emoji
+
+alt: "alt" {
+  class: frame
+  If interaction code exist: "[If interaction code not exist]" {
+    class: frame
+    apiGateway.get <- postService.get: 5A. Return 400 status {class: return arrow}
+    application.get <- apiGateway.get: 5A.1. Return 400 status {class: return arrow}
+    Admin <- application.get: 5A.2. Display error {class: return arrow}
+  }
+  If interaction code not exist: "[If interaction code exist]" {
+    class: frame
+    postService.get -> DB.get: 5. Request database
+    postService.get <- DB.get: 6. Database response {class: return arrow}
+    apiGateway.get <- postService.get: 7. return 201 status {class: return arrow}
+    application.get <- apiGateway.get: 8. return 201 status {class: return arrow}
+    Admin <- application.get: 9. return 201 status {class: return arrow}
+  }
+}

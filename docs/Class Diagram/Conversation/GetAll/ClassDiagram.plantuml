@@ -1,0 +1,104 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BaseApiController {
+    #_sender: ISender
+    #_httpContextAccessor: HttpContextAccessor 
+}
+
+class ConversationController {
+    +GetAll(): Task<IActionResult>
+}
+
+class GetAllConversationsQuery {}
+
+class GetAllConversationsQueryHandler {
+    -_context: IApplicationDbContext
+    +Handle(GetAllConversationsQuery request, CancellationToken cancellationToken): Task<Result<List<Conversation>>>
+}
+
+class IApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +ConversationUsers: DbSet<ConversationUser>
+}
+
+class ApplicationDbContext {
+    +Conversations: DbSet<Conversation>
+    +ConversationUsers: DbSet<ConversationUser>
+    #OnConfiguring(DbContextOptionsBuilder optionsBuilder): void
+}
+
+class Result {
+    +IsFailure: bool
+    +IsSuccess: bool
+    +Errors: IEnumerable<Error>
+    #Result(bool isSuccess, IEnumerable<Error> errors)
+    #Result(bool isSuccess, Error error)
+    +ThrowIfFailure(): void
+    +{static} Success(): Result 
+    +{static} Failure(Error err): Result
+    +{static} Failure(IEnumerable<Error> errs): Result
+}
+
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
+class Error {
+    +{static} None: Error
+    +{static} Result(Error err): implicit operator
+}
+
+class BaseEntity {
+    +Id: Guid
+}
+
+class BaseAuditableEntity{
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class Conversation {
+    +Type: string
+    +Users: List<ConversationUser>
+}
+
+class ConversationUser {
+    +ConversationId: Guid
+    +UserId: Guid
+    +Role: string 
+    +ReadTime: DateTime?
+    +Conversation: Conversation
+}
+
+interface "IRequest<TResponse>"
+interface "IRequestHandler<TRequest, TResponse>"{
+    Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
+}
+
+'==== Get All Conversation ====
+'API Layer
+ConversationController --|> BaseApiController
+ConversationController -- GetAllConversationsQuery
+'Application Layer
+GetAllConversationsQuery ..|> "IRequest<TResponse>"
+GetAllConversationsQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
+GetAllConversationsQueryHandler "1" --"1..*" GetAllConversationsQuery
+GetAllConversationsQueryHandler "1" --"1..*" Result
+GetAllConversationsQueryHandler "1" o--"1..*" IApplicationDbContext
+'Domain Layer
+Result <|-- Error
+Result <|-- "Result<T>"
+ConversationUser --|> BaseEntity
+Conversation --|> BaseAuditableEntity
+Conversation "1..*"*-- ConversationUser
+BaseAuditableEntity --|>BaseEntity
+'Infrastructure Layer
+IApplicationDbContext <|.. ApplicationDbContext
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Conversation
+@enduml

@@ -90,16 +90,21 @@ const ProfileModalContent = (variant: Variants) => {
   }
   const { data: currentUserData } = useGetCurrentUser({ enabled: isPersonal });
   const { data: otherUserData } = useGetUser(modalEntityId, {
-    enabled: isFriend || isStranger,
+    enabled: (isFriend || isStranger) && !!modalEntityId,
   });
-  const { data: conversationData } = useGetConversation({
-    conversationId: modalEntityId,
-  });
+  const { data: conversationData } = useGetConversation(
+    {
+      conversationId: modalEntityId,
+    },
+    {
+      enabled: isGroup && !!modalEntityId,
+    }
+  );
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
-    modalEntityId,
+    { conversationId: modalEntityId },
     {
-      enabled: isGroup,
+      enabled: isGroup && !!modalEntityId,
     }
   );
 
@@ -109,7 +114,9 @@ const ProfileModalContent = (variant: Variants) => {
     ? conversationUsersData?.flatMap((cu) => cu.userId)
     : undefined;
 
-  const usersQueryData = useGetUsers(userIdList ?? []);
+  const usersQueryData = useGetUsers(userIdList ?? [], {
+    enabled: !!userIdList,
+  });
 
   const name = isGroup
     ? (conversationData as GroupConversation)?.name
@@ -322,4 +329,4 @@ const ProfileModalContent = (variant: Variants) => {
   );
 };
 
-export default ProfileModalContent;
+export { ProfileModalContent };
