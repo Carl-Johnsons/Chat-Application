@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using PostService.Domain.Common;
 using PostService.Domain.DTOs;
-using PostService.Domain.Entities;
 using PostService.Domain.Errors;
 namespace PostService.Application.Posts.Queries;
 

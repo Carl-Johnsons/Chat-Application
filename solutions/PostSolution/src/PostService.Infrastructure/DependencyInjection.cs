@@ -1,7 +1,6 @@
 ﻿using Contract.Common;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
-using PostService.Domain.Interfaces;
 using PostService.Infrastructure.EventPublishing;
 using PostService.Infrastructure.Persistence.Mockup;
 using PostService.Infrastructure.Utilities;

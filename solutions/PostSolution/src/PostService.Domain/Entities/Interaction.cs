@@ -1,17 +1,11 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace PostService.Domain.Entities;
 
 [Table("Interaction")]
 [PrimaryKey(nameof(Id))]
-public class Interaction : BaseEntity
+public class Interaction : BaseAuditableEntity
 {
     [Required]
     [JsonProperty("value")]

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using PostService.Domain.Entities;
+﻿using PostService.Domain.Entities;
 using Interaction = PostService.Domain.Entities.Interaction;
 
 namespace PostService.Infrastructure.Persistence;
@@ -39,6 +38,26 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Post>(entity =>
+        {
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        });
+
+        modelBuilder.Entity<Interaction>(entity =>
+        {
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        });
+
+        modelBuilder.Entity<Domain.Entities.Tag>(entity =>
         {
             entity.Property(e => e.CreatedAt)
                   .HasConversion(v => v.ToUniversalTime(),

@@ -16,7 +16,7 @@ public class GetAllInteractionsQueryHandler : IRequestHandler<GetAllInteractions
 
     public async Task<Result<List<Interaction>>> Handle(GetAllInteractionsQuery request, CancellationToken cancellationToken)
     {
-        var interactions = await _context.Interactions.ToListAsync(cancellationToken);
+        var interactions = await _context.Interactions.OrderBy(i => i.CreatedAt).ToListAsync(cancellationToken);
 
         return Result<List<Interaction>>.Success(interactions);
     }

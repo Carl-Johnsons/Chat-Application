@@ -27,7 +27,7 @@ public class PaginatedCommentListDTO : BasePaginatedDTO
 
 /* ===================== Response  ===================== */
 
-public class PaginatedPostListResponseDTO : BasePaginatedResponse<PostDTO, PostListMetadata>;
+public class PaginatedPostListResponseDTO : BasePaginatedResponse<string, PostListMetadata>;
 public class PaginatedCommentListResponseDTO : BasePaginatedResponse<Comment, EmptyMetadata>;
 
 

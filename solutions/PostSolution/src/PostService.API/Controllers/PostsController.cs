@@ -115,9 +115,8 @@ public class PostsController : BaseApiController
         return Ok();
     }
 
-    [HttpPost]
-    [Route("post-interaction")]
-    public async Task<IActionResult> CreateInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
+    [HttpPost("interact")]
+    public async Task<IActionResult> InteractPost([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
@@ -134,8 +133,8 @@ public class PostsController : BaseApiController
         return Ok();
     }
 
-    [HttpGet("post-interaction")]
-    public async Task<IActionResult> GetInteraction([FromQuery] Guid id)
+    [HttpGet("interact")]
+    public async Task<IActionResult> GetInteractionByPostId([FromQuery] Guid id)
     {
         var interactions = await _sender.Send(new GetInteractionByPostIdQuery
         {
@@ -146,7 +145,23 @@ public class PostsController : BaseApiController
         return Ok(interactions.Value);
     }
 
-    [HttpPost("report-post")]
+    [HttpGet("interact/user")]
+    public async Task<IActionResult> GetInteractionByPostIdAndUserId([FromQuery] Guid id)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var interactions = await _sender.Send(new GetInteractionByPostIdQuery
+        {
+            PostId = id,
+            UserId = Guid.Parse(subjectId!)
+        });
+
+        interactions.ThrowIfFailure();
+        return Ok(interactions.Value);
+    }
+
+    [HttpPost("report")]
     public async Task<IActionResult> CreateReportPost([FromBody] CreatePostReport createPostReport)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
@@ -163,7 +178,7 @@ public class PostsController : BaseApiController
         return Ok();
     }
 
-    [HttpGet("all-post-report")]
+    [HttpGet("report/all")]
     public async Task<IActionResult> GetAllReportPost()
     {
         var posts = await _sender.Send(new GetListReportPostQuery { });
@@ -171,7 +186,7 @@ public class PostsController : BaseApiController
         return Ok(posts.Value);
     }
 
-    [HttpGet("post-report")]
+    [HttpGet("report")]
     public async Task<IActionResult> GetReportPost([FromQuery] Guid id)
     {
         var post = await _sender.Send(new GetPostReportByPostIdCommand
@@ -182,8 +197,8 @@ public class PostsController : BaseApiController
         return Ok(post.Value);
     }
 
-    [HttpDelete("uninteraction")]
-    public async Task<IActionResult> UninteractionPost([FromBody] UninteractionPostDTO uninteractionPostDTO)
+    [HttpDelete("interact")]
+    public async Task<IActionResult> UndoInteractPost([FromBody] UninteractionPostDTO uninteractionPostDTO)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
