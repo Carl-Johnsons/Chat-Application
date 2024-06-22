@@ -5,23 +5,22 @@ using PostService.Domain.Errors;
 
 namespace PostService.Application.Interactions.Queries;
 
-public class GetInteractionByPostIdQuery : IRequest<Result<List<PostInteract>?>>
+public class GetInteractionByPostIdQuery : IRequest<Result<List<Interaction>?>>
 {
     public Guid PostId { get; init; }
+    public Guid? UserId { get; init; }
 }
 
-public class GetInteractionByPostIdQueryHandler : IRequestHandler<GetInteractionByPostIdQuery, Result<List<PostInteract>?>>
+public class GetInteractionByPostIdQueryHandler : IRequestHandler<GetInteractionByPostIdQuery, Result<List<Interaction>?>>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public GetInteractionByPostIdQueryHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public GetInteractionByPostIdQueryHandler(IApplicationDbContext context)
     {
         _context = context;
-        _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<List<PostInteract>?>> Handle(GetInteractionByPostIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<Interaction>?>> Handle(GetInteractionByPostIdQuery request, CancellationToken cancellationToken)
     {
         var post = _context.Posts
                     .Where(p => p.Id == request.PostId)
@@ -29,13 +28,21 @@ public class GetInteractionByPostIdQueryHandler : IRequestHandler<GetInteraction
 
         if (post == null)
         {
-            return Result<List<PostInteract>?>.Failure(PostError.NotFound);
+            return Result<List<Interaction>?>.Failure(PostError.NotFound);
         }
 
-        var interactions = await _context.PostInteracts
-                            .Where(i => i.PostId == request.PostId)
-                            .ToListAsync();
+        var query = _context.PostInteracts
+                                .Where(i => i.PostId == request.PostId)
+                                .AsQueryable();
 
-        return Result<List<PostInteract>?>.Success(interactions);
+        if (request.UserId.HasValue)
+        {
+            query = query.Where(i => i.UserId == request.UserId);
+        }
+
+        var interactions = await query.Include(pt => pt.Interaction).
+                                Select(pt => pt.Interaction).ToListAsync();
+
+        return Result<List<Interaction>?>.Success(interactions);
     }
 }

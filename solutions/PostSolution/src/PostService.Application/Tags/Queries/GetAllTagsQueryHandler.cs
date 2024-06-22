@@ -18,6 +18,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, Result<Li
     public async Task<Result<List<Tag>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
     {
         var tags = await _context.Tags
+                    .OrderBy(t => t.CreatedAt)
                     .ToListAsync(cancellationToken);
 
         return Result<List<Tag>>.Success(tags);

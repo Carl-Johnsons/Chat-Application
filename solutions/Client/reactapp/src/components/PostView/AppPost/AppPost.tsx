@@ -1,6 +1,5 @@
 import moment from "moment";
-import { Post } from "models/Post";
-
+import htmlParser from "html-react-parser";
 import style from "./AppPost.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
@@ -10,18 +9,31 @@ import {
   InteractionCounterContainer,
   PostButtonContainer,
 } from "../";
-import { AppDivider } from "@/components/shared";
+import { AppDivider, AppTag } from "@/components/shared";
+import { useGetUser } from "@/hooks/queries/user";
+import { useGetPostByd } from "hooks/queries/post/useGetPostById.query";
 
 const cx = classNames.bind(style);
 
 interface Props {
-  post: Post;
+  postId: string;
 }
 
-const AppPost = ({ post }: Props) => {
-  const { interactions, comments, content, createdAt } = post;
+const AppPost = ({ postId }: Props) => {
+  const { data: postData } = useGetPostByd({ postId }, { enabled: !!postId });
+
+  const { data: authorData } = useGetUser(postData?.userId ?? "", {
+    enabled: !!postData?.userId,
+  });
+
   const tz = moment.tz.guess();
-  const formattedTime = moment(new Date(createdAt)).tz(tz).format("HH:mm");
+  const formattedTime = moment(new Date(postData?.createdAt ?? ""))
+    .tz(tz)
+    .fromNow();
+
+  const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
+  const authorName = authorData?.name ?? "Loading...";
+
   return (
     <div
       className={cx(
@@ -39,23 +51,36 @@ const AppPost = ({ post }: Props) => {
           className={cx("me-2")}
           avatarClassName={cx("rounded-circle")}
           variant="avatar-img-45px"
-          src={images.defaultAvatarImg.src}
+          src={authorAvatar}
           alt="author avatar"
         ></Avatar>
         <div className={cx("author-name", "fw-medium", "me-auto")}>
-          test user
+          {authorName}
         </div>
         <div className={cx("time")}>{formattedTime}</div>
       </div>
-      <div className={cx("ps-2", "pe-2", "text-break")}>{content}</div>
-      <InteractionCounterContainer
-        className={cx("ps-2", "pe-2")}
-        interactions={interactions}
-      />
+      <div className={cx("ps-2", "pe-2", "text-break")}>
+        {htmlParser(postData?.content ?? "")}
+      </div>
+      <div className={cx("mt-2", "mb-2", "d-flex", "gap-2", "flex-wrap")}>
+        {postData?.tags &&
+          postData?.tags.map((tag, index) => {
+            return <AppTag key={index} value={tag} disableCancel />;
+          })}
+      </div>
+
+      {postData?.interactions && (
+        <InteractionCounterContainer
+          className={cx("ps-2", "pe-2")}
+          interactTotal={postData.interactTotal}
+          interactions={postData.interactions}
+        />
+      )}
+
       <AppDivider />
-      <PostButtonContainer />
+      <PostButtonContainer postId={postId} />
       <AppDivider />
-      <CommentContainer comments={comments} />
+      <CommentContainer postId={postId} />
     </div>
   );
 };

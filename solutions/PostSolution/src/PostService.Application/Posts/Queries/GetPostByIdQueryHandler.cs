@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using PostService.Domain.Common;
 using PostService.Domain.DTOs;
-using PostService.Domain.Entities;
 using PostService.Domain.Errors;
 namespace PostService.Application.Posts.Queries;
 
@@ -70,7 +68,7 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<
 
         var postReponse = new PostDTO
         {
-            PostId = request.Id,
+            Id = request.Id,
             Content = post.Content,
             UserId = post.UserId,
             CreatedAt = post.CreatedAt,

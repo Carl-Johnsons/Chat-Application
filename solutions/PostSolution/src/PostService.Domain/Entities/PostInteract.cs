@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PostService.Domain.Entities;
 
 [Table("PostInteract")]
-[PrimaryKey(nameof(PostId), nameof(InteractionId))]
+[PrimaryKey(nameof(PostId), nameof(InteractionId), nameof(UserId))]
 public class PostInteract
 {
     [Required]

@@ -1,6 +1,8 @@
-﻿using ChatHub.Hubs;
+﻿using ChatHub.Filters;
+using ChatHub.Hubs;
 using Contract.Event.ConversationEvent;
 using MassTransit;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
 namespace ChatHub;
@@ -12,10 +14,13 @@ public static class DependenciesInjection
     {
         var services = builder.Services;
 
-        services.AddSignalR();
         services.AddHttpContextAccessor();
 
-        services.AddSignalR()
+        services.AddSignalR(options =>
+        {
+            //Global filter
+            options.AddFilter<GlobalLoggingFilter>();
+        })
             .AddNewtonsoftJsonProtocol(options =>
             {
                 options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -42,7 +47,7 @@ public static class DependenciesInjection
 
         services.AddCors(option =>
         {
-            option.AddPolicy(name: "AllowSPAClientOrign", builder =>
+            option.AddPolicy(name: "AllowSPAClientOrigin", builder =>
             {
                 builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
                         .AllowAnyHeader()
@@ -53,10 +58,11 @@ public static class DependenciesInjection
         return builder;
     }
 
-    public static WebApplication UseChatHubService(this WebApplication app) {
+    public static WebApplication UseChatHubService(this WebApplication app)
+    {
         // Set endpoint for a chat hub
         app.MapHub<ChatHubServer>("/chat-hub");
-        app.UseCors("AllowSPAClientOrign");
+        app.UseCors("AllowSPAClientOrigin");
         return app;
     }
 }

@@ -36,8 +36,7 @@ public class GetMessagesByConversationIdQueryHandler : IRequestHandler<GetMessag
             Limit = MESSAGE_CONSTANTS.LIMIT
         });
 
-        var messageList = await query.OrderBy(m => m.Id).ToListAsync();
-
+        var messageList = await query.OrderBy(m => m.CreatedAt).ToListAsync();
 
         var paginatedResponse = new PaginatedMessageListResponseDTO
         {

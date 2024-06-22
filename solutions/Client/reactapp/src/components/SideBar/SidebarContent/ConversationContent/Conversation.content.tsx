@@ -35,7 +35,7 @@ const ConversationContent = () => {
       setActiveConversationId(conversationId);
       setConversationType(type);
       setEnableMessageListQuery(true);
-      
+
       console.log({ conversationId, type });
 
       messageListQuery.refetch();
@@ -62,7 +62,8 @@ const ConversationContent = () => {
             if (!conversation) {
               return;
             }
-            const lastMessage: Message = lastMessageQueries[index].data ?? {
+            const lastMessage: Partial<Message> = lastMessageQueries[index]
+              .data ?? {
               content: "This conversation is new! Say hi",
             };
 
@@ -86,7 +87,8 @@ const ConversationContent = () => {
             if (!conversation) {
               return;
             }
-            const lastMessage: Message = lastMessageQueries[index].data ?? {
+            const lastMessage: Partial<Message> = lastMessageQueries[index]
+              .data ?? {
               content: "This conversation is new! Say hi",
             };
 
