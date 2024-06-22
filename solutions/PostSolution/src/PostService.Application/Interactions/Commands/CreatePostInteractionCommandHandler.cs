@@ -44,7 +44,7 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
         }
 
        var postInteraction = _context.PostInteracts
-                            .Where(pi => pi.UserId == request.PostId && pi.UserId == request.UserId)
+                            .Where(pi => pi.PostId == request.PostId && pi.UserId == request.UserId)
                             .FirstOrDefault();
 
         if (postInteraction != null)

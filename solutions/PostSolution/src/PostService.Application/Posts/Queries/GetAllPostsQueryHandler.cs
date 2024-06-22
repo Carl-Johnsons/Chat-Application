@@ -24,7 +24,7 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<
 
     public async Task<Result<PaginatedPostListResponseDTO>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
     {
-        var postQuery = _context.Posts.AsQueryable();
+        var postQuery = _context.Posts.OrderByDescending(p => p.CreatedAt).AsQueryable();
 
         postQuery = _paginateDataUtility.PaginateQuery(postQuery, new PaginateParam
         {
@@ -32,7 +32,7 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, Result<
             Limit = POST_CONSTANTS.LIMIT
         });
 
-        var postIds = await postQuery.OrderByDescending(p => p.CreatedAt).Select(p=>p.Id.ToString()).ToListAsync();
+        var postIds = await postQuery.Select(p=>p.Id.ToString()).ToListAsync();
 
         //List<PostDTO> result = new List<PostDTO>();
 

@@ -9,7 +9,7 @@ import {
   InteractionCounterContainer,
   PostButtonContainer,
 } from "../";
-import { AppDivider } from "@/components/shared";
+import { AppDivider, AppTag } from "@/components/shared";
 import { useGetUser } from "@/hooks/queries/user";
 import { useGetPostByd } from "hooks/queries/post/useGetPostById.query";
 
@@ -62,6 +62,13 @@ const AppPost = ({ postId }: Props) => {
       <div className={cx("ps-2", "pe-2", "text-break")}>
         {htmlParser(postData?.content ?? "")}
       </div>
+      <div className={cx("mt-2", "mb-2", "d-flex", "gap-2", "flex-wrap")}>
+        {postData?.tags &&
+          postData?.tags.map((tag, index) => {
+            return <AppTag key={index} value={tag} disableCancel />;
+          })}
+      </div>
+
       {postData?.interactions && (
         <InteractionCounterContainer
           className={cx("ps-2", "pe-2")}

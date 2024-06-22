@@ -108,8 +108,8 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
         )}
         ref={containerRef}
       >
-        {postIds.map((postId, index) => {
-          return <AppPost key={index} postId={postId}></AppPost>;
+        {postIds.map((postId) => {
+          return <AppPost key={postId} postId={postId}></AppPost>;
         })}
       </div>
     </div>

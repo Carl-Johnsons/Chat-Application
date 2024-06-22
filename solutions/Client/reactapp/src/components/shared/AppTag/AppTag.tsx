@@ -9,16 +9,24 @@ const cx = classNames.bind(style);
 interface Props {
   className?: string;
   value: string;
+  disableCancel?: boolean;
   onClickCancel?: () => void;
 }
 
-const AppTag = ({ className = "", value, onClickCancel = () => {} }: Props) => {
+const AppTag = ({
+  className = "",
+  value,
+  disableCancel = false,
+  onClickCancel = () => {},
+}: Props) => {
   return (
     <div className={cx("tag", "enable-cancel", "d-flex", className)}>
       <div className={cx("d-flex", "align-items-center")}>{value}</div>
-      <AppButton onClick={onClickCancel} className={cx("cancel-btn", "ms-2")}>
-        <FontAwesomeIcon icon={faClose} />
-      </AppButton>
+      {!disableCancel && (
+        <AppButton onClick={onClickCancel} className={cx("cancel-btn", "ms-2")}>
+          <FontAwesomeIcon icon={faClose} />
+        </AppButton>
+      )}
     </div>
   );
 };
