@@ -1,5 +1,5 @@
 import { BaseTag } from "@/models";
-import style from "./AppInput.module.scss";
+import style from "./AppTagInput.module.scss";
 import classNames from "classnames/bind";
 import {
   Dispatch,
@@ -19,6 +19,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   suggestions?: Array<BaseTag>;
   reverseSuggestion?: boolean;
   strictSuggestion?: boolean;
+  disableSuggestion?: boolean;
   triggerKeys?: string[];
 
   onAddition?: (tag: BaseTag) => void;
@@ -28,13 +29,14 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   setSuggestionObject?: Dispatch<SetStateAction<BaseTag | undefined>>;
 }
 
-const AppInput = ({
+const AppTagInput = ({
   wrapperClassName = "",
   suggestions = [],
   reverseSuggestion = false,
   inputValue,
   triggerKeys = [KEYBOARD_KEY.ENTER],
   strictSuggestion,
+  disableSuggestion,
   onAddition = () => {},
   setInputValue,
   setSuggestionObject = () => {},
@@ -128,7 +130,7 @@ const AppInput = ({
           }
         }}
       />
-      {isFocused && (
+      {!disableSuggestion && isFocused && (
         <div
           className={cx(
             "suggestion-container",
@@ -184,4 +186,4 @@ const AppInput = ({
   );
 };
 
-export { AppInput };
+export { AppTagInput };

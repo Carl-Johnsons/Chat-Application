@@ -1,6 +1,6 @@
 export * from "./AppButton";
 export * from "./AppDivider";
-export * from "./AppInput";
+export * from "./AppInput/TagInput";
 export * from "./AppTag";
 export * from "./Avatar";
 export * from "./Box";

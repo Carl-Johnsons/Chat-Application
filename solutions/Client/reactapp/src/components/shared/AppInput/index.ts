@@ -1,1 +1,2 @@
-export * from "./AppInput";
+export * from "./Input";
+export * from "./TagInput";

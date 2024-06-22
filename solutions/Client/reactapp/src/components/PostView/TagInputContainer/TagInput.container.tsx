@@ -3,7 +3,7 @@ import style from "./TagInput.container.module.scss";
 import classNames from "classnames/bind";
 import { useGetTags } from "@/hooks/queries/post";
 import { BaseTag, Tag } from "@/models";
-import { AppInput, AppTag } from "@/components/shared";
+import { AppTag, AppTagInput } from "@/components/shared";
 import AppButton from "@/components/shared/AppButton";
 
 interface Props {
@@ -71,7 +71,7 @@ const TagInputContainer = ({ tags, setTags }: Props) => {
         )}
       </div>
       <div>
-        <AppInput
+        <AppTagInput
           inputValue={inputValue}
           setInputValue={setInputValue}
           onAddition={handleAddition}

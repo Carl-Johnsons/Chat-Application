@@ -38,6 +38,7 @@ public class GetCommentByPostIdQueryHandler : IRequestHandler<GetCommentByPostId
 
         var commentsQuery = _context.PostComments
                             .Where(pc => pc.PostId == request.PostId)
+                            .OrderByDescending(pc => pc.Comment.CreatedAt)
                             .AsQueryable();
 
         commentsQuery = _paginateDataUtility.PaginateQuery(commentsQuery, new PaginateParam
@@ -48,7 +49,6 @@ public class GetCommentByPostIdQueryHandler : IRequestHandler<GetCommentByPostId
 
         var comments = await commentsQuery
                             .Include(pc => pc.Comment)
-                            .OrderByDescending(pc => pc.Comment.CreatedAt)
                             .Select(pc => pc.Comment)
                             .ToListAsync();
 

@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const isLeapYear = (year: number) => {
   return year % 400 === 0 || (year !== 100 && year % 4 === 0);
 };
@@ -57,4 +59,27 @@ export const convertISODateToVietnameseFormat = (dateTime?: string) => {
   const day = date.getDate();
 
   return `${day} tháng ${month}, ${year}`;
+};
+
+export const formatRelativeTime = (createdAt: string | Date): string => {
+  const now = moment();
+  const tz = moment.tz.guess();
+  const createdMoment = moment(new Date(createdAt)).tz(tz);
+  const duration = moment.duration(now.diff(createdMoment));
+
+  if (duration.asSeconds() < 60) {
+    return `${Math.floor(duration.asSeconds())}s`;
+  } else if (duration.asMinutes() < 60) {
+    return `${Math.floor(duration.asMinutes())}m`;
+  } else if (duration.asHours() < 24) {
+    return `${Math.floor(duration.asHours())}h`;
+  } else if (duration.asDays() < 7) {
+    return `${Math.floor(duration.asDays())}d`;
+  } else if (duration.asWeeks() < 4) {
+    return `${Math.floor(duration.asWeeks())}w`;
+  } else if (duration.asMonths() < 12) {
+    return `${Math.floor(duration.asMonths())}mo`;
+  } else {
+    return `${Math.floor(duration.asYears())}y`;
+  }
 };
