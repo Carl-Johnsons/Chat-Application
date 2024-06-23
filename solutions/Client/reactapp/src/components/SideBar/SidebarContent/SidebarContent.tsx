@@ -99,11 +99,17 @@ const SidebarContent = () => {
       break;
   }
 
+  if (!currentUserData) {
+    return;
+  }
+
   return (
     <>
-      <div className={cx("search-bar-container")}>
-        <SearchBar />
-      </div>
+      {currentUserData.role === ROLE.USER && (
+        <div className={cx("search-bar-container")}>
+          <SearchBar />
+        </div>
+      )}
       {currentView}
     </>
   );

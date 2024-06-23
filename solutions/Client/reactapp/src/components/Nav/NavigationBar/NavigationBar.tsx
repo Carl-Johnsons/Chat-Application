@@ -126,27 +126,28 @@ const NavigationBar = () => {
         " border-0 nav-tabs d-flex flex-column h-100"
       )}
     >
-      {items.map((item, index) => (
-        <NavItem
-          key={index}
-          index={index}
-          dataContent={item.dataContent}
-          href={item.href}
-          isActive={activeNav == index}
-          className={item.className}
-          navLinkClassName={item.navLinkClassName}
-          onClick={() => handleClick(item.dataContent, index)}
-        >
-          <Avatar
-            variant="avatar-img-40px"
-            avatarClassName={cx(
-              item.dataContent === "info-modal" ? "rounded-circle" : "p-2"
-            )}
-            src={item.image}
-            alt={item.imageAlt}
-          />
-        </NavItem>
-      ))}
+      {currentUser &&
+        items.map((item, index) => (
+          <NavItem
+            key={index}
+            index={index}
+            dataContent={item.dataContent}
+            href={item.href}
+            isActive={activeNav == index}
+            className={item.className}
+            navLinkClassName={item.navLinkClassName}
+            onClick={() => handleClick(item.dataContent, index)}
+          >
+            <Avatar
+              variant="avatar-img-40px"
+              avatarClassName={cx(
+                item.dataContent === "info-modal" ? "rounded-circle" : "p-2"
+              )}
+              src={item.image}
+              alt={item.imageAlt}
+            />
+          </NavItem>
+        ))}
     </Nav>
   );
 };

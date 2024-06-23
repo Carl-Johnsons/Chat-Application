@@ -44,6 +44,10 @@ const MainViewContainer = () => {
       currentView = views[activeNav - 1].view;
       break;
   }
+  
+  if (!currentUserData) {
+    return;
+  }
 
   return <>{currentView}</>;
 };
