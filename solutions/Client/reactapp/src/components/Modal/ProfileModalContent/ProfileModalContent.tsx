@@ -37,12 +37,14 @@ type FriendVariant = BaseVariant & {
   type: "Friend";
   onClickCalling?: () => void;
   onClickMessaging?: () => void;
+  onClickBlockUser?: () => void;
 };
 
 type StrangerVariant = BaseVariant & {
   type: "Stranger";
   onClickSendFriendRequest?: () => void;
   onClickMessaging?: () => void;
+  onClickBlockUser?: () => void;
 };
 type GroupVariant = BaseVariant & {
   type: "Group";
@@ -73,6 +75,8 @@ const ProfileModalContent = (variant: Variants) => {
   let onClickMessaging: (() => void) | undefined;
   //Group
   let onClickMoreMemberInfo: (() => void) | undefined;
+  //block
+  let onClickBlockUser: (() => void) | undefined;
 
   const isPersonal = type === "Personal";
   const isFriend = type === "Friend";
@@ -82,9 +86,10 @@ const ProfileModalContent = (variant: Variants) => {
   if (isPersonal) {
     ({ onClickUpdate, onClickEditAvatar, onClickEditUserName } = variant);
   } else if (isFriend) {
-    ({ onClickCalling, onClickMessaging } = variant);
+    ({ onClickCalling, onClickMessaging, onClickBlockUser } = variant);
   } else if (isStranger) {
-    ({ onClickSendFriendRequest, onClickMessaging } = variant);
+    ({ onClickSendFriendRequest, onClickMessaging, onClickBlockUser } =
+      variant);
   } else {
     ({ onClickMessaging, onClickMoreMemberInfo } = variant);
   }
@@ -147,15 +152,13 @@ const ProfileModalContent = (variant: Variants) => {
           "ps-3",
           "pe-3",
           isPersonal ? "pb-4" : "pb-2"
-        )}
-      >
+        )}>
         <div
           className={cx(
             "info-detail",
             "d-flex",
             !isGroup ? "individual" : "pb-4"
-          )}
-        >
+          )}>
           <div className={cx("w-25", "avatar-img-container")}>
             <Avatar
               variant="avatar-img-80px"
@@ -180,40 +183,57 @@ const ProfileModalContent = (variant: Variants) => {
                 "justify-content-center",
                 "align-items-center"
               )}
-              onClick={onClickEditUserName}
-            >
+              onClick={onClickEditUserName}>
               <FontAwesomeIcon icon={faPen} />
             </AppButton>
           </div>
         </div>
         {/* Type friend and stranger has multiple button to function */}
         {!isPersonal && (
-          <div
-            className={cx(
-              "info-button-container",
-              "d-flex",
-              "justify-content-between",
-              !isGroup && "pt-5"
-            )}
-          >
-            {!isGroup && (
-              <AppButton
-                variant="app-btn-primary"
-                className={cx("info-button", "fw-medium", "flex-grow-1")}
-                onClick={isFriend ? onClickCalling : onClickSendFriendRequest}
-              >
-                {isFriend ? "Gọi điện" : "Kết bạn"}
-              </AppButton>
-            )}
+          <>
+            <div
+              className={cx(
+                "info-button-container",
+                "d-flex",
+                "justify-content-between",
+                !isGroup && "pt-5"
+              )}>
+              {!isGroup && (
+                <AppButton
+                  variant="app-btn-primary"
+                  className={cx("info-button", "fw-medium", "flex-grow-1")}
+                  onClick={
+                    isFriend ? onClickCalling : onClickSendFriendRequest
+                  }>
+                  {isFriend ? "Gọi điện" : "Kết bạn"}
+                </AppButton>
+              )}
 
-            <AppButton
-              variant="app-btn-tertiary"
-              className={cx("info-button", "fw-medium", "flex-grow-1")}
-              onClick={onClickMessaging}
-            >
-              Nhắn tin
-            </AppButton>
-          </div>
+              <AppButton
+                variant="app-btn-tertiary"
+                className={cx("info-button", "fw-medium", "flex-grow-1")}
+                onClick={onClickMessaging}>
+                Nhắn tin
+              </AppButton>
+            </div>
+
+            <div
+              className={cx(
+                "w-100",
+                "d-flex",
+                "justify-content-center",
+                "mt-2"
+              )}>
+              {(isStranger || isFriend) && (
+                <AppButton
+                  variant="app-btn-danger"
+                  className={cx("info-button", "fw-medium", "flex-grow-1")}
+                  onClick={onClickBlockUser}>
+                  Chặn người dùng
+                </AppButton>
+              )}
+            </div>
+          </>
         )}
       </div>
 
@@ -227,8 +247,7 @@ const ProfileModalContent = (variant: Variants) => {
             "flex-column",
             "ps-3",
             "pe-3"
-          )}
-        >
+          )}>
           <div className={cx("personal-information-row")}>
             Thông tin cá nhân
           </div>
@@ -260,8 +279,7 @@ const ProfileModalContent = (variant: Variants) => {
             "flex-column",
             "ps-3",
             "pe-3"
-          )}
-        >
+          )}>
           <div className={cx("personal-information-row")}>
             Thành viên &#40;{userIdList?.length}&#41;
           </div>
@@ -299,8 +317,7 @@ const ProfileModalContent = (variant: Variants) => {
                 "rounded-circle",
                 "z-0"
               )}
-              onClick={onClickMoreMemberInfo}
-            >
+              onClick={onClickMoreMemberInfo}>
               <FontAwesomeIcon
                 className={cx("m-0")}
                 icon={faEllipsis}
@@ -318,8 +335,7 @@ const ProfileModalContent = (variant: Variants) => {
           <AppButton
             variant="app-btn-primary-transparent"
             onClick={onClickUpdate}
-            className={cx("w-100", "fw-medium")}
-          >
+            className={cx("w-100", "fw-medium")}>
             <FontAwesomeIcon icon={faPen} className="me-2" />
             Cập nhật
           </AppButton>

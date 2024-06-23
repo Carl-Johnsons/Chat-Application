@@ -1,4 +1,5 @@
 export * from "./useAcceptFriendRequest.mutation";
+export * from "./useBlockUser.mutation";
 export * from "./useDeleteFriend.mutation";
 export * from "./useDeleteFriendRequest.mutation";
 export * from "./useGetCurrentUser.query";

@@ -2,6 +2,7 @@
 using Contract.DTOs;
 using Contract.Event.UploadEvent;
 using Contract.Event.UploadEvent.EventModel;
+using Contract.Event.UserEvent;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
@@ -11,6 +12,7 @@ using MassTransit.Clients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Sprache;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
@@ -29,14 +31,16 @@ public class UsersController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint)
     {
         _context = context;
         _userManager = userManager;
         _mapper = mapper;
         _httpContextAccessor = httpContextAccessor;
         _bus = bus;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -172,23 +176,41 @@ public class UsersController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest, "You already block this user!");
         }
 
+        _context.UserBlocks.Add(buInput);
+
         var friend = _context.Friends
                              .Where(f => (f.UserId == buInput.UserId && f.FriendId == buInput.BlockUserId) ||
-                             (f.FriendId == buInput.BlockUserId && f.UserId == buInput.UserId))
+                             (f.FriendId == buInput.UserId && f.UserId == buInput.BlockUserId))
                              .SingleOrDefault();
 
-        _context.UserBlocks.Add(buInput);
         if (friend != null)
         {
-            _context.Remove(friend);
+            _context.Friends.Remove(friend);
+        }
+
+        var friendReq = _context.FriendRequests
+                                .Where(fq => (fq.SenderId == buInput.BlockUserId && fq.ReceiverId == buInput.UserId) ||
+                                (fq.SenderId == buInput.UserId && fq.ReceiverId == buInput.BlockUserId))
+                                .SingleOrDefault();
+        
+        if(friendReq != null)
+        {
+            _context.FriendRequests.Remove(friendReq);
         }
         var result = _context.SaveChanges();
-
 
         if (result == 0)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
         }
+
+        await _publishEndpoint.Publish(
+                new UserBlockedEvent
+                {
+                    UserId = Guid.Parse(buInput.UserId),
+                    BlockUserId = Guid.Parse(buInput.BlockUserId),
+                }
+            );
 
         return Ok(); 
     }
@@ -218,5 +240,21 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("block")]
+    public async Task<IActionResult> GetBlockList()
+    {
+        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
 
+        var result = _context.UserBlocks
+                        .Where(u =>  u.UserId == userId)
+                        .Select(u => u.BlockUserId)
+                        .ToList();
+
+        BlockUserListDTO blockUserListDTO = new BlockUserListDTO
+        {
+            BlockUserId = result
+        };   
+
+        return Ok(blockUserListDTO);
+    }
 }

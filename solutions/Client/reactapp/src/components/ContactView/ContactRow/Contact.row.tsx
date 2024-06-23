@@ -4,7 +4,7 @@ import {
   faClose,
   faEllipsis,
   faBan,
-  faUnblock
+  faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
 
 import AppButton from "@/components/shared/AppButton";
@@ -35,8 +35,8 @@ const ContactRow = ({
   onClickBtnDetail = () => {},
   onClickBtnDelFriend = () => {},
   onClickBtnDelFriendRequest = () => {},
-   onClickBtnBlock = () => {},
-  onClickBtnUnblock = () => {} 
+  onClickBtnBlock = () => {},
+  onClickBtnUnblock = () => {},
 }: Props) => {
   const [activeContactType] = useGlobalState("activeContactType");
   const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
@@ -73,8 +73,7 @@ const ContactRow = ({
           "d-flex",
           "align-items-center",
           "p-2"
-        )}
-      >
+        )}>
         <div className={cx("avatar-container")}>
           <Avatar
             variant="avatar-img-40px"
@@ -93,8 +92,7 @@ const ContactRow = ({
               "start-0",
               "end-0",
               "bottom-0"
-            )}
-          >
+            )}>
             {name ?? ""}
           </div>
         </div>
@@ -109,8 +107,7 @@ const ContactRow = ({
               "align-items-center",
               "fw-bold"
             )}
-            onClick={() => onClickBtnAcceptFriendRequest(entityId)}
-          >
+            onClick={() => onClickBtnAcceptFriendRequest(entityId)}>
             <FontAwesomeIcon icon={faCheck} />
           </AppButton>
         )}
@@ -123,8 +120,7 @@ const ContactRow = ({
             "align-items-center",
             "fw-bold"
           )}
-          onClick={() => onClickBtnDetail(entityId)}
-        >
+          onClick={() => onClickBtnDetail(entityId)}>
           <FontAwesomeIcon icon={faEllipsis} />
         </AppButton>
         <AppButton
@@ -139,11 +135,10 @@ const ContactRow = ({
             activeContactType === MenuContactIndex.FRIEND_LIST
               ? onClickBtnDelFriend(entityId)
               : onClickBtnDelFriendRequest(entityId)
-          }
-        >
+          }>
           <FontAwesomeIcon icon={faClose} />
         </AppButton>
-        {activeContactType === MenuContactIndex.USER_BLACK_LIST && (
+        {(activeContactType === MenuContactIndex.USER_BLACK_LIST && (
           <AppButton
             variant="app-btn-primary-transparent"
             className={cx(
@@ -152,22 +147,22 @@ const ContactRow = ({
               "align-items-center",
               "fw-bold"
             )}
-            onClick={() => {onClickBtnUnblock(entityId)}}
-          >
+            onClick={() => {
+              onClickBtnUnblock(entityId);
+            }}>
             <FontAwesomeIcon icon={faUnlock} />
           </AppButton>
-        ) || (
-        <AppButton
-        variant="app-btn-primary-transparent"
-          className={cx(
-            "btn btn-detail",
-            "d-flex",
-            "align-items-center",
-            "fw-bold"
-          )}
-          onClick={() =>  onClickBtnBlock(entityId)}
-        >          
-          <FontAwesomeIcon icon={faBan} />
+        )) || (
+          <AppButton
+            variant="app-btn-primary-transparent"
+            className={cx(
+              "btn btn-detail",
+              "d-flex",
+              "align-items-center",
+              "fw-bold"
+            )}
+            onClick={() => onClickBtnBlock(entityId)}>
+            <FontAwesomeIcon icon={faBan} />
           </AppButton>
         )}
       </div>

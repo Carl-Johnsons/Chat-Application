@@ -10,6 +10,9 @@ import { useAxios } from "hooks/useAxios";
 interface Props extends AxiosProps {
   conversationId: string | undefined;
 }
+interface FetchGetConversationProp {
+  conversationId: string | undefined;
+}
 const getConversation = async ({
   conversationId,
   axiosInstance,
@@ -27,7 +30,7 @@ const getConversation = async ({
 };
 
 const useGetConversation = (
-  { conversationId }: Props,
+  { conversationId }: FetchGetConversationProp,
   queryOptions: Omit<
     UseQueryOptions<Conversation | null, Error, Conversation | null, unknown[]>,
     "queryKey" | "queryFn" | "initialData"
