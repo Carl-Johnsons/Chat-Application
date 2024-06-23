@@ -11,11 +11,11 @@ import {
   UpdateProfileModalContent,
 } from "../..";
 import { ModalContent } from "models/ModalContent";
-import { useSendFriendRequest } from "@/hooks/queries/user";
+import { useBlockUser, useSendFriendRequest } from "@/hooks/queries/user";
 
 const ModalContentMapper = (): ModalContent[] => {
   const { mutate: sendFriendRequestMutate } = useSendFriendRequest();
-
+  const { mutate: blockUserMutate } = useBlockUser();
   const [, setActiveModal] = useGlobalState("activeModal");
 
   const [modalEntityId] = useGlobalState("modalEntityId");
@@ -40,6 +40,11 @@ const ModalContentMapper = (): ModalContent[] => {
     const handleClickSendFriendRequest = async () => {
       sendFriendRequestMutate({ receiverId: modalEntityId });
     };
+    const handleClickBlockUser = (userId:string) => {
+      console.log("block đc gòi nè heheh");
+      
+      blockUserMutate({userId})
+    }
 
     switch (modalType) {
       case "Personal":
@@ -79,6 +84,7 @@ const ModalContentMapper = (): ModalContent[] => {
               <ProfileModalContent
                 type="Friend"
                 modalEntityId={modalEntityId}
+                onClickBlockUser={() => handleClickBlockUser(modalEntityId)}
               />
             ),
           },
@@ -93,6 +99,7 @@ const ModalContentMapper = (): ModalContent[] => {
                 type="Stranger"
                 modalEntityId={modalEntityId}
                 onClickSendFriendRequest={handleClickSendFriendRequest}
+                onClickBlockUser={() => handleClickBlockUser(modalEntityId)}
               />
             ),
           },

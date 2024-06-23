@@ -2,6 +2,7 @@ using AutoMapper;
 using Contract.Event.ConversationEvent;
 using Contract.Event.FriendEvent;
 using Contract.Event.UploadEvent;
+using Contract.Event.UserEvent;
 using Duende.IdentityServer;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
@@ -51,6 +52,11 @@ internal static class HostingExtensions
                 config.Message<FriendCreatedEvent>(m =>
                 {
                     m.SetEntityName("friend-created-event"); // Explicit exchange name
+                });
+
+                config.Message<UserBlockedEvent>(u =>
+                {
+                    
                 });
 
             });
