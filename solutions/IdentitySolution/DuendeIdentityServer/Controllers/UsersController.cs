@@ -8,11 +8,9 @@ using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
 using MassTransit;
-using MassTransit.Clients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Sprache;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
@@ -43,26 +41,27 @@ public class UsersController : ControllerBase
         _publishEndpoint = publishEndpoint;
     }
 
-    [HttpGet]
-    public IActionResult Get()
+    [Authorize(Roles = "Admin")]
+    [HttpGet("all")]
+    public IActionResult GetAll()
     {
-        var senderId = HttpContext.Request.Query["id"].ToString();
-        if (senderId != null)
-        {
-
-            var user = _context.Users.Where(u => u.Id == senderId).FirstOrDefault();
-            if (user == null)
-            {
-                return NotFound();
-            }
-            var mappedUser = _mapper.Map<ApplicationUser, ApplicationUserResponseDTO>(user);
-            return Ok(mappedUser);
-        }
-
         var users = _context.Users.ToList();
         var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
         return Ok(mappedUsers);
     }
+
+    [HttpGet]
+    public IActionResult Get([FromQuery] Guid id)
+    {
+        var user = _context.Users.Where(u => u.Id == id.ToString()).FirstOrDefault();
+        if (user == null)
+        {
+            return NotFound();
+        }
+        var mappedUser = _mapper.Map<ApplicationUser, ApplicationUserResponseDTO>(user);
+        return Ok(mappedUser);
+    }
+
 
     // api/users/search?value=test
     [HttpGet("search")]
@@ -74,7 +73,7 @@ public class UsersController : ControllerBase
 
         var match = Regex.Match(searchValue, phonePattern);
         IQueryable<ApplicationUser> query = _context.Users;
-        var currentUserId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var currentUserId = _httpContextAccessor.HttpContext!.User.GetSubjectId();
 
         if (match.Success)
         {
@@ -116,12 +115,13 @@ public class UsersController : ControllerBase
                 FileStreamEvent = avtFileStreamEvent,
                 Url = user.AvatarUrl
             });
-            if(response != null)
+            if (response != null)
             {
                 user.AvatarUrl = response.Message.Url;
             }
         };
-        if (updateUserDTO.BackgroundFile != null) {
+        if (updateUserDTO.BackgroundFile != null)
+        {
             var bgFileStreamEvent = new FileStreamEvent
             {
                 FileName = updateUserDTO.BackgroundFile.FileName,
@@ -153,7 +153,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Block([FromBody] BlockUserDTO blockUserDTO)
     {
         var buInput = _mapper.Map<BlockUserDTO, UserBlock>(blockUserDTO);
-        buInput.UserId = _httpContextAccessor.HttpContext.User.GetSubjectId(); 
+        buInput.UserId = _httpContextAccessor.HttpContext?.User.GetSubjectId() ?? "";
 
         var existingUser = await _context.Users.FindAsync(blockUserDTO.BlockUserId);
 
@@ -170,8 +170,8 @@ public class UsersController : ControllerBase
         var blockUser = _context.UserBlocks
                             .Where(bu => (bu.UserId == buInput.UserId && bu.BlockUserId == buInput.BlockUserId))
                             .SingleOrDefault();
-                            
-        if (blockUser != null) 
+
+        if (blockUser != null)
         {
             return StatusCode(StatusCodes.Status400BadRequest, "You already block this user!");
         }
@@ -192,8 +192,8 @@ public class UsersController : ControllerBase
                                 .Where(fq => (fq.SenderId == buInput.BlockUserId && fq.ReceiverId == buInput.UserId) ||
                                 (fq.SenderId == buInput.UserId && fq.ReceiverId == buInput.BlockUserId))
                                 .SingleOrDefault();
-        
-        if(friendReq != null)
+
+        if (friendReq != null)
         {
             _context.FriendRequests.Remove(friendReq);
         }
@@ -212,16 +212,16 @@ public class UsersController : ControllerBase
                 }
             );
 
-        return Ok(); 
+        return Ok();
     }
 
     [HttpDelete("unblock")]
-    public async Task<IActionResult> Unblock([FromBody] UnblockUserDTO unblockUserDTO)
+    public IActionResult Unblock([FromBody] UnblockUserDTO unblockUserDTO)
     {
-        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
         var blockUserId = unblockUserDTO.UnblockUserId;
         var unblockUser = _context.UserBlocks
-                            .Where(ub => (ub.UserId == userId && ub.BlockUserId == blockUserId))                     
+                            .Where(ub => (ub.UserId == userId && ub.BlockUserId == blockUserId))
                             .SingleOrDefault();
 
         if (unblockUser == null)
@@ -241,19 +241,19 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("block")]
-    public async Task<IActionResult> GetBlockList()
+    public IActionResult GetBlockList()
     {
-        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
 
         var result = _context.UserBlocks
-                        .Where(u =>  u.UserId == userId)
+                        .Where(u => u.UserId == userId)
                         .Select(u => u.BlockUserId)
                         .ToList();
 
         BlockUserListDTO blockUserListDTO = new BlockUserListDTO
         {
             BlockUserId = result
-        };   
+        };
 
         return Ok(blockUserListDTO);
     }

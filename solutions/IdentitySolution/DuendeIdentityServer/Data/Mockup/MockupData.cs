@@ -1,7 +1,6 @@
 ﻿using DuendeIdentityServer.Data.Mockup.Data;
 using DuendeIdentityServer.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace DuendeIdentityServer.Data.Mockup;
