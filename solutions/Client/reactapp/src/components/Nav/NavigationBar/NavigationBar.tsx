@@ -11,7 +11,9 @@ import classNames from "classnames/bind";
 import images from "@/assets";
 import { useGetCurrentUser } from "@/hooks/queries/user";
 import { useCallback } from "react";
+import { ROLE } from "data/constants";
 const cx = classNames.bind(styles);
+
 type NavItem = {
   dataContent: string;
   href: string;
@@ -21,60 +23,98 @@ type NavItem = {
   navLinkClassName?: string;
 };
 
+type NavBarItem = {
+  admin: NavItem[];
+  user: NavItem[];
+};
+
 const NavigationBar = () => {
   const [activeNav, setActiveNav] = useGlobalState("activeNav");
   const { handleShowModal } = useModal();
   const { handleClickScreenSection } = useScreenSectionNavigator();
   const { data: currentUser } = useGetCurrentUser();
 
-  const userProfileQuery = useGetCurrentUser();
+  const navBarItems: NavBarItem = {
+    admin: [
+      {
+        dataContent: "info-modal",
+        href: "#",
+        image: currentUser?.avatarUrl || images.userIcon.src,
+        imageAlt: "User Icon",
+        navLinkClassName: cx("nav-avatar"),
+      },
+      {
+        dataContent: "dashboard",
+        href: "#",
+        image: images.statistic.src,
+        imageAlt: "Statistic icon",
+      },
+      {
+        dataContent: "log-out",
+        href: "/logout",
+        image: images.logOutIcon.src,
+        imageAlt: "Log out icon",
+        className: "mt-auto",
+      },
+    ],
+    user: [
+      {
+        dataContent: "info-modal",
+        href: "#",
+        image: currentUser?.avatarUrl || images.userIcon.src,
+        imageAlt: "User Icon",
+        navLinkClassName: cx("nav-avatar"),
+      },
+      {
+        dataContent: "conversation-page",
+        href: "#",
+        image: images.chatIcon.src,
+        imageAlt: "Chat Icon",
+      },
+      {
+        dataContent: "contact-page",
+        href: "#",
+        image: images.contactIcon.src,
+        imageAlt: "Contact Icon",
+      },
+      {
+        dataContent: "post-page",
+        href: "#",
+        image: images.post.src,
+        imageAlt: "Post Icon",
+      },
+      {
+        dataContent: "log-out",
+        href: "/logout",
+        image: images.logOutIcon.src,
+        imageAlt: "Log out icon",
+        className: "mt-auto",
+      },
+    ],
+  };
 
-  const items: NavItem[] = [
-    {
-      dataContent: "info-modal",
-      href: "#",
-      image: userProfileQuery.data?.avatarUrl || images.userIcon.src,
-      imageAlt: "User Icon",
-      navLinkClassName: cx("nav-avatar"),
-    },
-    {
-      dataContent: "conversation-page",
-      href: "#",
-      image: images.chatIcon.src,
-      imageAlt: "Chat Icon",
-    },
-    {
-      dataContent: "contact-page",
-      href: "#",
-      image: images.contactIcon.src,
-      imageAlt: "Contact Icon",
-    },
-    {
-      dataContent: "post-page",
-      href: "#",
-      image: images.post.src,
-      imageAlt: "Post Icon",
-      className: "mb-auto",
-    },
-    {
-      dataContent: "log-out",
-      href: "/logout",
-      image: images.logOutIcon.src,
-      imageAlt: "Log out icon",
-    },
-  ];
+  let items: NavItem[];
+
+  switch (currentUser?.role) {
+    case ROLE.ADMIN:
+      items = navBarItems.admin;
+      break;
+    default:
+      items = navBarItems.user;
+      break;
+  }
 
   const handleClick = useCallback(
-    (linkId: number) => {
+    (dataContent: string, index: number) => {
       handleClickScreenSection(true);
-      if (linkId === 0) {
+      if (dataContent === "info-modal") {
         handleShowModal({
           entityId: currentUser?.id,
           modalType: "Personal",
         });
         return;
       }
-      setActiveNav(linkId);
+      setActiveNav(index);
     },
     [currentUser, handleClickScreenSection, handleShowModal, setActiveNav]
   );
@@ -95,11 +135,13 @@ const NavigationBar = () => {
           isActive={activeNav == index}
           className={item.className}
           navLinkClassName={item.navLinkClassName}
-          onClick={handleClick}
+          onClick={() => handleClick(item.dataContent, index)}
         >
           <Avatar
             variant="avatar-img-40px"
-            avatarClassName={cx(index === 0 ? "rounded-circle" : "p-2")}
+            avatarClassName={cx(
+              item.dataContent === "info-modal" ? "rounded-circle" : "p-2"
+            )}
             src={item.image}
             alt={item.imageAlt}
           />
