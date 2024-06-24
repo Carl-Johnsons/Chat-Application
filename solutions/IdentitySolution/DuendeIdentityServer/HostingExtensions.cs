@@ -30,6 +30,7 @@ internal static class HostingExtensions
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddSingleton<ISignalRService, SignalRService>();
+        services.AddScoped(typeof(IPaginateDataUtility<,>), typeof(PaginateDataUtility<,>));
 
         services.AddMassTransit(busConfig =>
         {

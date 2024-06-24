@@ -7,6 +7,7 @@ using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
+using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,8 +31,9 @@ public class UsersController : ControllerBase
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBus _bus;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IPaginateDataUtility<ApplicationUser, EmptyMetadata> _paginateDataUtility;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint, IPaginateDataUtility<ApplicationUser, EmptyMetadata> paginateDataUtility)
     {
         _context = context;
         _userManager = userManager;
@@ -39,15 +41,29 @@ public class UsersController : ControllerBase
         _httpContextAccessor = httpContextAccessor;
         _bus = bus;
         _publishEndpoint = publishEndpoint;
+        _paginateDataUtility = paginateDataUtility;
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet("all")]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] PaginatedUserListDTO paginatedUserListDTO)
     {
-        var users = _context.Users.ToList();
+        var usersQuery = _context.Users.AsQueryable();
+        var userLimit = 5;
+        usersQuery = _paginateDataUtility.PaginateQuery(usersQuery, new PaginateParam
+        {
+            Offset = paginatedUserListDTO.Skip * userLimit,
+            Limit = userLimit
+        });
+        var users = usersQuery.ToList();
         var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
-        return Ok(mappedUsers);
+
+        var paginatedResponse = new PaginatedUserListResponseDTO
+        {
+            PaginatedData = mappedUsers,
+            Metadata = new EmptyMetadata()
+        };
+        return Ok(paginatedResponse);
     }
 
     [HttpGet]
