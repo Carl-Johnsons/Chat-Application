@@ -1,4 +1,4 @@
-@startuml getConversationListByUserId
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -105,26 +105,26 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Conversation List By User Id ====
 'API Layer
 ConversationController --|> BaseApiController
-ConversationController --> GetConversationListByUserIdQuery
+ConversationController "1" --"1..*" GetConversationListByUserIdQuery
 'Application Layer
-GetConversationListByUserId ..|> "IRequest<TResponse>"
+GetConversationListByUserIdQuery ..|> "IRequest<TResponse>"
 GetConversationListByUserIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetConversationListByUserIdQueryHandler --> GetConversationListByUserIdQuery
-GetConversationListByUserIdQueryHandler --> Result
-GetConversationListByUserIdQueryHandler --> IApplicationDbContext
-GetConversationListByUserIdQueryHandler --> ConversationUserResponseDTO
-GetConversationListByUserIdQueryHandler --> ConversationResponseDTO
-GetConversationListByUserIdQueryHandler --> GroupConversationResponseDTO
+GetConversationListByUserIdQueryHandler "1" --"1..*" GetConversationListByUserIdQuery
+GetConversationListByUserIdQueryHandler "1" --"1..*" Result
+GetConversationListByUserIdQueryHandler "1" o--"1..*" IApplicationDbContext
+GetConversationListByUserIdQueryHandler "1" --"1..*" ConversationUserResponseDTO
+GetConversationListByUserIdQueryHandler "1" --"1..*" ConversationResponseDTO
+GetConversationListByUserIdQueryHandler "1" --"1..*" GroupConversationResponseDTO
 'Domain Layer
 GroupConversationResponseDTO --|> ConversationResponseDTO
 Result <|-- Error
 Result <|-- "Result<T>"
 ConversationUser --|> BaseEntity
 Conversation --|> BaseAuditableEntity
-Conversation *-- ConversationUser
+Conversation "1..*"*-- ConversationUser
 BaseAuditableEntity --|>BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Conversation
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Conversation
 @enduml

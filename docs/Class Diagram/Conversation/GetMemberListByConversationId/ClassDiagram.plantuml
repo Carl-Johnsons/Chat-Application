@@ -1,4 +1,4 @@
-@startuml GetMemberListByConversationId
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -115,33 +115,33 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 ConversationController --|> BaseApiController
-ConversationController --> GetMemberListByConversationIdQuery
+ConversationController "1" --"1..*" GetMemberListByConversationIdQuery
 
-ConversationController --> GetMemberListByConversationIdDTO
+ConversationController "1" --"1..*" GetMemberListByConversationIdDTO
 
 GetMemberListByConversationIdQuery ..|> "IRequest<TResponse>"
 GetMemberListByConversationIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetMemberListByConversationIdQueryHandler --> GetMemberListByConversationIdQuery
-GetMemberListByConversationIdQueryHandler --> ConversationUser
-GetMemberListByConversationIdQueryHandler --> Result
-GetMemberListByConversationIdQueryHandler --> IApplicationDbContext
-GetMemberListByConversationIdQueryHandler --> ConversationError
+GetMemberListByConversationIdQueryHandler "1" --"1..*" GetMemberListByConversationIdQuery
+GetMemberListByConversationIdQueryHandler "1" --"1..*" ConversationUser
+GetMemberListByConversationIdQueryHandler "1" --"1..*" Result
+GetMemberListByConversationIdQueryHandler "1" o--"1..*" IApplicationDbContext
+GetMemberListByConversationIdQueryHandler "1" --"1..*" ConversationError
 
 IApplicationDbContext <|.. ApplicationDbContext
-Result <-- Error
+Result "1" --"1..*" Error
 Result <|-- "Result<T>"
-ConversationError --> Error
+ConversationError "1" --"1..*" Error
 
-ApplicationDbContext --> Conversation
-ApplicationDbContext --> GroupConversation
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Message
+ApplicationDbContext "1" o--"1..*" Conversation
+ApplicationDbContext "1" o--"1..*" GroupConversation
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
 ConversationUser --|> BaseEntity
-ConversationUser --* Conversation
+ConversationUser --*"1..*" Conversation
 Message --|> BaseAuditableEntity
-Message --* Conversation
+Message --*"1..*" Conversation
 BaseAuditableEntity --|> BaseEntity
 @enduml

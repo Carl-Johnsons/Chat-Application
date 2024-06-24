@@ -62,7 +62,9 @@ class DeleteMultipleFileEventResponseDTO{
     + Result: string
 }
 
-class IdentityUser
+class IdentityUser {
+    + IdentityUser(string userName) 
+}
 
 class PageModel
 
@@ -180,42 +182,42 @@ interface "IRequestHandler<TRequest, TResponse>"{
     Handle(TRequest request, CancellationToken cancellationToken): Task<TResponse>
 }
 
-Index ----> IIdentityServerInteractionService
-Index ----> "SignInManager<TUser>"
-Index --> UploadMultipleFileEvent
-Index --> UploadMultipleFileEventResponseDTO
-Index --> ApplicationUser
-Index ---> DeleteMultipleFileEvent
-Index ---> DeleteMultipleFileEventResponseDTO
+Index "1" o---"1" IIdentityServerInteractionService
+Index "1" o----"1" "SignInManager<TUser>"
+Index "1"--"1" UploadMultipleFileEvent
+Index "1"--"1" UploadMultipleFileEventResponseDTO
+Index "1" o--"1" ApplicationUser
+Index "1"---"1" DeleteMultipleFileEvent
+Index "1"---"1" DeleteMultipleFileEventResponseDTO
 Index --|> PageModel
-UploadMultipleFileEventResponseDTO --> UploadFileEventResponseDTO
-UploadMultipleFileEvent --> FileStreamEvent
+UploadMultipleFileEventResponseDTO "1"--"1" UploadFileEventResponseDTO
+UploadMultipleFileEvent "1"--"1" FileStreamEvent
 ApplicationUser --|> IdentityUser
 
 ' ===== Upload service =====
 ' Api Layer
-UploadMultipleFileConsumer --> UploadMultipleFileEvent
-UploadMultipleFileConsumer --> UploadFileEventResponseDTO
-UploadMultipleFileConsumer --> UploadMultipleFileEventResponseDTO
-UploadMultipleFileConsumer --> IApplicationDbContext
+UploadMultipleFileConsumer "1"--"1" UploadMultipleFileEvent
+UploadMultipleFileConsumer "1"--"1" UploadFileEventResponseDTO
+UploadMultipleFileConsumer "1"--"1" UploadMultipleFileEventResponseDTO
+UploadMultipleFileConsumer "1" o--"1" IApplicationDbContext
 UploadMultipleFileConsumer ----|> "IConsumer<TMessage>"
-UploadMultipleFileConsumer ----> FormFile
+UploadMultipleFileConsumer "1"----"1" FormFile
 ' Application Layer
 CreateMultipleCloudinaryImageFileCommand ..|> "IRequest<TResponse>"
-UploadMultipleFileConsumer --> CreateMultipleCloudinaryImageFileCommand
-CreateMultipleCloudinaryImageFileCommandHandler ---> IUnitOfWork
+UploadMultipleFileConsumer -- CreateMultipleCloudinaryImageFileCommand
+CreateMultipleCloudinaryImageFileCommandHandler "1" o---"1" IUnitOfWork
 CreateMultipleCloudinaryImageFileCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-CreateMultipleCloudinaryImageFileCommandHandler --> CreateMultipleCloudinaryImageFileCommand
-CreateMultipleCloudinaryImageFileCommandHandler --> "Result<T>"
-CreateMultipleCloudinaryImageFileCommandHandler --> CloudinaryFile
-CreateMultipleCloudinaryImageFileCommandHandler --> IFileUtility
-CreateMultipleCloudinaryImageFileCommandHandler --> ExtensionType
-CreateMultipleCloudinaryImageFileCommandHandler ---> CloudinaryFileError
-CreateMultipleCloudinaryImageFileCommandHandler ---> Cloudinary
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" CreateMultipleCloudinaryImageFileCommand
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" "Result<T>"
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" CloudinaryFile
+CreateMultipleCloudinaryImageFileCommandHandler "1" o---"1" IFileUtility
+CreateMultipleCloudinaryImageFileCommandHandler "1"--"1" ExtensionType
+CreateMultipleCloudinaryImageFileCommandHandler "1"---"1" CloudinaryFileError
+CreateMultipleCloudinaryImageFileCommandHandler "1"---"1" Cloudinary
 ' Domain Layer
 ExtensionType --|> BaseEntity
 CloudinaryFile --|> BaseEntity
-Result --> Error
+Result -- Error
 "Result<T>" --|> Result
 CloudinaryFileError --- Error
 ' Infrastructure Layer

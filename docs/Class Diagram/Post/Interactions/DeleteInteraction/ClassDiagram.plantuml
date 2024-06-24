@@ -83,15 +83,15 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Delete Interaction ====
 'API Layer
 InteractionsController --|> BaseApiController
-InteractionsController --> DeleteInteractionCommand
-InteractionsController --> DeleteInteractionDTO
+InteractionsController "1"--"1" DeleteInteractionCommand
+InteractionsController "1"--"1" DeleteInteractionDTO
 'Application Layer
 DeleteInteractionCommand ..|> "IRequest<TResponse>"
 DeleteInteractionCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-DeleteInteractionCommandHandler --> DeleteInteractionCommand
-DeleteInteractionCommandHandler --> Result
-DeleteInteractionCommandHandler --> IUnitOfWork
-DeleteInteractionCommandHandler --> IApplicationDbContext
+DeleteInteractionCommandHandler "1"--"1" DeleteInteractionCommand
+DeleteInteractionCommandHandler "1"--"1" Result
+DeleteInteractionCommandHandler "1" o--"1" IUnitOfWork
+DeleteInteractionCommandHandler "1" o--"1" IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Error -- InteractionError
@@ -99,5 +99,5 @@ Interaction --|> BaseEntity
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Interaction
+ApplicationDbContext "*" o--"1" Interaction
 @enduml

@@ -1,4 +1,4 @@
-@startuml acceptFriendRequest
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 class FriendRequestController {
@@ -45,10 +45,10 @@ class SignalRService {
     + InvokeAction<T>(string action, T obj): Task
 }
 
-FriendRequestController --> ApplicationDbContext
-FriendRequestController --> AcceptFriendRequestDTO
-FriendRequestController --> SignalRService
-FriendRequestController --> FriendCreatedEvent
-ApplicationDbContext --> FriendRequest
-ApplicationDbContext --> Friend
+FriendRequestController "1" o--"1" ApplicationDbContext
+FriendRequestController "1" --"1" AcceptFriendRequestDTO
+FriendRequestController "1" --"1" SignalRService
+FriendRequestController "1" --"1" FriendCreatedEvent
+ApplicationDbContext "1" o--"1..*" FriendRequest
+ApplicationDbContext "1" o--"1..*" Friend
 @enduml

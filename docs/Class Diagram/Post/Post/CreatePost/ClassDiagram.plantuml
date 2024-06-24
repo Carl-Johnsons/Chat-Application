@@ -130,22 +130,22 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Create Post ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> CreatePostCommand
-PostsController --> CreatePostDTO
-PostsController --> CreatePostTagCommand
+PostsController "1"--"1" CreatePostCommand
+PostsController "1"--"1" CreatePostDTO
+PostsController "1"--"1" CreatePostTagCommand
 'Application Layer
 CreatePostCommand ..|> "IRequest<TResponse>"
 CreatePostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreatePostTagCommand ..|> "IRequest<TResponse>"
 CreatePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-CreatePostTagCommandHandler --> CreatePostTagCommand
-CreatePostTagCommandHandler --> Result
-CreatePostTagCommandHandler --> IUnitOfWork
-CreatePostTagCommandHandler --> IApplicationDbContext
-CreatePostCommandHandler --> CreatePostCommand
-CreatePostCommandHandler --> Result
-CreatePostCommandHandler --> IUnitOfWork
-CreatePostCommandHandler --> IApplicationDbContext
+CreatePostTagCommandHandler "1"--"1" CreatePostTagCommand
+CreatePostTagCommandHandler "1"--"1" Result
+CreatePostTagCommandHandler "1"--"1" IUnitOfWork
+CreatePostTagCommandHandler "1"--"1" IApplicationDbContext
+CreatePostCommandHandler "1"--"1" CreatePostCommand
+CreatePostCommandHandler "1"--"1" Result
+CreatePostCommandHandler "1" o--"1" IUnitOfWork
+CreatePostCommandHandler "1" o--"1" IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -154,12 +154,12 @@ Error -- PostError
 Tag --|> BaseEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
-PostTag --* Post
-PostTag --* Tag
+PostTag "*"--*"1" Post
+PostTag "*"--*"1" Tag
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostTag
+ApplicationDbContext "*" o--"1" Tag
+ApplicationDbContext "*" o--"1" Post
+ApplicationDbContext "*" o--"1" PostTag
 @enduml

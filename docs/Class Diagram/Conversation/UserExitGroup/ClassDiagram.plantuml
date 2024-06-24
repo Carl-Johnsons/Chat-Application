@@ -22,6 +22,7 @@ class UserExitGroupConversationDTO{
 class UserExitGroupConversationCommandHandler {
     -_context: IApplicationDbContext
     -_unitOfWork: IUnitOfWork
+    -_signalRService: ISignalRService
     +Handle(UserExitGroupConversationCommand request, CancellationToken cancellationToken): async Task<Result>
 }
 
@@ -77,6 +78,21 @@ class UnitOfWork {
     +Task SaveChangeAsync(CancellationToken cancellationToken = default)
 }
 
+class ISignalRService{
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
+class SignalRService{
+    -_logger: ILogger<SignalRService>
+    +HubConnection: HubConnection
+    +Task StartConnectionAsync()
+    +Task StopConnectionAsync()
+    +Task InvokeAction<T>(string action, T obj)
+}
+
 class GroupConversationError {
     {static} +NotEnoughMember: Error
     {static} +NotFound: Error
@@ -126,33 +142,35 @@ interface "IRequestHandler<TRequest, TResponse>"{
 }
 
 GroupConversationController --|> BaseApiController
-GroupConversationController --> UserExitGroupConversationDTO
-GroupConversationController --> UserExitGroupConversationCommand
+GroupConversationController "1"--"1" UserExitGroupConversationDTO
+GroupConversationController "1"--"1" UserExitGroupConversationCommand
 
 UserExitGroupConversationCommand ..|> "IRequest<TResponse>"
 UserExitGroupConversationCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
-UserExitGroupConversationCommandHandler --> UserExitGroupConversationCommand
-UserExitGroupConversationCommandHandler --> Result
-UserExitGroupConversationCommandHandler --> IUnitOfWork
-UserExitGroupConversationCommandHandler --> IApplicationDbContext
-UserExitGroupConversationCommandHandler --> GroupConversationError
+UserExitGroupConversationCommandHandler "1"--"1" UserExitGroupConversationCommand
+UserExitGroupConversationCommandHandler "1"--"1" Result
+UserExitGroupConversationCommandHandler "1" o-- "1" IUnitOfWork
+UserExitGroupConversationCommandHandler "1" o-- "1" IApplicationDbContext
+UserExitGroupConversationCommandHandler "1" o-- "1" ISignalRService
+UserExitGroupConversationCommandHandler "1" o-- "1" GroupConversationError
 
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-Result <-- Error
+ISignalRService <|.. SignalRService
+Result "1" -- "1..*" Error
 Result <|-- "Result<T>"
-Error --> GroupConversationError
+Error "1..*" --* "1" GroupConversationError
 
-ApplicationDbContext --> Conversation
-ApplicationDbContext --> GroupConversation
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Message
+ApplicationDbContext "1" o-- "1..*" Conversation
+ApplicationDbContext "1" o-- "1..*" GroupConversation
+ApplicationDbContext "1" o-- "1..*" ConversationUser
+ApplicationDbContext "1" o-- "1..*" Message
 
 Conversation --|> BaseAuditableEntity
 GroupConversation --|> Conversation
 ConversationUser --|> BaseEntity
-ConversationUser --* Conversation
+ConversationUser "1..*" --* "1" Conversation
 Message --|> BaseAuditableEntity
-Message --* Conversation
+Message "1..*" --* "1" Conversation
 BaseAuditableEntity --|> BaseEntity
 @enduml

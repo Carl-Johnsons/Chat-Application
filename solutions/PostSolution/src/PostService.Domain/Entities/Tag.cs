@@ -6,7 +6,7 @@ namespace PostService.Domain.Entities;
 
 [Table("Tag")]
 [PrimaryKey(nameof(Id))]
-public class Tag : BaseEntity
+public class Tag : BaseAuditableEntity
 {
     [Required]
     [JsonProperty("value")]

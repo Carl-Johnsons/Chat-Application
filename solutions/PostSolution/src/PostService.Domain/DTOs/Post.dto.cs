@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
-using PostService.Domain.Entities;
 
 namespace PostService.Domain.DTOs;
 
 public class PostDTO
 {
-    [JsonProperty("postId")]
-    public Guid PostId { get; set; }
+    [JsonProperty("id")]
+    public Guid Id { get; set; }
 
     [JsonProperty("content")]
     public string Content { get; set; } = null!;

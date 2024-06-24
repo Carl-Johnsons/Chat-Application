@@ -38,8 +38,8 @@ $button-variants: (
         bg-active: var(--light-blue-active)
     ),
     danger: (
-        bg-color: var(--light-blue),
-        text-color: var(--danger),
+        bg-color: var(--danger),
+        text-color: var(--white),
         bg-hover: var(--danger-hover),
         bg-active: var(--danger-active)
     ),

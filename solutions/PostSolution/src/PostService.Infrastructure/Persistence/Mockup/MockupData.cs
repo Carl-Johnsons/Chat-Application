@@ -18,7 +18,7 @@ internal class MockupData
         await Console.Out.WriteLineAsync("=================Begin seeding tag data=================");
         foreach (var tag in TagData.Data)
         {
-            var id = Guid.Parse(tag.Id);
+            var id = tag.Id;
             var value = tag.Value;
 
             var isTagExisteed = _context.Tags
@@ -30,13 +30,8 @@ internal class MockupData
                 await Console.Out.WriteLineAsync($"Tag {value} is already exited");
                 continue;
             }
-            Tag tag1 = new Tag
-            {
-                Id = id,
-                Value = value,
-                Code = tag.Code,
-            };
-            _context.Tags.Add(tag1);
+
+            _context.Tags.Add(tag);
             await Console.Out.WriteLineAsync($"Added Tag {value}");
         }
         await _unitOfWork.SaveChangeAsync();
@@ -48,7 +43,7 @@ internal class MockupData
         await Console.Out.WriteLineAsync("=================Begin seeding interaction data=================");
         foreach (var interaction in InteractionData.Data)
         {
-            var id = Guid.Parse(interaction.Id);
+            var id = interaction.Id;
             var code = interaction.Code;
 
             var isInteractionExited = _context.Interactions
@@ -61,18 +56,10 @@ internal class MockupData
                 continue;
             }
 
-            Interaction interaction1 = new Interaction
-            {
-                Id = id,
-                Code = code,
-                Value = interaction.Value,
-                Gif = interaction.Gif
-            };
-
-            _context.Interactions.Add(interaction1);
+            _context.Interactions.Add(interaction);
             await Console.Out.WriteLineAsync($"Added Tag {code}");
+            await _unitOfWork.SaveChangeAsync();
         }
-        await _unitOfWork.SaveChangeAsync();
         await Console.Out.WriteLineAsync("=================DONE seeding add data=================");
     }
 

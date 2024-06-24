@@ -1,4 +1,4 @@
-@startuml getConversationById
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 
@@ -89,23 +89,23 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Get Conversation By Id ====
 'API Layer
 ConversationController --|> BaseApiController
-ConversationController --> GetConversationByIdQuery
-ConversationController --> GetConversationByIdDTO
+ConversationController -- GetConversationByIdQuery
+ConversationController -- GetConversationByIdDTO
 'Application Layer
 GetConversationByIdQuery ..|> "IRequest<TResponse>"
 GetConversationByIdQueryHandler ..|> "IRequestHandler<TRequest, TResponse>"
-GetConversationByIdQueryHandler --> GetConversationByIdQuery
-GetConversationByIdQueryHandler --> Result
-GetConversationByIdQueryHandler --> IApplicationDbContext
+GetConversationByIdQueryHandler "1" --"1..*" GetConversationByIdQuery
+GetConversationByIdQueryHandler "1" --"1..*" Result
+GetConversationByIdQueryHandler "1" o--"1..*" IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
 ConversationUser --|> BaseEntity
 Conversation --|> BaseAuditableEntity
-Conversation *-- ConversationUser
+Conversation "1..*"*-- ConversationUser
 BaseAuditableEntity --|>BaseEntity
 'Infrastructure Layer
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> ConversationUser
-ApplicationDbContext --> Conversation
+ApplicationDbContext "1" o--"1..*" ConversationUser
+ApplicationDbContext "1" o--"1..*" Conversation
 @enduml

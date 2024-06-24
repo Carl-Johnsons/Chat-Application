@@ -69,6 +69,13 @@ class Result {
     +{static} Failure(IEnumerable<Error> errs): Result
 }
 
+class "Result<T>" {
+    +Value: T
+    +{static} Success(T value): Result<T>
+    +{static} Failure(Error error): Result<T?>
+    +{static} Failure(IEnumerable<Error> errs): Result<T?>
+}
+
 class Error {
     +{static} None: Error
     +{static} Result(Error err): implicit operator
@@ -88,6 +95,11 @@ class PostError {
     +{static} UserNotFound: Error
     +{static} AlreadyInteractedPost: Error
     +{static} NotInteractedPost: Error
+}
+
+class TagError {
+    +{static} NotFound: Error
+    +{static} AlreadyExited: Error
 }
 
 class UpdatePostDTO {
@@ -132,10 +144,10 @@ interface "IRequestHandler<TRequest, TResponse>"{
 '==== Update Post ====
 'API Layer
 PostsController --|> BaseApiController
-PostsController --> UpdatePostCommand
-PostsController --> UpdatePostDTO
-PostsController --> DeletePostTagCommand
-PostsController --> CreatePostTagCommand
+PostsController "1"--"1" UpdatePostCommand
+PostsController "1"--"1" UpdatePostDTO
+PostsController "1"--"1" DeletePostTagCommand
+PostsController "1"--"1" CreatePostTagCommand
 'Application Layer
 UpdatePostCommand ..|> "IRequest<TResponse>"
 UpdatePostCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
@@ -144,18 +156,18 @@ DeletePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 CreatePostTagCommand ..|> "IRequest<TResponse>"
 CreatePostTagCommandHandler ..|> "IRequestHandler<TRequest, TResponse>"
 
-UpdatePostCommandHandler --> UpdatePostCommand
-UpdatePostCommandHandler --> Result
-UpdatePostCommandHandler --> IUnitOfWork
-UpdatePostCommandHandler --> IApplicationDbContext
-DeletePostTagCommandHandler --> DeletePostTagCommand
-DeletePostTagCommandHandler --> Result
-DeletePostTagCommandHandler --> IUnitOfWork
-DeletePostTagCommandHandler --> IApplicationDbContext
-CreatePostTagCommandHandler --> CreatePostTagCommand
-CreatePostTagCommandHandler --> Result
-CreatePostTagCommandHandler --> IUnitOfWork
-CreatePostTagCommandHandler --> IApplicationDbContext
+UpdatePostCommandHandler "1"--"1" UpdatePostCommand
+UpdatePostCommandHandler "1"--"1" Result
+UpdatePostCommandHandler "1" o--"1" IUnitOfWork
+UpdatePostCommandHandler "1" o--"1" IApplicationDbContext
+DeletePostTagCommandHandler "1"--"1" DeletePostTagCommand
+DeletePostTagCommandHandler "1"--"1" Result
+DeletePostTagCommandHandler "1" o--"1" IUnitOfWork
+DeletePostTagCommandHandler "1" o--"1" IApplicationDbContext
+CreatePostTagCommandHandler "1"--"1" CreatePostTagCommand
+CreatePostTagCommandHandler "1"--"1" Result
+CreatePostTagCommandHandler "1" o--"1" IUnitOfWork
+CreatePostTagCommandHandler "1" o--"1" IApplicationDbContext
 'Domain Layer
 Result <|-- Error
 Result <|-- "Result<T>"
@@ -164,12 +176,12 @@ Error -- PostError
 Tag --|> BaseEntity
 Post --|> BaseAuditableEntity
 BaseAuditableEntity --|> BaseEntity
-PostTag --* Post
-PostTag --* Tag
+PostTag "*"--*"1" Post
+PostTag "*"--*"1" Tag
 'Infrastructure Layer
 IUnitOfWork <|.. UnitOfWork
 IApplicationDbContext <|.. ApplicationDbContext
-ApplicationDbContext --> Tag
-ApplicationDbContext --> Post
-ApplicationDbContext --> PostTag
+ApplicationDbContext "*" o--"1" Tag
+ApplicationDbContext "*" o--"1" Post
+ApplicationDbContext "*" o--"1" PostTag
 @enduml

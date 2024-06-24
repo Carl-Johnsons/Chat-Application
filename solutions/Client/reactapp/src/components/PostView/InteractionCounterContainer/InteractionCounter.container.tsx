@@ -1,4 +1,3 @@
-import { Interaction } from "models";
 import React from "react";
 import style from "./InteractionCounter.container.module.scss";
 import classNames from "classnames/bind";
@@ -7,30 +6,29 @@ const cx = classNames.bind(style);
 
 interface Props {
   className?: string;
-  interactions: Interaction[];
+  interactTotal?: number;
+  interactions: string[];
 }
 
-const InteractionCounterContainer = ({ interactions, className }: Props) => {
-  const emojiMap = new Map<string, number>();
-  interactions.forEach((interaction) => {
-    emojiMap.set(interaction.value, (emojiMap.get(interaction.id) ?? 0) + 1);
-  });
-  const emojiList = [...emojiMap];
+const InteractionCounterContainer = ({
+  interactTotal = 0,
+  interactions,
+  className,
+}: Props) => {
   return (
     <div className={cx(className)}>
       <div className={cx("d-flex")}>
-        {emojiList.map((emoji, index) => {
-          const [value] = emoji;
+        {interactions.map((interaction, index) => {
           return (
             <div key={index} className={cx("emoji", index === 0 && "first")}>
-              {value}
+              {interaction}
             </div>
           );
         })}
         <div className={cx("interaction-count", "fw-lighter", "fs-6")}>
-          {interactions.length == 0
+          {interactTotal == 0
             ? "Hãy là người tương tác đầu tiên"
-            : interactions.length}
+            : interactTotal}
         </div>
       </div>
     </div>

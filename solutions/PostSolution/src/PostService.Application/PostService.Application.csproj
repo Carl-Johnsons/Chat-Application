@@ -17,8 +17,4 @@
 	  <ProjectReference Include="..\PostService.Infrastructure\PostService.Infrastructure.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Interactions\" />
-	</ItemGroup>
-
 </Project>
