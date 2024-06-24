@@ -11,7 +11,7 @@ import camelcaseKeysDeep from "camelcase-keys-deep";
 const QUERY_KEY = "currentUser";
 type UserClaimResponse = User & {
   sub: string;
-  "http://schemasMicrosoftCom/ws/2008/06/identity/claims/role"?: string;
+  role?: string;
 };
 interface Props extends AxiosProps {}
 
@@ -28,10 +28,7 @@ const getUserProfile = async ({
   const userData: User = {
     ...transformedUserClaimResponseData,
     id: transformedUserClaimResponseData.sub,
-    role:
-      transformedUserClaimResponseData[
-        "http://schemasMicrosoftCom/ws/2008/06/identity/claims/role"
-      ] ?? "User",
+    role: transformedUserClaimResponseData.role ?? "User",
     isOnline: false,
   };
 
