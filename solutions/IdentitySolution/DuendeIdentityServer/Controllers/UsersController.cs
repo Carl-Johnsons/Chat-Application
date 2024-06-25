@@ -7,12 +7,11 @@ using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
+using DuendeIdentityServer.Services;
 using MassTransit;
-using MassTransit.Clients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Sprache;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
@@ -32,8 +31,9 @@ public class UsersController : ControllerBase
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBus _bus;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IPaginateDataUtility<ApplicationUser, EmptyMetadata> _paginateDataUtility;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint, IPaginateDataUtility<ApplicationUser, EmptyMetadata> paginateDataUtility)
     {
         _context = context;
         _userManager = userManager;
@@ -41,28 +41,43 @@ public class UsersController : ControllerBase
         _httpContextAccessor = httpContextAccessor;
         _bus = bus;
         _publishEndpoint = publishEndpoint;
+        _paginateDataUtility = paginateDataUtility;
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("all")]
+    public IActionResult GetAll([FromQuery] PaginatedUserListDTO paginatedUserListDTO)
+    {
+        var usersQuery = _context.Users.AsQueryable();
+        var userLimit = 5;
+        usersQuery = _paginateDataUtility.PaginateQuery(usersQuery, new PaginateParam
+        {
+            Offset = paginatedUserListDTO.Skip * userLimit,
+            Limit = userLimit
+        });
+        var users = usersQuery.ToList();
+        var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
+
+        var paginatedResponse = new PaginatedUserListResponseDTO
+        {
+            PaginatedData = mappedUsers,
+            Metadata = new EmptyMetadata()
+        };
+        return Ok(paginatedResponse);
     }
 
     [HttpGet]
-    public IActionResult Get()
+    public IActionResult Get([FromQuery] Guid id)
     {
-        var senderId = HttpContext.Request.Query["id"].ToString();
-        if (senderId != null)
+        var user = _context.Users.Where(u => u.Id == id.ToString()).FirstOrDefault();
+        if (user == null)
         {
-
-            var user = _context.Users.Where(u => u.Id == senderId).FirstOrDefault();
-            if (user == null)
-            {
-                return NotFound();
-            }
-            var mappedUser = _mapper.Map<ApplicationUser, ApplicationUserResponseDTO>(user);
-            return Ok(mappedUser);
+            return NotFound();
         }
-
-        var users = _context.Users.ToList();
-        var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
-        return Ok(mappedUsers);
+        var mappedUser = _mapper.Map<ApplicationUser, ApplicationUserResponseDTO>(user);
+        return Ok(mappedUser);
     }
+
 
     // api/users/search?value=test
     [HttpGet("search")]
@@ -74,7 +89,7 @@ public class UsersController : ControllerBase
 
         var match = Regex.Match(searchValue, phonePattern);
         IQueryable<ApplicationUser> query = _context.Users;
-        var currentUserId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var currentUserId = _httpContextAccessor.HttpContext!.User.GetSubjectId();
 
         if (match.Success)
         {
@@ -116,12 +131,13 @@ public class UsersController : ControllerBase
                 FileStreamEvent = avtFileStreamEvent,
                 Url = user.AvatarUrl
             });
-            if(response != null)
+            if (response != null)
             {
                 user.AvatarUrl = response.Message.Url;
             }
         };
-        if (updateUserDTO.BackgroundFile != null) {
+        if (updateUserDTO.BackgroundFile != null)
+        {
             var bgFileStreamEvent = new FileStreamEvent
             {
                 FileName = updateUserDTO.BackgroundFile.FileName,
@@ -153,7 +169,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Block([FromBody] BlockUserDTO blockUserDTO)
     {
         var buInput = _mapper.Map<BlockUserDTO, UserBlock>(blockUserDTO);
-        buInput.UserId = _httpContextAccessor.HttpContext.User.GetSubjectId(); 
+        buInput.UserId = _httpContextAccessor.HttpContext?.User.GetSubjectId() ?? "";
 
         var existingUser = await _context.Users.FindAsync(blockUserDTO.BlockUserId);
 
@@ -170,8 +186,8 @@ public class UsersController : ControllerBase
         var blockUser = _context.UserBlocks
                             .Where(bu => (bu.UserId == buInput.UserId && bu.BlockUserId == buInput.BlockUserId))
                             .SingleOrDefault();
-                            
-        if (blockUser != null) 
+
+        if (blockUser != null)
         {
             return StatusCode(StatusCodes.Status400BadRequest, "You already block this user!");
         }
@@ -192,8 +208,8 @@ public class UsersController : ControllerBase
                                 .Where(fq => (fq.SenderId == buInput.BlockUserId && fq.ReceiverId == buInput.UserId) ||
                                 (fq.SenderId == buInput.UserId && fq.ReceiverId == buInput.BlockUserId))
                                 .SingleOrDefault();
-        
-        if(friendReq != null)
+
+        if (friendReq != null)
         {
             _context.FriendRequests.Remove(friendReq);
         }
@@ -212,16 +228,16 @@ public class UsersController : ControllerBase
                 }
             );
 
-        return Ok(); 
+        return Ok();
     }
 
     [HttpDelete("unblock")]
-    public async Task<IActionResult> Unblock([FromBody] UnblockUserDTO unblockUserDTO)
+    public IActionResult Unblock([FromBody] UnblockUserDTO unblockUserDTO)
     {
-        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
         var blockUserId = unblockUserDTO.UnblockUserId;
         var unblockUser = _context.UserBlocks
-                            .Where(ub => (ub.UserId == userId && ub.BlockUserId == blockUserId))                     
+                            .Where(ub => (ub.UserId == userId && ub.BlockUserId == blockUserId))
                             .SingleOrDefault();
 
         if (unblockUser == null)
@@ -241,19 +257,19 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("block")]
-    public async Task<IActionResult> GetBlockList()
+    public IActionResult GetBlockList()
     {
-        var userId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
 
         var result = _context.UserBlocks
-                        .Where(u =>  u.UserId == userId)
+                        .Where(u => u.UserId == userId)
                         .Select(u => u.BlockUserId)
                         .ToList();
 
         BlockUserListDTO blockUserListDTO = new BlockUserListDTO
         {
             BlockUserId = result
-        };   
+        };
 
         return Ok(blockUserListDTO);
     }

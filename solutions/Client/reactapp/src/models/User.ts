@@ -11,6 +11,7 @@ export type User = {
   email?: string;
   refreshToken?: string;
   active: boolean;
+  role: string;
   // Extended props
   isOnline: boolean;
 };

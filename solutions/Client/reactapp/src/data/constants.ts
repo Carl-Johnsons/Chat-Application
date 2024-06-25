@@ -37,4 +37,9 @@ enum KEYBOARD_KEY {
   DOWN_ARROW = "ArrowDown",
 }
 
-export { menuContacts, MenuContactIndex, SignalREvent, KEYBOARD_KEY };
+enum ROLE {
+  ADMIN = "Admin",
+  USER = "User",
+}
+
+export { menuContacts, MenuContactIndex, SignalREvent, KEYBOARD_KEY, ROLE };

@@ -1,16 +1,13 @@
 "use client";
-
 // Hooks
 import { useGlobalState, useScreenSectionNavigator } from "@/hooks";
 //components
 import styles from "./Home.module.scss";
 import classNames from "classnames/bind";
 import AsideContainer from "@/components/Aside/AsideContainer";
-import ChatViewContainer from "@/components/ChatView/ChatViewContainer";
-import ContactContainer from "@/components/ContactView/ContactContainer";
 import NavigationBar from "@/components/Nav/NavigationBar";
 import SidebarContent from "@/components/SideBar/SidebarContent";
-import { PostViewContainer } from "@/components/PostView";
+import { MainViewContainer } from "@/components/MainView";
 
 const cx = classNames.bind(styles);
 
@@ -45,9 +42,7 @@ const Home = () => {
             "flex-grow-1 flex-shrink-1"
           )}
         >
-          {activeNav === 1 && <ChatViewContainer />}
-          {activeNav === 2 && <ContactContainer />}
-          {activeNav === 3 && <PostViewContainer />}
+          <MainViewContainer />
         </div>
         <div
           className={cx(
