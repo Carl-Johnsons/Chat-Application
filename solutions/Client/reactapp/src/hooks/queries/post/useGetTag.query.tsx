@@ -20,7 +20,7 @@ const useGetTags = (
 
   return useQuery({
     ...queryOptions,
-    queryKey: ["conversationList"],
+    queryKey: ["tagsList"],
     queryFn: () => getTags({ axiosInstance: protectedAxiosInstance }),
   });
 };

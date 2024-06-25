@@ -6,3 +6,4 @@ export * from "./Avatar";
 export * from "./Box";
 export * from "./ClearableFile";
 export * from "./ErrorMessage";
+export * from "./MenuItem";

@@ -1,4 +1,4 @@
-import MenuContact from "@/components/ContactView/MenuContact";
+import { MenuItem } from "@/components/shared";
 import { useGlobalState, useScreenSectionNavigator } from "@/hooks";
 import { menuContacts } from "data/constants";
 
@@ -16,7 +16,7 @@ const MenuContactContent = () => {
   return (
     <>
       {menuContacts.map((menuContact, index) => (
-        <MenuContact
+        <MenuItem
           key={index}
           index={index}
           image={menuContact.image}

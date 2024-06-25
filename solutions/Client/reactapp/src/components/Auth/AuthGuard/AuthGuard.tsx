@@ -1,5 +1,5 @@
 import userManager from "app/oidc-client";
-import { Suspense, useEffect } from "react";
+import { useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import style from "./AuthGuard.module.scss";
 const cx = classNames.bind(style);
@@ -12,17 +12,36 @@ const Loading = () => {
 };
 
 const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const handleLogin = async () => {
-      const user = await userManager.getUser();
-      if (!user) {
-        await userManager.signinRedirect();
+      setIsLoading(true);
+      try {
+        const user = await userManager.getUser();
+        if (!user) {
+          await userManager.signinRedirect();
+        } else {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error("Authentication error: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     handleLogin();
   }, []);
 
-  return <Suspense fallback={<Loading />}>{children}</Suspense>;
+  if (!isAuthenticated) {
+    return null;
+  }
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  return <>{children}</>;
 };
 
 export { AuthGuard };

@@ -1,5 +1,4 @@
 using AutoMapper;
-using Contract.Event.ConversationEvent;
 using Contract.Event.FriendEvent;
 using Contract.Event.UploadEvent;
 using Contract.Event.UserEvent;
@@ -7,7 +6,6 @@ using Duende.IdentityServer;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
-using DuendeIdentityServer.Pages.Profile;
 using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
@@ -28,12 +26,11 @@ internal static class HostingExtensions
 
         // Register automapper
         IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
-
-        builder.Services.AddSingleton(mapper);
+        services.AddSingleton(mapper);
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddSingleton<ISignalRService, SignalRService>();
-
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddScoped(typeof(IPaginateDataUtility<,>), typeof(PaginateDataUtility<,>));
 
         services.AddMassTransit(busConfig =>
         {
@@ -56,7 +53,7 @@ internal static class HostingExtensions
 
                 config.Message<UserBlockedEvent>(u =>
                 {
-                    
+
                 });
 
             });

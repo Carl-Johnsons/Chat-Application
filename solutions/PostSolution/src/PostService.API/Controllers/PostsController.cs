@@ -178,6 +178,7 @@ public class PostsController : BaseApiController
         return Ok();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("report/all")]
     public async Task<IActionResult> GetAllReportPost()
     {
@@ -186,6 +187,7 @@ public class PostsController : BaseApiController
         return Ok(posts.Value);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("report")]
     public async Task<IActionResult> GetReportPost([FromQuery] Guid id)
     {

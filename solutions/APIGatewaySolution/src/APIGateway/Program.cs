@@ -2,7 +2,6 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using System.IdentityModel.Tokens.Jwt;
 
 var builder = new WebHostBuilder();
 builder.UseKestrel()
