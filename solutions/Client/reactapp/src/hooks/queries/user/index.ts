@@ -5,6 +5,8 @@ export * from "./useDeleteFriendRequest.mutation";
 export * from "./useGetCurrentUser.query";
 export * from "./useGetFriendList.query";
 export * from "./useGetFriendRequestList.query";
+export * from "./useGetInfiniteUserList.query";
 export * from "./useGetUser.query";
+export * from "./useSearchInfiniteUser.query";
 export * from "./useSendFriendRequest.mutation";
 export * from "./useUpdateUser.mutation";

@@ -1,7 +1,9 @@
 import React, { ReactNode } from "react";
 import ChatViewContainer from "../ChatView/ChatViewContainer";
 import ContactContainer from "../ContactView/ContactContainer";
+import { DashboardContainer } from "../DashboardView";
 import { PostViewContainer } from "../PostView";
+
 import { useGlobalState } from "@/hooks";
 import { useGetCurrentUser } from "@/hooks/queries/user";
 import { ROLE } from "data/constants";
@@ -20,7 +22,11 @@ const MainViewContainer = () => {
   const { data: currentUserData } = useGetCurrentUser();
 
   const roleBasedView: RoleBasedView = {
-    admin: [],
+    admin: [
+      {
+        view: <DashboardContainer />,
+      },
+    ],
     user: [
       { view: <ChatViewContainer /> },
       { view: <ContactContainer /> },
@@ -34,7 +40,10 @@ const MainViewContainer = () => {
   switch (currentUserData?.role) {
     case ROLE.ADMIN:
       views = roleBasedView.admin;
-      currentView = null;
+      if (activeNav - 1 >= views.length) {
+        break;
+      }
+      currentView = views[activeNav - 1].view;
       break;
     default:
       views = roleBasedView.user;
@@ -44,7 +53,7 @@ const MainViewContainer = () => {
       currentView = views[activeNav - 1].view;
       break;
   }
-  
+
   if (!currentUserData) {
     return;
   }

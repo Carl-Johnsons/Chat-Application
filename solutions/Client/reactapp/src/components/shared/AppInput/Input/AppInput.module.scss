@@ -1,0 +1,18 @@
+$suggestion-bg-color: #fff;
+
+.input-suggestion {
+    background-color: $suggestion-bg-color;
+    &:hover,
+    &.focus {
+        background-color: darken($color: $suggestion-bg-color, $amount: 7%);
+        cursor: pointer;
+    }
+}
+.suggestion-container {
+    overflow: hidden;
+    border-width: 1px;
+    border-style: solid;
+    border-color: darken($color: $suggestion-bg-color, $amount: 15%);
+
+    border-radius: 0 0 10px 10px;
+}
