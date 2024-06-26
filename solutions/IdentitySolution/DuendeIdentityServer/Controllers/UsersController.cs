@@ -9,7 +9,6 @@ using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
 using DuendeIdentityServer.Services;
-using Humanizer;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +17,6 @@ using Sprache;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
 using static Duende.IdentityServer.IdentityServerConstants;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DuendeIdentityServer.Controllers;
 
@@ -304,5 +302,35 @@ public class UsersController : ControllerBase
         };
 
         return Ok(blockUserListDTO);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("disable")]
+    public async Task<IActionResult> DisableUser([FromBody] DisableAndEnableUserDTO dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.Id.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.Active = false;
+        _context.Users.Update(user);
+        _context.SaveChanges();
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("enable")]
+    public async Task<IActionResult> EnableUser([FromBody] DisableAndEnableUserDTO dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.Id.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.Active = true;
+        _context.Users.Update(user);
+        _context.SaveChanges();
+        return Ok();
     }
 }
