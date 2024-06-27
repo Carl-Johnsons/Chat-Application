@@ -10,6 +10,7 @@ import useMessageSubscription from "./useMessageSubscription";
 import useNotifyUserTypingSubscription from "./useNotifyUserTypingSubscription";
 import { HubConnection } from "@microsoft/signalr";
 import useReceiveCallSubscription from "./useReceiveCallSubscription";
+import useForcedLogoutSubscription from "./useForcedLogoutSubscription";
 
 const useSubscribeSignalREvents = () => {
   // global state
@@ -42,6 +43,9 @@ const useSubscribeSignalREvents = () => {
   const { subscribeReceiveCallEvent, unsubscribeReceiveCallEvent } =
     useReceiveCallSubscription();
 
+  const { subscribeForcedLogoutEvent, unsubscribeForcedLogoutEvent } =
+    useForcedLogoutSubscription();
+
   const subscribeAllEvents = useCallback(
     (connection: HubConnection) => {
       subscribeConnectedEvent(connection);
@@ -53,6 +57,7 @@ const useSubscribeSignalREvents = () => {
       subscribeMessageEvent(connection);
       subscribeNotifyUserTypingEvent(connection);
       subscribeReceiveCallEvent(connection);
+      subscribeForcedLogoutEvent(connection);
     },
     [
       subscribeAcceptFriendRequestEvent,
@@ -78,6 +83,7 @@ const useSubscribeSignalREvents = () => {
       unsubscribeMessageEvent(connection);
       unsubscribeNotifyUserTypingEvent(connection);
       unsubscribeReceiveCallEvent(connection);
+      unsubscribeForcedLogoutEvent(connection);
     },
     [
       unsubscribeAcceptFriendRequestEvent,

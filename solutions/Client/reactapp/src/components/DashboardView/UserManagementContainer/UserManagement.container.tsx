@@ -8,7 +8,10 @@ import { useDebounceValue } from "@/hooks";
 import AppButton from "@/components/shared/AppButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { useSearchInfiniteUser } from "@/hooks/queries/user";
+import {
+  useSearchInfiniteUser,
+  useToggleUserStatus,
+} from "@/hooks/queries/user";
 import { User } from "@/models";
 
 const cx = classNames.bind(style);
@@ -17,6 +20,9 @@ const UserManagementContainer = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<User[]>([]);
+
+  //hook
+  const { mutate: toggleUserStatusMutate } = useToggleUserStatus();
   const { handleShowModal } = useModal();
   const [debouncedSearchValue, setDebouncedSearchValue] = useDebounceValue(
     "",
@@ -99,9 +105,22 @@ const UserManagementContainer = () => {
         {users?.map((u, index) => (
           <ContactRow
             key={index}
+            type="UserManagement"
             entityId={u.id}
             onClickBtnDetail={() => {
               handleShowModal({ entityId: u.id, modalType: "Stranger" });
+            }}
+            onClickDisableUser={() => {
+              toggleUserStatusMutate({
+                userId: u.id,
+                active: false,
+              });
+            }}
+            onClickEnableUser={() => {
+              toggleUserStatusMutate({
+                userId: u.id,
+                active: true,
+              });
             }}
           ></ContactRow>
         ))}

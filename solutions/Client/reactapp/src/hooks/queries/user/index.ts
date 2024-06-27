@@ -9,4 +9,5 @@ export * from "./useGetInfiniteUserList.query";
 export * from "./useGetUser.query";
 export * from "./useSearchInfiniteUser.query";
 export * from "./useSendFriendRequest.mutation";
+export * from "./useToggleUserStatus.mutation";
 export * from "./useUpdateUser.mutation";

@@ -5,6 +5,7 @@ import {
 } from "@microsoft/signalr";
 import { useGetCurrentUser } from "hooks/queries/user/useGetCurrentUser.query";
 import { useSubscribeSignalREvents } from "hooks/signalREvents/useSubscribeSignalREvents";
+import { useLocalStorage } from "hooks/useStorage";
 import React, {
   createContext,
   useCallback,
@@ -28,6 +29,7 @@ const ChatHubContext = createContext<ChatHubContextType | null>(null);
 const ChatHubProvider = ({ children }: Props) => {
   const hubURL = process.env.NEXT_PUBLIC_SIGNALR_URL ?? "";
   const [waitingToReconnect, setWaitingToReconnect] = useState(false);
+  const [accessToken] = useLocalStorage("access_token");
   const { data: currentUser } = useGetCurrentUser();
   const { subscribeAllEvents, unsubscribeAllEvents } =
     useSubscribeSignalREvents();
@@ -62,8 +64,11 @@ const ChatHubProvider = ({ children }: Props) => {
       return;
     }
     setWaitingToReconnect(true);
+    console.log(accessToken);
+
     connectionRef.current = new HubConnectionBuilder()
       .withUrl(`${hubURL}?userId=${currentUser.id}`)
+      .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
       .build();
 

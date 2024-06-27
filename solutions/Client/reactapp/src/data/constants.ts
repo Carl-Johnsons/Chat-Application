@@ -28,6 +28,7 @@ export enum SignalREvent {
   RECEIVE_MESSAGE = "ReceiveMessage",
   RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",
   RECEIVE_CALL = "ReceiveCall",
+  FORCED_LOGOUT = "ForcedLogout",
 }
 
 export const menuContacts: MenuContact[] = [

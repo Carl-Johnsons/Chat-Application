@@ -17,7 +17,6 @@ interface Props {
 
 const AppModalBody = ({ modalContents, modalBodyDimension }: Props) => {
   const [activeModal] = useGlobalState("activeModal");
-  console.log("re-render modal body");
 
   return (
     <Modal.Body

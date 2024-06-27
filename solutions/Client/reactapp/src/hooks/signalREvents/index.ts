@@ -2,6 +2,7 @@ export * from "./useAcceptedFriendRequestSubscription";
 export * from "./useConnectedSubscription";
 export * from "./useDisableNotifyUserTypingSubscription";
 export * from "./useDisconnectedSubscription";
+export * from "./useForcedLogoutSubscription";
 export * from "./useFriendRequestSubscription";
 export * from "./useJoinConversationSubscription";
 export * from "./useMessageSubscription";

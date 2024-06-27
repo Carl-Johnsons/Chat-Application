@@ -87,7 +87,6 @@ const AppInput = ({
       setInputValue(inputValue);
       return;
     }
-    console.log("here1");
 
     const objectMatch = suggestions.filter((s) => s.value === inputValue)?.[0];
     onTrigger({
@@ -122,7 +121,6 @@ const AppInput = ({
         }}
         onBlur={() => {
           if (!isSuggestionHover) {
-            console.log("Input blur");
             setIsFocused(false);
           }
         }}

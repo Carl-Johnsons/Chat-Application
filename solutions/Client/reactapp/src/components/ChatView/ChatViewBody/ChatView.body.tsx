@@ -29,8 +29,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     .reverse() // reverse function mutate the original array which is messed the useInfinite query, so creating a new array is needed
     .flatMap((page) => page.data.paginatedData);
 
-  console.log({ messageList });
-
   const prevValuesRef = useRef({
     activeConversationId: activeConversationId,
     messageListLength: messageList.length,
@@ -47,7 +45,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     //Save the first message before fetch new message
     if (!isLoadingNextML && messageList[0]) {
       const firstOldMessage = messageList[0];
-      console.log({ firstOldMessage });
       firstOldMessageIdRef.current = firstOldMessage.id;
     }
     fetchNextML();
@@ -79,7 +76,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
   }, [onScroll]);
 
   const scrollToLastMessage = useCallback(() => {
-    console.log("Call scroll last message");
     if (
       !messageContainerRef.current ||
       prevActiveConversationRef.current === activeConversationId ||
@@ -90,7 +86,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     const ele = messageContainerRef.current as HTMLElement;
     ele.scrollTop = ele.scrollHeight;
     prevActiveConversationRef.current = activeConversationId;
-    console.log("scroll to last message");
   }, [activeConversationId, messageList.length]);
 
   const scrollToFirstOldMessage = useCallback(() => {
@@ -109,7 +104,6 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
       return;
     }
     containerEle.scrollTop = ele.offsetTop - 20;
-    console.log("scroll to first old message");
   }, [activeConversationId]);
 
   const scrollToMessage = () => {

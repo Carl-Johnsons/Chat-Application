@@ -109,7 +109,6 @@ const AppTagInput = ({
       className={cx(wrapperClassName, "position-relative")}
       onBlur={() => {
         if (!isSuggestionHover) {
-          console.log("Wrapper blur");
           setIsFocused(false);
         }
       }}
@@ -127,7 +126,6 @@ const AppTagInput = ({
         }}
         onBlur={() => {
           if (!isSuggestionHover) {
-            console.log("Input blur");
             setIsFocused(false);
           }
         }}

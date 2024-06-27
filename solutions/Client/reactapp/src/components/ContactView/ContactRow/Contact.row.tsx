@@ -5,12 +5,11 @@ import {
   faEllipsis,
   faBan,
   faUnlock,
+  faUserSlash,
 } from "@fortawesome/free-solid-svg-icons";
 
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
-import { useGlobalState } from "@/hooks";
-import { MenuContactIndex } from "data/constants";
 
 import style from "./Contact.row.module.scss";
 import classNames from "classnames/bind";
@@ -20,30 +19,92 @@ import { useGetUser } from "@/hooks/queries/user";
 import { useGetConversation } from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);
-interface Props {
+
+type BaseVariant = {
   entityId: string;
-  onClickBtnAcceptFriendRequest?: (userId: string) => void;
+  className?: string;
+};
+
+type UserManagementVariant = BaseVariant & {
+  type: "UserManagement";
+  onClickBtnDetail?: (userId: string) => void;
+  onClickDisableUser?: () => void;
+  onClickEnableUser?: () => void;
+};
+
+type UserVariant = BaseVariant & {
+  type: "User";
   onClickBtnDetail?: (userId: string) => void;
   onClickBtnDelFriend?: (userId: string) => void;
+  onClickBtnBlock?: (userId: string) => void;
+};
+
+type GroupVariant = BaseVariant & {
+  type: "Group";
+  onClickBtnDetail?: (groupId: string) => void;
+};
+
+type UserBlockVariant = BaseVariant & {
+  type: "UserBlock";
+  onClickBtnDetail?: (userId: string) => void;
+  onClickBtnUnblock?: (userId: string) => void;
+};
+
+type FriendRequestVariant = BaseVariant & {
+  type: "FriendRequest";
+  onClickBtnDetail?: (userId: string) => void;
+  onClickBtnAcceptFriendRequest?: (userId: string) => void;
   onClickBtnDelFriendRequest?: (userId: string) => void;
   onClickBtnBlock?: (userId: string) => void;
-  onClickBtnUnblock?: (userId: string) => void;
-}
-const ContactRow = ({
-  entityId,
-  onClickBtnAcceptFriendRequest = () => {},
-  onClickBtnDetail = () => {},
-  onClickBtnDelFriend = () => {},
-  onClickBtnDelFriendRequest = () => {},
-  onClickBtnBlock = () => {},
-  onClickBtnUnblock = () => {},
-}: Props) => {
-  const [activeContactType] = useGlobalState("activeContactType");
-  const isGroup = activeContactType === MenuContactIndex.GROUP_LIST;
+};
+
+type Variant =
+  | UserVariant
+  | GroupVariant
+  | UserBlockVariant
+  | FriendRequestVariant
+  | UserManagementVariant;
+
+const ContactRow = (variant: Variant) => {
+  //Extract type
+  const { className, type } = variant;
+  let entityId: string = variant.entityId;
+  let onClickBtnAcceptFriendRequest: ((entityId: string) => void) | undefined;
+  let onClickBtnDetail: ((entityId: string) => void) | undefined;
+  let onClickBtnDelFriend: ((entityId: string) => void) | undefined;
+  let onClickBtnDelFriendRequest: ((entityId: string) => void) | undefined;
+  let onClickBtnBlock: ((entityId: string) => void) | undefined;
+  let onClickBtnUnblock: ((entityId: string) => void) | undefined;
+  let onClickDisableUser: (() => void) | undefined;
+  let onClickEnableUser: (() => void) | undefined;
+
+  const isUser = type === "User";
+  const isGroup = type === "Group";
+  const isUserBlock = type === "UserBlock";
+  const isFriendRequest = type === "FriendRequest";
+  const isUserManagement = type === "UserManagement";
+
+  if (isUser) {
+    ({ onClickBtnDetail, onClickBtnDelFriend, onClickBtnBlock } = variant);
+  } else if (isGroup) {
+    ({ onClickBtnDetail } = variant);
+  } else if (isUserBlock) {
+    ({ onClickBtnDetail, onClickBtnUnblock } = variant);
+  } else if (isFriendRequest) {
+    ({
+      onClickBtnDetail,
+      onClickBtnAcceptFriendRequest,
+      onClickBtnBlock,
+      onClickBtnDelFriendRequest,
+    } = variant);
+  } else {
+    ({ onClickBtnDetail, onClickEnableUser, onClickDisableUser } = variant);
+  }
 
   const { data: userData } = useGetUser(entityId, {
     enabled: !isGroup && !!entityId,
   });
+
   const { data: conversationData } = useGetConversation(
     {
       conversationId: entityId,
@@ -65,15 +126,73 @@ const ContactRow = ({
       ? (entityData as GroupConversation)?.name
       : (entityData as User)?.name) ?? "";
 
+  const buttons = [
+    {
+      condition: isFriendRequest && onClickBtnAcceptFriendRequest,
+      onClick: () => onClickBtnAcceptFriendRequest!(entityId),
+      icon: faCheck,
+      className: "btn-accept-friend-request",
+    },
+    {
+      condition: onClickBtnDetail,
+      onClick: () => onClickBtnDetail!(entityId),
+      icon: faEllipsis,
+      className: "btn-detail",
+    },
+    {
+      condition:
+        (isFriendRequest || isUser) &&
+        (onClickBtnDelFriendRequest || onClickBtnDelFriend),
+      onClick: () =>
+        isFriendRequest
+          ? onClickBtnDelFriendRequest!(entityId)
+          : onClickBtnDelFriend!(entityId),
+      icon: faClose,
+      className: "btn-delete-friend",
+    },
+    {
+      condition: isUserBlock && onClickBtnUnblock,
+      onClick: () => onClickBtnUnblock!(entityId),
+      icon: faUnlock,
+      className: "btn-unblock-user",
+    },
+    {
+      condition: (isUser || isFriendRequest) && onClickBtnBlock,
+      onClick: () => onClickBtnBlock!(entityId),
+      icon: faBan,
+      className: "btn-block-user",
+    },
+    {
+      condition: isUserManagement && userData?.active && onClickDisableUser,
+      onClick: () => onClickDisableUser!(),
+      icon: faUserSlash,
+      className: "btn-disable-user",
+    },
+    {
+      condition: isUserManagement && !userData?.active && onClickEnableUser,
+      onClick: () => onClickEnableUser!(),
+      icon: faUnlock,
+      className: "btn-enable-user",
+    },
+  ];
+
   return (
-    <div className={cx("contact-row", "d-flex", "justify-content-between")}>
+    <div
+      className={cx(
+        "contact-row",
+        "d-flex",
+        "justify-content-between",
+        className
+      )}
+    >
       <div
         className={cx(
           "contact-info-container",
           "d-flex",
           "align-items-center",
           "p-2"
-        )}>
+        )}
+      >
         <div className={cx("avatar-container")}>
           <Avatar
             variant="avatar-img-40px"
@@ -92,79 +211,30 @@ const ContactRow = ({
               "start-0",
               "end-0",
               "bottom-0"
-            )}>
+            )}
+          >
             {name ?? ""}
           </div>
         </div>
       </div>
       <div className={cx("btn-container", "d-flex")}>
-        {activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST && (
-          <AppButton
-            variant="app-btn-primary-transparent"
-            className={cx(
-              "btn btn-accept-friend-request",
-              "d-flex",
-              "align-items-center",
-              "fw-bold"
-            )}
-            onClick={() => onClickBtnAcceptFriendRequest(entityId)}>
-            <FontAwesomeIcon icon={faCheck} />
-          </AppButton>
-        )}
-
-        <AppButton
-          variant="app-btn-primary-transparent"
-          className={cx(
-            "btn btn-detail",
-            "d-flex",
-            "align-items-center",
-            "fw-bold"
-          )}
-          onClick={() => onClickBtnDetail(entityId)}>
-          <FontAwesomeIcon icon={faEllipsis} />
-        </AppButton>
-        <AppButton
-          variant="app-btn-primary-transparent"
-          className={cx(
-            "btn-delete-friend",
-            "d-flex",
-            "align-items-center",
-            "fw-bold"
-          )}
-          onClick={() =>
-            activeContactType === MenuContactIndex.FRIEND_LIST
-              ? onClickBtnDelFriend(entityId)
-              : onClickBtnDelFriendRequest(entityId)
-          }>
-          <FontAwesomeIcon icon={faClose} />
-        </AppButton>
-        {(activeContactType === MenuContactIndex.USER_BLACK_LIST && (
-          <AppButton
-            variant="app-btn-primary-transparent"
-            className={cx(
-              "btn btn-accept-friend-request",
-              "d-flex",
-              "align-items-center",
-              "fw-bold"
-            )}
-            onClick={() => {
-              onClickBtnUnblock(entityId);
-            }}>
-            <FontAwesomeIcon icon={faUnlock} />
-          </AppButton>
-        )) || (
-          <AppButton
-            variant="app-btn-primary-transparent"
-            className={cx(
-              "btn btn-detail",
-              "d-flex",
-              "align-items-center",
-              "fw-bold"
-            )}
-            onClick={() => onClickBtnBlock(entityId)}>
-            <FontAwesomeIcon icon={faBan} />
-          </AppButton>
-        )}
+        {buttons
+          .filter((button) => button.condition)
+          .map((button, index) => (
+            <AppButton
+              key={index}
+              variant="app-btn-primary-transparent"
+              className={cx(
+                button.className,
+                "d-flex",
+                "align-items-center",
+                "fw-bold"
+              )}
+              onClick={button.onClick}
+            >
+              <FontAwesomeIcon icon={button.icon} />
+            </AppButton>
+          ))}
       </div>
     </div>
   );

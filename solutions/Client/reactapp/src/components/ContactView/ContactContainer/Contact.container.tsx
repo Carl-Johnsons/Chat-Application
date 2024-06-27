@@ -53,16 +53,16 @@ const ContactContainer = ({ className }: Props) => {
   const userBlockList = [
     {
       avt: "avt1",
-      userName: "block1"
+      userName: "block1",
     },
     {
       avt: "avt2",
-      userName: "block2"
+      userName: "block2",
     },
     {
       avt: "avt3",
-      userName: "block3"
-    }
+      userName: "block3",
+    },
   ];
   return (
     <div className={cx(className)}>
@@ -80,6 +80,7 @@ const ContactContainer = ({ className }: Props) => {
           friendList.map((f) => {
             return (
               <ContactRow
+                type="User"
                 key={f.id}
                 entityId={f.id}
                 onClickBtnDetail={() => handleClickBtnDetail(f.id, "Friend")}
@@ -93,6 +94,7 @@ const ContactContainer = ({ className }: Props) => {
             return (
               <ContactRow
                 key={gc.id}
+                type="Group"
                 entityId={gc.id}
                 onClickBtnDetail={() => handleClickBtnDetail(gc.id, "Group")}
               />
@@ -107,6 +109,7 @@ const ContactContainer = ({ className }: Props) => {
               senderId && (
                 <ContactRow
                   key={id}
+                  type="FriendRequest"
                   entityId={senderId}
                   onClickBtnAcceptFriendRequest={() =>
                     id && handleClickAcpFriend(id)
@@ -121,27 +124,23 @@ const ContactContainer = ({ className }: Props) => {
               )
             );
           })}
-          {activeContactType === MenuContactIndex.USER_BLACK_LIST && 
-          userBlockList.map((a)=> {
-             return (
+        {activeContactType === MenuContactIndex.USER_BLACK_LIST &&
+          userBlockList.map((a) => {
+            return (
               <>
                 <>
-                {a.avt && a.userName && (
-                  <ContactRow
-                    key={a.avt}
-                    entityId={a.userName}                    
-                    onClickBtnDetail={() =>
-                      handleClickBtnDetail(a.avt, "Stranger")
-                    }
-                    onClickBtnDelFriendRequest={() =>
-                      handleClickDelFriendRequest(a.avt)
-                    }            
-                    onClickBtnUnblock={() =>
-                      handleClickAcpFriend(a.avt)
-                    }      
-                  />
-                )}
-              </>
+                  {a.avt && a.userName && (
+                    <ContactRow
+                      key={a.avt}
+                      type="UserBlock"
+                      entityId={a.userName}
+                      onClickBtnDetail={() =>
+                        handleClickBtnDetail(a.avt, "Stranger")
+                      }
+                      onClickBtnUnblock={() => handleClickAcpFriend(a.avt)}
+                    />
+                  )}
+                </>
               </>
             );
           })}
