@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using MassTransit;
 using Contract.Event.ConversationEvent;
 using ChatHub.Models;
+using System.Text.RegularExpressions;
 
 namespace ChatHub.Hubs;
 
@@ -161,12 +162,29 @@ public class ChatHubServer : Hub<IChatClient>
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
     }
+
+    public async Task DisableUser(DisableAndEnableUserDTO dto)
+    {
+        var userConnectionIdList = UserConnectionMap.
+                                    Where(pair => pair.Value == dto.Id)
+                                    .Select(pair => pair.Key)
+                                    .ToList();
+        if (userConnectionIdList.Count <= 0)
+        {
+            return;
+        }
+        foreach (var connectionId in userConnectionIdList)
+        {
+            await Console.Out.WriteLineAsync("Force log out");
+            await Clients.Client(connectionId).ForcedLogout();
+        }
+    }
+
     private async Task ConnectWithUserIdAsync(Guid userId)
     {
         UserConnectionMap[Context.ConnectionId] = userId;
         await Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {userId}");
         await Console.Out.WriteLineAsync(userId + " Connected");
-
 
         Console.WriteLine("=================Call conversation service by sending message to queue===============");
         var requestClient = _bus.CreateRequestClient<GetConversationByUserIdEvent>();

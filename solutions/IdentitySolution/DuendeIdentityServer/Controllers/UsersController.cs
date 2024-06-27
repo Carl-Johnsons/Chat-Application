@@ -33,8 +33,9 @@ public class UsersController : ControllerBase
     private readonly IBus _bus;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IPaginateDataUtility<ApplicationUser, EmptyMetadata> _paginateDataUtility;
+    private readonly ISignalRService _signalRService;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint, IPaginateDataUtility<ApplicationUser, EmptyMetadata> paginateDataUtility)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint, IPaginateDataUtility<ApplicationUser, EmptyMetadata> paginateDataUtility, ISignalRService signalRService)
     {
         _context = context;
         _userManager = userManager;
@@ -43,6 +44,7 @@ public class UsersController : ControllerBase
         _bus = bus;
         _publishEndpoint = publishEndpoint;
         _paginateDataUtility = paginateDataUtility;
+        _signalRService = signalRService;
     }
 
     [Authorize(Roles = "Admin")]
@@ -316,6 +318,7 @@ public class UsersController : ControllerBase
         user.Active = false;
         _context.Users.Update(user);
         _context.SaveChanges();
+        await _signalRService.InvokeAction("DisableUser", dto);
         return Ok();
     }
 

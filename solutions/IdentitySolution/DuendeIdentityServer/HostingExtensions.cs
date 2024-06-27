@@ -150,8 +150,8 @@ internal static class HostingExtensions
                 .RequireAuthorization();
         });
 
-        var signalService = app.Services.GetService<ISignalRService>();
-        signalService!.StartConnectionAsync();
+        var signalRService = app.Services.GetService<ISignalRService>();
+        signalRService!.StartConnectionAsync();
         return app;
     }
 }
