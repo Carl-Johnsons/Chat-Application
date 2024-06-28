@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using MassTransit;
 using Contract.Event.ConversationEvent;
 using ChatHub.Models;
-using System.Text.RegularExpressions;
+using ChatHub.Constants;
 
 namespace ChatHub.Hubs;
 
@@ -26,7 +26,7 @@ public class ChatHubServer : Hub<IChatClient>
         callOffers = new List<CallOffer>();
     }
 
-    // The url would be like "https://yourhubURL:port?userId=???"
+    // The url would be like "https://yourhubURL:port?userId=abc&access_token=abc"
     public override async Task OnConnectedAsync()
     {
         var userId = _httpContextAccessor.HttpContext?.Request.Query["userId"].ToString();
@@ -162,7 +162,6 @@ public class ChatHubServer : Hub<IChatClient>
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
     }
-
     public async Task DisableUser(DisableAndEnableUserDTO dto)
     {
         var userConnectionIdList = UserConnectionMap.
@@ -180,12 +179,74 @@ public class ChatHubServer : Hub<IChatClient>
         }
     }
 
+    public async Task DeletePost()
+    {
+        await Clients.All.DeletePost();
+    }
+
+    public async Task ReportPost()
+    {
+        await Clients.Group(ROLE_BASED_GROUP.ADMIN).ReportPost();
+    }
+
+    public async Task Call(CallDTO callDTO)
+    {
+        var conversationId = callDTO.TargetConversationId;
+        var callerId = UserConnectionMap[Context.ConnectionId];
+
+        callOffers.Add(new CallOffer
+        {
+            CallerId = callerId,
+            ConversationId = conversationId
+        });
+
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
+    }
+
+    #region Helper method
+    private async Task AddUserToGroup(Guid conversationId, Guid userId)
+    {
+        await Console.Out.WriteLineAsync($"{userId} joining conversation {conversationId}");
+        if (!ConversationUsersMap.TryGetValue(conversationId, out var participants))
+        {
+            participants = new List<Guid>();
+            ConversationUsersMap[conversationId] = participants;
+        }
+
+        if (!participants.Contains(userId))
+        {
+            participants.Add(userId);
+        }
+        await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
+    }
+
+    private void RemoveUserFromGroup(Guid conversationId, Guid userId)
+    {
+        if (ConversationUsersMap.TryGetValue(conversationId, out var participants))
+        {
+            participants.Remove(userId);
+
+            if (participants.Count == 0)
+            {
+                // Optionally, remove the conversation if there are no participants
+                ConversationUsersMap.TryRemove(conversationId, out _);
+            }
+        }
+    }
     private async Task ConnectWithUserIdAsync(Guid userId)
     {
         UserConnectionMap[Context.ConnectionId] = userId;
         await Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {userId}");
         await Console.Out.WriteLineAsync(userId + " Connected");
 
+        // Admin user
+        if (Context.User != null && Context.User.IsInRole("Admin"))
+        {
+            await Console.Out.WriteLineAsync("Add admin to group admin");
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Admin");
+            return;
+        }
+        // Public user
         Console.WriteLine("=================Call conversation service by sending message to queue===============");
         var requestClient = _bus.CreateRequestClient<GetConversationByUserIdEvent>();
         var conversationsResponse = await requestClient.GetResponse<ConversationEventResponse>(new GetConversationByUserIdEvent
@@ -208,46 +269,5 @@ public class ChatHubServer : Hub<IChatClient>
         var userIdOnlineList = UserConnectionMap.Select(uc => uc.Value);
         await Clients.All.Connected(userIdOnlineList);
     }
-    private async Task AddUserToGroup(Guid conversationId, Guid userId)
-    {
-        await Console.Out.WriteLineAsync($"{userId} joining conversation {conversationId}");
-        if (!ConversationUsersMap.TryGetValue(conversationId, out var participants))
-        {
-            participants = new List<Guid>();
-            ConversationUsersMap[conversationId] = participants;
-        }
-
-        if (!participants.Contains(userId))
-        {
-            participants.Add(userId);
-        }
-        await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
-    }
-    public void RemoveUserFromGroup(Guid conversationId, Guid userId)
-    {
-        if (ConversationUsersMap.TryGetValue(conversationId, out var participants))
-        {
-            participants.Remove(userId);
-
-            if (participants.Count == 0)
-            {
-                // Optionally, remove the conversation if there are no participants
-                ConversationUsersMap.TryRemove(conversationId, out _);
-            }
-        }
-    }
-
-    public async Task Call(CallDTO callDTO)
-    {
-        var conversationId = callDTO.TargetConversationId;
-        var callerId = UserConnectionMap[Context.ConnectionId];
-
-        callOffers.Add(new CallOffer
-        {
-            CallerId = callerId,
-            ConversationId = conversationId
-        });
-
-        await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
-    }
+    #endregion
 }

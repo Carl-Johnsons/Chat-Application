@@ -14,4 +14,6 @@ public interface IChatClient
     Task ReceiveDisableNotifyUserTyping();
     Task ForcedLogout();
     Task ReceiveCall(Guid callerId);
+    Task DeletePost();
+    Task ReportPost();
 }

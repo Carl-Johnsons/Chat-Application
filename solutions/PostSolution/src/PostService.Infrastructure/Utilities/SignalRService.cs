@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace ConversationService.Application;
+namespace PostService.Infrastructure.Utilities;
 
 public sealed class SignalRService : ISignalRService
 {
@@ -40,5 +40,10 @@ public sealed class SignalRService : ISignalRService
         await HubConnection.InvokeAsync(action, obj);
         _logger.LogInformation($"Done invoking action");
     }
-
+    public async Task InvokeAction(string action)
+    {
+        _logger.LogInformation($"Begin to invoke {action}");
+        await HubConnection.InvokeAsync(action);
+        _logger.LogInformation($"Done invoking action");
+    }
 }

@@ -11,12 +11,10 @@ public class GetListReportPostQuery : BasePaginatedDTO, IRequest<Result<Paginate
 public class GetListReportPostQueryHandler : IRequestHandler<GetListReportPostQuery, Result<PaginatedReportListResponseDTO?>>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IPaginateDataUtility<PostReportDTO, EmptyMetadata> _paginateDataUtility;
 
-    public GetListReportPostQueryHandler(IApplicationDbContext context, IPaginateDataUtility<PostReportDTO, EmptyMetadata> paginateDataUtility)
+    public GetListReportPostQueryHandler(IApplicationDbContext context)
     {
         _context = context;
-        _paginateDataUtility = paginateDataUtility;
     }
 
     public async Task<Result<PaginatedReportListResponseDTO?>> Handle(GetListReportPostQuery request, CancellationToken cancellationToken)

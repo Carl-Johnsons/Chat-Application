@@ -36,7 +36,8 @@ public static class DependenciesInjection
              {
                  ValidateIssuerSigningKey = false,
                  ValidateAudience = false,
-                 ValidateIssuer = false
+                 ValidateIssuer = false,
+                 RoleClaimType = "role" // map the role claim to jwt
              };
              // For development only
              options.IncludeErrorDetails = true;
@@ -58,8 +59,6 @@ public static class DependenciesInjection
                  OnMessageReceived = context =>
                  {
                      var accessToken = context.Request.Query["access_token"];
-                     Console.WriteLine("Access Token received");
-                     Console.WriteLine(accessToken);
                      // If the request is for our hub...
                      var path = context.HttpContext.Request.Path;
                      if (!string.IsNullOrEmpty(accessToken) &&
