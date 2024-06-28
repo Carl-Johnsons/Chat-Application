@@ -36,7 +36,8 @@ public static class DependenciesInjection
                 {
                     ValidateIssuerSigningKey = false,
                     ValidateAudience = false,
-                    ValidateIssuer = false
+                    ValidateIssuer = false,
+                    RoleClaimType = "role" // map jwt claim to role
                 };
                 // For development only
                 options.IncludeErrorDetails = true;

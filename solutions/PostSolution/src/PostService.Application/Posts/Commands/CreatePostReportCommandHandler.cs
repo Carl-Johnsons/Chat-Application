@@ -6,8 +6,8 @@ namespace PostService.Application.Posts.Commands;
 
 public class CreatePostReportCommand : IRequest<Result>
 {
-    public Guid PostId { get; init;}
-    public Guid UserId { get; init;}
+    public Guid PostId { get; init; }
+    public Guid UserId { get; init; }
     public string Reason { get; init; } = null!;
 }
 
@@ -32,16 +32,23 @@ public class CreatePostReportCommandHandler : IRequestHandler<CreatePostReportCo
         {
             return Result.Failure(PostError.NotFound);
         }
+        var postReport = _context.PostReports
+                            .Where(rp => rp.PostId == request.PostId && rp.UserId == request.UserId)
+                            .SingleOrDefault();
+        if (postReport != null)
+        {
+            return Result.Failure(PostError.AlreadyReportedPost);
+        }
 
-        PostReport postReport = new PostReport
+        var rp = new PostReport
         {
             PostId = request.PostId,
             UserId = request.UserId,
             Reason = request.Reason,
         };
 
-        _context.PostReports.Add(postReport);
-        await _unitOfWork.SaveChangeAsync();
+        _context.PostReports.Add(rp);
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
 
         return Result.Success();
     }
