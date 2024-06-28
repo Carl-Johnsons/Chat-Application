@@ -37,4 +37,4 @@ const useJoinConversationSubscription = () => {
   };
 };
 
-export default useJoinConversationSubscription;
+export { useJoinConversationSubscription };

@@ -10,7 +10,7 @@ import {
   UpdateAvatarModalContent,
   UpdateProfileModalContent,
 } from "../..";
-import { ModalContent } from "models/ModalContent";
+import { ModalContent } from "models/ModalContent.model";
 import { useBlockUser, useSendFriendRequest } from "@/hooks/queries/user";
 
 const ModalContentMapper = (): ModalContent[] => {
@@ -41,8 +41,6 @@ const ModalContentMapper = (): ModalContent[] => {
       sendFriendRequestMutate({ receiverId: modalEntityId });
     };
     const handleClickBlockUser = (userId:string) => {
-      console.log("block đc gòi nè heheh");
-      
       blockUserMutate({userId})
     }
 

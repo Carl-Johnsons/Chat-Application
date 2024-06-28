@@ -24,6 +24,6 @@
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
-		<InternalsVisibleTo Include ="ChatHub.Tests"/>
+		<InternalsVisibleTo Include="ChatHub.Tests" />
 	</ItemGroup>
 </Project>

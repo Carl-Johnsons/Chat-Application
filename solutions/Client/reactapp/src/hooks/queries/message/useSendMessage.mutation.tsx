@@ -12,11 +12,11 @@ const sendMessage = async ({
   axiosInstance,
 }: Props): Promise<Message | null> => {
   const url = "/api/conversation/message";
-  const respone = await axiosInstance.post(url, {
+  const response = await axiosInstance.post(url, {
     conversationId,
     content: messageContent,
   });
-  return respone.data;
+  return response.data;
 };
 
 const useSendMessage = () => {

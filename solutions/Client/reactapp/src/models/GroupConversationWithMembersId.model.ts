@@ -1,5 +1,5 @@
 import { Conversation } from ".";
-import { GroupConversation } from "./GroupConversation";
+import { GroupConversation } from "./GroupConversation.model";
 
 export type GroupConversationWithMembersId = Conversation &
   GroupConversation & {

@@ -14,6 +14,7 @@ import phoneCallBtn from "./images/phone-call-button.png";
 import phoneCallDeclineBtn from "./images/phone-calll-decline-button.png";
 import phoneCallIcon from "./images/phone-call.png";
 import post from "./images/post.png";
+import postSolid from "./images/post-solid.png";
 import sidebarIcon from "./images/sidebarIcon.png";
 import sidebarIconActive from "./images/sidebarIconActive.png";
 import statistic from "./images/statistic.png";
@@ -40,6 +41,7 @@ const images = {
   phoneCallDeclineBtn,
   phoneCallIcon,
   post,
+  postSolid,
   sidebarIcon,
   sidebarIconActive,
   statistic,

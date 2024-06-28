@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTimeout } from ".";
 
 const useDebounce = (callback: (...args: unknown[]) => void, delay: number) => {
@@ -8,4 +8,25 @@ const useDebounce = (callback: (...args: unknown[]) => void, delay: number) => {
   return debounceCallback;
 };
 
-export { useDebounce };
+const useDebounceValue = (initialValue: any, delay: number) => {
+  const [value, setValue] = useState(initialValue);
+  const [debouncedValue, setDebouncedValue] = useState(initialValue);
+
+  const setDebounced = useCallback((newValue: any) => {
+    setValue(newValue);
+  }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return [debouncedValue, setDebounced];
+};
+
+export { useDebounce, useDebounceValue };

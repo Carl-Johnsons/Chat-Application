@@ -4,7 +4,7 @@ import {
   GroupConversationWithMembersId,
 } from "@/models";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
-import { AxiosProps } from "models/AxiosProps";
+import { AxiosProps } from "models/AxiosProps.model";
 import { useAxios } from "@/hooks";
 
 interface Props extends AxiosProps {

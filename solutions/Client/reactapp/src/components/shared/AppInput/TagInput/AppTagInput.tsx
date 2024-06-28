@@ -21,6 +21,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   strictSuggestion?: boolean;
   disableSuggestion?: boolean;
   triggerKeys?: string[];
+  suggestionLimit?: number;
 
   onAddition?: (tag: BaseTag) => void;
 
@@ -37,6 +38,7 @@ const AppTagInput = ({
   triggerKeys = [KEYBOARD_KEY.ENTER],
   strictSuggestion,
   disableSuggestion,
+  suggestionLimit = 5,
   onAddition = () => {},
   setInputValue,
   setSuggestionObject = () => {},
@@ -107,7 +109,6 @@ const AppTagInput = ({
       className={cx(wrapperClassName, "position-relative")}
       onBlur={() => {
         if (!isSuggestionHover) {
-          console.log("Wrapper blur");
           setIsFocused(false);
         }
       }}
@@ -125,7 +126,6 @@ const AppTagInput = ({
         }}
         onBlur={() => {
           if (!isSuggestionHover) {
-            console.log("Input blur");
             setIsFocused(false);
           }
         }}

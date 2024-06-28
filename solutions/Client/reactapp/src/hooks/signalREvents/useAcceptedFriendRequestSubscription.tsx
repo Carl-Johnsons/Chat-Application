@@ -40,4 +40,4 @@ const useAcceptedFriendRequestSubscription = () => {
   };
 };
 
-export default useAcceptedFriendRequestSubscription;
+export { useAcceptedFriendRequestSubscription };

@@ -53,6 +53,8 @@ const MenuItem = ({
           <div
             className={cx(
               "item-name",
+              "d-flex",
+              "align-items-center",
               "text-truncate",
               "position-absolute",
               "top-0",

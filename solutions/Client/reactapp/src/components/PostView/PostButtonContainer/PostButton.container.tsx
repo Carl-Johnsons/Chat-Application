@@ -7,23 +7,29 @@ import {
   IconDefinition,
   faFlag,
   faThumbsUp,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { InteractionContainer } from "..";
 import { useModal } from "hooks/useModal";
 import { Interaction } from "@/models";
 import {
+  useDeletePost,
   useGetInteractionByPostId,
   useInteractPost,
   useUndoInteractPost,
 } from "@/hooks/queries/post";
+import { useGlobalState } from "@/hooks";
+import { BUTTON } from "data/constants";
 
 const cx = classNames.bind(style);
 
 interface Props {
   postId: string;
+  enableButton?: string[];
 }
 
 interface ButtonContent {
+  condition: boolean;
   content: string;
   iconSrc: IconDefinition;
   handleClick?: () => void;
@@ -33,11 +39,16 @@ const Loading = () => {
   return <div>Loading...</div>;
 };
 
-const PostButtonContainer = ({ postId }: Props) => {
+const PostButtonContainer = ({
+  postId,
+  enableButton = [BUTTON.LIKE, BUTTON.REPORT],
+}: Props) => {
   const [isHover, setIsHover] = useState(false);
   const [isInteracted, setIsInteracted] = useState(false);
   const { mutate: interactPostMutate } = useInteractPost();
   const { mutate: undoInteractPostMutate } = useUndoInteractPost();
+  const { mutate: deletePostMutate } = useDeletePost();
+  const [, setModalEntityId] = useGlobalState("modalEntityId");
 
   const { data: interactionData } = useGetInteractionByPostId(
     { postId, isCurrentUser: true },
@@ -60,20 +71,35 @@ const PostButtonContainer = ({ postId }: Props) => {
   }, []);
 
   const handleReportBtnClick = useCallback(() => {
+    setModalEntityId(postId);
     handleShowModal({ modalType: "PostReport" });
   }, [handleShowModal]);
 
+  const handleDeleteBtnClick = useCallback(() => {
+    deletePostMutate({
+      id: postId,
+    });
+  }, []);
+
   const buttonsContent: ButtonContent[] = [
     {
-      content: "Like",
+      condition: enableButton.indexOf(BUTTON.LIKE) !== -1,
+      content: BUTTON.LIKE,
       iconSrc: faThumbsUp,
       emoji: interactionData?.[0] ? interactionData[0] : null,
       handleClick: handleLikeBtnClick,
     },
     {
-      content: "Report",
+      condition: enableButton.indexOf(BUTTON.REPORT) !== -1,
+      content: BUTTON.REPORT,
       iconSrc: faFlag,
       handleClick: handleReportBtnClick,
+    },
+    {
+      condition: enableButton.indexOf(BUTTON.DELETE) !== -1,
+      content: BUTTON.DELETE,
+      iconSrc: faTrashCan,
+      handleClick: handleDeleteBtnClick,
     },
   ];
 
@@ -92,20 +118,31 @@ const PostButtonContainer = ({ postId }: Props) => {
   return (
     <Suspense fallback={<Loading />}>
       <div className={cx("w-100", "d-flex", "position-relative")}>
-        <div
-          className={cx(
-            "interaction-container",
-            "position-absolute",
-            isHover && "hover"
-          )}
-        >
-          <InteractionContainer onClick={handleEmojiBtnClick} />
-        </div>
+        {enableButton.indexOf(BUTTON.LIKE) !== -1 && (
+          <div
+            className={cx(
+              "interaction-container",
+              "position-absolute",
+              isHover && "hover"
+            )}
+          >
+            <InteractionContainer onClick={handleEmojiBtnClick} />
+          </div>
+        )}
         {buttonsContent.map((btnContent, index) => {
-          const { content, iconSrc, handleClick, emoji } = btnContent;
+          const { condition, content, iconSrc, handleClick, emoji } =
+            btnContent;
+          if (!condition) {
+            return;
+          }
+
           return (
             <AppButton
-              variant={index == 1 ? "app-btn-danger" : "app-btn-secondary"}
+              variant={
+                content === BUTTON.REPORT || content === BUTTON.DELETE
+                  ? "app-btn-danger"
+                  : "app-btn-secondary"
+              }
               key={index}
               className={cx(
                 `btn-${content.toLowerCase()}`,

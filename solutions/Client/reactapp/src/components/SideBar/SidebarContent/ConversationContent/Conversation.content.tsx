@@ -35,9 +35,6 @@ const ConversationContent = () => {
       setActiveConversationId(conversationId);
       setConversationType(type);
       setEnableMessageListQuery(true);
-
-      console.log({ conversationId, type });
-
       messageListQuery.refetch();
     },
     [

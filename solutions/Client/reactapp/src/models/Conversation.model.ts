@@ -1,5 +1,5 @@
 import { ConversationUser } from ".";
-import { ConversationType } from "./ConversationType";
+import { ConversationType } from "./ConversationType.model";
 
 export type Conversation = {
   id: string;

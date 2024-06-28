@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 
-import { useGlobalState, useModal } from "@/hooks";
+import { useDebounceValue, useGlobalState, useModal } from "@/hooks";
 
 import style from "./SearchBar.module.scss";
 import classNames from "classnames/bind";
 import images from "@/assets";
-import useSearchUser from "hooks/queries/user/useSearchUser.query";
+import { useSearchInfiniteUser } from "@/hooks/queries/user";
 
 const cx = classNames.bind(style);
 
@@ -27,13 +27,39 @@ const SearchBar = () => {
   );
   //hook
   const { handleShowModal } = useModal();
-  const { data: searchUserData, isLoading } = useSearchUser(inputValue);
+  const [debouncedSearchValue, setDebouncedSearchValue] = useDebounceValue(
+    "",
+    300
+  );
+  const {
+    data: infiniteUL,
+    refetch: refetchUL,
+    isFetchingNextPage: isFetchingNextUL,
+  } = useSearchInfiniteUser(
+    {
+      searchValue: debouncedSearchValue,
+      limit: 10,
+    },
+    {}
+  );
+
   useEffect(() => {
-    if (isLoading) {
+    setDebouncedSearchValue(inputValue);
+  }, [inputValue, setDebouncedSearchValue]);
+
+  const users =
+    infiniteUL?.pages?.flatMap((query) => query?.data?.paginatedData) ?? [];
+
+  useEffect(() => {
+    if (isFetchingNextUL) {
       return;
     }
-    setSearchResult(searchUserData ?? null);
-  }, [isLoading, searchUserData, setSearchResult]);
+    setSearchResult(users);
+  }, [infiniteUL, isFetchingNextUL, setSearchResult]);
+
+  useEffect(() => {
+    refetchUL();
+  }, [debouncedSearchValue]);
 
   const searchButtons: SearchButtonProps[] = [
     {
