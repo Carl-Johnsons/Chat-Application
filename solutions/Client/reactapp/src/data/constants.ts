@@ -45,6 +45,12 @@ export enum KEYBOARD_KEY {
   DOWN_ARROW = "ArrowDown",
 }
 
+export enum BUTTON {
+  LIKE = "Like",
+  REPORT = "Report",
+  DELETE = "Delete",
+}
+
 export enum ROLE {
   ADMIN = "Admin",
   USER = "User",

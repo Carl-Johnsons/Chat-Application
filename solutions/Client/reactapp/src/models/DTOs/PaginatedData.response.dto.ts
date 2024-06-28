@@ -1,3 +1,4 @@
+import { ReportPostDTO } from ".";
 import { Message, Comment, User } from "..";
 /* ============================ Metadata  ============================ */
 export type MessageListMetaData = {
@@ -26,6 +27,11 @@ export type PaginatedMessageListResponse = PaginatedDataResponse<
 export type PaginatedPostListResponse = PaginatedDataResponse<
   string,
   EmptyMetadata
+>;
+
+export type PaginatedReportPostListResponse = PaginatedDataResponse<
+  ReportPostDTO,
+  CommonPaginatedMetadata
 >;
 
 export type PaginatedCommentListResponse = PaginatedDataResponse<

@@ -31,8 +31,6 @@ const useBlockUser = () => {
       });
     },
     onSuccess: () => {
-      console.log("Block gòi nhe");
-      
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],
         exact: true,
