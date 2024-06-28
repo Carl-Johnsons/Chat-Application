@@ -30,7 +30,7 @@ const useDeletePost = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["postList", "infinite"],
+        queryKey: ["posts", "infinite"],
         exact: true,
       });
       queryClient.invalidateQueries({

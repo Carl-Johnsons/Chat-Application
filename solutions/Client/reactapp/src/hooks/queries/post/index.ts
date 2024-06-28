@@ -8,6 +8,7 @@ export * from "./useGetInfinitePosts.query";
 export * from "./useGetInfiniteReportPosts.query";
 export * from "./useGetInteractionByPostId.query";
 export * from "./useGetPostById.query";
+export * from "./useGetReportPostById.query";
 export * from "./useGetTag.query";
 export * from "./useInteractPost.mutation";
 export * from "./useReportForm.mutation";

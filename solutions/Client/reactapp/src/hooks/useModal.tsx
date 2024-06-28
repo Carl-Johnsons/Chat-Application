@@ -1,4 +1,4 @@
-import { ModalType } from "models/ModalType";
+import { ModalType } from "models/ModalType.model";
 import { useGlobalState } from ".";
 import { useGetCurrentUser, useGetFriendList } from "./queries/user";
 import { useCallback } from "react";

@@ -16,7 +16,7 @@ import {
   useGetFriendList,
   useGetFriendRequestList,
 } from "@/hooks/queries/user";
-import { ModalType } from "models/ModalType";
+import { ModalType } from "models/ModalType.model";
 import { useGetConversationList } from "@/hooks/queries/conversation";
 
 const cx = classNames.bind(style);

@@ -10,7 +10,7 @@ import {
   UpdateAvatarModalContent,
   UpdateProfileModalContent,
 } from "../..";
-import { ModalContent } from "models/ModalContent";
+import { ModalContent } from "models/ModalContent.model";
 import { useBlockUser, useSendFriendRequest } from "@/hooks/queries/user";
 
 const ModalContentMapper = (): ModalContent[] => {

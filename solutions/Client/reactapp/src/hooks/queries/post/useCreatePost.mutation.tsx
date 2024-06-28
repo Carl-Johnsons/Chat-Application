@@ -35,7 +35,7 @@ const useCreatePost = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["postList", "infinite"],
+        queryKey: ["posts", "infinite"],
         exact: true,
       });
     },

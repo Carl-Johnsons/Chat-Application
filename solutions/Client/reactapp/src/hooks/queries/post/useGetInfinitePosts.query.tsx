@@ -51,7 +51,7 @@ const useGetInfinitePost = (
   const { protectedAxiosInstance } = useAxios();
   const infinitePostListQuery = useInfiniteQuery({
     ...queryOptions,
-    queryKey: ["postList", "infinite"],
+    queryKey: ["posts", "infinite"],
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
       const pml = await getPostList({

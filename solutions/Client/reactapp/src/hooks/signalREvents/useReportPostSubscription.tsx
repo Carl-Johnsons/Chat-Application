@@ -15,6 +15,9 @@ const useReportPostSubscription = () => {
           queryKey: ["reportPosts", "infinite"],
           exact: true,
         });
+        queryClient.invalidateQueries({
+          queryKey: ["reportPost"],
+        });
       });
     },
     [queryClient]

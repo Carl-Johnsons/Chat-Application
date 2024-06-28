@@ -64,10 +64,11 @@ const ChatHubProvider = ({ children }: Props) => {
       return;
     }
     setWaitingToReconnect(true);
-    console.log(accessToken);
 
     connectionRef.current = new HubConnectionBuilder()
-      .withUrl(`${hubURL}?userId=${currentUser.id}`)
+      .withUrl(`${hubURL}?userId=${currentUser.id}`, {
+        accessTokenFactory: () => accessToken,
+      })
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
       .build();
