@@ -11,6 +11,7 @@ const DefaultUser: User = {
   introduction: "",
   active: true,
   isOnline: false,
+  role: "User",
 };
 
 export { DefaultUser };
