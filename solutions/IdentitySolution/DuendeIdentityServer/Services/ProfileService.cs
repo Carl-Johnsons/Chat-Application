@@ -6,7 +6,7 @@ using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace DuendeIdentityServer.Pages.Profile;
+namespace DuendeIdentityServer.Services;
 
 public class ProfileService : IProfileService
 {
@@ -32,6 +32,7 @@ public class ProfileService : IProfileService
         var claims = principal.Claims.ToList();
         claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
 
+        var roles = await _userManager.GetRolesAsync(user);
         // Remove default user claim
         RemoveClaim(claims, JwtClaimTypes.Name);
 
@@ -42,6 +43,7 @@ public class ProfileService : IProfileService
         claims.Add(new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber ?? ""));
         claims.Add(new Claim(JwtClaimTypes.Email, user.Email ?? ""));
         claims.Add(new Claim(JwtClaimTypes.Gender, user.Gender ?? ""));
+        claims.AddRange(roles.Select(role => new Claim(JwtClaimTypes.Role, role)));
         // Specific claim
         claims.Add(new Claim("avatar_url", user.AvatarUrl ?? ""));
         claims.Add(new Claim("background_url", user.BackgroundUrl ?? ""));
@@ -63,6 +65,6 @@ public class ProfileService : IProfileService
     {
         var sub = context.Subject.GetSubjectId();
         var user = await _userManager.FindByIdAsync(sub);
-        context.IsActive = user != null;
+        context.IsActive = user?.Active ?? false;
     }
 }

@@ -33,4 +33,4 @@ const useConnectedSubscription = () => {
   return { subscribeConnectedEvent, unsubscribeConnectedEvent };
 };
 
-export default useConnectedSubscription;
+export { useConnectedSubscription };

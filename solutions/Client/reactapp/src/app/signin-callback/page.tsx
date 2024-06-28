@@ -21,7 +21,6 @@ const SignInCallBack = () => {
         const user = await userManager.signinRedirectCallback();
         setAccessToken(user.access_token ?? localToken);
         user.access_token && setLocalToken(user.access_token);
-        console.log(user.access_token);
       } catch (error) {
         console.error(error);
       }

@@ -19,6 +19,7 @@ public static class DependencyInjection
         var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found");
 
         var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
+        
         services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
         {
             options.UseSqlServer(connectionString);
@@ -26,6 +27,8 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IPaginateDataUtility<,>), typeof(PaginateDataUtility<,>));
         services.AddScoped<MockupData>();
+        services.AddSingleton<ISignalRService, SignalRService>();
+        services.AddMassTransitService();
 
         using (var serviceProvider = services.BuildServiceProvider())
         {
@@ -37,7 +40,6 @@ public static class DependencyInjection
             mockupData.SeedPostInteractData().Wait();
         }
 
-        services.AddMassTransitService();
         return services;
     }
 

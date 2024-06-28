@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace ConversationService.Application;
+namespace PostService.Infrastructure.Utilities;
 
 public sealed class SignalRService : ISignalRService
 {
@@ -14,6 +14,7 @@ public sealed class SignalRService : ISignalRService
         _logger = logger;
         HubConnection = new HubConnectionBuilder()
             .WithUrl("http://websocket/chat-hub")
+            .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30)])
             .ConfigureLogging(logging =>
             {
                 logging.SetMinimumLevel(LogLevel.Information);
@@ -39,5 +40,10 @@ public sealed class SignalRService : ISignalRService
         await HubConnection.InvokeAsync(action, obj);
         _logger.LogInformation($"Done invoking action");
     }
-
+    public async Task InvokeAction(string action)
+    {
+        _logger.LogInformation($"Begin to invoke {action}");
+        await HubConnection.InvokeAsync(action);
+        _logger.LogInformation($"Done invoking action");
+    }
 }

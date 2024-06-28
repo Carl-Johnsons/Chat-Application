@@ -26,18 +26,18 @@ public static class DependencyInjection
         });
 
 
-        // MediatR require repository scope denpendency injection
+        // MediatR require repository scope dependency injection
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
         services.AddScoped<MockupData>();
         services.AddScoped(typeof(IPaginateDataUtility<,>), typeof(PaginateDataUtility<,>));
-        // Build a temporary service provider to resolve services
+        services.AddSingleton<ISignalRService, SignalRService>();
+        services.AddMassTransitService();
+
         using (var serviceProvider = services.BuildServiceProvider())
         {
             var mockupData = serviceProvider.GetRequiredService<MockupData>();
             mockupData.SeedConversationData().Wait();
         }
-
-        services.AddMassTransitService();
 
         return services;
     }
@@ -66,7 +66,6 @@ public static class DependencyInjection
                 config.ConfigureEndpoints(context);
             });
         });
-
         services.AddScoped<IServiceBus, MassTransitServiceBus>();
         return services;
     }

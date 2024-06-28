@@ -18,7 +18,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<PostComment> PostComments { get; set; }
-    public DbSet<Domain.Entities.Tag> Tags { get; set; }
+    public DbSet<Tag> Tags { get; set; }
     public DbSet<Interaction> Interactions { get; set; }
     public DbSet<PostInteract> PostInteracts { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
@@ -47,6 +47,17 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                                  v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         });
 
+        modelBuilder.Entity<PostReport>(entity =>
+        {
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        });
+
+
         modelBuilder.Entity<Interaction>(entity =>
         {
             entity.Property(e => e.CreatedAt)
@@ -57,7 +68,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                                  v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         });
 
-        modelBuilder.Entity<Domain.Entities.Tag>(entity =>
+        modelBuilder.Entity<Tag>(entity =>
         {
             entity.Property(e => e.CreatedAt)
                   .HasConversion(v => v.ToUniversalTime(),

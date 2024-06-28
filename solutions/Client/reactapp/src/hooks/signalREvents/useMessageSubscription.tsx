@@ -57,4 +57,4 @@ const useMessageSubscription = () => {
   };
 };
 
-export default useMessageSubscription;
+export { useMessageSubscription };

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net;
 using System.Security.Claims;
 
 namespace DuendeIdentityServer.Pages.ExternalLogin
@@ -70,12 +71,29 @@ namespace DuendeIdentityServer.Pages.ExternalLogin
 
             // find external user
             var user = await _userManager.FindByLoginAsync(provider, providerUserId);
+
             if (user == null)
             {
                 // this might be where you might initiate a custom workflow for user registration
                 // in this sample we don't show how that would be done, as our sample implementation
                 // simply auto-provisions new external user
                 user = await AutoProvisionUserAsync(provider, providerUserId, externalUser.Claims);
+            }
+
+            // Retrieve return URL
+            var returnUrl = result.Properties.Items["returnUrl"] ?? "~/";
+
+            // Check if the user is banned
+            if (user != null && !user.Active)
+            {
+                // Sign out the user
+                await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+                //Persist error message through context of the request
+                TempData["ErrorMessage"] = "Your account has been disabled.";
+                var encodedRedirectUri = WebUtility.UrlEncode(returnUrl);
+
+                // Redirect to login page with the return URL as a query parameter
+                return Redirect($"/Account/Login?returnUrl={encodedRedirectUri}");
             }
 
             // this allows us to collect any additional claims or properties
@@ -90,9 +108,6 @@ namespace DuendeIdentityServer.Pages.ExternalLogin
 
             // delete temporary cookie used during external authentication
             await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-
-            // retrieve return URL
-            var returnUrl = result.Properties.Items["returnUrl"] ?? "~/";
 
             // check if external login is in the context of an OIDC request
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);

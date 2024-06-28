@@ -55,7 +55,7 @@ const TagInputContainer = ({ tags, setTags }: Props) => {
               (tag) =>
                 tag.id === suggestion.id || tag.value === suggestion.value
             )
-        )
+        ) ?? []
       );
     }
   }, [tagsData, tags]);

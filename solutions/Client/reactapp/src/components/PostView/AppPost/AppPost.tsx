@@ -8,18 +8,39 @@ import {
   CommentContainer,
   InteractionCounterContainer,
   PostButtonContainer,
+  UserReportContainer,
 } from "../";
 import { AppDivider, AppTag } from "@/components/shared";
 import { useGetUser } from "@/hooks/queries/user";
 import { useGetPostByd } from "hooks/queries/post/useGetPostById.query";
+import { BUTTON } from "data/constants";
 
 const cx = classNames.bind(style);
 
-interface Props {
+type BaseVariant = {
   postId: string;
-}
+  disableComment?: boolean;
+};
 
-const AppPost = ({ postId }: Props) => {
+type NormalVariant = BaseVariant & {
+  type: "normal";
+};
+
+type ReportVariant = BaseVariant & {
+  type: "report";
+  reportCount: number;
+};
+
+type Variant = NormalVariant | ReportVariant;
+
+const AppPost = ({
+  postId,
+  disableComment = false,
+  type = "normal",
+}: Variant) => {
+  const isReport = type === "report";
+  const isNormal = type === "normal";
+
   const { data: postData } = useGetPostByd({ postId }, { enabled: !!postId });
 
   const { data: authorData } = useGetUser(postData?.userId ?? "", {
@@ -69,7 +90,7 @@ const AppPost = ({ postId }: Props) => {
           })}
       </div>
 
-      {postData?.interactions && (
+      {isNormal && postData?.interactions && (
         <InteractionCounterContainer
           className={cx("ps-2", "pe-2")}
           interactTotal={postData.interactTotal}
@@ -78,9 +99,15 @@ const AppPost = ({ postId }: Props) => {
       )}
 
       <AppDivider />
-      <PostButtonContainer postId={postId} />
+      {isReport ? (
+        <PostButtonContainer postId={postId} enableButton={[BUTTON.DELETE]} />
+      ) : (
+        <PostButtonContainer postId={postId} />
+      )}
+
       <AppDivider />
-      <CommentContainer postId={postId} />
+      {disableComment && <CommentContainer postId={postId} />}
+      {isReport && <UserReportContainer postId={postId} />}
     </div>
   );
 };

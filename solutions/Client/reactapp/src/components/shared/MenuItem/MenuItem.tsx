@@ -1,6 +1,6 @@
 import Avatar from "@/components/shared/Avatar";
 
-import style from "./MenuContact.module.scss";
+import style from "./MenuItem.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(style);
@@ -12,7 +12,7 @@ interface Props {
   onClick?: (index: number) => void;
 }
 
-const MenuContact = ({
+const MenuItem = ({
   index = 0,
   image,
   name,
@@ -22,7 +22,7 @@ const MenuContact = ({
   return (
     <div
       className={cx(
-        "menu-contact-item",
+        "menu-item",
         "w-100",
         "position-relative",
         "d-flex",
@@ -39,7 +39,7 @@ const MenuContact = ({
           "me-3"
         )}
       >
-        <Avatar variant="avatar-img-20px" src={image} alt="menu contact icon" />
+        <Avatar variant="avatar-img-20px" src={image} alt="menu icon" />
       </div>
       <div
         className={cx(
@@ -53,6 +53,8 @@ const MenuContact = ({
           <div
             className={cx(
               "item-name",
+              "d-flex",
+              "align-items-center",
               "text-truncate",
               "position-absolute",
               "top-0",
@@ -70,4 +72,4 @@ const MenuContact = ({
   );
 };
 
-export default MenuContact;
+export { MenuItem };

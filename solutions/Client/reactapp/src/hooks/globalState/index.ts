@@ -4,7 +4,8 @@ import { createGlobalState } from "react-hooks-global-state";
 const initialState = {
   // Number
   activeContactType: 0,
-  activeNav: 3,
+  activeDashboardType: 0,
+  activeNav: 1,
   activeModal: 0,
   // string
   activeConversationId: "",

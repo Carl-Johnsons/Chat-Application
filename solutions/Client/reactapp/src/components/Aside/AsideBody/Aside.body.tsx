@@ -24,7 +24,7 @@ import {
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
 import { useGetUser } from "@/hooks/queries/user";
-import { GroupConversation } from "models/GroupConversation";
+import { GroupConversation } from "models/GroupConversation.model";
 
 const cx = classnames.bind(style);
 

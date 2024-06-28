@@ -1,4 +1,4 @@
-import { ConversationUser } from "models/ConversationUser";
+import { ConversationUser } from "models/ConversationUser.model";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { ConversationResponseDTO } from "@/models/DTOs";
 import { AxiosProps } from "@/models";

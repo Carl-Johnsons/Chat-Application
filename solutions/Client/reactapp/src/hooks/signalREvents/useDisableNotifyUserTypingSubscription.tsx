@@ -32,4 +32,4 @@ const useDisableNotifyUserTypingSubscription = () => {
   };
 };
 
-export default useDisableNotifyUserTypingSubscription;
+export { useDisableNotifyUserTypingSubscription };

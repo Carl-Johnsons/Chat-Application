@@ -19,6 +19,7 @@ import {
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
 import { GroupConversation } from "@/models";
+import { ROLE } from "data/constants";
 
 const cx = classNames.bind(style);
 
@@ -37,12 +38,14 @@ type FriendVariant = BaseVariant & {
   type: "Friend";
   onClickCalling?: () => void;
   onClickMessaging?: () => void;
+  onClickBlockUser?: () => void;
 };
 
 type StrangerVariant = BaseVariant & {
   type: "Stranger";
   onClickSendFriendRequest?: () => void;
   onClickMessaging?: () => void;
+  onClickBlockUser?: () => void;
 };
 type GroupVariant = BaseVariant & {
   type: "Group";
@@ -57,8 +60,7 @@ type Variants =
   | GroupVariant;
 
 const ProfileModalContent = (variant: Variants) => {
-  //Extract variable
-  const type = variant.type;
+  const { type } = variant;
   //Base variable
   const modalEntityId = variant.modalEntityId;
   //Personal
@@ -73,22 +75,28 @@ const ProfileModalContent = (variant: Variants) => {
   let onClickMessaging: (() => void) | undefined;
   //Group
   let onClickMoreMemberInfo: (() => void) | undefined;
+  //block
+  let onClickBlockUser: (() => void) | undefined;
 
   const isPersonal = type === "Personal";
   const isFriend = type === "Friend";
   const isStranger = type === "Stranger";
   const isGroup = type === "Group";
 
+  const { data: currentUserData } = useGetCurrentUser();
+
+  const isCurrentUserAdmin = currentUserData?.role === ROLE.ADMIN;
+
   if (isPersonal) {
     ({ onClickUpdate, onClickEditAvatar, onClickEditUserName } = variant);
   } else if (isFriend) {
-    ({ onClickCalling, onClickMessaging } = variant);
+    ({ onClickCalling, onClickMessaging, onClickBlockUser } = variant);
   } else if (isStranger) {
-    ({ onClickSendFriendRequest, onClickMessaging } = variant);
+    ({ onClickSendFriendRequest, onClickMessaging, onClickBlockUser } =
+      variant);
   } else {
     ({ onClickMessaging, onClickMoreMemberInfo } = variant);
   }
-  const { data: currentUserData } = useGetCurrentUser({ enabled: isPersonal });
   const { data: otherUserData } = useGetUser(modalEntityId, {
     enabled: (isFriend || isStranger) && !!modalEntityId,
   });
@@ -169,51 +177,74 @@ const ProfileModalContent = (variant: Variants) => {
           </div>
           <div className={cx("user-name", "position-relative", "w-75")}>
             <span className={cx("me-2")}> {name}</span>
-            <AppButton
-              variant="app-btn-primary-transparent"
-              className={cx(
-                "username-edit-btn",
-                "p-0",
-                "rounded-circle",
-                "position-absolute",
-                "d-inline-flex",
-                "justify-content-center",
-                "align-items-center"
-              )}
-              onClick={onClickEditUserName}
-            >
-              <FontAwesomeIcon icon={faPen} />
-            </AppButton>
+            {isPersonal && (
+              <AppButton
+                variant="app-btn-primary-transparent"
+                className={cx(
+                  "username-edit-btn",
+                  "p-0",
+                  "rounded-circle",
+                  "position-absolute",
+                  "d-inline-flex",
+                  "justify-content-center",
+                  "align-items-center"
+                )}
+                onClick={onClickEditUserName}
+              >
+                <FontAwesomeIcon icon={faPen} />
+              </AppButton>
+            )}
           </div>
         </div>
         {/* Type friend and stranger has multiple button to function */}
-        {!isPersonal && (
-          <div
-            className={cx(
-              "info-button-container",
-              "d-flex",
-              "justify-content-between",
-              !isGroup && "pt-5"
-            )}
-          >
-            {!isGroup && (
-              <AppButton
-                variant="app-btn-primary"
-                className={cx("info-button", "fw-medium", "flex-grow-1")}
-                onClick={isFriend ? onClickCalling : onClickSendFriendRequest}
-              >
-                {isFriend ? "Gọi điện" : "Kết bạn"}
-              </AppButton>
-            )}
-
-            <AppButton
-              variant="app-btn-tertiary"
-              className={cx("info-button", "fw-medium", "flex-grow-1")}
-              onClick={onClickMessaging}
+        {!isPersonal && !isCurrentUserAdmin && (
+          <>
+            <div
+              className={cx(
+                "info-button-container",
+                "d-flex",
+                "justify-content-between",
+                !isGroup && "pt-5"
+              )}
             >
-              Nhắn tin
-            </AppButton>
-          </div>
+              {!isGroup && (
+                <AppButton
+                  variant="app-btn-primary"
+                  className={cx("info-button", "fw-medium", "flex-grow-1")}
+                  onClick={isFriend ? onClickCalling : onClickSendFriendRequest}
+                >
+                  {isFriend ? "Gọi điện" : "Kết bạn"}
+                </AppButton>
+              )}
+
+              <AppButton
+                variant="app-btn-tertiary"
+                className={cx("info-button", "fw-medium", "flex-grow-1")}
+                onClick={onClickMessaging}
+              >
+                Nhắn tin
+              </AppButton>
+            </div>
+
+            <div
+              className={cx(
+                "w-100",
+                "d-flex",
+                "justify-content-center",
+                "mt-2"
+              )}
+            >
+              {(isStranger || isFriend) && (
+                <AppButton
+                  variant="app-btn-danger"
+                  className={cx("info-button", "fw-medium", "flex-grow-1")}
+                  onClick={onClickBlockUser}
+                >
+                  Chặn người dùng
+                </AppButton>
+              )}
+            </div>
+          </>
         )}
       </div>
 

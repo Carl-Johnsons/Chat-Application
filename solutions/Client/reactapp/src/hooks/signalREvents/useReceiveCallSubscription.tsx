@@ -36,4 +36,4 @@ const useReceiveCallSubscription = () => {
   };
 };
 
-export default useReceiveCallSubscription;
+export { useReceiveCallSubscription };
