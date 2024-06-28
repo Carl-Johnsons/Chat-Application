@@ -3,17 +3,16 @@ import { useCallback } from "react";
 import { SignalREvent } from "../../data/constants";
 import { useQueryClient } from "@tanstack/react-query";
 
-const useJoinConversationSubscription = () => {
+const useDeletePostSubscription = () => {
   const queryClient = useQueryClient();
-
-  const subscribeJoinConversationEvent = useCallback(
+  const subscribeDeletePostEvent = useCallback(
     (connection: HubConnection) => {
       if (!connection) {
         return;
       }
-      connection.on(SignalREvent.RECEIVE_JOIN_CONVERSATION, () => {
+      connection.on(SignalREvent.DELETE_POST, () => {
         queryClient.invalidateQueries({
-          queryKey: ["conversationList"],
+          queryKey: ["posts", "infinite"],
           exact: true,
         });
       });
@@ -21,20 +20,20 @@ const useJoinConversationSubscription = () => {
     [queryClient]
   );
 
-  const unsubscribeJoinConversationEvent = useCallback(
+  const unsubscribeDeletePostEvent = useCallback(
     (connection: HubConnection) => {
       if (!connection) {
         return;
       }
-      connection.off(SignalREvent.RECEIVE_JOIN_CONVERSATION);
+      connection.off(SignalREvent.DELETE_POST);
     },
     []
   );
 
   return {
-    subscribeJoinConversationEvent,
-    unsubscribeJoinConversationEvent,
+    subscribeDeletePostEvent,
+    unsubscribeDeletePostEvent,
   };
 };
 
-export { useJoinConversationSubscription };
+export { useDeletePostSubscription };

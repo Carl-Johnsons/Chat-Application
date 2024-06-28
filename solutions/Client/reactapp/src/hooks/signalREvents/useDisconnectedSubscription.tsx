@@ -36,4 +36,4 @@ const useDisconnectedSubscription = () => {
   };
 };
 
-export default useDisconnectedSubscription;
+export { useDisconnectedSubscription };

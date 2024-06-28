@@ -35,4 +35,4 @@ const useForcedLogoutSubscription = () => {
   };
 };
 
-export default useForcedLogoutSubscription;
+export { useForcedLogoutSubscription };
