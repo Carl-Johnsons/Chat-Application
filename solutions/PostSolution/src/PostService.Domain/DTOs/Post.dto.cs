@@ -22,6 +22,9 @@ public class PostDTO
     [JsonProperty("createdAt")]
     public DateTime CreatedAt { get; set; }
 
+    [JsonProperty("attachedFilesURL")]
+    public string AttachedFilesURL { get; set; } = "[]";
+
     [JsonProperty("tags")]
     public List<string> Tags { get; set; } = null!;
 }

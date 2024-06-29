@@ -74,7 +74,8 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<
             CreatedAt = post.CreatedAt,
             InteractTotal = countInteract,
             Interactions = interacts,
-            Tags = tags
+            Tags = tags,
+            AttachedFilesURL = post.AttachedFilesURL
         };
 
         return Result<PostDTO?>.Success(postReponse);

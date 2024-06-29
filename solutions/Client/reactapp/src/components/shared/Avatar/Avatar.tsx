@@ -19,7 +19,8 @@ type AppImageVariants =
   | "50"
   | "80"
   | "120"
-  | "160";
+  | "160"
+  | "240";
 type VariantType<T extends string> = `avatar-img-${T}px`;
 
 type Default = "avatar-img";

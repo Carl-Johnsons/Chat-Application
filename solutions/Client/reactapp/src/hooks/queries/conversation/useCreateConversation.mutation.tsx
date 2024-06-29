@@ -44,7 +44,7 @@ const createGroupConversation = async ({
       if (Array.isArray(conversationAsAny[key])) {
         // If the property is an array, append each element separately
         conversationAsAny[key].forEach((item: string) => {
-          formData.append(`${key}[]`, item);
+          formData.append(`${key}`, item);
         });
       } else {
         formData.append(key, conversationAsAny[key]);

@@ -79,8 +79,9 @@ const PostInputContainer = () => {
     createPostMutate({
       content: editorRef.current?.getContent() ?? "",
       tagIds,
+      blobs,
     });
-    
+
     handleHideModal();
   };
 

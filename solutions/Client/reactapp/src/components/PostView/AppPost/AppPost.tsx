@@ -12,8 +12,9 @@ import {
 } from "../";
 import { AppDivider, AppTag } from "@/components/shared";
 import { useGetUser } from "@/hooks/queries/user";
-import { useGetPostByd } from "hooks/queries/post/useGetPostById.query";
-import { BUTTON } from "data/constants";
+import { BUTTON, FILE_TYPE } from "data/constants";
+import { CloudinaryImage } from "@/models";
+import { useGetPostByd } from "@/hooks/queries/post";
 
 const cx = classNames.bind(style);
 
@@ -54,6 +55,9 @@ const AppPost = ({
 
   const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
   const authorName = authorData?.name ?? "Loading...";
+  const files: CloudinaryImage[] = JSON.parse(
+    postData?.attachedFilesURL ?? "[]"
+  );
 
   return (
     <div
@@ -83,6 +87,31 @@ const AppPost = ({
       <div className={cx("ps-2", "pe-2", "text-break")}>
         {htmlParser(postData?.content ?? "")}
       </div>
+      <div
+        className={cx(
+          "file-container",
+          "d-flex",
+          "gap-2",
+          "justify-content-center",
+          "flex-wrap"
+        )}
+      >
+        {files.map((f) => {
+          const { id, url, name } = f;
+          if (f.fileType === FILE_TYPE.IMAGE) {
+            return (
+              <Avatar
+                variant="avatar-img-240px"
+                avatarClassName={cx("post-img", "rounded-2")}
+                key={id}
+                src={url}
+                alt={name}
+              />
+            );
+          }
+        })}
+      </div>
+
       <div className={cx("mt-2", "mb-2", "d-flex", "gap-2", "flex-wrap")}>
         {postData?.tags &&
           postData?.tags.map((tag, index) => {
