@@ -37,7 +37,7 @@ public partial class MessageController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SendClientMessage([FromBody] SendClientMessageDTO sendClientMessageDTO)
+    public async Task<IActionResult> SendClientMessage([FromForm] SendClientMessageDTO sendClientMessageDTO)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
@@ -45,8 +45,7 @@ public partial class MessageController : BaseApiController
         var result = await _sender.Send(new SendClientMessageCommand
         {
             SenderId = Guid.Parse(subjectId!),
-            ConversationId = sendClientMessageDTO.ConversationId,
-            Content = sendClientMessageDTO.Content
+            SendClientMessageDTO = sendClientMessageDTO
         });
 
         result.ThrowIfFailure();

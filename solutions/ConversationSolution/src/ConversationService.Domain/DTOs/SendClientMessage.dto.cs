@@ -14,6 +14,6 @@ public class SendClientMessageDTO
     public string Content { get; set; } = null!;
 
     [JsonProperty("files")]
-    public List<IFormFile> Files { get; set; } = null!;
+    public List<IFormFile>? Files { get; set; } = [];
 
 }
