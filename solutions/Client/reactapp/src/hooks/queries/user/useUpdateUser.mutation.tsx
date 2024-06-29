@@ -12,8 +12,19 @@ export const updateUser = async ({
   axiosInstance,
 }: Props): Promise<User | null> => {
   const url = "http://localhost:5001/api/users";
-
-  const response = await axiosInstance.put(url, user);
+  const formData = new FormData();
+  // Cast user to a more flexible type
+  const userAsAny = user as { [key: string]: any };
+  for (const key in userAsAny) {
+    if (userAsAny.hasOwnProperty(key)) {
+      formData.append(key, userAsAny[key]);
+    }
+  }
+  const response = await axiosInstance.put(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
