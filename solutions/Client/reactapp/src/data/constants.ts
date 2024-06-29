@@ -57,3 +57,9 @@ export enum ROLE {
   ADMIN = "Admin",
   USER = "User",
 }
+
+export enum FILE_TYPE {
+  IMAGE = "Image",
+  VIDEO = "Video",
+  RAW = "Raw",
+}

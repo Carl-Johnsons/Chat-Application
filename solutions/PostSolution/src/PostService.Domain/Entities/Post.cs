@@ -16,6 +16,9 @@ public class Post : BaseAuditableEntity
     [JsonProperty("active")]
     public bool Active { get; set; } = true;
 
+    [JsonProperty("attachedFilesURL")]
+    public string AttachedFilesURL { get; set; } = "[]";
+
     [Required]
     [JsonProperty("userId")]
     public Guid UserId { get; set; }

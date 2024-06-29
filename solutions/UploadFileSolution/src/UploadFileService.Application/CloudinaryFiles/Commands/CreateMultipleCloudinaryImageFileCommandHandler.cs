@@ -46,6 +46,7 @@ public class CreateMultipleCloudinaryImageFileCommandHandler : IRequestHandler<C
         var formFileNames = Enumerable.Repeat(string.Empty, formFiles.Count).ToList();
         var formFileSizes = Enumerable.Repeat(0L, formFiles.Count).ToList();
         var extensionValues = Enumerable.Repeat(string.Empty, formFiles.Count).ToList();
+        var extensionTypes = Enumerable.Repeat(new ExtensionType(), formFiles.Count).ToList();
 
         //Used to store new extension type that not in DB
         List<ExtensionType> newExtensionTypes = new List<ExtensionType>();
@@ -120,6 +121,7 @@ public class CreateMultipleCloudinaryImageFileCommandHandler : IRequestHandler<C
             };
             _context.CloudinaryFiles.Add(cloudinaryFile);
             returnResult[i] = cloudinaryFile;
+            extensionTypes[i] = extensionType!;
         }
         await _unitOfWork.SaveChangeAsync(cancellationToken);
         await Console.Out.WriteLineAsync("return result count:" + returnResult.Count);

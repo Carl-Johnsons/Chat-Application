@@ -7,16 +7,19 @@ import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 import { AxiosProps } from "models/AxiosProps.model";
 import { useAxios } from "@/hooks";
 
-interface Props extends AxiosProps {
+interface Props {
   conversationWithMembersId:
     | ConversationWithMembersId
     | GroupConversationWithMembersIdDTO
     | undefined;
 }
+
+interface FetchProps extends Props, AxiosProps {}
+
 const createConversation = async ({
   conversationWithMembersId,
   axiosInstance,
-}: Props): Promise<ConversationWithMembersId | null> => {
+}: FetchProps): Promise<ConversationWithMembersId | null> => {
   if (!conversationWithMembersId) {
     return null;
   }
@@ -27,12 +30,33 @@ const createConversation = async ({
 const createGroupConversation = async ({
   conversationWithMembersId,
   axiosInstance,
-}: Props): Promise<GroupConversationWithMembersId | null> => {
+}: FetchProps): Promise<GroupConversationWithMembersId | null> => {
   if (!conversationWithMembersId) {
     return null;
   }
   const url = `/api/conversation/group`;
-  const response = await axiosInstance.post(url, conversationWithMembersId);
+  const formData = new FormData();
+  // Cast object to a more flexible type
+  const conversationAsAny = conversationWithMembersId as { [key: string]: any };
+
+  for (const key in conversationAsAny) {
+    if (conversationAsAny.hasOwnProperty(key)) {
+      if (Array.isArray(conversationAsAny[key])) {
+        // If the property is an array, append each element separately
+        conversationAsAny[key].forEach((item: string) => {
+          formData.append(`${key}`, item);
+        });
+      } else {
+        formData.append(key, conversationAsAny[key]);
+      }
+    }
+  }
+  
+  const response = await axiosInstance.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 const useCreateConversation = () => {

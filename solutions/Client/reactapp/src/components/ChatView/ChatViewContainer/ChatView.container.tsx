@@ -52,9 +52,7 @@ const ChatViewContainer = ({ className }: Props) => {
         )}
       </div>
 
-      <div className={cx("input-message-container", "w-100", "d-flex")}>
-        <ChatViewFooter />
-      </div>
+      <ChatViewFooter />
     </div>
   );
 };

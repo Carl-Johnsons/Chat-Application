@@ -6,3 +6,22 @@
         padding-right: 16px;
     }
 }
+
+.file-input {
+    display: none;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: var(--light-blue);
+    color: var(--blue);
+    border-radius: 5px;
+    &:hover {
+        background-color: var(--light-blue-hover);
+    }
+    &:active {
+        background-color: var(--light-blue-active);
+    }
+}

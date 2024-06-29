@@ -49,11 +49,7 @@ const MessageContainer = ({
           return (
             <Message
               key={m.id}
-              message={{
-                userId: m.senderId,
-                content: m.content,
-                createdAt: m.createdAt ?? "",
-              }}
+              message={m}
               sender={isSender}
               showUsername={index === 0}
               id={`message_${m.id}`}
