@@ -6,11 +6,9 @@
     justify-self: end;
 }
 .file-display-container {
-    width: 560px;
-    height: 315px;
     .file {
         object-fit: cover;
-        transition: all 0.25s ease-in;
+        transition: transform 0.25s ease-in;
         &:hover {
             transform: scale(1.015);
         }

@@ -6,6 +6,6 @@ export type Message = {
   createdAt: string;
   updatedAt: string;
   source: "Client" | "Server";
-  format: "Text" | "Image";
+  attachedFilesURL: string;
   active: boolean;
 };

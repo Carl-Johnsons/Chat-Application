@@ -45,6 +45,7 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
             Content = dto.Content,
             Source = MESSAGE_CONSTANTS.Source.CLIENT,
             Active = true,
+            AttachedFilesURL = "[]",
         };
 
         //check file array has element

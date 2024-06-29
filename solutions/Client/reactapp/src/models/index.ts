@@ -1,4 +1,5 @@
 export * from "./AxiosProps.model";
+export * from "./CloudinaryImage.model";
 export * from "./Comment.model";
 export * from "./Conversation.model";
 export * from "./ConversationType.model";

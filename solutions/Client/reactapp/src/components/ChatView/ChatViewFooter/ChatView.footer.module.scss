@@ -4,3 +4,19 @@
         outline: none;
     }
 }
+.chat-view-footer {
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: darken(#fff, 10%);
+    transition: border-color 0.25s ease-in-out;
+    &:focus-within {
+        border-color: #1c98ba;
+    }
+}
+.file-container {
+    height: 100px;
+}
+.clearable-file {
+    width: 100px;
+    height: 100px;
+}

@@ -10,7 +10,16 @@ import { useState } from "react";
 
 const cx = classNames.bind(style);
 
-type AppImageVariants = "16" | "20" | "30" | "40" | "45" | "50" | "80";
+type AppImageVariants =
+  | "16"
+  | "20"
+  | "30"
+  | "40"
+  | "45"
+  | "50"
+  | "80"
+  | "120"
+  | "160";
 type VariantType<T extends string> = `avatar-img-${T}px`;
 
 type Default = "avatar-img";
@@ -48,7 +57,7 @@ const Avatar = ({
         alt={alt}
         src={src}
         className={cx(
-          "object-fit-cover",
+          "object-fit-contain",
           "overflow-hidden",
           avatarClassName + `${!isImageLoaded ? " opacity-0" : " opacity-100"}`
         )}
