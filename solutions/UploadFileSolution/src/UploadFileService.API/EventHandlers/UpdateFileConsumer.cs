@@ -10,6 +10,7 @@ namespace UploadFileService.API.EventHandlers;
 public sealed class UpdateFileConsumer : IConsumer<UpdateFileEvent>
 {
     private readonly ISender _sender;
+    private readonly IApplicationDbContext _context;
 
     public UpdateFileConsumer(ISender sender)
     {
@@ -40,7 +41,8 @@ public sealed class UpdateFileConsumer : IConsumer<UpdateFileEvent>
         var result = new UploadFileEventResponseDTO();
         response.ThrowIfFailure();
         result.Name = response.Value!.Name;
-        result.ExtensionTypeCode = Path.GetExtension(fileStreamEvent.FileName).Replace(".", "").ToUpper();
+        result.ExtensionTypeCode = response.Value.ExtensionType.Code;
+        result.FileType = response.Value.ExtensionType.Type;
         result.Size = response.Value.Size;
         result.Url = response.Value.Url;
         await context.RespondAsync(result);

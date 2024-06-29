@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace ConversationService.Domain.DTOs;
@@ -9,7 +10,10 @@ public class SendClientMessageDTO
     [JsonProperty("conversationId")]
     public Guid ConversationId { get; set; }
 
-    [Required]
     [JsonProperty("content")]
     public string Content { get; set; } = null!;
+
+    [JsonProperty("files")]
+    public List<IFormFile> Files { get; set; } = null!;
+
 }
