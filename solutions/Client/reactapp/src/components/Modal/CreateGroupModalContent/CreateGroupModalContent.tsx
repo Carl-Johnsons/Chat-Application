@@ -9,7 +9,6 @@ import { User } from "@/models";
 
 import style from "./CreateGroupModalContent.module.scss";
 import classnames from "classnames/bind";
-import { useUploadImage } from "@/hooks/queries/tool";
 import { useGetFriendList } from "@/hooks/queries/user";
 import { useCreateGroupConversation } from "@/hooks/queries/conversation";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
@@ -24,11 +23,10 @@ const CreateGroupModalContent = () => {
   const { data: friendList } = useGetFriendList();
   const { mutate: createGroupConversationMutate } =
     useCreateGroupConversation();
-  const { mutateAsync: uploadImageMutateAsync } = useUploadImage();
 
   const inputFileRef = useRef(null);
   const [form, setForm] = useState({
-    avatarFile: null as unknown as File,
+    avatarFile: null as unknown as Blob,
     groupName: "",
     searchValue: "",
   });
@@ -43,7 +41,7 @@ const CreateGroupModalContent = () => {
     inputRefs.current = inputRefs.current.slice(0, friendList?.length);
   }, [friendList]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFriendListChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
 
     const friendId = e.target.dataset.friendId && e.target.dataset.friendId;
@@ -64,24 +62,19 @@ const CreateGroupModalContent = () => {
       setSelectedUser([...selectedUser, friend]);
     }
   };
-  const handleAvatarInputChange =
-    useRef<(e: React.ChangeEvent<HTMLInputElement>) => void>();
-  useEffect(() => {
-    handleAvatarInputChange.current = (
-      e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-      const file = e.target?.files?.[0];
-      if (!file) {
-        return;
-      }
-      previewImgURL && window.URL.revokeObjectURL(previewImgURL);
-      setForm((prev) => ({ ...prev, avatarFile: file }));
-      setPreviewImgURL(window.URL.createObjectURL(file));
-    };
-    return () => {
-      previewImgURL && window.URL.revokeObjectURL(previewImgURL);
-    };
-  }, [previewImgURL]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setForm({ ...form, avatarFile: file });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImgURL(reader.result as string);
+      };
+      // Read image as base 64 as preview img
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleClickAvatarButton = () => {
     if (!inputFileRef.current) {
@@ -102,15 +95,13 @@ const CreateGroupModalContent = () => {
     if (selectedUser.length < 2 || form.groupName.length <= 2) {
       return;
     }
-    //Upload img to imgur
-    const imgurImage = await uploadImageMutateAsync({ file: form.avatarFile });
     const members = selectedUser.map((f) => f.id);
 
     const model: GroupConversationWithMembersIdDTO = {
       name: form.groupName,
       membersId: members,
       inviteUrl: "string",
-      imageURL: imgurImage?.data.link ?? "",
+      imageFile: form.avatarFile,
     };
     createGroupConversationMutate({ conversationWithMembersId: model });
     handleHideModal();
@@ -130,7 +121,7 @@ const CreateGroupModalContent = () => {
         <div>
           <input
             ref={inputFileRef}
-            onChange={handleAvatarInputChange.current}
+            onChange={handleFileChange}
             type="file"
             id={cx("fileInput")}
           />
@@ -206,7 +197,7 @@ const CreateGroupModalContent = () => {
                     if (el) inputRefs.current[index] = el;
                   }}
                   id={index + ""}
-                  onChange={handleChange}
+                  onChange={handleFriendListChange}
                   checked={selectedUser.includes(friend)}
                   data-friend-id={friend.id}
                 />

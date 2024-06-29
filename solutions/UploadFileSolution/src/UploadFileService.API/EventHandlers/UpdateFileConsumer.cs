@@ -10,7 +10,6 @@ namespace UploadFileService.API.EventHandlers;
 public sealed class UpdateFileConsumer : IConsumer<UpdateFileEvent>
 {
     private readonly ISender _sender;
-    private readonly IApplicationDbContext _context;
 
     public UpdateFileConsumer(ISender sender)
     {

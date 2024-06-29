@@ -10,5 +10,5 @@ public class MessageResponseDTO
     public string Content { get; set; } = "";
     public string Source { get; set; } = null!;
     public bool? Active { get; set; }
-    public List<> AttachedFilesURL { get; set; } = null!;
+    //public List<> AttachedFilesURL { get; set; } = null!;
 }
