@@ -74,7 +74,6 @@ public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConver
                     UpdatedAt = gc.UpdatedAt,
                     Type = gc.Type,
                     ImageURL = gc.ImageURL,
-                    InviteURL = gc.InviteURL,
                     Users = usersWithoutCurrentUser
                 };
             })
