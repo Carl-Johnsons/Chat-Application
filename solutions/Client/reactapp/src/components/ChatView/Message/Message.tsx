@@ -50,7 +50,11 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
             return (
               <Avatar
                 variant="avatar-img-160px"
-                avatarClassName={cx("img-msg", "rounded-2")}
+                avatarClassName={cx(
+                  "img-msg",
+                  "rounded-2",
+                  "object-fit-contain"
+                )}
                 key={id}
                 src={url}
                 alt={name}

@@ -37,6 +37,12 @@ $button-variants: (
         bg-hover: var(--light-blue-hover),
         bg-active: var(--light-blue-active)
     ),
+    success: (
+        bg-color: var(--success),
+        text-color: var(--white),
+        bg-hover: var(--success-hover),
+        bg-active: var(--success-active)
+    ),
     danger: (
         bg-color: var(--danger),
         text-color: var(--white),
@@ -45,7 +51,7 @@ $button-variants: (
     ),
     phone-call: (
         bg-color: var(--phone-call),
-        text-color: var(--phone-call),
+        text-color: var(--white),
         bg-hover: var(--phone-call-hover),
         bg-active: var(--phone-call-active)
     ),

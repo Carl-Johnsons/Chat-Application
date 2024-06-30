@@ -13,7 +13,7 @@ const useJoinConversationSubscription = () => {
       }
       connection.on(SignalREvent.RECEIVE_JOIN_CONVERSATION, () => {
         queryClient.invalidateQueries({
-          queryKey: ["conversationList"],
+          queryKey: ["conversations"],
           exact: true,
         });
       });

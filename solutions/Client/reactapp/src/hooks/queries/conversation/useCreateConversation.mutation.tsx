@@ -71,7 +71,7 @@ const useCreateConversation = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
     },
@@ -96,7 +96,7 @@ const useCreateGroupConversation = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
     },

@@ -58,7 +58,6 @@ const Avatar = ({
         alt={alt}
         src={src}
         className={cx(
-          "object-fit-contain",
           "overflow-hidden",
           avatarClassName + `${!isImageLoaded ? " opacity-0" : " opacity-100"}`
         )}

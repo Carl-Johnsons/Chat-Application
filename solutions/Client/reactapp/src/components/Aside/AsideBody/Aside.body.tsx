@@ -51,9 +51,13 @@ const AsideBody = () => {
   const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });
-  const avatar = otherUserData?.avatarUrl ?? images.userIcon.src;
-  const name = otherUserData?.name ?? "";
-  const groupLink = (conversation as GroupConversation)?.inviteUrl ?? "";
+  const avatar =
+    (isGroup
+      ? (conversation as GroupConversation)?.imageURL
+      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+  const name = isGroup
+    ? (conversation as GroupConversation)?.name
+    : otherUserData?.name ?? "";
   const conversationUsers = isGroup ? conversationUsersData : undefined;
 
   return (
@@ -205,12 +209,7 @@ const AsideBody = () => {
                 <div className={cx("icon")}>
                   <FontAwesomeIcon icon={faLink} />
                 </div>
-                <div>
-                  Link tham gia nhóm
-                  <div>
-                    <a href={groupLink}>{groupLink}</a>
-                  </div>
-                </div>
+                <div>Link tham gia nhóm</div>
               </div>
               <div
                 className={cx(

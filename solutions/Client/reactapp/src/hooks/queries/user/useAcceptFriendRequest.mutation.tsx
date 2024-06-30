@@ -37,7 +37,7 @@ const useAcceptFriendRequest = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
       queryClient.invalidateQueries({
