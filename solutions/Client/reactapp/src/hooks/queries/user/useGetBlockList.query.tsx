@@ -5,15 +5,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface Props extends AxiosProps {
   userId: string;
 }
-const blockUser = async ({ userId, axiosInstance }: Props): Promise<void> => {
+const blockUser = async ({ userId, axiosInstance }: Props): Promise<UserBlock[]> => {
   const data = {
     blockUserId: userId,
   };
-  const url = "http://localhost:5001/api/users/block"; 
-  const response = await axiosInstance.post(url, data);
-  return response.data;
+  const url = "http://localhost:5001/api/users/block";
 };
-const useBlockUser = () => {
+const useGetBlockList = () => {
   const queryClient = useQueryClient();
   const { protectedAxiosInstance } = useAxios();
   return useMutation<
@@ -31,8 +29,6 @@ const useBlockUser = () => {
       });
     },
     onSuccess: () => {
-      console.log("Block gòi nhe");
-
       queryClient.invalidateQueries({
         queryKey: ["conversationList"],
         exact: true,
@@ -51,8 +47,8 @@ const useBlockUser = () => {
       });
     },
     onError: (err) => {
-      console.error("Block user failed: " + err.message);
+      console.error("Add friend failed: " + err.message);
     },
   });
 };
-export { useBlockUser };
+export { useGetBlockList };
