@@ -6,4 +6,5 @@ export type Post = {
   interactions: string[];
   createdAt: Date;
   tags: string[];
+  attachedFilesURL: string;
 };

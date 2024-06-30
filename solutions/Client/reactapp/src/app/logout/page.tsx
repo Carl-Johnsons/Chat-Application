@@ -26,7 +26,7 @@ const LogOut = () => {
         queryKey: ["messageList"],
       });
       queryClient.removeQueries({
-        queryKey: ["postList"],
+        queryKey: ["posts"],
       });
       removeLocalToken();
       await userManager.signoutRedirect();

@@ -1,22 +1,43 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import style from "./ReportPost.container.module.scss";
 import classNames from "classnames/bind";
-import { Form, InputGroup } from "react-bootstrap";
 import AppButton from "@/components/shared/AppButton";
+import { AppInput } from "@/components/shared/AppInput";
+import { useReportPost } from "hooks/queries/post/useReportForm.mutation";
+import { useGlobalState, useModal } from "@/hooks";
 
 const cx = classNames.bind(style);
 
 const ReportPostContainer = () => {
+  const [inputValue, setInputValue] = useState("");
+  const [modalEntityId] = useGlobalState("modalEntityId");
+  const { mutate: reportPostMutate } = useReportPost();
+  const { handleHideModal } = useModal();
+
+  const handleClick = useCallback(() => {
+    reportPostMutate({
+      postId: modalEntityId,
+      reason: inputValue,
+    });
+    handleHideModal();
+  }, [inputValue]);
+
   return (
     <div className={cx("d-flex", "flex-column", "align-items-center")}>
-      <InputGroup className="mb-3">
-        <Form.Control placeholder="Lí do" className={cx("shadow-lg")} />
-      </InputGroup>
+      <AppInput
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        disableSuggestion
+        placeholder="Lí do"
+        className="form-control w-100"
+        wrapperClassName="w-100 mb-3 mt-3"
+      />
       <AppButton
         className={cx("btn-submit", "w-50", "shadow-lg")}
         variant="app-btn-danger"
+        onClick={handleClick}
       >
-        Gửi và chặn người dùng
+        Báo cáo bài đăng
       </AppButton>
     </div>
   );

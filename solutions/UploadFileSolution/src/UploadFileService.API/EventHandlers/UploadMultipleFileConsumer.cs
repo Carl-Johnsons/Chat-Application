@@ -12,11 +12,13 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
 {
     private readonly ISender _sender;
     private readonly IApplicationDbContext _context;
+    private readonly IFileUtility _fileUtility;
 
-    public UploadMultipleFileConsumer(ISender sender, IApplicationDbContext context)
+    public UploadMultipleFileConsumer(ISender sender, IApplicationDbContext context, IFileUtility fileUtility)
     {
         _sender = sender;
         _context = context;
+        _fileUtility = fileUtility;
     }
 
     public async Task Consume(ConsumeContext<UploadMultipleFileEvent> context)
@@ -57,7 +59,7 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
         var result = new UploadMultipleFileEventResponseDTO();
         result.Files = new List<UploadFileEventResponseDTO>(fileStreamEvents.Count);
         response.ThrowIfFailure();
-        for (int i = 0; i < response.Value.Count; i++)
+        for (int i = 0; i < response.Value!.Count; i++)
         {
             await Console.Out.WriteLineAsync("extension tple id of :" + i + " " + response.Value[i].ExtensionTypeId);
 
@@ -68,7 +70,8 @@ public sealed class UploadMultipleFileConsumer : IConsumer<UploadMultipleFileEve
                 Name = response.Value[i].Name,
                 Size = response.Value[i].Size,
                 Url = response.Value[i].Url,
-                ExtensionTypeCode = extensionTypeCode
+                ExtensionTypeCode = extensionTypeCode,
+                FileType = _fileUtility.getFileType(response.Value[i].Name)
             };
             result.Files.Add(fileDTO);
         }

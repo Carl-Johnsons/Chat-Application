@@ -21,29 +21,19 @@ public class PostsController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
+    public async Task<IActionResult> Create([FromForm] CreatePostDTO createPostDTO)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
         var postResult = await _sender.Send(new CreatePostCommand
         {
-            Content = createPostDTO.Content,
-            UserId = Guid.Parse(subjectId!)
+            UserId = Guid.Parse(subjectId!),
+            CreatePostDTO = createPostDTO
         });
         postResult.ThrowIfFailure();
 
-        foreach (var t in createPostDTO.TagIds)
-        {
-            var result = await _sender.Send(new CreatePostTagCommand
-            {
-                PostId = postResult.Value.Id,
-                TagId = t
-            });
-            result.ThrowIfFailure();
-        }
-
-        return Ok();
+        return Ok(postResult.Value);
     }
 
     [HttpGet]
@@ -180,23 +170,28 @@ public class PostsController : BaseApiController
 
     [Authorize(Roles = "Admin")]
     [HttpGet("report/all")]
-    public async Task<IActionResult> GetAllReportPost()
+    public async Task<IActionResult> GetAllReportPost([FromQuery] PaginatedReportListDTO dto)
     {
-        var posts = await _sender.Send(new GetListReportPostQuery { });
+        var result = await _sender.Send(new GetListReportPostQuery
+        {
+            Skip = dto.Skip,
+            Limit = dto.Limit
+        });
+        result.ThrowIfFailure();
 
-        return Ok(posts.Value);
+        return Ok(result.Value);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet("report")]
     public async Task<IActionResult> GetReportPost([FromQuery] Guid id)
     {
-        var post = await _sender.Send(new GetPostReportByPostIdCommand
+        var result = await _sender.Send(new GetPostReportByPostIdCommand
         {
             PostId = id
         });
-
-        return Ok(post.Value);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
     }
 
     [HttpDelete("interact")]
@@ -209,6 +204,23 @@ public class PostsController : BaseApiController
         {
             PostId = uninteractionPostDTO.PostId,
             UserId = Guid.Parse(subjectId!)
+        });
+
+        result.ThrowIfFailure();
+
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete]
+    public async Task<IActionResult> DeletePost([FromBody] DeletePostDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var result = await _sender.Send(new DeletePostCommand
+        {
+            PostId = dto.Id,
         });
 
         result.ThrowIfFailure();

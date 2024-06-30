@@ -40,7 +40,8 @@ public sealed class UpdateFileConsumer : IConsumer<UpdateFileEvent>
         var result = new UploadFileEventResponseDTO();
         response.ThrowIfFailure();
         result.Name = response.Value!.Name;
-        result.ExtensionTypeCode = Path.GetExtension(fileStreamEvent.FileName).Replace(".", "").ToUpper();
+        result.ExtensionTypeCode = response.Value.ExtensionType.Code;
+        result.FileType = response.Value.ExtensionType.Type;
         result.Size = response.Value.Size;
         result.Url = response.Value.Url;
         await context.RespondAsync(result);

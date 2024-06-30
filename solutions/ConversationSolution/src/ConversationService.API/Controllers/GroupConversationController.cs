@@ -20,7 +20,7 @@ public partial class GroupConversationController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateGroupConversation([FromBody] CreateGroupConversationDTO createGroupConversationDTO)
+    public async Task<IActionResult> CreateGroupConversation([FromForm] CreateGroupConversationDTO createGroupConversationDTO)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;

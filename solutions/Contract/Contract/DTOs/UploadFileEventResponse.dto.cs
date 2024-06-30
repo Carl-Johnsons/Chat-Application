@@ -13,6 +13,9 @@ public class UploadFileEventResponseDTO : BaseEntity
     [Required]
     [JsonProperty("extensionTypeCode")]
     public string ExtensionTypeCode { get; set; } = null!;
+    [Required]
+    [JsonProperty("fileType")]
+    public string FileType { get; set; } = null!;
 
     [Required]
     [JsonProperty("size")]

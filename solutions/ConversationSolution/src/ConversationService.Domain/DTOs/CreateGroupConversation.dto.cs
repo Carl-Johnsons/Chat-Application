@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace ConversationService.Domain.DTOs;
@@ -12,5 +13,5 @@ public class CreateGroupConversationDTO
     public string Name { get; set; } = null!;
 
     [Required]
-    public string? ImageURL { get; set; } = null!;
+    public IFormFile? ImageFile { get; set; } = null!;
 }

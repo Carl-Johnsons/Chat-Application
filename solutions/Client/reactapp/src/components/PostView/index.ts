@@ -7,3 +7,4 @@ export * from "./PostButtonContainer";
 export * from "./PostInputContainer";
 export * from "./PostViewContainer";
 export * from "./ReportPostContainer";
+export * from "./UserReportContainer";

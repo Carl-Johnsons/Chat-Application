@@ -4,6 +4,7 @@ using Contract.Event.UploadEvent;
 using Contract.Event.UploadEvent.EventModel;
 using Contract.Event.UserEvent;
 using Duende.IdentityServer.Extensions;
+using DuendeIdentityServer.Constants;
 using DuendeIdentityServer.Data;
 using DuendeIdentityServer.DTOs;
 using DuendeIdentityServer.Models;
@@ -32,8 +33,9 @@ public class UsersController : ControllerBase
     private readonly IBus _bus;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IPaginateDataUtility<ApplicationUser, EmptyMetadata> _paginateDataUtility;
+    private readonly ISignalRService _signalRService;
 
-    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint, IPaginateDataUtility<ApplicationUser, EmptyMetadata> paginateDataUtility)
+    public UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBus bus, IPublishEndpoint publishEndpoint, IPaginateDataUtility<ApplicationUser, EmptyMetadata> paginateDataUtility, ISignalRService signalRService)
     {
         _context = context;
         _userManager = userManager;
@@ -42,26 +44,36 @@ public class UsersController : ControllerBase
         _bus = bus;
         _publishEndpoint = publishEndpoint;
         _paginateDataUtility = paginateDataUtility;
+        _signalRService = signalRService;
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet("all")]
-    public IActionResult GetAll([FromQuery] PaginatedUserListDTO paginatedUserListDTO)
+    public IActionResult GetAll([FromQuery] PaginatedUserListDTO dto)
     {
         var usersQuery = _context.Users.AsQueryable();
-        var userLimit = 5;
+
+        var limit = dto.Limit ?? PAGINATED_CONSTANTS.USER_LIMIT;
+
+        var count = usersQuery.Count();
+        var totalPage = (count / limit) + (count % limit == 0 ? 0 : 1);
+
         usersQuery = _paginateDataUtility.PaginateQuery(usersQuery, new PaginateParam
         {
-            Offset = paginatedUserListDTO.Skip * userLimit,
-            Limit = userLimit
+            Offset = dto.Skip * limit,
+            Limit = limit
         });
+
         var users = usersQuery.ToList();
         var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
 
         var paginatedResponse = new PaginatedUserListResponseDTO
         {
             PaginatedData = mappedUsers,
-            Metadata = new EmptyMetadata()
+            Metadata = new CommonPaginatedMetadata
+            {
+                TotalPage = totalPage
+            }
         };
         return Ok(paginatedResponse);
     }
@@ -81,7 +93,7 @@ public class UsersController : ControllerBase
 
     // api/users/search?value=test
     [HttpGet("search")]
-    public IActionResult Search()
+    public IActionResult Search([FromQuery] PaginatedUserListDTO dto)
     {
         string phonePattern = @"^\d{10}$";
         var searchValue = HttpContext.Request.Query["value"].ToString();
@@ -100,9 +112,29 @@ public class UsersController : ControllerBase
             query = query.Where(u => u.Name.Contains(searchValue) && !_context.UserBlocks.Any(ub => (ub.BlockUserId == u.Id && ub.UserId == currentUserId) || (ub.BlockUserId == currentUserId && ub.UserId == u.Id)));
         }
 
+        var limit = dto.Limit ?? PAGINATED_CONSTANTS.USER_LIMIT;
+        var count = query.Count();
+        var totalPage = (count / limit) + (count % limit == 0 ? 0 : 1);
+
+        query = _paginateDataUtility.PaginateQuery(query, new PaginateParam
+        {
+            Offset = dto.Skip * limit,
+            Limit = limit
+        });
+
         var users = query.ToList();
         var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
-        return Ok(mappedUsers);
+
+        var response = new PaginatedUserListResponseDTO
+        {
+            PaginatedData = mappedUsers,
+            Metadata = new CommonPaginatedMetadata
+            {
+                TotalPage = totalPage
+            }
+        };
+
+        return Ok(response);
     }
 
     [HttpPut]
@@ -272,5 +304,36 @@ public class UsersController : ControllerBase
         };
 
         return Ok(blockUserListDTO);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("disable")]
+    public async Task<IActionResult> DisableUser([FromBody] DisableAndEnableUserDTO dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.Id.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.Active = false;
+        _context.Users.Update(user);
+        _context.SaveChanges();
+        await _signalRService.InvokeAction("DisableUser", dto);
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("enable")]
+    public async Task<IActionResult> EnableUser([FromBody] DisableAndEnableUserDTO dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.Id.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.Active = true;
+        _context.Users.Update(user);
+        _context.SaveChanges();
+        return Ok();
     }
 }

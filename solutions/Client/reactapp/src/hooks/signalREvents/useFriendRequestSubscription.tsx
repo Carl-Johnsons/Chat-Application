@@ -41,4 +41,4 @@ const useFriendRequestSubscription = () => {
   };
 };
 
-export default useFriendRequestSubscription;
+export { useFriendRequestSubscription };

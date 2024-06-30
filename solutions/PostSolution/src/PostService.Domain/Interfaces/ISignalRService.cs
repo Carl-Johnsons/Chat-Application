@@ -9,4 +9,5 @@ public interface ISignalRService
     Task StartConnectionAsync();
     Task StopConnectionAsync();
     Task InvokeAction<T>(string action, T obj);
+    Task InvokeAction(string action);
 }

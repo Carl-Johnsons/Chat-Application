@@ -42,8 +42,6 @@ const ChatViewHeader = () => {
   );
   const handleToggleAside = () => setShowAside(!showAside);
   const handleCall = useCallback(() => {
-    console.log("Active conversation id is " + activeConversationId);
-
     invokeAction(
       signalRCall({
         targetConversationId: activeConversationId,

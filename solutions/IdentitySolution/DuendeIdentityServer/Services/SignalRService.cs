@@ -13,6 +13,7 @@ public sealed class SignalRService : ISignalRService
         _logger = logger;
         HubConnection = new HubConnectionBuilder()
             .WithUrl("http://websocket/chat-hub")
+            .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30)])
             .ConfigureLogging(logging =>
             {
                 logging.SetMinimumLevel(LogLevel.Information);

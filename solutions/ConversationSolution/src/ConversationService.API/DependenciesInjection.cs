@@ -19,7 +19,7 @@ public static class DependenciesInjection
 
         services.AddApplicationServices();
         services.AddInfrastructureServices(config);
-        
+
         services.AddControllers()
                 // Prevent circular JSON reach max depth of the object when serialization
                 .AddJsonOptions(options =>
@@ -77,8 +77,8 @@ public static class DependenciesInjection
 
         app.UseAuthorization();
 
-        var signalService = app.Services.GetService<ISignalRService>();
-        await signalService!.StartConnectionAsync();
+        var signalRService = app.Services.GetService<ISignalRService>();
+        await signalRService!.StartConnectionAsync();
 
         return app;
     }

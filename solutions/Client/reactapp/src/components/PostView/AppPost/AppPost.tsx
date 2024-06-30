@@ -8,18 +8,40 @@ import {
   CommentContainer,
   InteractionCounterContainer,
   PostButtonContainer,
+  UserReportContainer,
 } from "../";
 import { AppDivider, AppTag } from "@/components/shared";
 import { useGetUser } from "@/hooks/queries/user";
-import { useGetPostByd } from "hooks/queries/post/useGetPostById.query";
+import { BUTTON, FILE_TYPE } from "data/constants";
+import { CloudinaryImage } from "@/models";
+import { useGetPostByd } from "@/hooks/queries/post";
 
 const cx = classNames.bind(style);
 
-interface Props {
+type BaseVariant = {
   postId: string;
-}
+  disableComment?: boolean;
+};
 
-const AppPost = ({ postId }: Props) => {
+type NormalVariant = BaseVariant & {
+  type: "normal";
+};
+
+type ReportVariant = BaseVariant & {
+  type: "report";
+  reportCount: number;
+};
+
+type Variant = NormalVariant | ReportVariant;
+
+const AppPost = ({
+  postId,
+  disableComment = false,
+  type = "normal",
+}: Variant) => {
+  const isReport = type === "report";
+  const isNormal = type === "normal";
+
   const { data: postData } = useGetPostByd({ postId }, { enabled: !!postId });
 
   const { data: authorData } = useGetUser(postData?.userId ?? "", {
@@ -33,6 +55,9 @@ const AppPost = ({ postId }: Props) => {
 
   const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
   const authorName = authorData?.name ?? "Loading...";
+  const files: CloudinaryImage[] = JSON.parse(
+    postData?.attachedFilesURL ?? "[]"
+  );
 
   return (
     <div
@@ -62,6 +87,31 @@ const AppPost = ({ postId }: Props) => {
       <div className={cx("ps-2", "pe-2", "text-break")}>
         {htmlParser(postData?.content ?? "")}
       </div>
+      <div
+        className={cx(
+          "file-container",
+          "d-flex",
+          "gap-2",
+          "justify-content-center",
+          "flex-wrap"
+        )}
+      >
+        {files.map((f) => {
+          const { id, url, name } = f;
+          if (f.fileType === FILE_TYPE.IMAGE) {
+            return (
+              <Avatar
+                variant="avatar-img-240px"
+                avatarClassName={cx("post-img", "rounded-2")}
+                key={id}
+                src={url}
+                alt={name}
+              />
+            );
+          }
+        })}
+      </div>
+
       <div className={cx("mt-2", "mb-2", "d-flex", "gap-2", "flex-wrap")}>
         {postData?.tags &&
           postData?.tags.map((tag, index) => {
@@ -69,7 +119,7 @@ const AppPost = ({ postId }: Props) => {
           })}
       </div>
 
-      {postData?.interactions && (
+      {isNormal && postData?.interactions && (
         <InteractionCounterContainer
           className={cx("ps-2", "pe-2")}
           interactTotal={postData.interactTotal}
@@ -78,9 +128,15 @@ const AppPost = ({ postId }: Props) => {
       )}
 
       <AppDivider />
-      <PostButtonContainer postId={postId} />
+      {isReport ? (
+        <PostButtonContainer postId={postId} enableButton={[BUTTON.DELETE]} />
+      ) : (
+        <PostButtonContainer postId={postId} />
+      )}
+
       <AppDivider />
-      <CommentContainer postId={postId} />
+      {disableComment && <CommentContainer postId={postId} />}
+      {isReport && <UserReportContainer postId={postId} />}
     </div>
   );
 };

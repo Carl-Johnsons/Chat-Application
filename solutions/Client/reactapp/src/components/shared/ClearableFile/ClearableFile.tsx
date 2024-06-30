@@ -14,21 +14,32 @@ const cx = classNames.bind(style);
 
 interface Props {
   className?: string;
-  blob: File;
+  blob: File | Blob;
   onClickCancel?: () => void;
+  minDimension?: {
+    width: number;
+    height: number;
+  };
+  maxDimension?: {
+    width: number;
+    height: number;
+  };
 }
 
 const ClearableFile = ({
   className,
   blob,
-  onClickCancel = () => {},
-}: Props) => {
-  //aspect ratio 16:9
-  const minDimension = {
+  minDimension = {
+    //aspect ratio 16:9
     width: 560,
     height: 315,
-  };
-
+  },
+  maxDimension = {
+    width: 560,
+    height: 315,
+  },
+  onClickCancel = () => {},
+}: Props) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -53,10 +64,14 @@ const ClearableFile = ({
         width:
           img.naturalWidth < minDimension.width
             ? minDimension.width
+            : img.naturalWidth > maxDimension.width
+            ? maxDimension.width
             : img.naturalWidth,
         height:
           img.naturalHeight < minDimension.height
             ? minDimension.height
+            : img.naturalHeight > maxDimension.height
+            ? maxDimension.height
             : img.naturalHeight,
       });
     };
@@ -97,7 +112,8 @@ const ClearableFile = ({
           src={previewUrl ?? images.defaultAvatarImg}
           className={cx(
             "file",
-            !isImageLoaded ? " opacity-0" : " opacity-100"
+            !isImageLoaded ? " opacity-0" : " opacity-100",
+            "object-fit-contain"
           )}
           ref={imgRef}
           width={dimensions.width}

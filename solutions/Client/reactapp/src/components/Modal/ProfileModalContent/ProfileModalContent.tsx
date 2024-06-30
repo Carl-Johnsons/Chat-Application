@@ -19,6 +19,7 @@ import {
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
 import { GroupConversation } from "@/models";
+import { ROLE } from "data/constants";
 
 const cx = classNames.bind(style);
 
@@ -59,8 +60,7 @@ type Variants =
   | GroupVariant;
 
 const ProfileModalContent = (variant: Variants) => {
-  //Extract variable
-  const type = variant.type;
+  const { type } = variant;
   //Base variable
   const modalEntityId = variant.modalEntityId;
   //Personal
@@ -83,6 +83,10 @@ const ProfileModalContent = (variant: Variants) => {
   const isStranger = type === "Stranger";
   const isGroup = type === "Group";
 
+  const { data: currentUserData } = useGetCurrentUser();
+
+  const isCurrentUserAdmin = currentUserData?.role === ROLE.ADMIN;
+
   if (isPersonal) {
     ({ onClickUpdate, onClickEditAvatar, onClickEditUserName } = variant);
   } else if (isFriend) {
@@ -93,7 +97,6 @@ const ProfileModalContent = (variant: Variants) => {
   } else {
     ({ onClickMessaging, onClickMoreMemberInfo } = variant);
   }
-  const { data: currentUserData } = useGetCurrentUser({ enabled: isPersonal });
   const { data: otherUserData } = useGetUser(modalEntityId, {
     enabled: (isFriend || isStranger) && !!modalEntityId,
   });
@@ -152,13 +155,15 @@ const ProfileModalContent = (variant: Variants) => {
           "ps-3",
           "pe-3",
           isPersonal ? "pb-4" : "pb-2"
-        )}>
+        )}
+      >
         <div
           className={cx(
             "info-detail",
             "d-flex",
             !isGroup ? "individual" : "pb-4"
-          )}>
+          )}
+        >
           <div className={cx("w-25", "avatar-img-container")}>
             <Avatar
               variant="avatar-img-80px"
@@ -172,24 +177,27 @@ const ProfileModalContent = (variant: Variants) => {
           </div>
           <div className={cx("user-name", "position-relative", "w-75")}>
             <span className={cx("me-2")}> {name}</span>
-            <AppButton
-              variant="app-btn-primary-transparent"
-              className={cx(
-                "username-edit-btn",
-                "p-0",
-                "rounded-circle",
-                "position-absolute",
-                "d-inline-flex",
-                "justify-content-center",
-                "align-items-center"
-              )}
-              onClick={onClickEditUserName}>
-              <FontAwesomeIcon icon={faPen} />
-            </AppButton>
+            {isPersonal && (
+              <AppButton
+                variant="app-btn-primary-transparent"
+                className={cx(
+                  "username-edit-btn",
+                  "p-0",
+                  "rounded-circle",
+                  "position-absolute",
+                  "d-inline-flex",
+                  "justify-content-center",
+                  "align-items-center"
+                )}
+                onClick={onClickEditUserName}
+              >
+                <FontAwesomeIcon icon={faPen} />
+              </AppButton>
+            )}
           </div>
         </div>
         {/* Type friend and stranger has multiple button to function */}
-        {!isPersonal && (
+        {!isPersonal && !isCurrentUserAdmin && (
           <>
             <div
               className={cx(
@@ -197,14 +205,14 @@ const ProfileModalContent = (variant: Variants) => {
                 "d-flex",
                 "justify-content-between",
                 !isGroup && "pt-5"
-              )}>
+              )}
+            >
               {!isGroup && (
                 <AppButton
                   variant="app-btn-primary"
                   className={cx("info-button", "fw-medium", "flex-grow-1")}
-                  onClick={
-                    isFriend ? onClickCalling : onClickSendFriendRequest
-                  }>
+                  onClick={isFriend ? onClickCalling : onClickSendFriendRequest}
+                >
                   {isFriend ? "Gọi điện" : "Kết bạn"}
                 </AppButton>
               )}
@@ -212,7 +220,8 @@ const ProfileModalContent = (variant: Variants) => {
               <AppButton
                 variant="app-btn-tertiary"
                 className={cx("info-button", "fw-medium", "flex-grow-1")}
-                onClick={onClickMessaging}>
+                onClick={onClickMessaging}
+              >
                 Nhắn tin
               </AppButton>
             </div>
@@ -223,12 +232,14 @@ const ProfileModalContent = (variant: Variants) => {
                 "d-flex",
                 "justify-content-center",
                 "mt-2"
-              )}>
+              )}
+            >
               {(isStranger || isFriend) && (
                 <AppButton
                   variant="app-btn-danger"
                   className={cx("info-button", "fw-medium", "flex-grow-1")}
-                  onClick={onClickBlockUser}>
+                  onClick={onClickBlockUser}
+                >
                   Chặn người dùng
                 </AppButton>
               )}
@@ -247,7 +258,8 @@ const ProfileModalContent = (variant: Variants) => {
             "flex-column",
             "ps-3",
             "pe-3"
-          )}>
+          )}
+        >
           <div className={cx("personal-information-row")}>
             Thông tin cá nhân
           </div>
@@ -279,7 +291,8 @@ const ProfileModalContent = (variant: Variants) => {
             "flex-column",
             "ps-3",
             "pe-3"
-          )}>
+          )}
+        >
           <div className={cx("personal-information-row")}>
             Thành viên &#40;{userIdList?.length}&#41;
           </div>
@@ -317,7 +330,8 @@ const ProfileModalContent = (variant: Variants) => {
                 "rounded-circle",
                 "z-0"
               )}
-              onClick={onClickMoreMemberInfo}>
+              onClick={onClickMoreMemberInfo}
+            >
               <FontAwesomeIcon
                 className={cx("m-0")}
                 icon={faEllipsis}
@@ -335,7 +349,8 @@ const ProfileModalContent = (variant: Variants) => {
           <AppButton
             variant="app-btn-primary-transparent"
             onClick={onClickUpdate}
-            className={cx("w-100", "fw-medium")}>
+            className={cx("w-100", "fw-medium")}
+          >
             <FontAwesomeIcon icon={faPen} className="me-2" />
             Cập nhật
           </AppButton>

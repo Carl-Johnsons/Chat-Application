@@ -2,7 +2,7 @@
 
 namespace PostService.Domain.DTOs;
 
-public class PostReportListDTO
+public class PostReportDTO
 {
     [JsonProperty("postId")]
     public Guid PostId { get; set; }

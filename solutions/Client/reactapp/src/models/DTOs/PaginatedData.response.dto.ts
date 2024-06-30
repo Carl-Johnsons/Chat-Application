@@ -1,4 +1,5 @@
-import { Message, Comment } from "..";
+import { ReportPostDTO } from ".";
+import { Message, Comment, User } from "..";
 /* ============================ Metadata  ============================ */
 export type MessageListMetaData = {
   lastMessage?: Message;
@@ -7,6 +8,10 @@ export type MessageListMetaData = {
 export type PostListMetadata = {};
 
 export type EmptyMetadata = {};
+
+export type CommonPaginatedMetadata = {
+  totalPage: number;
+};
 /* ============================ Response  ============================ */
 
 export type PaginatedDataResponse<Type, MetadataType> = {
@@ -24,7 +29,17 @@ export type PaginatedPostListResponse = PaginatedDataResponse<
   EmptyMetadata
 >;
 
+export type PaginatedReportPostListResponse = PaginatedDataResponse<
+  ReportPostDTO,
+  CommonPaginatedMetadata
+>;
+
 export type PaginatedCommentListResponse = PaginatedDataResponse<
   Comment,
   EmptyMetadata
+>;
+
+export type PaginatedUserListResponse = PaginatedDataResponse<
+  User,
+  CommonPaginatedMetadata
 >;

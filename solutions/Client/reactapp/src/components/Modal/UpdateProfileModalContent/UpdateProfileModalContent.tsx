@@ -21,16 +21,21 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
 
   const [formData, setFormData] = useState<UpdateUserInputDTO>({
     name: currentUser?.name ?? "",
-    gender: currentUser?.gender === "Male" ? "M" : "F",
-    dob: currentUser?.dob ?? "1-1-2024",
+    gender:
+      currentUser?.gender === "Nam" || currentUser?.gender === "Male"
+        ? "M"
+        : "F",
+    dob: currentUser?.dob ?? "1/1/2024",
     introduction: currentUser?.introduction,
   });
+  console.log(currentUser?.dob);
+
   const [day, setDay] = useState(new Date(formData.dob!).getDate());
   const [month, setMonth] = useState(new Date(formData.dob!).getMonth() + 1); // Get month (0-11, so +1)
   const [year, setYear] = useState(new Date(formData.dob!).getFullYear());
 
   useEffect(() => {
-    const newDob = `${day}-${month}-${year}`;
+    const newDob = `${month}/${day}/${year}`;
     setFormData((prevFormData) => ({
       ...prevFormData,
       dob: newDob,
@@ -45,7 +50,18 @@ const UpdateProfileModalContent = ({ onClickCancel }: Props) => {
   const dateLimit: number = getMaxDayinMonth(month, year);
 
   const handleClickUpdate = async () => {
-    updateUserMutate({ user: formData });
+    let gender = formData.gender;
+    switch (gender) {
+      case "M":
+      case "Male":
+      case "Nam":
+        gender = "Nam";
+        break;
+      default:
+        gender = "Nữ";
+        break;
+    }
+    updateUserMutate({ user: { ...formData, gender } });
     onClickCancel();
   };
 

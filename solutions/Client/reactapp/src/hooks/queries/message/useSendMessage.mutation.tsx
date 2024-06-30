@@ -1,32 +1,45 @@
 import { AxiosProps, Message } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "@/hooks";
-interface Props extends AxiosProps {
+interface Props {
   conversationId: string;
   messageContent: string;
+  files: Blob[];
 }
 
+interface FetchProps extends Props, AxiosProps {}
 const sendMessage = async ({
   conversationId,
   messageContent,
+  files,
   axiosInstance,
-}: Props): Promise<Message | null> => {
+}: FetchProps): Promise<Message | null> => {
   const url = "/api/conversation/message";
-  const respone = await axiosInstance.post(url, {
-    conversationId,
-    content: messageContent,
+  const formData = new FormData();
+
+  formData.append("conversationId", conversationId);
+  formData.append("content", messageContent);
+  files.forEach((file) => {
+    formData.append("files", file);
   });
-  return respone.data;
+
+  const response = await axiosInstance.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
 };
 
 const useSendMessage = () => {
   const queryClient = useQueryClient();
   const { protectedAxiosInstance } = useAxios();
   const mutation = useMutation<Message | null, Error, Props, unknown>({
-    mutationFn: ({ conversationId, messageContent }: Props) =>
+    mutationFn: ({ conversationId, messageContent, files }: Props) =>
       sendMessage({
         conversationId,
         messageContent,
+        files,
         axiosInstance: protectedAxiosInstance,
       }),
     onSuccess: (im, { conversationId }) => {

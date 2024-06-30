@@ -10,7 +10,7 @@ import classNames from "classnames/bind";
 import { useGetCurrentUser } from "@/hooks/queries/user";
 import { ROLE } from "data/constants";
 import { ReactNode } from "react";
-import { MenuDashboard } from "@/components/DashboardView/MenuDashBoard";
+import { MenuDashboard } from "./MenuDashBoard";
 
 const cx = classNames.bind(style);
 

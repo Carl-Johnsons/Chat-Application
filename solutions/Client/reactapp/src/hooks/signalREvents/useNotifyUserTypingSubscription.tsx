@@ -47,4 +47,4 @@ const useNotifyUserTypingSubscription = () => {
   };
 };
 
-export default useNotifyUserTypingSubscription;
+export { useNotifyUserTypingSubscription };

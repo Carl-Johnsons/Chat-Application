@@ -1,13 +1,14 @@
 ﻿using MediatR;
 using PostService.Domain.Common;
+using PostService.Domain.Constants;
 using PostService.Domain.Errors;
 
 namespace PostService.Application.Posts.Commands;
 
 public class CreatePostReportCommand : IRequest<Result>
 {
-    public Guid PostId { get; init;}
-    public Guid UserId { get; init;}
+    public Guid PostId { get; init; }
+    public Guid UserId { get; init; }
     public string Reason { get; init; } = null!;
 }
 
@@ -15,11 +16,13 @@ public class CreatePostReportCommandHandler : IRequestHandler<CreatePostReportCo
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISignalRService _signalRService;
 
-    public CreatePostReportCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreatePostReportCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, ISignalRService signalRService)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _signalRService = signalRService;
     }
 
     public async Task<Result> Handle(CreatePostReportCommand request, CancellationToken cancellationToken)
@@ -32,16 +35,24 @@ public class CreatePostReportCommandHandler : IRequestHandler<CreatePostReportCo
         {
             return Result.Failure(PostError.NotFound);
         }
+        var postReport = _context.PostReports
+                            .Where(rp => rp.PostId == request.PostId && rp.UserId == request.UserId)
+                            .SingleOrDefault();
+        if (postReport != null)
+        {
+            return Result.Failure(PostError.AlreadyReportedPost);
+        }
 
-        PostReport postReport = new PostReport
+        var rp = new PostReport
         {
             PostId = request.PostId,
             UserId = request.UserId,
             Reason = request.Reason,
         };
 
-        _context.PostReports.Add(postReport);
-        await _unitOfWork.SaveChangeAsync();
+        _context.PostReports.Add(rp);
+        await _unitOfWork.SaveChangeAsync(cancellationToken);
+        await _signalRService.InvokeAction(SignalREvent.REPORT_POST);
 
         return Result.Success();
     }
