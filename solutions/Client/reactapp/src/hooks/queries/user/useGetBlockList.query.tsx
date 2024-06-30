@@ -1,53 +1,28 @@
 import { useAxios } from "@/hooks";
-import { AxiosProps } from "@/models";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosProps, User } from "@/models";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useGetCurrentUser } from ".";
 
-interface Props extends AxiosProps {
-  userId: string;
-}
-const blockUser = async ({ userId, axiosInstance }: Props): Promise<UserBlock[]> => {
-  const data = {
-    blockUserId: userId,
-  };
-  const url = "http://localhost:5001/api/users/block";
+const QUERY_KEY = "userblockedList";
+
+interface Props extends AxiosProps {}
+
+const blockUser = async ({ axiosInstance }: Props): Promise<User[] | null> => {
+  const url = "http://localhost:5001/api/block";
+  const response = await axiosInstance.get(url);
+  const users: User[] = response.data;
+  return users;
 };
 const useGetBlockList = () => {
   const queryClient = useQueryClient();
   const { protectedAxiosInstance } = useAxios();
-  return useMutation<
-    void,
-    Error,
-    {
-      userId: string;
-    },
-    unknown
-  >({
-    mutationFn: ({ userId }) => {
-      return blockUser({
-        userId: userId,
-        axiosInstance: protectedAxiosInstance,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
-        exact: true,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["friendList"],
-        exact: true,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["friendRequestList"],
-        exact: true,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["userBlockList"],
-        exact: true,
-      });
-    },
-    onError: (err) => {
-      console.error("Add friend failed: " + err.message);
+  const { data: currentUser } = useGetCurrentUser();
+  return useQuery({
+    queryKey: [QUERY_KEY],
+    enabled: !!currentUser,
+    queryFn: () => blockUser({ axiosInstance: protectedAxiosInstance }),
+    initialData: () => {
+      return queryClient.getQueryData<User[] | null>([QUERY_KEY]);
     },
   });
 };
