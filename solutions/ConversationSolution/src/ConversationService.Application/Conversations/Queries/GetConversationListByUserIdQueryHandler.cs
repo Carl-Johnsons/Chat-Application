@@ -23,70 +23,52 @@ public class GetConversationListByUserIdQueryHandler : IRequestHandler<GetConver
             .Where(c => c.Users.Any(u => u.UserId == request.UserId))
             .ToListAsync(cancellationToken);
 
+        var lastMessages = await _context.Messages
+            .Where(m => conversations.Select(c => c.Id).Contains(m.ConversationId))
+            .GroupBy(m => m.ConversationId)
+            .Select(g => g.OrderByDescending(m => m.CreatedAt).FirstOrDefault())
+            .ToListAsync(cancellationToken);
 
+        // Create a dictionary of last messages for fast lookup
+        var lastMessagesDict = lastMessages.ToDictionary(m => m.ConversationId, m => m);
 
-        var conversationList = conversations
-            .Where(c => c.Type == CONVERSATION_TYPE_CODE.INDIVIDUAL)
-            .Select(c =>
-            {
-                var usersWithoutCurrentUser = c.Users
-                    .Where(u => u.UserId != request.UserId)
-                    .Select(u => new ConversationUserResponseDTO
-                    {
-                        UserId = u.UserId,
-                        Role = u.Role,
-                        ReadTime = u.ReadTime,
-                    })
-                    .ToList();
-
-                return new ConversationResponseDTO
+        // Process conversations and include last messages
+        var conversationList = conversations.Select(c =>
+        {
+            var usersWithoutCurrentUser = c.Users
+                .Where(u => u.UserId != request.UserId)
+                .Select(u => new ConversationUserResponseDTO
                 {
-                    Id = c.Id,
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt,
-                    Type = c.Type,
-                    Users = usersWithoutCurrentUser
-                };
-            })
-            .ToList();
+                    UserId = u.UserId,
+                    Role = u.Role,
+                    ReadTime = u.ReadTime,
+                })
+                .ToList();
 
+            lastMessagesDict.TryGetValue(c.Id, out var lastMessage);
 
-        var groupConversationList = conversations
-            .Where(c => c.Type == CONVERSATION_TYPE_CODE.GROUP)
-            .Select(c =>
+            return new GroupConversationResponseDTO
             {
-                var usersWithoutCurrentUser = c.Users
-                    .Where(u => u.UserId != request.UserId)
-                    .Select(u => new ConversationUserResponseDTO
-                    {
-                        UserId = u.UserId,
-                        Role = u.Role,
-                        ReadTime = u.ReadTime,
-                    })
-                    .ToList();
+                Id = c.Id,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                Type = c.Type,
+                Name = c.Type == CONVERSATION_TYPE_CODE.GROUP ? (c as GroupConversation)!.Name : "",
+                ImageURL = c.Type == CONVERSATION_TYPE_CODE.GROUP ? (c as GroupConversation)!.ImageURL : "",
+                Users = usersWithoutCurrentUser,
+                LastMessage = lastMessage!
+            };
+        }).ToList();
 
-                var gc = c as GroupConversation;
-                return new GroupConversationResponseDTO
-                {
-                    Id = gc!.Id,
-                    Name = gc.Name,
-                    CreatedAt = gc.CreatedAt,
-                    UpdatedAt = gc.UpdatedAt,
-                    Type = gc.Type,
-                    ImageURL = gc.ImageURL,
-                    Users = usersWithoutCurrentUser
-                };
-            })
+        var sortedConversations = conversationList
+            .OrderByDescending(c => c.LastMessage?.CreatedAt ?? c.CreatedAt)
             .ToList();
 
         var dto = new ConversationsResponseDTO
         {
-            Conversations = conversationList,
-            GroupConversations = groupConversationList
+            Conversations = sortedConversations,
         };
-
 
         return Result<ConversationsResponseDTO>.Success(dto);
     }
-
 }

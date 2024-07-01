@@ -40,18 +40,6 @@ public sealed class GetConversationByUserIdConsumer : IConsumer<GetConversationB
             });
         }
 
-        foreach (var conversation in conversations.GroupConversations)
-        {
-            responses.Add(new ConversationEventResponseDTO
-            {
-                Id = conversation.Id,
-                Type = conversation.Type,
-                CreatedAt = conversation.CreatedAt,
-                UpdatedAt = conversation.UpdatedAt,
-            });
-        }
-
-
         await context.RespondAsync(new ConversationEventResponse
         {
             Conversations = responses
