@@ -1,6 +1,7 @@
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "hooks/useAxios";
+import { toast } from "react-toastify";
 
 interface Props {
   userId: string;
@@ -49,6 +50,10 @@ const useToggleUserStatus = () => {
         queryKey: ["users", userId],
         exact: true,
       });
+      toast.success("Cập nhật trạng thái người dùng thành công");
+    },
+    onError: () => {
+      toast.error("Cập nhật trạng thái người dùng thất bại");
     },
   });
 };

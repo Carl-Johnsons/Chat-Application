@@ -1,6 +1,7 @@
 import { AxiosProps, Message } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 interface Props {
   conversationId: string;
   messageContent: string;
@@ -36,15 +37,18 @@ const useSendMessage = () => {
   const { protectedAxiosInstance } = useAxios();
   const mutation = useMutation<Message | null, Error, Props, unknown>({
     mutationFn: ({ conversationId, messageContent, files }: Props) =>
-      sendMessage({
-        conversationId,
-        messageContent,
-        files,
-        axiosInstance: protectedAxiosInstance,
-      }),
+      toast.promise(
+        sendMessage({
+          conversationId,
+          messageContent,
+          files,
+          axiosInstance: protectedAxiosInstance,
+        }),
+        {
+          error: "Gửi tin nhắn thất bại",
+        }
+      ),
     onSuccess: (im, { conversationId }) => {
-      console.log("success sending message " + im);
-
       if (!im) {
         return;
       }
@@ -55,6 +59,10 @@ const useSendMessage = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ["message", "conversation", conversationId, "last"],
+        exact: true,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["conversations"],
         exact: true,
       });
     },

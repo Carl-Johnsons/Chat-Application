@@ -74,6 +74,31 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                     b.ToTable("ConversationUser");
                 });
 
+            modelBuilder.Entity("ConversationService.Domain.Entities.GroupConversationInvite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("GroupConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupConversationId");
+
+                    b.ToTable("GroupConversationInvite");
+                });
+
             modelBuilder.Entity("ConversationService.Domain.Entities.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -123,9 +148,6 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                     b.Property<string>("ImageURL")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InviteURL")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -144,6 +166,17 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("ConversationService.Domain.Entities.GroupConversationInvite", b =>
+                {
+                    b.HasOne("ConversationService.Domain.Entities.GroupConversation", "GroupConversation")
+                        .WithMany()
+                        .HasForeignKey("GroupConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupConversation");
                 });
 
             modelBuilder.Entity("ConversationService.Domain.Entities.Message", b =>

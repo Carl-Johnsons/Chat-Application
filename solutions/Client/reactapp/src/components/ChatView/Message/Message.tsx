@@ -7,6 +7,8 @@ import { useGetUser } from "@/hooks/queries/user";
 import { CloudinaryImage, Message as MessageModel } from "@/models";
 import Avatar from "@/components/shared/Avatar";
 import { FILE_TYPE } from "data/constants";
+import { urlify } from "@/utils";
+import htmlParser from "html-react-parser";
 
 const cx = classNames.bind(style);
 interface Props {
@@ -30,6 +32,7 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
   const { data: userData } = useGetUser(senderId);
   const tz = moment.tz.guess();
   const formattedTime = moment(new Date(createdAt)).tz(tz).format("HH:mm");
+  const formattedContent = htmlParser(urlify(content));
   return (
     <div
       className={cx("message", "mb-1", "text-break", sender && "sender")}
@@ -50,7 +53,11 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
             return (
               <Avatar
                 variant="avatar-img-160px"
-                avatarClassName={cx("img-msg", "rounded-2")}
+                avatarClassName={cx(
+                  "img-msg",
+                  "rounded-2",
+                  "object-fit-contain"
+                )}
                 key={id}
                 src={url}
                 alt={name}
@@ -59,7 +66,7 @@ const Message: React.FC<Props & HTMLProps<HTMLDivElement>> = ({
           }
         })}
       </div>
-      <div className={cx("content", "mb-2")}>{content}</div>
+      <div className={cx("content", "mb-2")}>{formattedContent}</div>
       <div className={cx("time")}>{formattedTime}</div>
     </div>
   );

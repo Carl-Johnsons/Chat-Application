@@ -6,6 +6,7 @@ import {
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 import { AxiosProps } from "models/AxiosProps.model";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props {
   conversationWithMembersId:
@@ -51,7 +52,7 @@ const createGroupConversation = async ({
       }
     }
   }
-  
+
   const response = await axiosInstance.post(url, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -71,7 +72,7 @@ const useCreateConversation = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
     },
@@ -90,13 +91,20 @@ const useCreateGroupConversation = () => {
     unknown
   >({
     mutationFn: ({ conversationWithMembersId }) =>
-      createGroupConversation({
-        conversationWithMembersId,
-        axiosInstance: protectedAxiosInstance,
-      }),
+      toast.promise(
+        createGroupConversation({
+          conversationWithMembersId,
+          axiosInstance: protectedAxiosInstance,
+        }),
+        {
+          pending: "Đang tạo nhóm",
+          success: "Tạo nhóm thành công",
+          error: "Tạo nhóm thất bại",
+        }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
     },

@@ -2,6 +2,7 @@ import { AxiosProps, User } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "hooks/useAxios";
 import { UpdateUserInputDTO } from "@/models/DTOs";
+import { toast } from "react-toastify";
 
 interface Props extends AxiosProps {
   user: UpdateUserInputDTO;
@@ -34,7 +35,14 @@ const useUpdateUser = () => {
   return useMutation<User | null, Error, { user: UpdateUserInputDTO }, unknown>(
     {
       mutationFn: ({ user }) =>
-        updateUser({ user, axiosInstance: protectedAxiosInstance }),
+        toast.promise(
+          updateUser({ user, axiosInstance: protectedAxiosInstance }),
+          {
+            pending: "Đang cập nhật...",
+            success: "Cập nhật thành công",
+            error: "Cập nhật thất bại",
+          }
+        ),
       onSuccess: (data) => {
         queryClient.invalidateQueries({
           queryKey: ["currentUser"],
@@ -44,7 +52,6 @@ const useUpdateUser = () => {
           queryKey: ["users", data?.id],
           exact: true,
         });
-        console.log("Update user successfully!");
       },
     }
   );

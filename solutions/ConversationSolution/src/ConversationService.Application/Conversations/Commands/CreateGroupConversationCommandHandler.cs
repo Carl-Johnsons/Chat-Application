@@ -34,7 +34,6 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
         var groupConversation = new GroupConversation
         {
             Name = conversationWithMembersId.Name,
-            InviteURL = "link",
             Type = CONVERSATION_TYPE_CODE.GROUP,
         };
 

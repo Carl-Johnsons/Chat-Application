@@ -55,7 +55,7 @@ const useGetConversationList = (
 
   return useQuery({
     ...queryOptions,
-    queryKey: ["conversationList"],
+    queryKey: ["conversations"],
     queryFn: () =>
       getConversationList({ axiosInstance: protectedAxiosInstance }),
   });
