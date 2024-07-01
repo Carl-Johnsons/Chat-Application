@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosProps } from "models/AxiosProps.model";
 import { useAxios } from "@/hooks";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 interface Props {
   groupId: string;
@@ -43,9 +44,11 @@ const useJoinGroupConversation = () => {
         exact: true,
       });
       router.push("/");
+      toast.success("Tham gia nhóm thành công");
     },
     onError: (err) => {
       console.error(err.message);
+      toast.error("Tham gia nhóm thất bại");
     },
   });
 };

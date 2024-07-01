@@ -40,10 +40,10 @@ const UserStatus = ({ type }: Props) => {
       )}
       {isLoading
         ? "Loading...."
-        : isStranger
-        ? "Người lạ"
         : isGroup
         ? `${conversationUsersData?.length ?? 0} thành viên`
+        : isStranger
+        ? "Người lạ"
         : isOnline
         ? "Online"
         : "Offline"}

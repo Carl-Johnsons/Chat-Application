@@ -102,7 +102,7 @@ const AppPost = ({
             return (
               <Avatar
                 variant="avatar-img-240px"
-                avatarClassName={cx("post-img", "rounded-2")}
+                avatarClassName={cx("post-img", "rounded-2","object-fit-contain")}
                 key={id}
                 src={url}
                 alt={name}

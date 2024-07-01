@@ -36,6 +36,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.0",
     "react-loading-skeleton": "^3.4.0",
+    "react-toastify": "^10.0.5",
     "simple-peer": "^9.11.1",
     "tinymce": "^7.1.1"
   },

@@ -6,6 +6,7 @@ import {
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 import { AxiosProps } from "models/AxiosProps.model";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props {
   conversationWithMembersId:
@@ -51,7 +52,7 @@ const createGroupConversation = async ({
       }
     }
   }
-  
+
   const response = await axiosInstance.post(url, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -99,9 +100,11 @@ const useCreateGroupConversation = () => {
         queryKey: ["conversations"],
         exact: true,
       });
+      toast.success("Tạo nhóm thành công");
     },
     onError: (err) => {
       console.error(err.message);
+      toast.error("Tạo nhóm thất bại");
     },
   });
 };

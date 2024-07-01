@@ -1,6 +1,7 @@
 import { useAxios } from "@/hooks";
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 interface Props extends AxiosProps {
   userId: string;
@@ -47,9 +48,11 @@ const useBlockUser = () => {
         queryKey: ["userBlockList"],
         exact: true,
       });
+      toast.success("Chặn người dùng thành công");
     },
     onError: (err) => {
       console.error("Block user failed: " + err.message);
+      toast.error("Chặn người dùng thất bại");
     },
   });
 };

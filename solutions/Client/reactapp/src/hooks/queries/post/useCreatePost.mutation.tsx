@@ -1,6 +1,7 @@
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props {
   content: string;
@@ -41,12 +42,19 @@ const useCreatePost = () => {
   const { protectedAxiosInstance } = useAxios();
   const mutation = useMutation<void, Error, Props, unknown>({
     mutationFn: ({ content, tagIds, blobs }: Props) =>
-      createPost({
-        content,
-        tagIds,
-        blobs,
-        axiosInstance: protectedAxiosInstance,
-      }),
+      toast.promise(
+        createPost({
+          content,
+          tagIds,
+          blobs,
+          axiosInstance: protectedAxiosInstance,
+        }),
+        {
+          pending: "Đang đăng bài",
+          success: "Đăng bài thành công",
+          error: "Đăng bài thất bại",
+        }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["posts", "infinite"],

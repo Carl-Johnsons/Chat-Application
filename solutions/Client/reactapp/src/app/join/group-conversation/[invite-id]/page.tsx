@@ -1,5 +1,5 @@
 "use client";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import style from "./page.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";

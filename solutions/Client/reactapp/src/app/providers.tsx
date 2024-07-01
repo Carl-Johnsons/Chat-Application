@@ -6,6 +6,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import userManager from "./oidc-client";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,6 +41,18 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       <AxiosProvider>
         {isExcluded ? children : <ChatHubProvider>{children}</ChatHubProvider>}
         <ReactQueryDevtools />
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </AxiosProvider>
     </QueryClientProvider>
   );

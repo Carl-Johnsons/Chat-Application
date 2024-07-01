@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosProps, ConversationWithMembersId } from "@/models";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props extends AxiosProps {
   friendId: string;
@@ -48,9 +49,11 @@ const useAcceptFriendRequest = () => {
         queryKey: ["friendRequestList"],
         exact: true,
       });
+      toast.success("Chấp nhận lời mời kết bạn thành công");
     },
     onError: (err) => {
       console.error("Add friend failed: " + err.message);
+      toast.error("Chấp nhận lời mời kết bạn thất bại");
     },
   });
 };
