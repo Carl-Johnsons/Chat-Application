@@ -5,3 +5,4 @@ export * from "./useGetConversationUsers.query";
 export * from "./useGetGroupInvitationByGroupId.query";
 export * from "./useGetGroupInvitationByInviteId.query";
 export * from "./useJoinGroupConversation.mutation";
+export * from "./useUpdateGroupConversation.mutation";

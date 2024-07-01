@@ -1,3 +1,4 @@
+export * from "./AddGroupMemberModalContent";
 export * from "./CallingModalContent";
 export * from "./CreateGroupModalContent";
 export * from "./ListingGroupMemberModalContent";

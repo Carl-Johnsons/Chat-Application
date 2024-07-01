@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from "react";
 import { useGlobalState } from "@/hooks";
 import {
+  AddGroupMembersModalContent,
   CallingModalContent,
   CreateGroupModalContent,
   ListGroupMemberModalContent,
@@ -30,6 +31,7 @@ const ModalContentMapper = (): ModalContent[] => {
   const postInputRef = useRef<HTMLElement>();
   const reportPostRef = useRef<HTMLElement>();
   const callingRef = useRef<HTMLElement>();
+  const addGroupMemberRef = useRef<HTMLElement>();
 
   const memberIdRef = useRef<string>();
   const content = useMemo(() => {
@@ -40,9 +42,9 @@ const ModalContentMapper = (): ModalContent[] => {
     const handleClickSendFriendRequest = async () => {
       sendFriendRequestMutate({ receiverId: modalEntityId });
     };
-    const handleClickBlockUser = (userId:string) => {
-      blockUserMutate({userId})
-    }
+    const handleClickBlockUser = (userId: string) => {
+      blockUserMutate({ userId });
+    };
 
     switch (modalType) {
       case "Personal":
@@ -169,6 +171,13 @@ const ModalContentMapper = (): ModalContent[] => {
             modalContent: <CallingModalContent />,
             disableHeader: true,
             disableHideModal: true,
+          },
+        ];
+      case "AddGroupMember":
+        return [
+          {
+            ref: addGroupMemberRef,
+            modalContent: <AddGroupMembersModalContent />,
           },
         ];
       default:

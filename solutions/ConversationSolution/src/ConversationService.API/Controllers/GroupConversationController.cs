@@ -36,6 +36,19 @@ public partial class GroupConversationController : BaseApiController
         return StatusCode(StatusCodes.Status201Created);
     }
 
+    [HttpPut]
+    public async Task<IActionResult> UpdateGroupConversation([FromForm] UpdateGroupConversationDTO dto)
+    {
+        var result = await _sender.Send(
+                new UpdateGroupConversationCommand
+                {
+                    UpdateGroupConversationDTO = dto
+                });
+
+        result.ThrowIfFailure();
+        return StatusCode(StatusCodes.Status204NoContent);
+    }
+
     [HttpGet("invite")]
     public async Task<IActionResult> GetInviteUrlByGroupId([FromQuery] Guid id)
     {
