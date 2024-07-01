@@ -7,7 +7,7 @@ import {
   faCopy,
   faGear,
   faLink,
-  faShare,
+  faRefresh,
   faThumbTack,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
@@ -20,19 +20,21 @@ import images from "@/assets";
 import { useGlobalState } from "@/hooks";
 // model
 import {
+  useGenerateGroupInvitation,
   useGetConversation,
+  useGetGroupInvitationByGroupId,
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
 import { useGetUser } from "@/hooks/queries/user";
 import { GroupConversation } from "models/GroupConversation.model";
+import { useCallback } from "react";
+import { toast } from "react-toastify";
 
 const cx = classnames.bind(style);
 
 const AsideBody = () => {
   const [activeConversationId] = useGlobalState("activeConversationId");
-  const [conversationType] = useGlobalState("conversationType");
 
-  const isGroup = conversationType === "GROUP";
   const { data: conversation } = useGetConversation(
     {
       conversationId: activeConversationId,
@@ -41,6 +43,11 @@ const AsideBody = () => {
       enabled: !!activeConversationId,
     }
   );
+
+  const { mutate: generateGroupInvitationMutate } =
+    useGenerateGroupInvitation();
+
+  const isGroup = conversation?.type === "GROUP";
   const { data: conversationUsersData } = useGetMemberListByConversationId(
     { conversationId: activeConversationId, other: true },
     {
@@ -59,6 +66,46 @@ const AsideBody = () => {
     ? (conversation as GroupConversation)?.name
     : otherUserData?.name ?? "";
   const conversationUsers = isGroup ? conversationUsersData : undefined;
+
+  const { data: groupInvitationData } = useGetGroupInvitationByGroupId(
+    { groupId: conversation?.id },
+    {
+      enabled: isGroup,
+    }
+  );
+  const handleClickCopyBtn = useCallback(() => {
+    if (!isGroup) {
+      toast.error("Copy link nhóm thất bại");
+      return;
+    }
+    if (!groupInvitationData?.id) {
+      toast.error("Link nhóm không tìm thấy, hãy tạo link mới");
+      return;
+    }
+    if (groupInvitationData.isExpired) {
+      toast.error("Link nhóm đã hết hạn, hãy tạo link mới");
+      return;
+    }
+
+    const baseAddress =
+      process.env.NEXT_PUBLIC_CLIENT_BASE_URL ?? "http://localhost:3000";
+    navigator.clipboard.writeText(
+      `Link tham gia nhóm ${
+        (conversation as GroupConversation).name
+      }: ${baseAddress}/join/group-conversation/${groupInvitationData.id}`
+    );
+    toast.success("Copy link nhóm thành công");
+  }, [conversation, groupInvitationData]);
+
+  const handleClickRefreshGroupInvitation = useCallback(() => {
+    const id = conversation?.id;
+    if (!id) {
+      toast.error("Tạo mới link nhóm thất bại");
+      return;
+    }
+
+    generateGroupInvitationMutate({ groupId: id });
+  }, [conversation?.id]);
 
   return (
     <>
@@ -227,6 +274,7 @@ const AsideBody = () => {
                     "justify-content-center",
                     "align-items-center"
                   )}
+                  onClick={handleClickCopyBtn}
                 >
                   <FontAwesomeIcon icon={faCopy} />
                 </AppButton>
@@ -239,8 +287,9 @@ const AsideBody = () => {
                     "justify-content-center",
                     "align-items-center"
                   )}
+                  onClick={handleClickRefreshGroupInvitation}
                 >
-                  <FontAwesomeIcon icon={faShare} />
+                  <FontAwesomeIcon icon={faRefresh} />
                 </AppButton>
               </div>
             </div>

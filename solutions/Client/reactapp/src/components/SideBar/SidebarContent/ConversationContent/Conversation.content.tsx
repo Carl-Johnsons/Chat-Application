@@ -60,7 +60,7 @@ const ConversationContent = () => {
               return;
             }
             const lastMessage: Partial<Message> = lastMessageQueries[index]
-              .data ?? {
+              ?.data ?? {
               content: "This conversation is new! Say hi",
             };
 
@@ -85,7 +85,7 @@ const ConversationContent = () => {
               return;
             }
             const lastMessage: Partial<Message> = lastMessageQueries[index]
-              .data ?? {
+              ?.data ?? {
               content: "This conversation is new! Say hi",
             };
 

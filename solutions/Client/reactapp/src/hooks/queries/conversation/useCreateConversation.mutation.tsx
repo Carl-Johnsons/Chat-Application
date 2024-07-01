@@ -91,20 +91,25 @@ const useCreateGroupConversation = () => {
     unknown
   >({
     mutationFn: ({ conversationWithMembersId }) =>
-      createGroupConversation({
-        conversationWithMembersId,
-        axiosInstance: protectedAxiosInstance,
-      }),
+      toast.promise(
+        createGroupConversation({
+          conversationWithMembersId,
+          axiosInstance: protectedAxiosInstance,
+        }),
+        {
+          pending: "Đang tạo nhóm",
+          success: "Tạo nhóm thành công",
+          error: "Tạo nhóm thất bại",
+        }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["conversations"],
         exact: true,
       });
-      toast.success("Tạo nhóm thành công");
     },
     onError: (err) => {
       console.error(err.message);
-      toast.error("Tạo nhóm thất bại");
     },
   });
 };
