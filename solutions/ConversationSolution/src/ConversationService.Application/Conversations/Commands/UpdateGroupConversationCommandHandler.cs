@@ -17,12 +17,14 @@ public class UpdateGroupConversationCommandHandler : IRequestHandler<UpdateGroup
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IServiceBus _serviceBus;
+    private readonly ISignalRService _signalRService;
 
-    public UpdateGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
+    public UpdateGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus, ISignalRService signalRService)
     {
         _context = context;
         _unitOfWork = unitOfWork;
         _serviceBus = serviceBus;
+        _signalRService = signalRService;
     }
 
     public async Task<Result> Handle(UpdateGroupConversationCommand request, CancellationToken cancellationToken)
@@ -73,7 +75,14 @@ public class UpdateGroupConversationCommandHandler : IRequestHandler<UpdateGroup
 
         _context.GroupConversation.Update(group);
         await _unitOfWork.SaveChangeAsync(cancellationToken);
-
+        if (dto.MembersId != null)
+        {
+            await _signalRService.InvokeAction(SignalREvent.JOIN_CONVERSATION_ACTION, new JoinConversationDTO
+            {
+                ConversationId = dto.Id,
+                MemberIds = dto.MembersId
+            });
+        }
         return Result.Success();
     }
 }

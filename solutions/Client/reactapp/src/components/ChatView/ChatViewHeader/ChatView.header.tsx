@@ -21,6 +21,8 @@ import {
 } from "@/hooks/queries/conversation";
 import { useGetUser } from "@/hooks/queries/user";
 import UserStatus from "../UserStatus";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const cx = classNames.bind(style);
 
@@ -66,6 +68,16 @@ const ChatViewHeader = () => {
     conversationUsersData,
     handleShowModal,
   ]);
+
+  const handleClickAddGroupMember = useCallback(() => {
+    if (!isGroup) {
+      return;
+    }
+    handleShowModal({
+      modalType: "AddGroupMember",
+      entityId: activeConversationId,
+    });
+  }, [activeConversationId]);
 
   const { data: conversationData } = useGetConversation(
     { conversationId: activeConversationId },
@@ -124,7 +136,21 @@ const ChatViewHeader = () => {
         </div>
         <UserStatus type={conversationType} />
       </div>
-      <div className={cx("icon-container", "ps", "d-flex")}>
+      <div className={cx("icon-container", "ps", "d-flex", "gap-2")}>
+        {isGroup && (
+          <AppButton
+            variant="app-btn-tertiary-transparent"
+            className={cx(
+              "icon-btn",
+              "d-flex",
+              "justify-content-center",
+              "align-items-center"
+            )}
+            onClick={handleClickAddGroupMember}
+          >
+            <FontAwesomeIcon icon={faUserPlus} />
+          </AppButton>
+        )}
         <AppButton
           variant="app-btn-tertiary-transparent"
           className={cx(
