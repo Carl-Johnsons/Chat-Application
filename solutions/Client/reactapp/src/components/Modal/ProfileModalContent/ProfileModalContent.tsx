@@ -63,6 +63,7 @@ const ProfileModalContent = (variant: Variants) => {
   const { type } = variant;
   //Base variable
   const modalEntityId = variant.modalEntityId;
+
   //Personal
   let onClickUpdate: (() => void) | undefined;
   let onClickEditAvatar: (() => void) | undefined;
