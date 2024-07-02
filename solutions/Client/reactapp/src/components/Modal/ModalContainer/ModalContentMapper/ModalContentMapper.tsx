@@ -41,7 +41,7 @@ const ModalContentMapper = (): ModalContent[] => {
       sendFriendRequestMutate({ receiverId: modalEntityId });
     };
     const handleClickBlockUser = (userId:string) => {
-      blockUserMutate({userId})
+      blockUserMutate({userId});
     }
 
     switch (modalType) {

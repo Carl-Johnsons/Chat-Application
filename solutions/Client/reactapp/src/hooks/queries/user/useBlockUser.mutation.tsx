@@ -44,7 +44,7 @@ const useBlockUser = () => {
         exact: true,
       });
       queryClient.invalidateQueries({
-        queryKey: ["userBlockList"],
+        queryKey: ["blockList"],
         exact: true,
       });
     },

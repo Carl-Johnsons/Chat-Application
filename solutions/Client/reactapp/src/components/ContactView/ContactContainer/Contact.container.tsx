@@ -15,6 +15,8 @@ import {
   useDeleteFriendRequest,
   useGetFriendList,
   useGetFriendRequestList,
+  useGetBlockList,
+  useUnblockUser,
 } from "@/hooks/queries/user";
 import { ModalType } from "models/ModalType.model";
 import { useGetConversationList } from "@/hooks/queries/conversation";
@@ -30,12 +32,14 @@ const ContactContainer = ({ className }: Props) => {
   const { data: friendList } = useGetFriendList();
   const { data: conversationResponse } = useGetConversationList();
   const { data: friendRequestList } = useGetFriendRequestList();
+  const { data: userBlockList} = useGetBlockList();
 
   // hooks
   const { handleShowModal } = useModal();
   const { mutate: acceptFriendRequestMutate } = useAcceptFriendRequest();
   const { mutate: deleteFriendMutate } = useDeleteFriend();
   const { mutate: deleteFriendRequestMutate } = useDeleteFriendRequest();
+  const { mutate: unblockUsertMutate } = useUnblockUser();
 
   const handleClickBtnDetail = (entityId: string, type: ModalType) => {
     handleShowModal({ entityId, modalType: type });
@@ -43,27 +47,16 @@ const ContactContainer = ({ className }: Props) => {
   const handleClickAcpFriend = async (frId: string) => {
     acceptFriendRequestMutate({ frId });
   };
-
   const handleClickDelFriend = async (friendId: string) => {
     deleteFriendMutate({ friendId });
   };
   const handleClickDelFriendRequest = async (frId: string) => {
     deleteFriendRequestMutate({ frId });
   };
-  const userBlockList = [
-    {
-      avt: "avt1",
-      userName: "block1",
-    },
-    {
-      avt: "avt2",
-      userName: "block2",
-    },
-    {
-      avt: "avt3",
-      userName: "block3",
-    },
-  ];
+  const handleClickUnblockUser = async (userId: string) => {
+    unblockUsertMutate({ userId });
+  };
+
   return (
     <div className={cx(className)}>
       <div
@@ -125,23 +118,22 @@ const ContactContainer = ({ className }: Props) => {
             );
           })}
         {activeContactType === MenuContactIndex.USER_BLACK_LIST &&
-          userBlockList.map((a) => {
-            return (
-              <>
-                <>
-                  {a.avt && a.userName && (
+          userBlockList &&
+          userBlockList.map((ub) => {
+            return (                  
+              ub.id && (
                     <ContactRow
-                      key={a.avt}
                       type="UserBlock"
-                      entityId={a.userName}
+                      key={ub.id}                      
+                      entityId={ub.id}
                       onClickBtnDetail={() =>
-                        handleClickBtnDetail(a.avt, "Stranger")
+                        handleClickBtnDetail(ub.id, "Stranger")
+                      }                      
+                      onClickBtnUnblock={() => 
+                        handleClickUnblockUser(ub.id)
                       }
-                      onClickBtnUnblock={() => handleClickAcpFriend(a.avt)}
-                    />
-                  )}
-                </>
-              </>
+                    />   
+              )               
             );
           })}
       </div>
