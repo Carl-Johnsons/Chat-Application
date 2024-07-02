@@ -10,11 +10,12 @@ import {
   PostButtonContainer,
   UserReportContainer,
 } from "../";
-import { AppDivider, AppTag } from "@/components/shared";
+import { AppDivider, AppImageGallery, AppTag } from "@/components/shared";
 import { useGetUser } from "@/hooks/queries/user";
 import { BUTTON, FILE_TYPE } from "data/constants";
 import { CloudinaryImage } from "@/models";
 import { useGetPostByd } from "@/hooks/queries/post";
+import { useCallback, useState } from "react";
 
 const cx = classNames.bind(style);
 
@@ -39,6 +40,9 @@ const AppPost = ({
   disableComment = false,
   type = "normal",
 }: Variant) => {
+  const [showImageGallery, setShowImageGallery] = useState<boolean>(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+
   const isReport = type === "report";
   const isNormal = type === "normal";
 
@@ -58,6 +62,23 @@ const AppPost = ({
   const files: CloudinaryImage[] = JSON.parse(
     postData?.attachedFilesURL ?? "[]"
   );
+
+  const imagesGallery: {
+    original: string;
+    thumbnail: string;
+  }[] = [];
+
+  for (const file of files) {
+    imagesGallery.push({
+      original: file.url,
+      thumbnail: file.url,
+    });
+  }
+
+  const handleClickImage = useCallback((index: number) => {
+    setShowImageGallery(true);
+    setCurrentImageIndex(index);
+  }, []);
 
   return (
     <div
@@ -96,16 +117,23 @@ const AppPost = ({
           "flex-wrap"
         )}
       >
-        {files.map((f) => {
+        {files.map((f, index) => {
           const { id, url, name } = f;
           if (f.fileType === FILE_TYPE.IMAGE) {
             return (
               <Avatar
                 variant="avatar-img-240px"
-                avatarClassName={cx("post-img", "rounded-2","object-fit-contain")}
+                avatarClassName={cx(
+                  "post-img",
+                  "rounded-2",
+                  "object-fit-cover"
+                )}
                 key={id}
                 src={url}
                 alt={name}
+                onClick={() => {
+                  handleClickImage(index);
+                }}
               />
             );
           }
@@ -137,6 +165,12 @@ const AppPost = ({
       <AppDivider />
       {disableComment && <CommentContainer postId={postId} />}
       {isReport && <UserReportContainer postId={postId} />}
+      <AppImageGallery
+        show={showImageGallery}
+        setShow={setShowImageGallery}
+        images={imagesGallery}
+        currentImageIndex={currentImageIndex}
+      />
     </div>
   );
 };
