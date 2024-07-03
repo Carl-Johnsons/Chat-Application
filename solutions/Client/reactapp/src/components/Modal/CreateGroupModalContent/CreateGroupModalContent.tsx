@@ -12,6 +12,7 @@ import classnames from "classnames/bind";
 import { useGetFriendList } from "@/hooks/queries/user";
 import { useCreateGroupConversation } from "@/hooks/queries/conversation";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
+import { toast } from "react-toastify";
 
 const cx = classnames.bind(style);
 
@@ -92,9 +93,15 @@ const CreateGroupModalContent = () => {
   };
   const handleClickCreateGroup = async () => {
     // A group is created if the member size is greater than 2
-    if (selectedUser.length < 2 || form.groupName.length <= 2) {
+    if (selectedUser.length < 2) {
+      toast.error("Nhóm phải có từ 3 thành viên trở lên");
       return;
     }
+    if (form.groupName.length <= 2) {
+      toast.error("Tên nhóm phải có độ dài lớn hơn 2");
+      return;
+    }
+
     const members = selectedUser.map((f) => f.id);
 
     const model: GroupConversationWithMembersIdDTO = {

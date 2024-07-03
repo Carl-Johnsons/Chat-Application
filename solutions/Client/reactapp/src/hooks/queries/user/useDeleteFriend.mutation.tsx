@@ -1,6 +1,7 @@
 import { useAxios } from "@/hooks";
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 interface Props extends AxiosProps {
   friendId: string;
@@ -33,15 +34,15 @@ const useDeleteFriend = () => {
     mutationFn: ({ friendId }) =>
       deleteFriend({ friendId, axiosInstance: protectedAxiosInstance }),
     onSuccess: () => {
-      console.log("delete friend successfully");
-
       queryClient.invalidateQueries({
         queryKey: ["friendList"],
         exact: true,
       });
+      toast.success("Xóa bạn thành công");
     },
     onError: (err) => {
       console.error("Failed to delete friend! " + err.message);
+      toast.success("Xóa bạn thất bại");
     },
   });
 };

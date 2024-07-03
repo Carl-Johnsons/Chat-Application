@@ -13,10 +13,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbContext Instance => this;
     public virtual DbSet<Conversation> Conversations { get; set; }
     public virtual DbSet<GroupConversation> GroupConversation { get; set; }
+    public virtual DbSet<GroupConversationInvite> GroupConversationInvites { get; set; }
     public virtual DbSet<ConversationUser> ConversationUsers { get; set; }
     public virtual DbSet<Message> Messages { get; set; }
-
-
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -45,6 +44,25 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                                  v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
         });
+
+        modelBuilder.Entity<GroupConversationInvite>(entity =>
+        {
+            entity.HasOne(e => e.GroupConversation)
+                  .WithMany()
+                  .HasForeignKey(e => e.GroupConversationId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.ExpiresAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        });
+
         modelBuilder.Entity<ConversationUser>(entity =>
         {
             entity.HasOne(cu => cu.Conversation)

@@ -39,6 +39,10 @@ const useMessageSubscription = () => {
           queryKey: ["message", "conversation", message.conversationId, "last"],
           exact: true,
         });
+        queryClient.invalidateQueries({
+          queryKey: ["conversations"],
+          exact: true,
+        });
       });
     },
     [queryClient]

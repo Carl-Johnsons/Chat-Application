@@ -2,12 +2,12 @@ import classNames from "classnames/bind";
 import style from "./PostView.container.module.scss";
 
 import { AppPost } from "..";
-import { useGetCurrentUser } from "hooks/queries/user/useGetCurrentUser.query";
 import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
 import { useModal } from "hooks/useModal";
 import { useCallback, useEffect, useRef } from "react";
-import { useGetInfinitePost } from "hooks/queries/post/useGetInfinitePosts.query";
+import { useGetInfinitePost } from "@/hooks/queries/post";
+import { useGetCurrentUser } from "@/hooks/queries/user";
 
 const cx = classNames.bind(style);
 

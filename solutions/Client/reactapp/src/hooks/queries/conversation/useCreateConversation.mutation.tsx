@@ -1,36 +1,43 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  Conversation,
   ConversationWithMembersId,
   GroupConversationWithMembersId,
 } from "@/models";
 import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
 import { AxiosProps } from "models/AxiosProps.model";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props {
+  otherUserId: string;
+}
+interface FetchProps extends Props, AxiosProps {}
+
+interface GroupProps {
   conversationWithMembersId:
     | ConversationWithMembersId
     | GroupConversationWithMembersIdDTO
     | undefined;
 }
 
-interface FetchProps extends Props, AxiosProps {}
+interface FetchGroupProps extends GroupProps, AxiosProps {}
 
 const createConversation = async ({
-  conversationWithMembersId,
+  otherUserId,
   axiosInstance,
-}: FetchProps): Promise<ConversationWithMembersId | null> => {
-  if (!conversationWithMembersId) {
-    return null;
-  }
-  const url = `/api/Conversation`;
-  const response = await axiosInstance.post(url, conversationWithMembersId);
+}: FetchProps): Promise<Conversation | null> => {
+  const url = `/api/conversation`;
+  const data = {
+    otherUserId,
+  };
+  const response = await axiosInstance.post(url, data);
   return response.data;
 };
 const createGroupConversation = async ({
   conversationWithMembersId,
   axiosInstance,
-}: FetchProps): Promise<GroupConversationWithMembersId | null> => {
+}: FetchGroupProps): Promise<GroupConversationWithMembersId | null> => {
   if (!conversationWithMembersId) {
     return null;
   }
@@ -51,7 +58,7 @@ const createGroupConversation = async ({
       }
     }
   }
-  
+
   const response = await axiosInstance.post(url, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -63,15 +70,15 @@ const useCreateConversation = () => {
   const queryClient = useQueryClient();
   const { protectedAxiosInstance } = useAxios();
 
-  return useMutation<ConversationWithMembersId | null, Error, Props, unknown>({
-    mutationFn: ({ conversationWithMembersId }) =>
+  return useMutation<Conversation | null, Error, Props, unknown>({
+    mutationFn: async ({ otherUserId }) =>
       createConversation({
-        conversationWithMembersId,
+        otherUserId,
         axiosInstance: protectedAxiosInstance,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
     },
@@ -86,17 +93,24 @@ const useCreateGroupConversation = () => {
   return useMutation<
     GroupConversationWithMembersId | null,
     Error,
-    Props,
+    GroupProps,
     unknown
   >({
     mutationFn: ({ conversationWithMembersId }) =>
-      createGroupConversation({
-        conversationWithMembersId,
-        axiosInstance: protectedAxiosInstance,
-      }),
+      toast.promise(
+        createGroupConversation({
+          conversationWithMembersId,
+          axiosInstance: protectedAxiosInstance,
+        }),
+        {
+          pending: "Đang tạo nhóm",
+          success: "Tạo nhóm thành công",
+          error: "Tạo nhóm thất bại",
+        }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
     },

@@ -8,6 +8,7 @@ type VariantType<T extends string> = `${T}` | `${T}-transparent`;
 type Primary = VariantType<"app-btn-primary">;
 type Secondary = VariantType<"app-btn-secondary">;
 type Tertiary = VariantType<"app-btn-tertiary">;
+type Success = VariantType<"app-btn-success">;
 type Danger = VariantType<"app-btn-danger">;
 type PhoneCall = VariantType<"app-btn-phone-call">;
 type PhoneCallDecline = VariantType<"app-btn-phone-call-decline">;
@@ -17,6 +18,7 @@ interface Props extends ButtonProps {
     | Secondary
     | Tertiary
     | Danger
+    | Success
     | PhoneCall
     | PhoneCallDecline;
   type?: "button" | "reset" | "submit";

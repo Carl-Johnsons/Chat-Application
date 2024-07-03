@@ -1,6 +1,6 @@
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
+import Image, { ImageProps } from "next/image";
 import AppButton from "../AppButton";
 import style from "./Avatar.module.scss";
 import classNames from "classnames/bind";
@@ -25,7 +25,7 @@ type VariantType<T extends string> = `avatar-img-${T}px`;
 
 type Default = "avatar-img";
 
-interface Props {
+interface Props extends ImageProps {
   variant?: Default | VariantType<AppImageVariants>;
   src: string;
   alt: string;
@@ -43,6 +43,7 @@ const Avatar = ({
   avatarClassName = "",
   editable,
   onClickEdit,
+  ...props
 }: Props) => {
   const isDefault = variant === "avatar-img";
   const size = isDefault
@@ -58,7 +59,6 @@ const Avatar = ({
         alt={alt}
         src={src}
         className={cx(
-          "object-fit-contain",
           "overflow-hidden",
           avatarClassName + `${!isImageLoaded ? " opacity-0" : " opacity-100"}`
         )}
@@ -67,6 +67,7 @@ const Avatar = ({
         loading="lazy"
         draggable="false"
         onLoad={() => setIsImageLoaded(true)}
+        {...props}
       />
       {!isImageLoaded && (
         <Box style={{ width: size, height: size, position: "absolute" }}>

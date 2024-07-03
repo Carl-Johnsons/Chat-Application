@@ -9,14 +9,19 @@ import styles from "./ListingGroupMember.modalContent.module.scss";
 import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
 import { useGetMemberListByConversationId } from "@/hooks/queries/conversation";
+import { useCallback } from "react";
 
 interface Props {
   onClickMember?: (memberId: string) => void;
+  onClickAddGroupMember?: () => void;
 }
 
 const cx = classNames.bind(styles);
 
-const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
+const ListGroupMemberModalContent = ({
+  onClickMember = () => {},
+  onClickAddGroupMember = () => {},
+}: Props) => {
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
   const { data: conversationData } = useGetMemberListByConversationId(
@@ -25,14 +30,21 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
       enabled: !!modalEntityId,
     }
   );
-
-  const userIdList =
-    modalType === "Group"
-      ? conversationData?.flatMap((cu) => cu.userId) ?? []
-      : [];
+  const isGroup = modalType === "Group";
+  const userIdList = isGroup
+    ? conversationData?.flatMap((cu) => cu.userId) ?? []
+    : [];
   const userListQuery = useGetUsers(userIdList, {
     enabled: userIdList?.length > 0,
   });
+
+  const handleClickAddGroupMemberBtn = useCallback(() => {
+    if (!isGroup) {
+      return;
+    }
+    onClickAddGroupMember();
+  }, [modalEntityId]);
+
   return (
     <div className={cx("list-group-member-content", "m-0", "ps-3", "pe-3")}>
       <div className={cx("mt-3", "mb-3")}>
@@ -44,43 +56,42 @@ const ListGroupMemberModalContent = ({ onClickMember = () => {} }: Props) => {
             "align-items-center",
             "w-100"
           )}
+          onClick={handleClickAddGroupMemberBtn}
         >
           <FontAwesomeIcon icon={faUserPlus} className={cx("me-2")} />
           <div className={cx("fw-medium")}>Thêm thành viên</div>
         </AppButton>
       </div>
       <div className={cx("fw-medium", "mb-1")}>
-        Danh sách thành viên: &#40;{userIdList?.length}&#41;
+        Danh sách thành viên: &#40;{userIdList?.length + 1}&#41;
       </div>
       <div>
         {userListQuery.map((query) => {
           const user = query.data;
-
-          return (
-            <>
-              {user && (
-                <AppButton
-                  variant="app-btn-primary-transparent"
-                  className={cx(
-                    "d-flex",
-                    "align-items-center",
-                    "pt-2",
-                    "pb-2",
-                    "w-100"
-                  )}
-                  onClick={() => onClickMember(user.id)}
-                >
-                  <Avatar
-                    src={user.avatarUrl}
-                    alt="user avatar"
-                    className={cx("me-2")}
-                    avatarClassName={cx("rounded-circle")}
-                  />
-                  <div>{user.name}</div>
-                </AppButton>
-              )}
-            </>
-          );
+          if (user) {
+            return (
+              <AppButton
+                key={user.id}
+                variant="app-btn-primary-transparent"
+                className={cx(
+                  "d-flex",
+                  "align-items-center",
+                  "pt-2",
+                  "pb-2",
+                  "w-100"
+                )}
+                onClick={() => onClickMember(user.id)}
+              >
+                <Avatar
+                  src={user.avatarUrl}
+                  alt="user avatar"
+                  className={cx("me-2")}
+                  avatarClassName={cx("rounded-circle")}
+                />
+                <div>{user.name}</div>
+              </AppButton>
+            );
+          }
         })}
       </div>
     </div>

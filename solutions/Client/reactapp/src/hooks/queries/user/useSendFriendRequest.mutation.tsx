@@ -1,6 +1,7 @@
 import { AxiosProps, FriendRequest } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signalRSendFriendRequest, useAxios, useSignalREvents } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props extends AxiosProps {
   receiverId: string;
@@ -41,9 +42,11 @@ const useSendFriendRequest = () => {
         return;
       }
       invokeAction(signalRSendFriendRequest(fr));
+      toast.success("Gửi lời mời kết bạn thành công");
     },
     onError: (err) => {
       console.error("Failed to send friend request" + err);
+      toast.error("Gửi lời mời kết bạn thất bại");
     },
   });
 };

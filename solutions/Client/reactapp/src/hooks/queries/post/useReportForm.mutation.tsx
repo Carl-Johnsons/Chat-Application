@@ -1,6 +1,7 @@
 import { AxiosProps } from "@/models";
 import { useMutation } from "@tanstack/react-query";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props {
   postId: string;
@@ -35,9 +36,12 @@ const useReportPost = () => {
     onMutate: (context: Props) => {
       return context;
     },
-    onSuccess: (_data, _variables, _context) => {},
+    onSuccess: (_data, _variables, _context) => {
+      toast.success("Báo cáo bài đăng thành công");
+    },
     onError: (err) => {
       console.error("Failed to report post: " + err.message);
+      toast.error("Báo cáo bài đăng thất bại.");
     },
   });
   return mutation;
