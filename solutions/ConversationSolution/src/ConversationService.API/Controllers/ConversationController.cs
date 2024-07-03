@@ -53,6 +53,22 @@ public partial class ConversationController : BaseApiController
 
         return Ok(result.Value);
     }
+    [HttpGet("user/id")]
+    public async Task<IActionResult> GetConversationBetweenUsers([FromQuery] GetConversationBetweenUsersDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var query = new GetConversationBetweenUsersQuery
+        {
+            UserId = Guid.Parse(subjectId!),
+            OtherUserId = dto.OtherUserId
+        };
+        var result = await _sender.Send(query);
+        result.ThrowIfFailure();
+
+        return Ok(result.Value);
+    }
     [HttpGet("member")]
     public async Task<IActionResult> GetMemberListByConversationId([FromQuery] GetMemberListByConversationIdDTO getMemberListByConversationIdDTO)
     {
@@ -70,7 +86,23 @@ public partial class ConversationController : BaseApiController
         return Ok(result.Value);
     }
 
-    [HttpDelete()]
+    [HttpPost]
+    public async Task<IActionResult> CreateConversation([FromBody] CreateConversationDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var command = new CreateConversationCommand
+        {
+            UserId = Guid.Parse(subjectId!),
+            OtherUserId = dto.OtherUserId
+        };
+        var result = await _sender.Send(command);
+        result.ThrowIfFailure();
+        return Ok(result.Value);
+    }
+
+    [HttpDelete]
     public async Task<IActionResult> Delete([FromBody] DeleteConversationDTO deleteConversationDTO)
     {
         var command = new DeleteConversationCommand

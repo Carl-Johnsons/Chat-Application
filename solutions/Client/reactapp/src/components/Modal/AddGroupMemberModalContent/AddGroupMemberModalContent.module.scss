@@ -1,0 +1,89 @@
+$user-selection-container-width: 520px;
+$search-result-container-height: 376px;
+
+/* Hide the default checkbox */
+.custom-input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Style the checked state and add the check symbol */
+.custom-input[type="checkbox"]:checked {
+    background-color: var(--blue);
+    border-color: var(--blue);
+}
+.custom-input[type="checkbox"]:disabled {
+    background-color: var(--gray);
+    border-color: var(--gray);
+}
+
+.custom-input[type="checkbox"]:checked::before {
+    content: "\2713"; /* Unicode check symbol */
+    color: #fff; /* Color of the check symbol */
+    font-size: 8px; /* Adjust the size of the check symbol */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial, sans-serif;
+}
+
+//Hide the file input
+#fileInput {
+    visibility: hidden;
+    top: 0;
+    position: absolute;
+    left: -5000px;
+}
+
+.create-group-modal-content {
+    width: 520px;
+}
+
+.avatar-btn {
+    width: 50px;
+    height: 50px;
+}
+.input-group-name {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid var(--border-color);
+    &:focus {
+        border-bottom: 1px solid var(--border-color-focus);
+    }
+}
+.search-container {
+    border: 1px solid var(--border-color);
+    &:focus-within {
+        border: 1px solid var(--border-color-focus);
+    }
+    .input-search {
+        outline: none;
+    }
+}
+.user-selection-container {
+    width: $user-selection-container-width;
+    .search-result-container {
+        height: $search-result-container-height;
+    }
+    .selected-user-container {
+        width: 184px;
+        .selected-user {
+            background-color: var(--light-blue);
+            .user-name-container {
+                height: 20px;
+                .user-name {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}

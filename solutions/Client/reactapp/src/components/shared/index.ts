@@ -1,5 +1,6 @@
 export * from "./AppButton";
 export * from "./AppDivider";
+export * from "./AppImageGallery";
 export * from "./AppInput/TagInput";
 export * from "./AppReportReason";
 export * from "./AppTag";

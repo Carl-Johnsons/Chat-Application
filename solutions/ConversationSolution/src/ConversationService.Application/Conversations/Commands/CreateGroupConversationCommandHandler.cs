@@ -18,12 +18,14 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IServiceBus _serviceBus;
+    private readonly ISignalRService _signalRService;
 
-    public CreateGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
+    public CreateGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus, ISignalRService signalRService)
     {
         _context = context;
         _unitOfWork = unitOfWork;
         _serviceBus = serviceBus;
+        _signalRService = signalRService;
     }
 
     public async Task<Result> Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
@@ -87,7 +89,11 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
             });
         }
         await _unitOfWork.SaveChangeAsync(cancellationToken);
-
+        await _signalRService.InvokeAction(SignalREvent.JOIN_CONVERSATION_ACTION, new JoinConversationDTO
+        {
+            ConversationId = groupConversation.Id,
+            MemberIds = [request.CurrentUserID, .. membersId]
+        });
         return Result.Success();
     }
 }

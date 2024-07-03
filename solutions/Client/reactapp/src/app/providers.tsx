@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import userManager from "./oidc-client";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

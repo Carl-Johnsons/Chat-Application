@@ -10,6 +10,7 @@ import {
   faRefresh,
   faThumbTack,
   faUserGroup,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 // component
 import AppButton from "@/components/shared/AppButton";
@@ -17,7 +18,7 @@ import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
 
 //hook
-import { useGlobalState } from "@/hooks";
+import { useGlobalState, useModal } from "@/hooks";
 // model
 import {
   useGenerateGroupInvitation,
@@ -34,7 +35,7 @@ const cx = classnames.bind(style);
 
 const AsideBody = () => {
   const [activeConversationId] = useGlobalState("activeConversationId");
-
+  const { handleShowModal } = useModal();
   const { data: conversation } = useGetConversation(
     {
       conversationId: activeConversationId,
@@ -44,20 +45,30 @@ const AsideBody = () => {
     }
   );
 
-  const { mutate: generateGroupInvitationMutate } =
-    useGenerateGroupInvitation();
-
-  const isGroup = conversation?.type === "GROUP";
   const { data: conversationUsersData } = useGetMemberListByConversationId(
     { conversationId: activeConversationId, other: true },
     {
       enabled: !!activeConversationId,
     }
   );
+
+  const { mutate: generateGroupInvitationMutate } =
+    useGenerateGroupInvitation();
+
+  const isGroup = conversation?.type === "GROUP";
   const otherUserId = conversationUsersData?.[0].userId;
+
   const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });
+  const { data: groupInvitationData } = useGetGroupInvitationByGroupId(
+    { groupId: conversation?.id },
+    {
+      enabled: isGroup,
+    }
+  );
+
+  // Inferred data
   const avatar =
     (isGroup
       ? (conversation as GroupConversation)?.imageURL
@@ -67,12 +78,6 @@ const AsideBody = () => {
     : otherUserData?.name ?? "";
   const conversationUsers = isGroup ? conversationUsersData : undefined;
 
-  const { data: groupInvitationData } = useGetGroupInvitationByGroupId(
-    { groupId: conversation?.id },
-    {
-      enabled: isGroup,
-    }
-  );
   const handleClickCopyBtn = useCallback(() => {
     if (!isGroup) {
       toast.error("Copy link nhóm thất bại");
@@ -105,6 +110,17 @@ const AsideBody = () => {
     }
 
     generateGroupInvitationMutate({ groupId: id });
+  }, [conversation?.id]);
+
+  const handleClickAddGroupMemberBtn = useCallback(() => {
+    if (!conversation?.id) {
+      toast.error("Thất bại, hãy thử lại");
+    }
+
+    handleShowModal({
+      modalType: "AddGroupMember",
+      entityId: conversation?.id,
+    });
   }, [conversation?.id]);
 
   return (
@@ -197,9 +213,10 @@ const AsideBody = () => {
                 "justify-content-center",
                 "align-items-center"
               )}
+              onClick={handleClickAddGroupMemberBtn}
             >
               {isGroup ? (
-                <FontAwesomeIcon icon={faUserGroup} />
+                <FontAwesomeIcon icon={faUserPlus} />
               ) : (
                 <FontAwesomeIcon icon={faUserGroup} />
               )}
