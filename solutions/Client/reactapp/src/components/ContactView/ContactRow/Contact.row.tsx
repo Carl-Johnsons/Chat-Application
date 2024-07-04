@@ -47,7 +47,7 @@ type GroupVariant = BaseVariant & {
 type UserBlockVariant = BaseVariant & {
   type: "UserBlock";
   onClickBtnDetail?: (userId: string) => void;
-  onClickBtnUnblock?: (userId: string) => void;
+  onClickBtnUnblock?: (unblockUserId: string) => void;
 };
 
 type FriendRequestVariant = BaseVariant & {

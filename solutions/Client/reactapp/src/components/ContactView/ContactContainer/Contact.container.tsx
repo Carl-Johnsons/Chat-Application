@@ -53,8 +53,8 @@ const ContactContainer = ({ className }: Props) => {
   const handleClickDelFriendRequest = async (frId: string) => {
     deleteFriendRequestMutate({ frId });
   };
-  const handleClickUnblockUser = async (userId: string) => {
-    unblockUsertMutate({ userId });
+  const handleClickUnblockUser = async (unblockUserId: string) => {
+    unblockUsertMutate({ unblockUserId });
   };
 
   return (
@@ -82,7 +82,7 @@ const ContactContainer = ({ className }: Props) => {
             );
           })}
         {activeContactType === MenuContactIndex.GROUP_LIST &&
-          conversationResponse?.groupConversations &&
+          conversationResponse?.groupConversations   &&
           conversationResponse?.groupConversations.map((gc) => {
             return (
               <ContactRow

@@ -3,17 +3,17 @@ import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Props extends AxiosProps {
-  userId: string;
+  unblockUserId: string;
 }
 
 export const unblockUser = async ({
-    userId,
+  unblockUserId,
   axiosInstance,
 }: Props): Promise<boolean | null> => {
   const url = "http://localhost:5001/api/users/unblock";
   const response = await axiosInstance.delete(url, {
     data: {
-        userId,
+      unblockUserId,
     },
   });
   return response.status === 204;
@@ -26,12 +26,12 @@ const useUnblockUser = () => {
     boolean | null,
     Error,
     {
-      userId: string;
+      unblockUserId: string;
     },
     unknown
   >({
-    mutationFn: ({ userId }) =>
-      unblockUser({ userId, axiosInstance: protectedAxiosInstance }),
+    mutationFn: ({ unblockUserId }) =>
+      unblockUser({ unblockUserId, axiosInstance: protectedAxiosInstance }),
     onSuccess: () => {
       console.log("unblock user successfully");
 

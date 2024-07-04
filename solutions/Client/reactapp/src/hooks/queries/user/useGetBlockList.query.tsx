@@ -13,7 +13,6 @@ const getBlockUser = async ({
   const url = "http://localhost:5001/api/users/block";
   const response = await axiosInstance.get(url);  
   const users: User[] = response.data;
-  console.log(users);
   return users;  
 };
 
