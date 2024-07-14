@@ -1,4 +1,4 @@
-@startuml blockUser
+@startuml
 hide circle
 skinparam classAttributeIconSize 0
 class UsersController {
@@ -44,11 +44,11 @@ class IdentityUser {
     + IdentityUser(string userName) 
 }
 
-UsersController -- ApplicationDbContext
-UsersController -- BlockUserDTO
-ApplicationDbContext --* ApplicationUser
-UsersController --o UserBlock
-ApplicationDbContext --* UserBlock
-ApplicationDbContext --* Friend
+UsersController "1" o--"1" ApplicationDbContext
+UsersController "1" -- "1" BlockUserDTO
+ApplicationDbContext "1" o--"1..*" ApplicationUser
+UsersController "1" o--"1" UserBlock
+ApplicationDbContext "1" o--"1..*" UserBlock
+ApplicationDbContext "1" o--"1*" Friend
 ApplicationUser --|> IdentityUser
 @enduml
