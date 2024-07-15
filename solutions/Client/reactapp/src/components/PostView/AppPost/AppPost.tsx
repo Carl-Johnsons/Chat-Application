@@ -10,10 +10,16 @@ import {
   PostButtonContainer,
   UserReportContainer,
 } from "../";
-import { AppDivider, AppTag } from "@/components/shared";
-import { useGetUser } from "@/hooks/queries/user";
-import { useGetPostByd } from "hooks/queries/post/useGetPostById.query";
-import { BUTTON } from "data/constants";
+import { AppDivider, AppImageGallery, AppTag } from "@/components/shared";
+import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import { BUTTON, FILE_TYPE } from "data/constants";
+import { CloudinaryImage } from "@/models";
+import { useGetPostByd } from "@/hooks/queries/post";
+import { useCallback, useState } from "react";
+import AppButton from "@/components/shared/AppButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { useModal } from "hooks/useModal";
 
 const cx = classNames.bind(style);
 
@@ -38,11 +44,15 @@ const AppPost = ({
   disableComment = false,
   type = "normal",
 }: Variant) => {
+  const [showImageGallery, setShowImageGallery] = useState<boolean>(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+
   const isReport = type === "report";
   const isNormal = type === "normal";
 
+  const { data: currentUserData } = useGetCurrentUser();
   const { data: postData } = useGetPostByd({ postId }, { enabled: !!postId });
-
+  const { handleShowModal } = useModal();
   const { data: authorData } = useGetUser(postData?.userId ?? "", {
     enabled: !!postData?.userId,
   });
@@ -54,6 +64,30 @@ const AppPost = ({
 
   const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
   const authorName = authorData?.name ?? "Loading...";
+  const files: CloudinaryImage[] = JSON.parse(
+    postData?.attachedFilesURL ?? "[]"
+  );
+
+  const imagesGallery: {
+    original: string;
+    thumbnail: string;
+  }[] = [];
+
+  for (const file of files) {
+    imagesGallery.push({
+      original: file.url,
+      thumbnail: file.url,
+    });
+  }
+
+  const handleClickImage = useCallback((index: number) => {
+    setShowImageGallery(true);
+    setCurrentImageIndex(index);
+  }, []);
+
+  const handleClickUpdatePost = useCallback(() => {
+    handleShowModal({ entityId: postId, modalType: "PostInput" });
+  }, []);
 
   return (
     <div
@@ -78,15 +112,59 @@ const AppPost = ({
         <div className={cx("author-name", "fw-medium", "me-auto")}>
           {authorName}
         </div>
-        <div className={cx("time")}>{formattedTime}</div>
+        <div className={cx("time", "me-2")}>{formattedTime}</div>
+        {authorData?.id === currentUserData?.id && (
+          <div>
+            <AppButton
+              variant="app-btn-primary-transparent"
+              className={cx("update-post-btn", "rounded-circle")}
+              onClick={handleClickUpdatePost}
+            >
+              <FontAwesomeIcon icon={faPen} />
+            </AppButton>
+          </div>
+        )}
       </div>
       <div className={cx("ps-2", "pe-2", "text-break")}>
         {htmlParser(postData?.content ?? "")}
       </div>
+      <div
+        className={cx(
+          "file-container",
+          "d-flex",
+          "gap-2",
+          "justify-content-center",
+          "flex-wrap"
+        )}
+      >
+        {files.map((f, index) => {
+          const { id, url, name } = f;
+          if (f.fileType === FILE_TYPE.IMAGE) {
+            return (
+              <Avatar
+                variant="avatar-img-240px"
+                avatarClassName={cx(
+                  "post-img",
+                  "rounded-2",
+                  "object-fit-cover"
+                )}
+                key={id}
+                src={url}
+                alt={name}
+                onClick={() => {
+                  handleClickImage(index);
+                }}
+              />
+            );
+          }
+        })}
+      </div>
+
       <div className={cx("mt-2", "mb-2", "d-flex", "gap-2", "flex-wrap")}>
         {postData?.tags &&
           postData?.tags.map((tag, index) => {
-            return <AppTag key={index} value={tag} disableCancel />;
+            const { value } = tag;
+            return <AppTag key={index} value={value} disableCancel />;
           })}
       </div>
 
@@ -108,6 +186,12 @@ const AppPost = ({
       <AppDivider />
       {disableComment && <CommentContainer postId={postId} />}
       {isReport && <UserReportContainer postId={postId} />}
+      <AppImageGallery
+        show={showImageGallery}
+        setShow={setShowImageGallery}
+        images={imagesGallery}
+        currentImageIndex={currentImageIndex}
+      />
     </div>
   );
 };

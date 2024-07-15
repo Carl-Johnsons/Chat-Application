@@ -13,6 +13,7 @@ const getFriendList = async ({
   const url = "http://localhost:5001/api/friend";
   const response = await axiosInstance.get(url);
   const users: User[] = response.data;
+  console.log(users);
   return users;
 };
 

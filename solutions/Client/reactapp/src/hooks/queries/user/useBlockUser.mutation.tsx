@@ -1,6 +1,7 @@
 import { useAxios } from "@/hooks";
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 interface Props extends AxiosProps {
   userId: string;
@@ -9,7 +10,7 @@ const blockUser = async ({ userId, axiosInstance }: Props): Promise<void> => {
   const data = {
     blockUserId: userId,
   };
-  const url = "http://localhost:5001/api/users/block";
+  const url = "http://localhost:5001/api/users/block"; 
   const response = await axiosInstance.post(url, data);
   return response.data;
 };
@@ -32,7 +33,7 @@ const useBlockUser = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["conversations"],
         exact: true,
       });
       queryClient.invalidateQueries({
@@ -44,12 +45,14 @@ const useBlockUser = () => {
         exact: true,
       });
       queryClient.invalidateQueries({
-        queryKey: ["userBlockList"],
+        queryKey: ["blockList"],
         exact: true,
       });
+      toast.success("Chặn người dùng thành công");
     },
     onError: (err) => {
       console.error("Block user failed: " + err.message);
+      toast.error("Chặn người dùng thất bại");
     },
   });
 };

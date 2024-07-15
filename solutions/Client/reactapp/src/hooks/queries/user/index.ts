@@ -2,6 +2,7 @@ export * from "./useAcceptFriendRequest.mutation";
 export * from "./useBlockUser.mutation";
 export * from "./useDeleteFriend.mutation";
 export * from "./useDeleteFriendRequest.mutation";
+export * from "./useGetBlockList.query"
 export * from "./useGetCurrentUser.query";
 export * from "./useGetFriendList.query";
 export * from "./useGetFriendRequestList.query";
@@ -10,4 +11,5 @@ export * from "./useGetUser.query";
 export * from "./useSearchInfiniteUser.query";
 export * from "./useSendFriendRequest.mutation";
 export * from "./useToggleUserStatus.mutation";
+export * from "./useUnblockUser.mutation";
 export * from "./useUpdateUser.mutation";

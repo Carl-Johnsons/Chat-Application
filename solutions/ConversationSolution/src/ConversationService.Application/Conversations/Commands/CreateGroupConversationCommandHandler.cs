@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Contract.DTOs;
+using Contract.Event.UploadEvent;
+using Contract.Event.UploadEvent.EventModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace ConversationService.Application.Conversations.Commands;
 public record CreateGroupConversationCommand : IRequest<Result>
@@ -14,25 +17,47 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceBus _serviceBus;
+    private readonly ISignalRService _signalRService;
 
-    public CreateGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreateGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus, ISignalRService signalRService)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _serviceBus = serviceBus;
+        _signalRService = signalRService;
     }
 
     public async Task<Result> Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
     {
         var conversationWithMembersId = request.CreateGroupConversationDTO;
+        var groupAvatar = conversationWithMembersId.ImageFile;
 
         var groupConversation = new GroupConversation
         {
-            ImageURL = conversationWithMembersId.ImageURL,
             Name = conversationWithMembersId.Name,
-            InviteURL = "link",
             Type = CONVERSATION_TYPE_CODE.GROUP,
         };
 
+        if (groupAvatar != null)
+        {
+            var avtFileStreamEvent = new FileStreamEvent
+            {
+                FileName = groupAvatar.FileName,
+                ContentType = groupAvatar.ContentType,
+                Stream = new BinaryReader(groupAvatar.OpenReadStream()).ReadBytes((int)groupAvatar.Length)
+            };
+
+            var requestClientUpdate = _serviceBus.CreateRequestClient<UpdateFileEvent>();
+            var response = await requestClientUpdate.GetResponse<UploadFileEventResponseDTO>(new UpdateFileEvent
+            {
+                FileStreamEvent = avtFileStreamEvent,
+            });
+            if (response != null)
+            {
+                groupConversation.ImageURL = response.Message.Url;
+            }
+        }
 
         _context.Conversations.Add(groupConversation);
 
@@ -64,7 +89,11 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
             });
         }
         await _unitOfWork.SaveChangeAsync(cancellationToken);
-
+        await _signalRService.InvokeAction(SignalREvent.JOIN_CONVERSATION_ACTION, new JoinConversationDTO
+        {
+            ConversationId = groupConversation.Id,
+            MemberIds = [request.CurrentUserID, .. membersId]
+        });
         return Result.Success();
     }
 }

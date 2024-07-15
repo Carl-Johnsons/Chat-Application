@@ -1,6 +1,7 @@
-import React, { useMemo, useRef } from "react";
-import { useGlobalState } from "@/hooks";
+import React, { useMemo, useRef, useState } from "react";
+import { useGlobalState, useModal } from "@/hooks";
 import {
+  AddGroupMembersModalContent,
   CallingModalContent,
   CreateGroupModalContent,
   ListGroupMemberModalContent,
@@ -11,13 +12,26 @@ import {
   UpdateProfileModalContent,
 } from "../..";
 import { ModalContent } from "models/ModalContent.model";
-import { useBlockUser, useSendFriendRequest } from "@/hooks/queries/user";
+import {
+  useBlockUser,
+  useGetCurrentUser,
+  useSendFriendRequest,
+} from "@/hooks/queries/user";
+import { toast } from "react-toastify";
+import {
+  useCreateConversation,
+  useDisbandGroupConversation,
+  useGetConversationBetweenUser,
+  useLeaveGroupConversation,
+} from "@/hooks/queries/conversation";
 
 const ModalContentMapper = (): ModalContent[] => {
-  const { mutate: sendFriendRequestMutate } = useSendFriendRequest();
-  const { mutate: blockUserMutate } = useBlockUser();
   const [, setActiveModal] = useGlobalState("activeModal");
-
+  const [activeConversationId, setActiveConversationId] = useGlobalState(
+    "activeConversationId"
+  );
+  const [conversationType] = useGlobalState("conversationType");
+  const [, setActiveNav] = useGlobalState("activeNav");
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
 
@@ -30,8 +44,29 @@ const ModalContentMapper = (): ModalContent[] => {
   const postInputRef = useRef<HTMLElement>();
   const reportPostRef = useRef<HTMLElement>();
   const callingRef = useRef<HTMLElement>();
+  const addGroupMemberRef = useRef<HTMLElement>();
 
-  const memberIdRef = useRef<string>();
+  const [currentMemberId, setCurrentMemberId] = useState<string | null>(null);
+  const { handleHideModal } = useModal();
+  const { data: currentUserData } = useGetCurrentUser();
+  //Mutation
+  const { mutate: sendFriendRequestMutate } = useSendFriendRequest();
+  const { mutate: blockUserMutate } = useBlockUser();
+  const { mutateAsync: createConversationMutate } = useCreateConversation();
+  const { mutateAsync: disbandConversationMutate } =
+    useDisbandGroupConversation();
+  const { mutateAsync: leaveGroupMutate } = useLeaveGroupConversation();
+  const { refetch: refetchConversation } = useGetConversationBetweenUser(
+    {
+      otherUserId:
+        (conversationType === "GROUP" ? currentMemberId : modalEntityId) ?? "",
+    },
+    {
+      enabled: !!(conversationType === "GROUP"
+        ? currentMemberId
+        : modalEntityId),
+    }
+  );
   const content = useMemo(() => {
     const handleClick = (index: number) => {
       setActiveModal(index);
@@ -40,9 +75,36 @@ const ModalContentMapper = (): ModalContent[] => {
     const handleClickSendFriendRequest = async () => {
       sendFriendRequestMutate({ receiverId: modalEntityId });
     };
-    const handleClickBlockUser = (userId:string) => {
-      blockUserMutate({userId})
-    }
+    const handleClickBlockUser = (userId: string) => {
+      blockUserMutate({ userId });
+    };
+    const handleClickDisbandGroup = () => {
+      disbandConversationMutate({ groupConversationId: activeConversationId });
+      handleHideModal();
+    };
+    const handleClickLeaveGroup = () => {
+      leaveGroupMutate({ groupConversationId: activeConversationId });
+      handleHideModal();
+    };
+    const handleClickMessaging = async (otherUserId: string) => {
+      if (currentUserData?.id === otherUserId) {
+        toast.error("Không thể cuộc trò chuyện với bản thân");
+        return;
+      }
+      setActiveNav(1);
+      const { data: refetchConversationData } = await refetchConversation();
+      if (!refetchConversationData) {
+        const newConversation = await createConversationMutate({ otherUserId });
+        if (!newConversation) {
+          toast.error("Lỗi khi tạo cuộc hội thoại! Hãy thử lại");
+          return;
+        }
+        setActiveConversationId(newConversation.id);
+        return;
+      }
+      setActiveConversationId(refetchConversationData.id);
+      handleHideModal();
+    };
 
     switch (modalType) {
       case "Personal":
@@ -83,6 +145,7 @@ const ModalContentMapper = (): ModalContent[] => {
                 type="Friend"
                 modalEntityId={modalEntityId}
                 onClickBlockUser={() => handleClickBlockUser(modalEntityId)}
+                onClickMessaging={() => handleClickMessaging(modalEntityId)}
               />
             ),
           },
@@ -98,6 +161,7 @@ const ModalContentMapper = (): ModalContent[] => {
                 modalEntityId={modalEntityId}
                 onClickSendFriendRequest={handleClickSendFriendRequest}
                 onClickBlockUser={() => handleClickBlockUser(modalEntityId)}
+                onClickMessaging={() => handleClickMessaging(modalEntityId)}
               />
             ),
           },
@@ -112,6 +176,8 @@ const ModalContentMapper = (): ModalContent[] => {
                 type="Group"
                 modalEntityId={modalEntityId}
                 onClickMoreMemberInfo={() => handleClick(1)}
+                onClickDisbandGroup={() => handleClickDisbandGroup()}
+                onClickLeaveGroup={() => handleClickLeaveGroup()}
               />
             ),
           },
@@ -121,8 +187,12 @@ const ModalContentMapper = (): ModalContent[] => {
             modalContent: (
               <ListGroupMemberModalContent
                 onClickMember={(memberId) => {
+                  setCurrentMemberId(memberId);
                   handleClick(2);
-                  memberIdRef.current = memberId;
+                  console.log({ memberId });
+                }}
+                onClickAddGroupMember={() => {
+                  handleClick(3);
                 }}
               />
             ),
@@ -132,10 +202,19 @@ const ModalContentMapper = (): ModalContent[] => {
             ref: otherProfileRef,
             modalContent: (
               <ProfileModalContent
+                key={currentMemberId}
                 type="Friend"
-                modalEntityId={memberIdRef.current ?? ""}
+                modalEntityId={currentMemberId ?? ""}
+                onClickMessaging={() =>
+                  handleClickMessaging(currentMemberId ?? "")
+                }
               />
             ),
+          },
+          {
+            title: "Thêm thành viên",
+            ref: addGroupMemberRef,
+            modalContent: <AddGroupMembersModalContent />,
           },
         ];
       case "CreateGroup":
@@ -171,10 +250,25 @@ const ModalContentMapper = (): ModalContent[] => {
             disableHideModal: true,
           },
         ];
+      case "AddGroupMember":
+        return [
+          {
+            title: "Thêm thành viên",
+            ref: addGroupMemberRef,
+            modalContent: <AddGroupMembersModalContent />,
+          },
+        ];
       default:
         return [];
     }
-  }, [modalEntityId, modalType, sendFriendRequestMutate, setActiveModal]);
+  }, [
+    modalEntityId,
+    modalType,
+    sendFriendRequestMutate,
+    setActiveModal,
+    currentMemberId,
+    currentUserData?.id,
+  ]);
 
   return content;
 };

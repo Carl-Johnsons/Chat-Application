@@ -1,4 +1,5 @@
 export * from "./AxiosProps.model";
+export * from "./CloudinaryImage.model";
 export * from "./Comment.model";
 export * from "./Conversation.model";
 export * from "./ConversationType.model";
@@ -9,6 +10,7 @@ export * from "./Friend.model";
 export * from "./FriendRequest.model";
 export * from "./GroupConversation.model";
 export * from "./GroupConversationWithMembersId.model";
+export * from "./GroupInvitation.model";
 export * from "./ImgurImage.model";
 export * from "./Interaction.model";
 export * from "./JwtToken";

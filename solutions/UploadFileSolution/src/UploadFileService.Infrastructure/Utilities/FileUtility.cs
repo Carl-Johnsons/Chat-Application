@@ -6,17 +6,14 @@ namespace UploadFileService.Infrastructure.Utilities;
 
 public class FileUtility : IFileUtility
 {
-    public string getFileType(string fileName)
-    {
-        List<string> imageExtensions = new List<string>
+    private readonly List<string> imageExtensions = new()
         {
             ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp",
             ".svg", ".ico", ".heic", ".heif", ".raw", ".cr2", ".nef", ".orf",
             ".sr2", ".arw", ".dng", ".raf", ".3fr", ".kdc", ".mos", ".mef",
             ".nrw", ".rw2", ".pef"
         };
-
-        List<string> videoExtensions = new List<string>
+    private readonly List<string> videoExtensions = new()
         {
             ".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".webm", ".mpeg",
             ".mpg", ".m4v", ".3gp", ".3g2", ".vob", ".ogv", ".m2ts", ".mts",
@@ -24,6 +21,9 @@ public class FileUtility : IFileUtility
             ".asf", ".swf", ".m2v",".mp3", ".wav", ".aac", ".flac", ".ogg", ".wma", ".m4a",
             ".aiff", ".alac", ".opus", ".amr"
         };
+    public string getFileType(string fileName)
+    {
+
 
         if (fileName == null || fileName.Length == 0)
         {

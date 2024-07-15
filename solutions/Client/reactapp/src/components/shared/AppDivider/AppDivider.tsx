@@ -10,7 +10,7 @@ interface Props {
 }
 
 const AppDivider = ({ className }: Props) => {
-  return <div className={cx("container-divider-2px", className)}></div>;
+  return <div className={cx("container-divider-1px", className)}></div>;
 };
 
 export { AppDivider };

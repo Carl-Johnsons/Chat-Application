@@ -14,6 +14,7 @@ COPY ["./solutions/PostSolution/src/PostService.Application/PostService.Applicat
 COPY ["./solutions/PostSolution/src/PostService.Infrastructure/PostService.Infrastructure.csproj", "./PostService.Infrastructure/"]
 COPY ["./solutions/PostSolution/src/PostService.Domain/PostService.Domain.csproj", "./PostService.Domain/"]
 COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.API/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.Application/"]
 COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.Infrastructure/"]
 
 WORKDIR /src/PostService.API

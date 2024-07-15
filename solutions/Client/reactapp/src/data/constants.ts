@@ -27,6 +27,7 @@ export enum SignalREvent {
   RECEIVE_JOIN_CONVERSATION = "ReceiveJoinConversation",
   RECEIVE_MESSAGE = "ReceiveMessage",
   RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",
+  RECEIVE_DISBAND_CONVERSATION = "ReceiveDisbandConversation",
   RECEIVE_CALL = "ReceiveCall",
   FORCED_LOGOUT = "ForcedLogout",
   DELETE_POST = "DeletePost",
@@ -56,4 +57,10 @@ export enum BUTTON {
 export enum ROLE {
   ADMIN = "Admin",
   USER = "User",
+}
+
+export enum FILE_TYPE {
+  IMAGE = "Image",
+  VIDEO = "Video",
+  RAW = "Raw",
 }

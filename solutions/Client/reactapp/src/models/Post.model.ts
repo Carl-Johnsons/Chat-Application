@@ -1,3 +1,5 @@
+import { Tag } from ".";
+
 export type Post = {
   id: string;
   content: string;
@@ -5,5 +7,6 @@ export type Post = {
   interactTotal: number;
   interactions: string[];
   createdAt: Date;
-  tags: string[];
+  tags: Tag[];
+  attachedFilesURL: string;
 };

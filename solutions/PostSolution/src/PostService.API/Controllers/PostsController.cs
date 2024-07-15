@@ -21,29 +21,19 @@ public class PostsController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
+    public async Task<IActionResult> Create([FromForm] CreatePostDTO createPostDTO)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
         var postResult = await _sender.Send(new CreatePostCommand
         {
-            Content = createPostDTO.Content,
-            UserId = Guid.Parse(subjectId!)
+            UserId = Guid.Parse(subjectId!),
+            CreatePostDTO = createPostDTO
         });
         postResult.ThrowIfFailure();
 
-        foreach (var t in createPostDTO.TagIds)
-        {
-            var result = await _sender.Send(new CreatePostTagCommand
-            {
-                PostId = postResult.Value.Id,
-                TagId = t
-            });
-            result.ThrowIfFailure();
-        }
-
-        return Ok();
+        return Ok(postResult.Value);
     }
 
     [HttpGet]
@@ -88,7 +78,8 @@ public class PostsController : BaseApiController
         {
             PostId = updatePostDTO.Id,
             Content = updatePostDTO.Content,
-            Active = updatePostDTO.Active
+            Active = updatePostDTO.Active,
+            TagIds = updatePostDTO.TagIds
         });
 
         result.ThrowIfFailure();

@@ -7,9 +7,10 @@ import {
   faCopy,
   faGear,
   faLink,
-  faShare,
+  faRefresh,
   faThumbTack,
   faUserGroup,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 // component
 import AppButton from "@/components/shared/AppButton";
@@ -17,22 +18,24 @@ import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
 
 //hook
-import { useGlobalState } from "@/hooks";
+import { useGlobalState, useModal } from "@/hooks";
 // model
 import {
+  useGenerateGroupInvitation,
   useGetConversation,
+  useGetGroupInvitationByGroupId,
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
 import { useGetUser } from "@/hooks/queries/user";
 import { GroupConversation } from "models/GroupConversation.model";
+import { useCallback } from "react";
+import { toast } from "react-toastify";
 
 const cx = classnames.bind(style);
 
 const AsideBody = () => {
   const [activeConversationId] = useGlobalState("activeConversationId");
-  const [conversationType] = useGlobalState("conversationType");
-
-  const isGroup = conversationType === "GROUP";
+  const { handleShowModal } = useModal();
   const { data: conversation } = useGetConversation(
     {
       conversationId: activeConversationId,
@@ -41,20 +44,88 @@ const AsideBody = () => {
       enabled: !!activeConversationId,
     }
   );
+
   const { data: conversationUsersData } = useGetMemberListByConversationId(
     { conversationId: activeConversationId, other: true },
     {
       enabled: !!activeConversationId,
     }
   );
+
+  const { mutate: generateGroupInvitationMutate } =
+    useGenerateGroupInvitation();
+
+  const isGroup = conversation?.type === "GROUP";
   const otherUserId = conversationUsersData?.[0].userId;
+
   const { data: otherUserData } = useGetUser(otherUserId ?? "", {
     enabled: !!otherUserId,
   });
-  const avatar = otherUserData?.avatarUrl ?? images.userIcon.src;
-  const name = otherUserData?.name ?? "";
-  const groupLink = (conversation as GroupConversation)?.inviteUrl ?? "";
+  const { data: groupInvitationData } = useGetGroupInvitationByGroupId(
+    { groupId: conversation?.id },
+    {
+      enabled: isGroup,
+    }
+  );
+
+  // Inferred data
+  const avatar =
+    (isGroup
+      ? (conversation as GroupConversation)?.imageURL
+      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+  const name = isGroup
+    ? (conversation as GroupConversation)?.name
+    : otherUserData?.name ?? "";
   const conversationUsers = isGroup ? conversationUsersData : undefined;
+
+  const handleClickCopyBtn = useCallback(() => {
+    if (!isGroup) {
+      toast.error("Copy link nhóm thất bại");
+      return;
+    }
+    if (!groupInvitationData?.id) {
+      toast.error("Link nhóm không tìm thấy, hãy tạo link mới");
+      return;
+    }
+    if (groupInvitationData.isExpired) {
+      toast.error("Link nhóm đã hết hạn, hãy tạo link mới");
+      return;
+    }
+
+    const baseAddress =
+      process.env.NEXT_PUBLIC_CLIENT_BASE_URL ?? "http://localhost:3000";
+    navigator.clipboard.writeText(
+      `Link tham gia nhóm ${
+        (conversation as GroupConversation).name
+      }: ${baseAddress}/join/group-conversation/${groupInvitationData.id}`
+    );
+    toast.success("Copy link nhóm thành công");
+  }, [conversation, groupInvitationData]);
+
+  const handleClickRefreshGroupInvitation = useCallback(() => {
+    const id = conversation?.id;
+    if (!id) {
+      toast.error("Tạo mới link nhóm thất bại");
+      return;
+    }
+
+    generateGroupInvitationMutate({ groupId: id });
+  }, [conversation?.id]);
+
+  const handleClickAddGroupMemberBtn = useCallback(() => {
+    if (!conversation?.id) {
+      toast.error("Thất bại, hãy thử lại");
+    }
+
+    handleShowModal({
+      modalType: "AddGroupMember",
+      entityId: conversation?.id,
+    });
+  }, [conversation?.id]);
+
+  if (!activeConversationId) {
+    return;
+  }
 
   return (
     <>
@@ -146,9 +217,10 @@ const AsideBody = () => {
                 "justify-content-center",
                 "align-items-center"
               )}
+              onClick={handleClickAddGroupMemberBtn}
             >
               {isGroup ? (
-                <FontAwesomeIcon icon={faUserGroup} />
+                <FontAwesomeIcon icon={faUserPlus} />
               ) : (
                 <FontAwesomeIcon icon={faUserGroup} />
               )}
@@ -205,12 +277,7 @@ const AsideBody = () => {
                 <div className={cx("icon")}>
                   <FontAwesomeIcon icon={faLink} />
                 </div>
-                <div>
-                  Link tham gia nhóm
-                  <div>
-                    <a href={groupLink}>{groupLink}</a>
-                  </div>
-                </div>
+                <div>Link tham gia nhóm</div>
               </div>
               <div
                 className={cx(
@@ -228,6 +295,7 @@ const AsideBody = () => {
                     "justify-content-center",
                     "align-items-center"
                   )}
+                  onClick={handleClickCopyBtn}
                 >
                   <FontAwesomeIcon icon={faCopy} />
                 </AppButton>
@@ -240,8 +308,9 @@ const AsideBody = () => {
                     "justify-content-center",
                     "align-items-center"
                   )}
+                  onClick={handleClickRefreshGroupInvitation}
                 >
-                  <FontAwesomeIcon icon={faShare} />
+                  <FontAwesomeIcon icon={faRefresh} />
                 </AppButton>
               </div>
             </div>

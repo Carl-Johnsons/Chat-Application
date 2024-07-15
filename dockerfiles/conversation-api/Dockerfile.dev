@@ -14,6 +14,7 @@ COPY ["./solutions/ConversationSolution/src/ConversationService.Application/Conv
 COPY ["./solutions/ConversationSolution/src/ConversationService.Domain/ConversationService.Domain.csproj", "ConversationService.Domain/"]
 COPY ["./solutions/ConversationSolution/src/ConversationService.Infrastructure/ConversationService.Infrastructure.csproj", "ConversationService.Infrastructure/"]
 COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationService.API/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationService.Application/"]
 COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationService.Infrastructure/"]
 
 # Building the services

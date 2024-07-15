@@ -1,4 +1,5 @@
 ﻿using ConversationService.Application.Conversations.Commands;
+using ConversationService.Application.Conversations.Queries;
 using ConversationService.Domain.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ public partial class GroupConversationController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateGroupConversation([FromBody] CreateGroupConversationDTO createGroupConversationDTO)
+    public async Task<IActionResult> CreateGroupConversation([FromForm] CreateGroupConversationDTO createGroupConversationDTO)
     {
         var claims = _httpContextAccessor.HttpContext?.User.Claims;
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
@@ -34,4 +35,102 @@ public partial class GroupConversationController : BaseApiController
         result.ThrowIfFailure();
         return StatusCode(StatusCodes.Status201Created);
     }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdateGroupConversation([FromForm] UpdateGroupConversationDTO dto)
+    {
+        var result = await _sender.Send(
+                new UpdateGroupConversationCommand
+                {
+                    UpdateGroupConversationDTO = dto
+                });
+
+        result.ThrowIfFailure();
+        return StatusCode(StatusCodes.Status204NoContent);
+    }
+
+    [HttpGet("invite")]
+    public async Task<IActionResult> GetInviteUrlByGroupId([FromQuery] Guid id)
+    {
+        var result = await _sender.Send(
+            new GetGroupInviteUrlQuery
+            {
+                Id = id
+            });
+        result.ThrowIfFailure();
+        return Ok(result.Value);
+    }
+
+    [HttpGet("invite/detail")]
+    public async Task<IActionResult> GetGroupInvitationByInviteId([FromQuery] Guid id)
+    {
+        var result = await _sender.Send(
+            new GetGroupInvitationByInviteIdCommand
+            {
+                InviteId = id
+            });
+        result.ThrowIfFailure();
+        return Ok(result.Value);
+    }
+
+    [HttpPost("invite")]
+    public async Task<IActionResult> GenerateInviteUrl([FromBody] CreateGroupInviteUrlDTO dto)
+    {
+        var result = await _sender.Send(
+            new CreateGroupInviteUrlCommand
+            {
+                GroupId = dto.GroupId
+            });
+        result.ThrowIfFailure();
+        return StatusCode(StatusCodes.Status201Created, result.Value);
+    }
+
+    [HttpPost("join")]
+    public async Task<IActionResult> JoinGroupConversation([FromBody] JoinGroupConversationDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var result = await _sender.Send(
+            new JoinGroupConversationCommand
+            {
+                JoinConversationDTO = dto,
+                UserId = Guid.Parse(subjectId!)
+            });
+        result.ThrowIfFailure();
+
+        return StatusCode(StatusCodes.Status201Created);
+    }
+
+    [HttpDelete("leave")]
+    public async Task<IActionResult> LeaveGroupConversation([FromBody] LeaveGroupConversationDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var result = await _sender.Send(
+            new LeaveGroupConversationCommand
+            {
+                UserId = Guid.Parse(subjectId!),
+                ConversationId = dto.GroupConversationId,
+            });
+        result.ThrowIfFailure();
+
+        return StatusCode(StatusCodes.Status204NoContent);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DisbandGroupConversation([FromBody] DisbandGroupConversationDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var result = await _sender.Send(
+            new DisbandGroupConversationCommand
+            {
+                GroupLeaderId = Guid.Parse(subjectId!),
+                ConversationId = dto.GroupConversationId,
+            });
+        result.ThrowIfFailure();
+
+        return StatusCode(StatusCodes.Status204NoContent);
+    }
+
 }

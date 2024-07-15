@@ -3,10 +3,7 @@ import { useCallback, useState } from "react";
 import SideBarItem from "../../SideBarItem";
 import { useGlobalState, useScreenSectionNavigator } from "@/hooks";
 import { ConversationType, Message } from "@/models";
-import {
-  useGetInfiniteMessageList,
-  useGetLastMessages,
-} from "@/hooks/queries/message";
+import { useGetInfiniteMessageList } from "@/hooks/queries/message";
 import { useGetConversationList } from "@/hooks/queries/conversation";
 
 const ConversationContent = () => {
@@ -19,15 +16,9 @@ const ConversationContent = () => {
 
   const [enableMessageListQuery, setEnableMessageListQuery] = useState(false);
   const messageListQuery = useGetInfiniteMessageList(activeConversationId, {
-    enabled: enableMessageListQuery,
+    enabled: enableMessageListQuery && !!activeConversationId,
   });
   const { data: conversationResponse } = useGetConversationList();
-  const conversationsId =
-    conversationResponse?.conversations?.flatMap((c) => c.id) ?? [];
-
-  const lastMessageQueries = useGetLastMessages(conversationsId, {
-    enabled: conversationsId.length > 0,
-  });
 
   const handleClickConversation = useCallback(
     (conversationId: string, type: ConversationType) => {
@@ -51,58 +42,42 @@ const ConversationContent = () => {
   //   //Initial with the first friend in the list
   //   handleClickConversation(friendList[0].friendNavigation.userId);
   // }, [friendList, handleClickConversation, activeConversationId]);
+
   return (
     <>
       {conversationResponse?.conversations &&
-        (conversationResponse.conversations ?? []).map(
-          (conversation, index) => {
-            if (!conversation) {
-              return;
-            }
-            const lastMessage: Partial<Message> = lastMessageQueries[index]
-              .data ?? {
-              content: "This conversation is new! Say hi",
-            };
-
+        (conversationResponse.conversations ?? []).map((conversation) => {
+          if (!conversation) {
+            return;
+          }
+          const { id, type, lastMessage } = conversation;
+          const message: Partial<Message> = lastMessage ?? {
+            content: "This conversation is new! Say hi",
+          };
+          if (type == "INDIVIDUAL") {
             return (
               <SideBarItem
-                key={conversation.id}
+                key={id}
                 type="conversation"
                 conversation={conversation}
-                lastMessage={lastMessage}
-                onClick={(conversationId) =>
-                  handleClickConversation(conversationId, conversation.type)
-                }
-                isActive={activeConversationId === conversation.id}
+                lastMessage={message}
+                onClick={() => handleClickConversation(id, type)}
+                isActive={activeConversationId === id}
               />
             );
-          }
-        )}
-      {conversationResponse?.groupConversations &&
-        (conversationResponse.groupConversations ?? []).map(
-          (conversation, index) => {
-            if (!conversation) {
-              return;
-            }
-            const lastMessage: Partial<Message> = lastMessageQueries[index]
-              .data ?? {
-              content: "This conversation is new! Say hi",
-            };
-
+          } else {
             return (
               <SideBarItem
-                key={conversation.id}
+                key={id}
                 type="groupConversation"
                 conversation={conversation}
-                lastMessage={lastMessage}
-                onClick={(conversationId) =>
-                  handleClickConversation(conversationId, conversation.type)
-                }
-                isActive={activeConversationId === conversation.id}
+                lastMessage={message}
+                onClick={() => handleClickConversation(id, type)}
+                isActive={activeConversationId === id}
               />
             );
           }
-        )}
+        })}
     </>
   );
 };

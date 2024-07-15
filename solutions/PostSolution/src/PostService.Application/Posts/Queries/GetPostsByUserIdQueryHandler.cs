@@ -40,21 +40,16 @@ public class GetPostsByUserIdQueryHandler : IRequestHandler<GetPostsByUserIdQuer
                         .Where(pt => pt.Id == p.Id)
                         .SingleOrDefaultAsync();
 
-            var tag = await _context.PostTags
-                        .Where(t => t.PostId == p.Id)
-                        .Include(t => t.Tag)
+            var tags = await _context.PostTags
+                        .Where(pt => pt.PostId == p.Id)
+                        .Include(pt => pt.Tag)
+                        .Select(pt => pt.Tag)
                         .ToListAsync();
 
             var countInteract = await _context.PostInteracts
                         .Where(pi => pi.PostId == p.Id)
                         .CountAsync();
 
-            List<string> tags = new List<string>();
-
-            foreach (PostTag t in tag)
-            {
-                tags.Add(t.Tag.Value);
-            }
 
             var topInteractions = await _context.PostInteracts
                     .Where(pi => pi.PostId == p.Id)
@@ -91,7 +86,7 @@ public class GetPostsByUserIdQueryHandler : IRequestHandler<GetPostsByUserIdQuer
 
                 result.Add(postReponse);
             }
-            
+
         }
 
         return Result<List<PostDTO>?>.Success(result);

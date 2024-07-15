@@ -20,6 +20,7 @@ import {
 } from "@/hooks/queries/conversation";
 import { GroupConversation } from "@/models";
 import { ROLE } from "data/constants";
+import { AppDivider } from "@/components/shared";
 
 const cx = classNames.bind(style);
 
@@ -51,6 +52,8 @@ type GroupVariant = BaseVariant & {
   type: "Group";
   onClickMoreMemberInfo?: () => void;
   onClickMessaging?: () => void;
+  onClickDisbandGroup?: () => void;
+  onClickLeaveGroup?: () => void;
 };
 
 type Variants =
@@ -63,6 +66,7 @@ const ProfileModalContent = (variant: Variants) => {
   const { type } = variant;
   //Base variable
   const modalEntityId = variant.modalEntityId;
+
   //Personal
   let onClickUpdate: (() => void) | undefined;
   let onClickEditAvatar: (() => void) | undefined;
@@ -75,6 +79,8 @@ const ProfileModalContent = (variant: Variants) => {
   let onClickMessaging: (() => void) | undefined;
   //Group
   let onClickMoreMemberInfo: (() => void) | undefined;
+  let onClickDisbandGroup: (() => void) | undefined;
+  let onClickLeaveGroup: (() => void) | undefined;
   //block
   let onClickBlockUser: (() => void) | undefined;
 
@@ -95,7 +101,12 @@ const ProfileModalContent = (variant: Variants) => {
     ({ onClickSendFriendRequest, onClickMessaging, onClickBlockUser } =
       variant);
   } else {
-    ({ onClickMessaging, onClickMoreMemberInfo } = variant);
+    ({
+      onClickMessaging,
+      onClickMoreMemberInfo,
+      onClickDisbandGroup,
+      onClickLeaveGroup,
+    } = variant);
   }
   const { data: otherUserData } = useGetUser(modalEntityId, {
     enabled: (isFriend || isStranger) && !!modalEntityId,
@@ -110,14 +121,13 @@ const ProfileModalContent = (variant: Variants) => {
   );
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
-    { conversationId: modalEntityId },
+    { conversationId: modalEntityId, other: false },
     {
       enabled: isGroup && !!modalEntityId,
     }
   );
 
   const userData = isPersonal ? currentUserData : otherUserData;
-  currentUserData && conversationUsersData?.push();
   const userIdList = isGroup
     ? conversationUsersData?.flatMap((cu) => cu.userId)
     : undefined;
@@ -137,6 +147,9 @@ const ProfileModalContent = (variant: Variants) => {
     : userData?.avatarUrl;
   const background = userData?.backgroundUrl;
 
+  const userRole = conversationUsersData?.filter(
+    (cu) => cu.userId == currentUserData?.id
+  )?.[0]?.role;
   return (
     <div className={cx("profile-modal-content", "m-0")}>
       {!isGroup && (
@@ -338,6 +351,26 @@ const ProfileModalContent = (variant: Variants) => {
                 width={40}
               />
             </AppButton>
+          </div>
+          <AppDivider />
+          <div>
+            {userRole === "Leader" ? (
+              <AppButton
+                variant="app-btn-danger"
+                className={cx("disband-group-btn", "w-100", " fw-medium")}
+                onClick={onClickDisbandGroup}
+              >
+                Disband Group
+              </AppButton>
+            ) : (
+              <AppButton
+                variant="app-btn-danger"
+                className={cx("leave-group-btn", "w-100", " fw-medium")}
+                onClick={onClickLeaveGroup}
+              >
+                Leave Group
+              </AppButton>
+            )}
           </div>
         </div>
       )}

@@ -1,10 +1,12 @@
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props {
   content: string;
   tagIds: string[];
+  blobs?: Blob[];
 }
 
 interface FetchProps extends Props, AxiosProps {}
@@ -12,14 +14,26 @@ interface FetchProps extends Props, AxiosProps {}
 const createPost = async ({
   content,
   tagIds,
+  blobs = [],
   axiosInstance,
 }: FetchProps): Promise<void> => {
   const url = "/api/post";
-  const data = {
-    content,
-    tagIds,
-  };
-  const response = await axiosInstance.post(url, data);
+
+  const formData = new FormData();
+
+  formData.append("content", content);
+  tagIds.forEach((tagId) => {
+    formData.append("tagIds", tagId);
+  });
+  blobs.forEach((b) => {
+    formData.append("files", b);
+  });
+
+  const response = await axiosInstance.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
@@ -27,12 +41,20 @@ const useCreatePost = () => {
   const queryClient = useQueryClient();
   const { protectedAxiosInstance } = useAxios();
   const mutation = useMutation<void, Error, Props, unknown>({
-    mutationFn: ({ content, tagIds }: Props) =>
-      createPost({
-        content,
-        tagIds,
-        axiosInstance: protectedAxiosInstance,
-      }),
+    mutationFn: ({ content, tagIds, blobs }: Props) =>
+      toast.promise(
+        createPost({
+          content,
+          tagIds,
+          blobs,
+          axiosInstance: protectedAxiosInstance,
+        }),
+        {
+          pending: "Đang đăng bài",
+          success: "Đăng bài thành công",
+          error: "Đăng bài thất bại",
+        }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["posts", "infinite"],

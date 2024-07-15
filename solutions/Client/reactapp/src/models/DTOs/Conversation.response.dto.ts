@@ -1,6 +1,9 @@
-import { Conversation, GroupConversation } from "..";
+import { GroupConversation, Message } from "..";
 
 export type ConversationResponseDTO = {
-  conversations: Conversation[];
-  groupConversations: GroupConversation[];
+  conversations: BaseConversationResponseDTO[];
+};
+
+export type BaseConversationResponseDTO = GroupConversation & {
+  lastMessage: Message;
 };

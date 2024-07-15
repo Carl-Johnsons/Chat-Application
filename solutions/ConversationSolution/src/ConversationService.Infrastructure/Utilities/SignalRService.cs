@@ -40,4 +40,9 @@ public sealed class SignalRService : ISignalRService
         await HubConnection.InvokeAsync(action, obj);
         _logger.LogInformation($"Done invoking action");
     }
+
+    public async Task InvokeAction(string action)
+    {
+        await HubConnection.InvokeAsync(action);
+    }
 }

@@ -20,7 +20,10 @@ const LogOut = () => {
         queryKey: ["friendRequestList"],
       });
       queryClient.removeQueries({
-        queryKey: ["conversationList"],
+        queryKey: ["blockList"],
+      });
+      queryClient.removeQueries({
+        queryKey: ["conversations"],
       });
       queryClient.removeQueries({
         queryKey: ["messageList"],

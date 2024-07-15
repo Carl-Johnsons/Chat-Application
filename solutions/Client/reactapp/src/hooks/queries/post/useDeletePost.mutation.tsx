@@ -1,6 +1,7 @@
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "@/hooks";
+import { toast } from "react-toastify";
 
 interface Props {
   id: string;
@@ -37,9 +38,11 @@ const useDeletePost = () => {
         queryKey: ["reportPosts", "infinite"],
         exact: true,
       });
+      toast.success("Xóa bài đăng thành công");
     },
     onError: (err) => {
       console.error("Failed to delete post: " + err.message);
+      toast.error("Xóa bài đăng thất bại");
     },
   });
   return mutation;

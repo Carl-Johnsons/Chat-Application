@@ -39,7 +39,9 @@ const ChatViewContainer = ({ className }: Props) => {
         className={cx(
           "conversation-container",
           "flex-grow-1",
-          "overflow-y-hidden"
+          "overflow-y-hidden",
+          "d-flex",
+          "flex-column"
         )}
       >
         <ChatViewBody
@@ -52,9 +54,7 @@ const ChatViewContainer = ({ className }: Props) => {
         )}
       </div>
 
-      <div className={cx("input-message-container", "w-100", "d-flex")}>
-        <ChatViewFooter />
-      </div>
+      <ChatViewFooter />
     </div>
   );
 };

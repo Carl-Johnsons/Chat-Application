@@ -21,7 +21,6 @@ const getConversationList = async ({
 }: FetchConversationListProps): Promise<ConversationResponseDTO | null> => {
   const url = `/api/conversation/user`;
   const response = await axiosInstance.get(url);
-  console.log(response.data);
 
   return response.data;
 };
@@ -55,7 +54,7 @@ const useGetConversationList = (
 
   return useQuery({
     ...queryOptions,
-    queryKey: ["conversationList"],
+    queryKey: ["conversations"],
     queryFn: () =>
       getConversationList({ axiosInstance: protectedAxiosInstance }),
   });
@@ -74,16 +73,16 @@ const useGetMemberListByConversationId = (
   > = {}
 ) => {
   const { protectedAxiosInstance } = useAxios();
-
   return useQuery({
     ...queryOptions,
-    queryKey: ["conversation", "member", conversationId],
-    queryFn: () =>
-      getMemberListByConversationId({
+    queryKey: ["conversation", "member", conversationId, { other }],
+    queryFn: () => {
+      return getMemberListByConversationId({
         conversationId: conversationId,
-        other,
+        other: other,
         axiosInstance: protectedAxiosInstance,
-      }),
+      });
+    },
   });
 };
 

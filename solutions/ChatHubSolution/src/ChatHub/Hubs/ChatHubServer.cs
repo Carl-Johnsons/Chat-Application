@@ -68,7 +68,6 @@ public class ChatHubServer : Hub<IChatClient>
     }
     public async Task SendMessage(MessageDTO messageDTO)
     {
-        await Console.Out.WriteLineAsync("sending message to client: " + JsonConvert.SerializeObject(messageDTO));
         try
         {
             await Clients.OthersInGroup(messageDTO.ConversationId.ToString()).ReceiveMessage(messageDTO);
@@ -81,8 +80,6 @@ public class ChatHubServer : Hub<IChatClient>
 
     public async Task SendFriendRequest(FriendRequestDTO friendRequestDTO)
     {
-        await Console.Out.WriteLineAsync("Invoking SendFriendRequest");
-        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(UserConnectionMap));
         // Have to get list because the 1 person can join on 2 different tab on browser
         // So the connectionId may differnect but still 1 userId
         var receiverConnectionIdList = UserConnectionMap.
@@ -109,17 +106,11 @@ public class ChatHubServer : Hub<IChatClient>
     */
     public async Task SendAcceptFriendRequest(FriendDTO friendDTO)
     {
-        await Console.Out.WriteLineAsync("Invoking SendAcceptFriendRequest");
-        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(friendDTO));
-        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(UserConnectionMap));
-
         var senderConnectionIdList = UserConnectionMap.
             Where(pair => pair.Value == friendDTO.UserId)
             .Select(pair => pair.Key)
             .ToList();
 
-        // If the receiver didn't online, simply do nothing
-        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(senderConnectionIdList));
         if (senderConnectionIdList.Count <= 0)
         {
             return;
@@ -133,7 +124,7 @@ public class ChatHubServer : Hub<IChatClient>
     public async Task JoinConversation(JoinConversationDTO joinConversationDTO)
     {
         var memberConnectionIds = UserConnectionMap
-                                .Where(pair => joinConversationDTO.MemberIds.Contains(pair.Value))
+                                .Where(pair => joinConversationDTO.MemberIds.Any(mId => mId == pair.Value))
                                 .Select(pair => pair.Key)
                                 .ToList();
         if (memberConnectionIds.Count == 0)
@@ -148,10 +139,29 @@ public class ChatHubServer : Hub<IChatClient>
         }
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveJoinConversation(conversationId);
     }
+
+    public async Task DisbandConversation(DisbandGroupConversationSignalRDTO dto)
+    {
+        var memberConnectionIds = UserConnectionMap
+                                .Where(pair => dto.MemberIds!.Any(mId => mId == pair.Value))
+                                .Select(pair => pair.Key)
+                                .ToList();
+
+        if (memberConnectionIds.Count == 0)
+        {
+            return;
+        }
+        var conversationId = dto.ConversationId;
+
+        foreach (var memberConnectionId in memberConnectionIds)
+        {
+            await Groups.AddToGroupAsync(memberConnectionId, conversationId.ToString());
+        }
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveDisbandConversation(conversationId);
+    }
+
     public async Task NotifyUserTyping(UserTypingNotificationDTO userTypingNotificationDTO)
     {
-        // Notify a list of user because they might have open mulit tab in browsers
-        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(userTypingNotificationDTO));
         await Clients.OthersInGroup(userTypingNotificationDTO.ConversationId.ToString()).ReceiveNotifyUserTyping(userTypingNotificationDTO);
     }
     public async Task DisableNotifyUserTyping(UserTypingNotificationDTO userTypingNotificationDTO)
@@ -174,7 +184,6 @@ public class ChatHubServer : Hub<IChatClient>
         }
         foreach (var connectionId in userConnectionIdList)
         {
-            await Console.Out.WriteLineAsync("Force log out");
             await Clients.Client(connectionId).ForcedLogout();
         }
     }
@@ -206,7 +215,6 @@ public class ChatHubServer : Hub<IChatClient>
     #region Helper method
     private async Task AddUserToGroup(Guid conversationId, Guid userId)
     {
-        await Console.Out.WriteLineAsync($"{userId} joining conversation {conversationId}");
         if (!ConversationUsersMap.TryGetValue(conversationId, out var participants))
         {
             participants = new List<Guid>();

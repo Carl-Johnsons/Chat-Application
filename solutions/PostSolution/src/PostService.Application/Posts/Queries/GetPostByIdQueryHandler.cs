@@ -30,21 +30,15 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<
             return Result<PostDTO>.Failure(PostError.NotFound);
         }
 
-        var tag = await _context.PostTags
+        var tags = await _context.PostTags
                     .Where(t => t.PostId == request.Id)
                     .Include(t => t.Tag)
+                    .Select(pt => pt.Tag)
                     .ToListAsync();
 
         var countInteract = await _context.PostInteracts
                     .Where(pi => pi.PostId == request.Id)
                     .CountAsync();
-
-        List<string> tags = new List<string>();
-
-        foreach (PostTag t in tag)
-        {
-            tags.Add(t.Tag.Value);
-        }
 
         var topInteractions = await _context.PostInteracts
                     .Where(pi => pi.PostId == request.Id)
@@ -74,7 +68,8 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result<
             CreatedAt = post.CreatedAt,
             InteractTotal = countInteract,
             Interactions = interacts,
-            Tags = tags
+            Tags = tags,
+            AttachedFilesURL = post.AttachedFilesURL
         };
 
         return Result<PostDTO?>.Success(postReponse);
