@@ -100,4 +100,37 @@ public partial class GroupConversationController : BaseApiController
 
         return StatusCode(StatusCodes.Status201Created);
     }
+
+    [HttpDelete("leave")]
+    public async Task<IActionResult> LeaveGroupConversation([FromBody] LeaveGroupConversationDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var result = await _sender.Send(
+            new LeaveGroupConversationCommand
+            {
+                UserId = Guid.Parse(subjectId!),
+                ConversationId = dto.GroupConversationId,
+            });
+        result.ThrowIfFailure();
+
+        return StatusCode(StatusCodes.Status204NoContent);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DisbandGroupConversation([FromBody] DisbandGroupConversationDTO dto)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var result = await _sender.Send(
+            new DisbandGroupConversationCommand
+            {
+                GroupLeaderId = Guid.Parse(subjectId!),
+                ConversationId = dto.GroupConversationId,
+            });
+        result.ThrowIfFailure();
+
+        return StatusCode(StatusCodes.Status204NoContent);
+    }
+
 }

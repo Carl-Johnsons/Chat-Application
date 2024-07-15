@@ -31,6 +31,9 @@ const UserStatus = ({ type }: Props) => {
   const isStranger =
     otherUserId && friendListData && !friendIds?.includes(otherUserId);
 
+  if (!activeConversationId) {
+    return;
+  }
   return (
     <div className={cx("user-status")}>
       {!isGroup && !isStranger && (
@@ -41,7 +44,7 @@ const UserStatus = ({ type }: Props) => {
       {isLoading
         ? "Loading...."
         : isGroup
-        ? `${conversationUsersData?.length ?? 0} thành viên`
+        ? `${(conversationUsersData?.length ?? 0) + 1} thành viên`
         : isStranger
         ? "Người lạ"
         : isOnline

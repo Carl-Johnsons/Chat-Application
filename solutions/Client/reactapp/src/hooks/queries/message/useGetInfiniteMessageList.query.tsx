@@ -71,7 +71,7 @@ const useGetInfiniteMessageList = (
       };
     },
     getNextPageParam: (prev) => {
-      return prev.data.paginatedData.length === 0 ? undefined : prev.nextPage;
+      return prev.data.paginatedData?.length === 0 ? undefined : prev.nextPage;
     },
     initialData: () => {
       return queryClient.getQueryData<

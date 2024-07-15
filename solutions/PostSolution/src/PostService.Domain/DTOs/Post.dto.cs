@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PostService.Domain.Entities;
 
 namespace PostService.Domain.DTOs;
 
@@ -26,5 +27,5 @@ public class PostDTO
     public string AttachedFilesURL { get; set; } = "[]";
 
     [JsonProperty("tags")]
-    public List<string> Tags { get; set; } = null!;
+    public List<Tag> Tags { get; set; } = null!;
 }

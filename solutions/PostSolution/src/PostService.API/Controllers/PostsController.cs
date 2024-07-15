@@ -78,7 +78,8 @@ public class PostsController : BaseApiController
         {
             PostId = updatePostDTO.Id,
             Content = updatePostDTO.Content,
-            Active = updatePostDTO.Active
+            Active = updatePostDTO.Active,
+            TagIds = updatePostDTO.TagIds
         });
 
         result.ThrowIfFailure();

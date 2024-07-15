@@ -17,13 +17,19 @@ import {
   useGetCurrentUser,
   useSendFriendRequest,
 } from "@/hooks/queries/user";
-import { useGetConversationBetweenUser } from "hooks/queries/conversation/useGetConversationBetweenUsers.query";
-import { useCreateConversation } from "hooks/queries/conversation/useCreateConversation.mutation";
 import { toast } from "react-toastify";
+import {
+  useCreateConversation,
+  useDisbandGroupConversation,
+  useGetConversationBetweenUser,
+  useLeaveGroupConversation,
+} from "@/hooks/queries/conversation";
 
 const ModalContentMapper = (): ModalContent[] => {
   const [, setActiveModal] = useGlobalState("activeModal");
-  const [, setActiveConversationId] = useGlobalState("activeConversationId");
+  const [activeConversationId, setActiveConversationId] = useGlobalState(
+    "activeConversationId"
+  );
   const [conversationType] = useGlobalState("conversationType");
   const [, setActiveNav] = useGlobalState("activeNav");
   const [modalEntityId] = useGlobalState("modalEntityId");
@@ -47,6 +53,9 @@ const ModalContentMapper = (): ModalContent[] => {
   const { mutate: sendFriendRequestMutate } = useSendFriendRequest();
   const { mutate: blockUserMutate } = useBlockUser();
   const { mutateAsync: createConversationMutate } = useCreateConversation();
+  const { mutateAsync: disbandConversationMutate } =
+    useDisbandGroupConversation();
+  const { mutateAsync: leaveGroupMutate } = useLeaveGroupConversation();
   const { refetch: refetchConversation } = useGetConversationBetweenUser(
     {
       otherUserId:
@@ -68,6 +77,14 @@ const ModalContentMapper = (): ModalContent[] => {
     };
     const handleClickBlockUser = (userId: string) => {
       blockUserMutate({ userId });
+    };
+    const handleClickDisbandGroup = () => {
+      disbandConversationMutate({ groupConversationId: activeConversationId });
+      handleHideModal();
+    };
+    const handleClickLeaveGroup = () => {
+      leaveGroupMutate({ groupConversationId: activeConversationId });
+      handleHideModal();
     };
     const handleClickMessaging = async (otherUserId: string) => {
       if (currentUserData?.id === otherUserId) {
@@ -159,6 +176,8 @@ const ModalContentMapper = (): ModalContent[] => {
                 type="Group"
                 modalEntityId={modalEntityId}
                 onClickMoreMemberInfo={() => handleClick(1)}
+                onClickDisbandGroup={() => handleClickDisbandGroup()}
+                onClickLeaveGroup={() => handleClickLeaveGroup()}
               />
             ),
           },

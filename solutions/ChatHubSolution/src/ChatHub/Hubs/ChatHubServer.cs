@@ -127,9 +127,6 @@ public class ChatHubServer : Hub<IChatClient>
                                 .Where(pair => joinConversationDTO.MemberIds.Any(mId => mId == pair.Value))
                                 .Select(pair => pair.Key)
                                 .ToList();
-        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(UserConnectionMap));
-        await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(memberConnectionIds));
-
         if (memberConnectionIds.Count == 0)
         {
             return;
@@ -142,6 +139,27 @@ public class ChatHubServer : Hub<IChatClient>
         }
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveJoinConversation(conversationId);
     }
+
+    public async Task DisbandConversation(DisbandGroupConversationSignalRDTO dto)
+    {
+        var memberConnectionIds = UserConnectionMap
+                                .Where(pair => dto.MemberIds!.Any(mId => mId == pair.Value))
+                                .Select(pair => pair.Key)
+                                .ToList();
+
+        if (memberConnectionIds.Count == 0)
+        {
+            return;
+        }
+        var conversationId = dto.ConversationId;
+
+        foreach (var memberConnectionId in memberConnectionIds)
+        {
+            await Groups.AddToGroupAsync(memberConnectionId, conversationId.ToString());
+        }
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveDisbandConversation(conversationId);
+    }
+
     public async Task NotifyUserTyping(UserTypingNotificationDTO userTypingNotificationDTO)
     {
         await Clients.OthersInGroup(userTypingNotificationDTO.ConversationId.ToString()).ReceiveNotifyUserTyping(userTypingNotificationDTO);

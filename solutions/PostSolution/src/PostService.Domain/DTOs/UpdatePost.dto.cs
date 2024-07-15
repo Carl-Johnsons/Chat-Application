@@ -9,14 +9,13 @@ namespace PostService.Domain.DTOs
         [JsonProperty("id")]
         public Guid Id { get; set; }
 
-        [Required]
         [JsonProperty("content")]
-        public string Content { get; set; } = null!;
+        public string? Content { get; set; } = null!;
 
         [JsonProperty("tagIds")]
-        public List<Guid> TagIds { get; set; } = null!;
+        public List<Guid>? TagIds { get; set; } = null!;
 
         [JsonProperty("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
     }
 }
