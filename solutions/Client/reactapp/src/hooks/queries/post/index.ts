@@ -13,3 +13,4 @@ export * from "./useGetTag.query";
 export * from "./useInteractPost.mutation";
 export * from "./useReportForm.mutation";
 export * from "./useUndoInteractPost.mutation";
+export * from "./useUpdatePost.mutation";

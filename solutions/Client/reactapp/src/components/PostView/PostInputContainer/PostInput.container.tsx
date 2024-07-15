@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 
 import style from "./PostInput.container.module.scss";
@@ -7,16 +7,31 @@ import { EditorEvent, Editor as TinyMCEEditor } from "tinymce";
 import AppButton from "@/components/shared/AppButton";
 import { ClearableFile } from "@/components/shared";
 import { TagInputContainer } from "../TagInputContainer";
-import { useCreatePost } from "@/hooks/queries/post";
+import {
+  useCreatePost,
+  useGetPostByd,
+  useUpdatePost,
+} from "@/hooks/queries/post";
 import { Tag } from "@/models";
 import { useModal } from "hooks/useModal";
+import { useGlobalState } from "@/hooks";
 
 const cx = classNames.bind(style);
 
 const PostInputContainer = () => {
   const [blobs, setBlobs] = useState<File[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [modalEntityId] = useGlobalState("modalEntityId");
+
+  const isUpdatePost = !!modalEntityId;
   const { mutate: createPostMutate } = useCreatePost();
+  const { mutate: updatePostMutate } = useUpdatePost();
+
+  const { data: postData } = useGetPostByd(
+    { postId: modalEntityId },
+    { enabled: !!modalEntityId }
+  );
+
   const { handleHideModal } = useModal();
   const editorRef = useRef<TinyMCEEditor | null>(null);
 
@@ -85,6 +100,24 @@ const PostInputContainer = () => {
     handleHideModal();
   };
 
+  const handleUpdatePost = useCallback(() => {
+    updatePostMutate({
+      postId: modalEntityId,
+      tagIds: tags.flatMap((t) => t.id),
+      content: editorRef.current?.getContent() ?? "",
+      active: true,
+    });
+    handleHideModal();
+  }, [modalEntityId, tags]);
+
+  useEffect(() => {
+    if (!postData) {
+      return;
+    }
+    setTags(postData.tags);
+  }, [postData]);
+
+  const initialValue = postData?.content ?? "Write your thought!";
   return (
     <>
       <div className={cx("text-editor-container")}>
@@ -106,7 +139,7 @@ const PostInputContainer = () => {
             },
             height: "260px",
           }}
-          initialValue="Write your thought!"
+          initialValue={initialValue}
           onExecCommand={(e) => {
             console.log(`The ${e.command} command was fired.`);
           }}
@@ -152,13 +185,23 @@ const PostInputContainer = () => {
         </div>
       </div>
       <div className={cx("d-flex", "justify-content-center", "mt-2", "mb-2")}>
-        <AppButton
-          variant="app-btn-secondary"
-          className={cx("shadow-lg")}
-          onClick={handlePost}
-        >
-          Đăng bài
-        </AppButton>
+        {isUpdatePost ? (
+          <AppButton
+            variant="app-btn-secondary"
+            className={cx("shadow-lg")}
+            onClick={handleUpdatePost}
+          >
+            Cập nhập
+          </AppButton>
+        ) : (
+          <AppButton
+            variant="app-btn-secondary"
+            className={cx("shadow-lg")}
+            onClick={handlePost}
+          >
+            Đăng bài
+          </AppButton>
+        )}
       </div>
     </>
   );
