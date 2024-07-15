@@ -3,32 +3,30 @@ import { useGetCurrentUser } from ".";
 import { AxiosProps, User } from "@/models";
 import { useAxios } from "@/hooks";
 
-const QUERY_KEY = "friendList";
+const QUERY_KEY = "blockList";
 
 interface Props extends AxiosProps {}
 
-const getFriendList = async ({
+const getBlockUser = async ({
   axiosInstance,
 }: Props): Promise<User[] | null> => {
-  const url = "http://localhost:5001/api/friend";
-  const response = await axiosInstance.get(url);
+  const url = "http://localhost:5001/api/users/block";
+  const response = await axiosInstance.get(url);  
   const users: User[] = response.data;
-  console.log(users);
-  return users;
+  return users;  
 };
 
-const useGetFriendList = () => {
+const useGetBlockList = () => {
   const queryClient = useQueryClient();
   const { protectedAxiosInstance } = useAxios();
   const { data: currentUser } = useGetCurrentUser();
   return useQuery({
     queryKey: [QUERY_KEY],
     enabled: !!currentUser,
-    queryFn: () => getFriendList({ axiosInstance: protectedAxiosInstance }),
+    queryFn: () => getBlockUser({ axiosInstance: protectedAxiosInstance }),
     initialData: () => {
       return queryClient.getQueryData<User[] | null>([QUERY_KEY]);
     },
   });
 };
-
-export { useGetFriendList };
+export { useGetBlockList };

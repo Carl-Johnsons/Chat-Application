@@ -6,7 +6,7 @@ const cx = classNames.bind(style);
 const Loading = () => {
   return (
     <div className={cx("container")}>
-      <div className={cx("loader")}></div>;
+      <div className={cx("loader")}></div>
     </div>
   );
 };

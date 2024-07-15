@@ -10,7 +10,7 @@ const blockUser = async ({ userId, axiosInstance }: Props): Promise<void> => {
   const data = {
     blockUserId: userId,
   };
-  const url = "http://localhost:5001/api/users/block";
+  const url = "http://localhost:5001/api/users/block"; 
   const response = await axiosInstance.post(url, data);
   return response.data;
 };
@@ -45,7 +45,7 @@ const useBlockUser = () => {
         exact: true,
       });
       queryClient.invalidateQueries({
-        queryKey: ["userBlockList"],
+        queryKey: ["blockList"],
         exact: true,
       });
       toast.success("Chặn người dùng thành công");

@@ -297,13 +297,11 @@ public class UsersController : ControllerBase
                         .Where(u => u.UserId == userId)
                         .Select(u => u.BlockUserId)
                         .ToList();
-
-        BlockUserListDTO blockUserListDTO = new BlockUserListDTO
-        {
-            BlockUserId = result
-        };
-
-        return Ok(blockUserListDTO);
+        var users = _context.Users
+                               .Where(u => result.Contains(u.Id))
+                               .ToList();
+        var mappedUsers = _mapper.Map<List<ApplicationUser>, List<ApplicationUserResponseDTO>>(users);
+        return Ok(mappedUsers);
     }
 
     [Authorize(Roles = "Admin")]
