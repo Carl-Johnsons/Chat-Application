@@ -123,6 +123,10 @@ const AsideBody = () => {
     });
   }, [conversation?.id]);
 
+  if (!activeConversationId) {
+    return;
+  }
+
   return (
     <>
       <div

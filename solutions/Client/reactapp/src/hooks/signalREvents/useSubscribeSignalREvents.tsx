@@ -5,6 +5,7 @@ import {
   useConnectedSubscription,
   useDeletePostSubscription,
   useDisableNotifyUserTypingSubscription,
+  useDisbandGroupConversationSubscription,
   useDisconnectedSubscription,
   useForcedLogoutSubscription,
   useFriendRequestSubscription,
@@ -54,27 +55,36 @@ const useSubscribeSignalREvents = () => {
 
   const { subscribeReportPostEvent, unsubscribeReportPostEvent } =
     useReportPostSubscription();
+  const {
+    subscribeDisbandGroupConversationEvent,
+    unsubscribeDisbandGroupConversationEvent,
+  } = useDisbandGroupConversationSubscription();
 
-  const subscribeAllEvents = useCallback((connection: HubConnection) => {
-    subscribeAcceptFriendRequestEvent(connection);
-    subscribeConnectedEvent(connection);
-    subscribeDeletePostEvent(connection);
-    subscribeDisableNotifyUserTypingEvent(connection);
-    subscribeDisconnectedEvent(connection);
-    subscribeForcedLogoutEvent(connection);
-    subscribeFriendRequestEvent(connection);
-    subscribeJoinConversationEvent(connection);
-    subscribeMessageEvent(connection);
-    subscribeNotifyUserTypingEvent(connection);
-    subscribeReceiveCallEvent(connection);
-    subscribeReportPostEvent(connection);
-  }, []);
+  const subscribeAllEvents = useCallback(
+    (connection: HubConnection) => {
+      subscribeAcceptFriendRequestEvent(connection);
+      subscribeConnectedEvent(connection);
+      subscribeDeletePostEvent(connection);
+      subscribeDisableNotifyUserTypingEvent(connection);
+      subscribeDisbandGroupConversationEvent(connection);
+      subscribeDisconnectedEvent(connection);
+      subscribeForcedLogoutEvent(connection);
+      subscribeFriendRequestEvent(connection);
+      subscribeJoinConversationEvent(connection);
+      subscribeMessageEvent(connection);
+      subscribeNotifyUserTypingEvent(connection);
+      subscribeReceiveCallEvent(connection);
+      subscribeReportPostEvent(connection);
+    },
+    [subscribeDisbandGroupConversationEvent]
+  );
 
   const unsubscribeAllEvents = useCallback((connection: HubConnection) => {
     unsubscribeAcceptFriendRequestEvent(connection);
     unsubscribeConnectedEvent(connection);
     unsubscribeDeletePostEvent(connection);
     unsubscribeDisableNotifyUserTypingEvent(connection);
+    unsubscribeDisbandGroupConversationEvent(connection);
     unsubscribeDisconnectedEvent(connection);
     unsubscribeForcedLogoutEvent(connection);
     unsubscribeFriendRequestEvent(connection);

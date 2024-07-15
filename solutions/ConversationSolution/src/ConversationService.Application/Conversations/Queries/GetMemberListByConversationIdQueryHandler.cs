@@ -21,7 +21,6 @@ public class GetMemberListByConversationIdQueryHandler : IRequestHandler<GetMemb
     {
         var conversationId = request.ConversationId;
         var query = _context.ConversationUsers.AsQueryable();
-
         if (request.Other)
         {
             query = query.Where(cu => cu.ConversationId == conversationId && cu.UserId != request.UserId);

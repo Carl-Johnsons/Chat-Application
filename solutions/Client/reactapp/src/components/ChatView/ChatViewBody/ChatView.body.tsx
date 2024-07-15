@@ -169,6 +169,10 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     return messageContainers;
   }, [conversationType, messageList, userId]);
 
+  if (!activeConversationId) {
+    return;
+  }
+
   return (
     <div ref={messageContainerRef} {...mergedProps}>
       {createMessageItemContainer()}

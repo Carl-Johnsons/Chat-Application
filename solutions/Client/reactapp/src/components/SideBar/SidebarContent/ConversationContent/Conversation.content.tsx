@@ -16,7 +16,7 @@ const ConversationContent = () => {
 
   const [enableMessageListQuery, setEnableMessageListQuery] = useState(false);
   const messageListQuery = useGetInfiniteMessageList(activeConversationId, {
-    enabled: enableMessageListQuery,
+    enabled: enableMessageListQuery && !!activeConversationId,
   });
   const { data: conversationResponse } = useGetConversationList();
 
@@ -42,6 +42,7 @@ const ConversationContent = () => {
   //   //Initial with the first friend in the list
   //   handleClickConversation(friendList[0].friendNavigation.userId);
   // }, [friendList, handleClickConversation, activeConversationId]);
+
   return (
     <>
       {conversationResponse?.conversations &&

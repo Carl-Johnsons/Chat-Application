@@ -17,4 +17,7 @@ public class GroupConversationError
     public static Error AlreadyJoinGroupConversation =>
        new("GroupConversationError.AlreadyJoinGroupConversation",
            "You have already joined the group");
+    public static Error NotAuthorized =>
+       new("GroupConversationError.NotAuthorized",
+           "You don't have the authority to perform this action");
 }

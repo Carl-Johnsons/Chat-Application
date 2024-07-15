@@ -126,7 +126,9 @@ const ChatViewFooter = () => {
   const handleCancelAllBlobs = () => {
     setBlobs([]);
   };
-
+  if (!activeConversationId) {
+    return;
+  }
   return (
     <div className={cx("chat-view-footer", "w-100", "p-3")}>
       <div className={cx("d-flex")}>

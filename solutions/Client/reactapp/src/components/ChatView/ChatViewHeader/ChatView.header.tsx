@@ -99,7 +99,10 @@ const ChatViewHeader = () => {
     (isGroup
       ? (conversationData as GroupConversation)?.name
       : otherUserData?.name) ?? "";
-
+      
+  if (!activeConversationId) {
+    return;
+  }
   return (
     <>
       <div
