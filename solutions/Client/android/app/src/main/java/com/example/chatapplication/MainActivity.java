@@ -1,51 +1,66 @@
 package com.example.chatapplication;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+
+import com.example.chatapplication.databinding.ActivityMainBinding;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    ActivityMainBinding binding;
+
+    private final ChatFragment CHAT_FRAGMENT = new ChatFragment();
+    private final ContactFragment CONTACT_FRAGMENT = new ContactFragment();
+    private final PostFragment POST_FRAGMENT = new PostFragment();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(binding.getRoot());
 
-        EditText mEdit;
-        TextView tv;
+        replaceFragment(CHAT_FRAGMENT);
 
-        tv = (TextView) findViewById(R.id.textView);
-
-        mEdit = findViewById(R.id.editTextText3);
-        mEdit.setOnKeyListener(
-                new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                        tv.setText(mEdit.getText().toString());
-                        return false;
-                    }
-                }
-        );
-
-        System.out.println(tv.getText());
-
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        binding.bottomNavBar.setOnItemSelectedListener(item -> {
+            if(item.getItemId() == R.id.nav_chat){
+                replaceFragment(CHAT_FRAGMENT);
+            }else if(item.getItemId() == R.id.nav_contact){
+                replaceFragment(CONTACT_FRAGMENT);
+            }else if(item.getItemId() == R.id.nav_post){
+                replaceFragment(POST_FRAGMENT);
+            }
+            return true;
         });
+
+//        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_nav_bar);
+//        navigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                if(item.getItemId() == R.id.nav_chat){
+//                    System.out.println("chat neeeee");
+//                } else if (item.getItemId() == R.id.nav_contact) {
+//                    System.out.println("contact neeeee");
+//                } else if (item.getItemId() == R.id.nav_post) {
+//                    System.out.println("post neeeee");
+//                }
+//                return true;
+//            }
+//        });
+
     }
-
-
-
+    private void replaceFragment(Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.commit();
+    }
 }
