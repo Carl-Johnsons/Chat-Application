@@ -17,7 +17,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("int", "HELLO", env.HELLO.value)
+            buildConfigField("String", "XINCHAO", "\"Xin chao value\"")
+
+        }
         release {
+            buildConfigField("int", "HELLO", env.HELLO.value)
+            buildConfigField("String", "XINCHAO", "\"Xin chao value\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -31,6 +38,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
