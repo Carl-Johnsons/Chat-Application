@@ -52,7 +52,7 @@ public static class Config
             {
                 ClientId = "react.spa",
                 ClientName = "React SPA",
-                RequireClientSecret = false,
+                RequireClientSecret = false, // TODO: add secret later
                 AllowedGrantTypes = GrantTypes.Implicit,
                 RequirePkce = true,
                 AllowAccessTokensViaBrowser = true,
@@ -74,6 +74,31 @@ public static class Config
                     "conversation-api",
                     "post-api"
                 },
+            },
+            new Client{
+                ClientId="android.client",
+                ClientName = "Android client",
+                AllowedGrantTypes= GrantTypes.Code,
+                RequirePkce = true,
+                RequireConsent = false,
+                RequireClientSecret=false, // TODO: add secret later
+                RefreshTokenUsage = TokenUsage.ReUse,
+                RedirectUris = {
+                   "chat-application:/oauth2callback",
+                   "https://www.getpostman.com/oauth2/callback"
+                },
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Phone,
+                    IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.LocalApi.ScopeName,
+                    "conversation-api",
+                    "post-api",
+                    IdentityServerConstants.StandardScopes.OfflineAccess
+                },
+                AllowOfflineAccess = true
             }
         ];
 }
