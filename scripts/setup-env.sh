@@ -26,4 +26,7 @@ echo -e "\e[95mPulling post service env file ....\e[0m" && \
 cd "$project_root" && \
 echo -e "\e[95mPulling react-app env file ....\e[0m" && \
 (cd ./solutions/Client/reactapp && npx dotenv-vault@latest pull) && \
+cd "$project_root" && \
+echo -e "\e[95mPulling android env file ....\e[0m" && \
+(cd ./solutions/Client/android && npx dotenv-vault@latest pull) && \
 cd "$project_root"

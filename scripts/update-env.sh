@@ -42,4 +42,9 @@ echo -e "\e[95mPushing react-app env file ....\e[0m"
 (cd ./solutions/Client/reactapp && npx dotenv-vault@latest push)
 cd "$project_root"
 
+# push android env file
+echo -e "\e[95mPushing android env file ....\e[0m"
+(cd ./solutions/Client/android && npx dotenv-vault@latest push)
+cd "$project_root"
+
 
