@@ -17,15 +17,11 @@ services:
       SA_PASSWORD: ${SA_PASSWORD}
     restart: always
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${SA_PASSWORD} -Q 'SELECT 1' || exit 1"
-        ]
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P ${SA_PASSWORD} -Q \"SELECT 1\" || exit 1" ]
       interval: 10s
+      timeout: 3s
       retries: 10
       start_period: 10s
-      timeout: 3s
 
   sql-server.configurator:
     build:
@@ -66,7 +62,7 @@ services:
       test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
       interval: 10s
       timeout: 10s
-      start_period: 10s  
+      start_period: 10s
       retries: 5
 
   api-gateway:

@@ -30,7 +30,7 @@ BEGIN
 END
 EOF
 
-/opt/mssql-tools/bin/sqlcmd -S $server -U $username -P $password -i $script_file
+/opt/mssql-tools18/bin/sqlcmd -C -S $server -U $username -P $password -i $script_file
 # Check if the command was successful
 if [ $? -eq 0 ]; then
     echo "Database creation '$identityDB', '$messageDB', '$fileDB', '$postDB' script executed successfully!"
