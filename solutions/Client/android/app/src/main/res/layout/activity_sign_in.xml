@@ -9,84 +9,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="CHAT APPLICATION"
-            android:textAlignment="center"
-            android:textColor="@color/primary_active"
-            android:textSize="30sp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Username" />
-
-        <EditText
-            android:id="@+id/usernameTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:ems="15"
-            android:inputType="text"
-            android:hint="Username"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Password" />
-
-        <EditText
-            android:id="@+id/passwordTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:ems="15"
-            android:inputType="textPassword"
-            android:hint="password"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
 
         <Button
             android:id="@+id/signInBtn"
             android:layout_width="100dp"
             android:layout_height="50dp"
-            android:text="Sign in"
-            android:backgroundTint="@drawable/primary_button_colors"/>
-
-
+            android:backgroundTint="@drawable/primary_button_colors"
+            android:text="Sign in" />
     </LinearLayout>
-
-
-
-
 </LinearLayout>
 

@@ -20,12 +20,34 @@ android {
     buildTypes {
         debug {
             buildConfigField("int", "HELLO", env.HELLO.value)
-            buildConfigField("String", "XINCHAO", "\"Xin chao value\"")
-
+            buildConfigField(
+                "String",
+                "ANDROID_CLIENT_ID",
+                "\"" + env.ANDROID_CLIENT_ID.value + "\""
+            )
+            buildConfigField("String", "API_GATEWAY_PORT", "\"" + env.API_GATEWAY_PORT.value + "\"")
+            buildConfigField(
+                "String",
+                "IDENTITY_SERVICE_PORT",
+                "\"" + env.IDENTITY_SERVICE_PORT.value + "\""
+            )
+            buildConfigField("String", "SIGNALR_PORT", "\"" + env.SIGNALR_PORT.value + "\"")
         }
         release {
             buildConfigField("int", "HELLO", env.HELLO.value)
-            buildConfigField("String", "XINCHAO", "\"Xin chao value\"")
+            buildConfigField(
+                "String",
+                "ANDROID_CLIENT_ID",
+                "\"" + env.ANDROID_CLIENT_ID.value + "\""
+            )
+            buildConfigField("String", "API_GATEWAY_PORT", "\"" + env.API_GATEWAY_PORT.value + "\"")
+            buildConfigField(
+                "String",
+                "IDENTITY_SERVICE_PORT",
+                "\"" + env.IDENTITY_SERVICE_PORT.value + "\""
+            )
+            buildConfigField("String", "SIGNALR_PORT", "\"" + env.SIGNALR_PORT.value + "\"")
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

@@ -84,7 +84,7 @@ public static class Config
                 RequireClientSecret=false, // TODO: add secret later
                 RefreshTokenUsage = TokenUsage.ReUse,
                 RedirectUris = {
-                   "chat-application:/oauth2callback",
+                   "chat-application://oauth2callback",
                    "https://www.getpostman.com/oauth2/callback"
                 },
                 AllowedScopes =
