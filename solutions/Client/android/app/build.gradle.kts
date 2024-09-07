@@ -79,4 +79,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.appauth)
+    implementation("com.google.android.material:material:1.13.0-alpha05")
 }
+
