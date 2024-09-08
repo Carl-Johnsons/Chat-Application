@@ -24,6 +24,9 @@ cd "$project_root" && \
 echo -e "\e[95mPulling post service env file ....\e[0m" && \
 (cd ./solutions/UploadFileSolution/src/UploadFileService.API && npx dotenv-vault@latest pull) && \
 cd "$project_root" && \
+echo -e "\e[95mPulling notification service env file ....\e[0m" && \
+(cd ./solutions/NotificationSolution/src/NotificationService.API && npx dotenv-vault@latest pull) && \
+cd "$project_root" && \
 echo -e "\e[95mPulling react-app env file ....\e[0m" && \
 (cd ./solutions/Client/reactapp && npx dotenv-vault@latest pull) && \
 cd "$project_root" && \
