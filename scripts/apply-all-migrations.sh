@@ -43,3 +43,9 @@ echo -e "\e[96mDB=\e[0m'$DB'"
 (cd ./solutions/PostSolution/src/PostService.Infrastructure && env SERVER="$SERVER" DB="$DB" SA_PASSWORD="$SA_PASSWORD" dotnet ef database update)
 cd "$project_root"
 
+# Apply Notification Service Migrations
+DB="$NotificationDB"
+echo -e "\e[96mApplying Notification Service Migrations ....\e[0m"
+echo -e "\e[96mDB=\e[0m'$DB'"
+(cd ./solutions/NotificationSolution/src/NotificationService.Infrastructure && env SERVER="$SERVER" DB="$DB" SA_PASSWORD="$SA_PASSWORD" dotnet ef database update)
+cd "$project_root"

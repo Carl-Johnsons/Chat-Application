@@ -27,6 +27,10 @@ echo -e "\e[95mRestoring Nuget Package in upload file service ....\e[0m"
 (cd ./solutions/UploadFileSolution/src/UploadFileService.API && dotnet restore --packages "$project_root/data/nuget/upload-api" --verbosity normal)
 cd "$project_root"
 
+echo -e "\e[95mRestoring Nuget Package in upload file service ....\e[0m"
+(cd ./solutions/NotificationSolution/src/NotificationService.API && dotnet restore --packages "$project_root/data/nuget/notification-api" --verbosity normal)
+cd "$project_root"
+
 # Publishing Contract solution
 echo -e "\e[95mPublishing Contract solution ...\e[0m"
 (cd ./solutions/Contract && dotnet publish)
