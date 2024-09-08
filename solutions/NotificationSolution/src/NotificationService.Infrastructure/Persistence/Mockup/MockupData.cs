@@ -13,10 +13,10 @@ internal class MockupData
         _unitOfWork = unitOfWork;
     }
 
-
     public async Task SeedAllData()
     {
         await SeedNotificationCategoriesData();
+        await SeedNotificationActionsData();
     }
 
     private async Task SeedNotificationCategoriesData()
@@ -37,5 +37,23 @@ internal class MockupData
         }
         await _unitOfWork.SaveChangeAsync();
         await Console.Out.WriteLineAsync("=================Done seeding notification categories data=================");
+    }
+    private async Task SeedNotificationActionsData()
+    {
+        if (_context.NotificationActions.Any())
+        {
+            return;
+        }
+
+        await Console.Out.WriteLineAsync("=================Begin seeding notification actions data=================");
+        foreach (var action in NotificationActionMockup.Data)
+        {
+            _context.NotificationActions.Add(new Domain.Entities.NotificationAction
+            {
+                Code = action.Code,
+            });
+        }
+        await _unitOfWork.SaveChangeAsync();
+        await Console.Out.WriteLineAsync("=================Done seeding notification actions data=================");
     }
 }

@@ -21,6 +21,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="EventHandlers\" />
+		<Reference Include="Contract">
+			<HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+		</Reference>
 	</ItemGroup>
+
 </Project>

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
+﻿
 namespace Contract.Common;
 
 public class BaseAuditableEntity : BaseEntity
