@@ -167,6 +167,25 @@ services:
     env_file:
       - ./solutions/PostSolution/src/PostService.API/.env
 
+  notification-api:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/notification-api/Dockerfile.dev
+    container_name: notification-service
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      websocket:
+        condition: service_started
+    ports:
+      - '${NOTIFICATION_SERVICE_PORT}:80'
+    networks:
+      - back-end
+    env_file:
+      - ./solutions/NotificationSolution/src/NotificationService.API/.env
+
   reactapp:
     build:
       context: .
