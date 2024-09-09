@@ -1,6 +1,8 @@
-﻿using MediatR;
+﻿using Contract.Event.NotificationEvent;
+using MediatR;
 using PostService.Domain.Common;
 using PostService.Domain.Errors;
+using PostService.Domain.Interfaces;
 
 namespace PostService.Application.Interactions.Commands;
 
@@ -15,11 +17,13 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceBus _serviceBus;
 
-    public CreatePostInteractionCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreatePostInteractionCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _serviceBus = serviceBus;
     }
 
     public async Task<Result> Handle(CreatePostInteractionCommand request, CancellationToken cancellationToken)
@@ -61,6 +65,14 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
 
         _context.PostInteracts.Add(postInteract);
         await _unitOfWork.SaveChangeAsync();
+
+        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActionCode = "POST_INTERACTION",
+            ActorIds = [request.UserId],
+            CategoryCode = "POST",
+            Url = ""
+        });
 
         return Result.Success();
     }

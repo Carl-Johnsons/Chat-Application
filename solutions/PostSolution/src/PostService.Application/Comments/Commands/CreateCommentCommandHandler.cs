@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Contract.Event.NotificationEvent;
+using MediatR;
 using PostService.Domain.Common;
 using PostService.Domain.Errors;
 
@@ -16,11 +17,13 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceBus _serviceBus;
 
-    public CreateCommentCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreateCommentCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _serviceBus = serviceBus;
     }
 
     public async Task<Result> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
@@ -53,6 +56,14 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
         _context.PostComments.Add(postCommment);
 
         await _unitOfWork.SaveChangeAsync();
+
+        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActionCode = "POST_COMMENT",
+            ActorIds = [request.UserId],
+            CategoryCode = "POST",
+            Url = ""            
+        });
 
         return Result.Success();
     }
