@@ -1,6 +1,8 @@
 package com.example.chatapplication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,9 +17,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.chatapplication.auth.AuthStateManager;
 import com.example.chatapplication.utils.UriUtility;
 
 import net.openid.appauth.AppAuthConfiguration;
+import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationRequest;
 import net.openid.appauth.AuthorizationResponse;
@@ -26,18 +30,29 @@ import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.ResponseTypeValues;
 import net.openid.appauth.connectivity.ConnectionBuilder;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SignInActivity extends AppCompatActivity {
     private final String TAG = "SignIn";
+    private AuthorizationServiceConfiguration authConfig;
     private AuthorizationService authService;
+    private AuthStateManager authStateManager;
     private final String BASE_IDENTITY_URI = "http://localhost:" + BuildConfig.IDENTITY_SERVICE_PORT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        var authorizeUri = Uri.parse(UriUtility.transformToAndroidUri(BASE_IDENTITY_URI + "/connect/authorize"));
+        var tokenUri = Uri.parse(UriUtility.transformToAndroidUri(BASE_IDENTITY_URI + "/connect/token"));
+
+        authStateManager = AuthStateManager.getInstance(this);
+        authConfig = new AuthorizationServiceConfiguration(authorizeUri, tokenUri);
+
         authService = new AuthorizationService(this, new AppAuthConfiguration
                 .Builder()
                 .setConnectionBuilder(new ConnectionBuilder() {
@@ -59,12 +74,11 @@ public class SignInActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_sign_in);
 
-        duendeIdentityServerAuth();
+
+        // Handle sign in
+        DuendeIdentityServerAuth();
         Button btnSignIn = findViewById(R.id.signInBtn);
-        btnSignIn.setOnClickListener(v -> duendeIdentityServerAuth());
-
-        System.out.println(BuildConfig.HELLO);
-
+        btnSignIn.setOnClickListener(v -> DuendeIdentityServerAuth());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -83,8 +97,10 @@ public class SignInActivity extends AppCompatActivity {
                     Log.e(TAG, "Data is null, authorization may have failed or been canceled.");
                     return;
                 }
-                AuthorizationException ex = AuthorizationException.fromIntent(data);
                 AuthorizationResponse response = AuthorizationResponse.fromIntent(data);
+                AuthorizationException ex = AuthorizationException.fromIntent(data);
+
+                authStateManager.updateAfterAuthorization(response, ex);
 
                 if (ex != null) {
                     Log.e(TAG, "launcher: " + ex);
@@ -97,9 +113,7 @@ public class SignInActivity extends AppCompatActivity {
                 }
 
                 var tokenRequest = response.createTokenExchangeRequest();
-                Log.i(TAG, tokenRequest.jsonSerializeString());
 
-                Log.i(TAG, tokenRequest.configuration.toJsonString());
                 authService.performTokenRequest(tokenRequest, (res, exception) -> {
                     if (exception != null) {
                         Log.e(TAG, "Token request failed: " + exception.error);
@@ -124,15 +138,27 @@ public class SignInActivity extends AppCompatActivity {
             }
     );
 
+    @NonNull
+    private AuthState InitializeAuthState(AuthorizationServiceConfiguration config) {
+        SharedPreferences prefs = getSharedPreferences("AuthState", Context.MODE_PRIVATE);
+        String stateJson = prefs.getString("state", null);
+        Log.i(TAG, "init auth state");
+        if (stateJson != null) {
+            try {
+                return AuthState.jsonDeserialize(stateJson);
+            } catch (JSONException ex) {
+                Log.e(TAG, "Failed to deserialize authState, ", ex);
+            }
+        }
+        Log.i(TAG, "null");
+        return new AuthState(config);
+    }
 
-    private void duendeIdentityServerAuth() {
+
+    private void DuendeIdentityServerAuth() {
         var redrirectUri = Uri.parse("chat-application://oauth2callback");
-        var authorizeUri = Uri.parse(UriUtility.transformToAndroidUri(BASE_IDENTITY_URI + "/connect/authorize"));
-        var tokenUri = Uri.parse(UriUtility.transformToAndroidUri(BASE_IDENTITY_URI + "/connect/token"));
-
-        var config = new AuthorizationServiceConfiguration(authorizeUri, tokenUri);
         var request = new AuthorizationRequest
-                .Builder(config, BuildConfig.ANDROID_CLIENT_ID, ResponseTypeValues.CODE, redrirectUri)
+                .Builder(authConfig, BuildConfig.ANDROID_CLIENT_ID, ResponseTypeValues.CODE, redrirectUri)
                 .setScope("openid profile phone email IdentityServerApi conversation-api post-api offline_access")
                 .build();
 

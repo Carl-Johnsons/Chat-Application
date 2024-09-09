@@ -19,7 +19,6 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("int", "HELLO", env.HELLO.value)
             buildConfigField(
                 "String",
                 "ANDROID_CLIENT_ID",
@@ -34,7 +33,6 @@ android {
             buildConfigField("String", "SIGNALR_PORT", "\"" + env.SIGNALR_PORT.value + "\"")
         }
         release {
-            buildConfigField("int", "HELLO", env.HELLO.value)
             buildConfigField(
                 "String",
                 "ANDROID_CLIENT_ID",
@@ -79,6 +77,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.appauth)
-    implementation("com.google.android.material:material:1.13.0-alpha05")
+    implementation(libs.material.v1130alpha05)
     implementation(libs.retrofit)
 }
