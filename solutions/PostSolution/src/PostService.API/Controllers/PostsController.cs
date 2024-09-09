@@ -222,6 +222,7 @@ public class PostsController : BaseApiController
         var result = await _sender.Send(new DeletePostCommand
         {
             PostId = dto.Id,
+            UserId = Guid.Parse(subjectId!)
         });
 
         result.ThrowIfFailure();
