@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public virtual DbSet<GroupConversationInvite> GroupConversationInvites { get; set; }
     public virtual DbSet<ConversationUser> ConversationUsers { get; set; }
     public virtual DbSet<Message> Messages { get; set; }
+    public virtual DbSet<DisabledNotification> DisabledNotifications { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
