@@ -1,5 +1,7 @@
 ﻿using ConversationService.Application.Conversations.Commands;
+using ConversationService.Application.Conversations.Queries;
 using ConversationService.Application.DisabledNotifications.Commands;
+using ConversationService.Application.DisabledNotifications.Queries;
 using ConversationService.Domain.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -54,4 +56,19 @@ public class DisabledNotificationController : BaseApiController
         return NoContent();
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetDisabledNotificationByUserId()
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var query = new GetDisabledNotificationsByUserIdQuery
+        {
+            UserId = Guid.Parse(subjectId!)
+        };
+        var result = await _sender.Send(query);
+        result.ThrowIfFailure();
+
+        return Ok(result.Value);
+    }
 }
