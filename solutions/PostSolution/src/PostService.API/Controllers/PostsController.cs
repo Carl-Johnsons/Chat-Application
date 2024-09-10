@@ -91,7 +91,7 @@ public class PostsController : BaseApiController
                 PostId = updatePostDTO.Id
             });
 
-            foreach (var t in updatePostDTO.TagIds)
+            foreach (var t in updatePostDTO.TagIds!)
             {
                 var postTag = await _sender.Send(new CreatePostTagCommand
                 {
