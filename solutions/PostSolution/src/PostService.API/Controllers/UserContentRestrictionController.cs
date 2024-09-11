@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostService.Application.Posts.Commands;
+using PostService.Application.Posts.Queries;
 using PostService.Domain.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -17,20 +18,59 @@ public class UserContentRestrictionController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateContentRestriction(CreateContentRestrictionDTO contentRestrictionDTO)
+    public async Task<IActionResult> Post([FromBody] CreateContentRestrictionDTO contentRestrictionDTO)
     {
-        var claims = _httpContextAccessor.HttpContext?.User.Claims;
-        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
-
-        var content = await _sender.Send( new CreateUserContentRestrictionsCommand
+        var result = await _sender.Send(new CreateUserContentRestrictionsCommand
         {
             UserId = contentRestrictionDTO.UserId,
             TypeId = contentRestrictionDTO.TypeId,
             ExpiredAt = contentRestrictionDTO.ExpiredAt
         });
 
-        content.ThrowIfFailure();
+        result.ThrowIfFailure();
 
         return Ok();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Put([FromBody] UpdateContentRestrictionDTO updateContentRestrictionDTO)
+    {
+        var result = await _sender.Send(new UpdateUserContentRestrictionsCommand
+        {
+            Id = updateContentRestrictionDTO.Id,
+            UserId = updateContentRestrictionDTO.UserId,
+            TypeId = updateContentRestrictionDTO.TypeId,
+            ExpiredAt = updateContentRestrictionDTO.ExpiredAt
+        });
+
+        result.ThrowIfFailure();
+
+        return Ok();
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromBody] DeleteContentRestrictionDTO deleteContentRestrictionDTO)
+    {
+        var result = await _sender.Send(new DeleteUserContentRestrictionsCommand
+        {
+            Id = deleteContentRestrictionDTO.Id
+        });
+        
+        result.ThrowIfFailure();
+
+        return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Get([FromQuery] Guid UserId)
+    {
+        var result = await _sender.Send(new GetUserContentRestrictionsByUserIdQuery
+        {
+            UserId = UserId
+        });
+
+        result!.ThrowIfFailure();
+
+        return Ok(result);
     }
 }

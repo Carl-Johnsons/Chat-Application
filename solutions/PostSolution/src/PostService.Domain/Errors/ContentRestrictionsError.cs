@@ -6,5 +6,8 @@ public class ContentRestrictionsError
         new Error("ContentRestrictions.TypeNotFound", "Type Not Found!");
 
     public static Error UserAlreadyInList =>
-        new Error("ContentRestrictions.UserAlreadyInList", "User Already In List");
+        new Error("ContentRestrictions.UserAlreadyInList", "User Already In List!");
+
+    public static Error NotFound =>
+        new Error("ContentRestrictions.NotFound", "User Content Restrictions Not Found!");
 }
