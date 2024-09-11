@@ -38,6 +38,7 @@ public static class DependencyInjection
             mockupData.SeedPostData().Wait();
             mockupData.SeedCommentData().Wait();
             mockupData.SeedPostInteractData().Wait();
+            mockupData.SeedContentRestrictionsTypeData().Wait();
         }
 
         return services;
