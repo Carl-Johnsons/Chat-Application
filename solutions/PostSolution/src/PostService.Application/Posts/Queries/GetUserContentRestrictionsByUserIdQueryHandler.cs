@@ -4,12 +4,12 @@ using PostService.Domain.Errors;
 
 namespace PostService.Application.Posts.Queries;
 
-public record GetUserContentRestrictionsByUserIdQuery : IRequest<Result<UserContentRestrictions>?>
+public record GetUserContentRestrictionsByUserIdQuery : IRequest<Result<UserContentRestrictions?>>
 {
     public Guid UserId { get; init; }
 }
 
-public class GetUserContentRestrictionsByUserIdQueryHandler : IRequestHandler<GetUserContentRestrictionsByUserIdQuery, Result<UserContentRestrictions>?>
+public class GetUserContentRestrictionsByUserIdQueryHandler : IRequestHandler<GetUserContentRestrictionsByUserIdQuery, Result<UserContentRestrictions?>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -18,18 +18,17 @@ public class GetUserContentRestrictionsByUserIdQueryHandler : IRequestHandler<Ge
         _context = context;
     }
 
-    public async Task<Result<UserContentRestrictions>?> Handle(GetUserContentRestrictionsByUserIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<UserContentRestrictions?>> Handle(GetUserContentRestrictionsByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var user = _context.UserContentRestrictions
+        var userResult = _context.UserContentRestrictions
                     .Where(u => u.UserId == request.UserId)
                     .SingleOrDefault();
 
-        if (user == null)
+        if (userResult == null)
         {
-            return Result<UserContentRestrictions>.Failure(ContentRestrictionsError.NotFound)!;
-        } else
-        {
-            return Result<UserContentRestrictions>.Success(user);
-        }
+            return Result<UserContentRestrictions?>.Failure(ContentRestrictionsError.NotFound)!;
+        } 
+        return Result<UserContentRestrictions?>.Success(userResult);
+        
     }
 }

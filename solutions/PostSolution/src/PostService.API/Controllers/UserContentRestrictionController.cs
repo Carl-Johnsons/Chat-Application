@@ -71,6 +71,6 @@ public class UserContentRestrictionController : BaseApiController
 
         result!.ThrowIfFailure();
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 }
