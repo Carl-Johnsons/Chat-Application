@@ -1,6 +1,7 @@
 package com.example.chatapplication;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,21 +10,28 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 
+import com.example.chatapplication.auth.AuthStateManager;
 import com.example.chatapplication.databinding.ActivityMainBinding;
 
 
 public class MainActivity extends AppCompatActivity {
-
+    private final String TAG = "Main";
     ActivityMainBinding binding;
 
     private final ChatFragment CHAT_FRAGMENT = new ChatFragment();
     private final ContactFragment CONTACT_FRAGMENT = new ContactFragment();
     private final PostFragment POST_FRAGMENT = new PostFragment();
+    private AuthStateManager authStateManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        authStateManager = AuthStateManager.getInstance(this);
+        var authState = authStateManager.getCurrent();
+        Log.i(TAG, authState.jsonSerializeString());
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
@@ -31,11 +39,11 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(CHAT_FRAGMENT);
 
         binding.bottomNavBar.setOnItemSelectedListener(item -> {
-            if(item.getItemId() == R.id.nav_chat){
+            if (item.getItemId() == R.id.nav_chat) {
                 replaceFragment(CHAT_FRAGMENT);
-            }else if(item.getItemId() == R.id.nav_contact){
+            } else if (item.getItemId() == R.id.nav_contact) {
                 replaceFragment(CONTACT_FRAGMENT);
-            }else if(item.getItemId() == R.id.nav_post){
+            } else if (item.getItemId() == R.id.nav_post) {
                 replaceFragment(POST_FRAGMENT);
             }
             return true;
@@ -57,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
     }
-    private void replaceFragment(Fragment fragment){
+
+    private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);

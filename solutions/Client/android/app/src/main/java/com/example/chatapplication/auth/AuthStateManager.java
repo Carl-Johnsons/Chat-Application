@@ -70,8 +70,8 @@ public class AuthStateManager {
     @AnyThread
     @NonNull
     public AuthState updateAfterAuthorization(
-            @NonNull AuthorizationResponse response,
-            @NonNull AuthorizationException ex) {
+            @Nullable AuthorizationResponse response,
+            @Nullable AuthorizationException ex) {
         AuthState current = getCurrent();
         current.update(response, ex);
         return replace(current);
