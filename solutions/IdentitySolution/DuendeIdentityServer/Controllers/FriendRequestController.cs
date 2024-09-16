@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract.Event.FriendEvent;
+using Contract.Event.NotificationEvent;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Constants;
 using DuendeIdentityServer.Data;
@@ -97,6 +98,15 @@ public class FriendRequestController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
         }
 
+        await _publishEndpoint.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActorIds = [Guid.Parse(frInput.SenderId)],
+            ActionCode = "SEND_FRIEND_REQUEST",
+            CategoryCode = "USER",
+            OwnerId = Guid.Parse(frInput.ReceiverId),
+            Url = ""
+        });
+
         return Ok(frInput);
     }
 
@@ -136,7 +146,16 @@ public class FriendRequestController : ControllerBase
         await Console.Out.WriteLineAsync("Done sending friendCreatedEvent");
 
         await _signalRService.InvokeAction(SignalREvent.SEND_ACCEPT_FRIEND_REQUEST_ACTION, friend);
-        
+
+        await _publishEndpoint.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActorIds = [Guid.Parse(friend.FriendId)],
+            ActionCode = "ACCEPT_FRIEND_REQUEST",
+            CategoryCode = "USER",
+            OwnerId = Guid.Parse(friend.UserId),
+            Url = ""
+        });
+
         return Ok(friend);
     }
 
