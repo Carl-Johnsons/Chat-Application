@@ -4,7 +4,6 @@ import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
 import {
-  signalRCall,
   useGlobalState,
   useModal,
   useSignalREvents,
@@ -48,13 +47,7 @@ const ChatViewHeader = () => {
   );
   const handleToggleAside = () => setShowAside(!showAside);
   const handleCall = useCallback(() => {
-    invokeAction(
-      signalRCall({
-        targetConversationId: activeConversationId,
-      })
-    );
     router.push("/call/1");
-
   }, [activeConversationId, invokeAction]);
 
   const handleClickAvatar = useCallback(() => {

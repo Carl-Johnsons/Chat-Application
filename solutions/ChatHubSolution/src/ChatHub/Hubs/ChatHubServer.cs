@@ -198,33 +198,27 @@ public class ChatHubServer : Hub<IChatClient>
         await Clients.Group(ROLE_BASED_GROUP.ADMIN).ReportPost();
     }
 
-    public async Task Call(CallDTO callDTO)
-    {
-        var conversationId = callDTO.TargetConversationId;
-        var callerId = UserConnectionMap[Context.ConnectionId];
 
+    public async Task SendCallSignal(SendCallSignalDTO sendCallSignalDTO)
+    {
+        // Forward the signal to the target peer
+        var conversationId = sendCallSignalDTO.TargetConversationId;
+        var callerId = UserConnectionMap[Context.ConnectionId];
         callOffers.Add(new CallOffer
         {
             CallerId = callerId,
             ConversationId = conversationId
         });
-
-        await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
-    }
-
-
-    public async Task SendSignal(SendSignalDTO sendSignalDTO)
-    {
-        // Forward the signal to the target peer
-        var conversationId = sendSignalDTO.TargetConversationId;
         await Console.Out.WriteLineAsync("Day la send sygnal**************************************");
-        await Clients.OthersInGroup(conversationId.ToString()).ReceiveSignal(sendSignalDTO.SignalData);
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveSignal(sendCallSignalDTO.SignalData);
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
+
     }
 
-    public async Task AcceptCall(SendSignalDTO sendSignalDTO) {
-        var conversationId = sendSignalDTO.TargetConversationId;
+    public async Task AcceptCall(SendCallSignalDTO sendCallSignalDTO) {
+        var conversationId = sendCallSignalDTO.TargetConversationId;
         await Console.Out.WriteLineAsync("Day la accepp sygnal**************************************");
-        await Clients.OthersInGroup(conversationId.ToString()).ReceiveAcceptCall(sendSignalDTO.SignalData);
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveAcceptCall(sendCallSignalDTO.SignalData);
     }
 
     #region Helper method

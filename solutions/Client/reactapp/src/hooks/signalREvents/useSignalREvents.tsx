@@ -2,9 +2,8 @@ import { useContext, useRef } from "react";
 
 import { FriendRequest } from "@/models";
 
-import { CallDTO, UserTypingNotificationDTO } from "@/models/DTOs";
+import { SendCallSignalDTO, UserTypingNotificationDTO } from "@/models/DTOs";
 import { ChatHubContext } from "contexts/ChatHubContext";
-import { SendSignalDTO } from "models/DTOs/SendSignal.dto";
 
 interface InvokeSignalREvent {
   name: string;
@@ -61,25 +60,18 @@ export function signalRDisableNotifyUserTyping(
     args: [userTypingNotificationDTO],
   };
 }
-export function signalRCall(callDTO: CallDTO) {
+
+export function signalRSendCallSignal(sendCallSignalDTO: SendCallSignalDTO) {
   return {
-    name: "Call",
-    args: [callDTO],
+    name: "SendCallSignal",
+    args: [sendCallSignalDTO],
   };
 }
 
-export function signalRSendSignal(sendSignalDTO: SendSignalDTO) {
-  return {
-    name: "SendSignal",
-    args: [sendSignalDTO],
-  };
-}
-
-export function signalRAcceptCall(sendSignalDTO: SendSignalDTO) {
-  console.log("call acceptCall hub")
+export function signalRAcceptCall(sendCallSignalDTO: SendCallSignalDTO) {
   return {
     name: "AcceptCall",
-    args: [sendSignalDTO],
+    args: [sendCallSignalDTO],
   };
 }
 

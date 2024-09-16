@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ChatHub.DTOs;
 
-public class SendSignalDTO
+public class SendCallSignalDTO
 {
     [Required]
     [JsonProperty("targetConversationId")]

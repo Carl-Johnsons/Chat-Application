@@ -5,16 +5,12 @@ import { useGlobalState, usePeer } from "@/hooks";
 
 
 const VideoCall: React.FC = () => {
-  //const [peer, setPeer] = useState<Peer.Instance | null>(null);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const [activeConversationId] = useGlobalState("activeConversationId");
   const { initiateCallerPeer, remoteVideoRef, initiateCalleePeer } = usePeer();
-  //const [userPeer] = useGlobalState("userPeer");
   const [signalData] = useGlobalState("signalData");
 
-
   useEffect(() => {
-    // Start video call automatically on page load
     const startVideoCall = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       if (!signalData) {

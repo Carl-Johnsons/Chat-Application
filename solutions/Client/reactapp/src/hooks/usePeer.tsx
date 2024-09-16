@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import Peer, { SignalData } from "simple-peer";
-import { signalRAcceptCall, signalRSendSignal, useGlobalState, useSignalREvents } from "@/hooks";
+import { signalRAcceptCall, signalRSendCallSignal, useGlobalState, useSignalREvents } from "@/hooks";
 
 type InitCallerPeerProps = { conversationId?: string, stream?: MediaStream }
 
@@ -21,16 +21,14 @@ const usePeer = () => {
         });
 
         peerRef.current = peer;
-        //setUserPeer(peer);
         peer.on("signal", (signalData) => {
             console.log("set signal caller");
             setSignalData(signalData);
-            // Send signal data via SignalR
             console.log("send signal caller*****************************", remoteVideoRef)
             const data = JSON.stringify(signalData);
             if (conversationId) {
                 invokeAction(
-                    signalRSendSignal({
+                    signalRSendCallSignal({
                         signalData: data,
                         targetConversationId: conversationId,
                     })
