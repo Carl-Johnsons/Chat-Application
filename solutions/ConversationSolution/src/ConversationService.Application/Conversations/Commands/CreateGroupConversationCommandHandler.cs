@@ -1,4 +1,5 @@
 ﻿using Contract.DTOs;
+using Contract.Event.NotificationEvent;
 using Contract.Event.UploadEvent;
 using Contract.Event.UploadEvent.EventModel;
 using System.ComponentModel.DataAnnotations;
@@ -94,6 +95,15 @@ public class CreateGroupConversationCommandHandler : IRequestHandler<CreateGroup
             ConversationId = groupConversation.Id,
             MemberIds = [request.CurrentUserID, .. membersId]
         });
+
+        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActionCode = "ADD_MEMBER_TO_GROUP",
+            CategoryCode = "GROUP",
+            ActorIds =  membersId.ToArray(),
+            Url = ""
+        });
+
         return Result.Success();
     }
 }

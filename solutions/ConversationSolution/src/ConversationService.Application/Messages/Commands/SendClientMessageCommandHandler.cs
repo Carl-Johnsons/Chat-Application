@@ -1,5 +1,6 @@
 ﻿
 using Contract.DTOs;
+using Contract.Event.NotificationEvent;
 using Contract.Event.UploadEvent;
 using Contract.Event.UploadEvent.EventModel;
 using Newtonsoft.Json;
@@ -79,6 +80,18 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
         await _unitOfWork.SaveChangeAsync(cancellationToken);
 
         await _signalRService.InvokeAction(SignalREvent.SEND_MESSAGE_ACTION, message);
+
+        if (dto.UserTaggedId != null)
+        {
+            
+                await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+                {
+                    ActionCode = "POST_USER_TAG",
+                    ActorIds = dto.UserTaggedId,
+                    CategoryCode = ""
+                });
+            
+        }
 
         return Result<Message>.Success(message);
     }
