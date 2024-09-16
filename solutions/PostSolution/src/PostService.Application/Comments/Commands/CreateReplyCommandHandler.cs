@@ -56,7 +56,8 @@ public class CreateReplyCommandHandler : IRequestHandler<CreateReplyCommand, Res
                 ActionCode = "POST_REPLY",
                 ActorIds = [replyComment.UserId],
                 CategoryCode = "POST",
-                Url = ""
+                Url = "",
+                OwnerId = comment.UserId,
             });
 
             return Result.Success();            

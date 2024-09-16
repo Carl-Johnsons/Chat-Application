@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Contract.Event.NotificationEvent;
+using MediatR;
 using PostService.Domain.Common;
 using PostService.Domain.Errors;
 
@@ -9,17 +10,20 @@ public class CreateUserContentRestrictionsCommand : IRequest<Result>
     public Guid UserId { get; init; }
     public Guid TypeId { get; init; }
     public DateTime ExpiredAt { get; init; }
+    public Guid AdminId { get; init; }
 }
 
 public class CreateUserContentRestrictionsCommandHandler : IRequestHandler<CreateUserContentRestrictionsCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceBus _serviceBus;
 
-    public CreateUserContentRestrictionsCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreateUserContentRestrictionsCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _serviceBus = serviceBus;
     }
 
     public async Task<Result> Handle(CreateUserContentRestrictionsCommand request, CancellationToken cancellationToken)
@@ -42,6 +46,11 @@ public class CreateUserContentRestrictionsCommandHandler : IRequestHandler<Creat
             return Result.Failure(ContentRestrictionsError.TypeNotFound);
         }
 
+        if( request.ExpiredAt <  DateTime.UtcNow )
+        {
+            return Result.Failure(ContentRestrictionsError.MustFromFuture);
+        }
+
         _context.UserContentRestrictions.Add( new UserContentRestrictions
         {
             UserId = request.UserId,
@@ -50,6 +59,15 @@ public class CreateUserContentRestrictionsCommandHandler : IRequestHandler<Creat
         });
 
         await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActionCode = "Post_warning",
+            CategoryCode = "User",
+            Url = "",
+            ActorIds = [request.AdminId],
+            OwnerId = request.UserId
+        });
 
         return Result.Success();
     }

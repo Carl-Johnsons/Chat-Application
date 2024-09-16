@@ -71,7 +71,8 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
             ActionCode = "POST_INTERACTION",
             ActorIds = [request.UserId],
             CategoryCode = "POST",
-            Url = ""
+            Url = "",
+            OwnerId = post.UserId,
         });
 
         return Result.Success();

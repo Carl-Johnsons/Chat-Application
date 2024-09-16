@@ -10,4 +10,7 @@ public class ContentRestrictionsError
 
     public static Error NotFound =>
         new Error("ContentRestrictions.NotFound", "User Content Restrictions Not Found!");
+
+    public static Error MustFromFuture =>
+        new Error("ContentRestrictions.MustFromFuture", "Expired time must be from the future!");
 }

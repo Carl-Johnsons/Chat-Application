@@ -20,8 +20,12 @@ public class UserContentRestrictionController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateContentRestrictionDTO contentRestrictionDTO)
     {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
         var result = await _sender.Send(new CreateUserContentRestrictionsCommand
         {
+            AdminId = Guid.Parse(subjectId!),
             UserId = contentRestrictionDTO.UserId,
             TypeId = contentRestrictionDTO.TypeId,
             ExpiredAt = contentRestrictionDTO.ExpiredAt

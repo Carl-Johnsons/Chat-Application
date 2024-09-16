@@ -62,7 +62,8 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
             ActionCode = "POST_COMMENT",
             ActorIds = [request.UserId],
             CategoryCode = "POST",
-            Url = ""            
+            Url = "",
+            OwnerId = post.UserId,
         });
 
         return Result<Comment>.Success(comment);
