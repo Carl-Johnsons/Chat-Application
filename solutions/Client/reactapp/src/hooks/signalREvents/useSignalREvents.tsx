@@ -4,6 +4,7 @@ import { FriendRequest } from "@/models";
 
 import { CallDTO, UserTypingNotificationDTO } from "@/models/DTOs";
 import { ChatHubContext } from "contexts/ChatHubContext";
+import { SendSignalDTO } from "models/DTOs/SendSignal.dto";
 
 interface InvokeSignalREvent {
   name: string;
@@ -19,7 +20,7 @@ const useSignalREvents = () => {
   const { connection } = context;
 
   // ref
-  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
+  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => { });
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
     if (!connection) {
@@ -66,4 +67,20 @@ export function signalRCall(callDTO: CallDTO) {
     args: [callDTO],
   };
 }
+
+export function signalRSendSignal(sendSignalDTO: SendSignalDTO) {
+  return {
+    name: "SendSignal",
+    args: [sendSignalDTO],
+  };
+}
+
+export function signalRAcceptCall(sendSignalDTO: SendSignalDTO) {
+  console.log("call acceptCall hub")
+  return {
+    name: "AcceptCall",
+    args: [sendSignalDTO],
+  };
+}
+
 export { useSignalREvents };

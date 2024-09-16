@@ -212,6 +212,21 @@ public class ChatHubServer : Hub<IChatClient>
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
     }
 
+
+    public async Task SendSignal(SendSignalDTO sendSignalDTO)
+    {
+        // Forward the signal to the target peer
+        var conversationId = sendSignalDTO.TargetConversationId;
+        await Console.Out.WriteLineAsync("Day la send sygnal**************************************");
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveSignal(sendSignalDTO.SignalData);
+    }
+
+    public async Task AcceptCall(SendSignalDTO sendSignalDTO) {
+        var conversationId = sendSignalDTO.TargetConversationId;
+        await Console.Out.WriteLineAsync("Day la accepp sygnal**************************************");
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveAcceptCall(sendSignalDTO.SignalData);
+    }
+
     #region Helper method
     private async Task AddUserToGroup(Guid conversationId, Guid userId)
     {
