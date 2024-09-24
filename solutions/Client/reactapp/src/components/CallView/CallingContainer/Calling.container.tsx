@@ -1,25 +1,17 @@
-//import React, { useCallback } from "react";
 import style from "./Calling.container.module.scss";
 import classNames from "classnames/bind";
-import { useGlobalState, useModal, usePeer } from "@/hooks";
+import { useGlobalState, useModal } from "@/hooks";
 import { useGetUser } from "@/hooks/queries/user";
 import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
 import AppButton from "@/components/shared/AppButton";
 import { useRouter } from "next/navigation";
-//import { count } from "console";
 
 const cx = classNames.bind(style);
 
 const CallingContainer = () => {
   const [entityId] = useGlobalState("modalEntityId");
   const router = useRouter();
-  // const [signalData] = useGlobalState("signalData");
-  // const [activeConversationId] = useGlobalState("activeConversationId");
-
-  // const { initiateCalleePeer } = usePeer();
-
-  //hook
   const { data: caller } = useGetUser(entityId, {
     enabled: !!entityId,
   });
@@ -29,14 +21,8 @@ const CallingContainer = () => {
     handleHideModal();
   };
 
-  // const handleAcceptCall = useCallback(() => {
-  //   router.push("/call/1");
-  //   //initiateCalleePeer({ callerSignalData: signalData, conversationId: activeConversationId })
-  // }, [signalData])
-
   const handleAcceptCall = () => {
     router.push("/call/1");
-    //initiateCalleePeer({ callerSignalData: signalData, conversationId: activeConversationId })
   }
 
   return (

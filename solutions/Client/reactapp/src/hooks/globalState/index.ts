@@ -29,7 +29,7 @@ const initialState = {
   //Peer
   userPeer: null as unknown as Instance,
   signalData: null as unknown as SignalData,
-  streamData: null as unknown as MediaStream
+  // streamData: null as unknown as MediaStream
 };
 
 const { useGlobalState, setGlobalState } = createGlobalState(initialState);

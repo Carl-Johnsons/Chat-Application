@@ -210,7 +210,7 @@ public class ChatHubServer : Hub<IChatClient>
             ConversationId = conversationId
         });
         await Console.Out.WriteLineAsync("Day la send sygnal**************************************");
-        await Clients.OthersInGroup(conversationId.ToString()).ReceiveSignal(sendCallSignalDTO.SignalData);
+        await Clients.OthersInGroup(conversationId.ToString()).ReceiveSignal(sendCallSignalDTO.SignalData, conversationId);
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
 
     }

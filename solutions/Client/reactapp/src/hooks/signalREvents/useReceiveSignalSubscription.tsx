@@ -8,14 +8,16 @@ import { SignalData } from "simple-peer";
 const useReceiveSignalSubscription = () => {
 
   const [, setSignalData] = useGlobalState("signalData");
+  const [, SetActiveConversationId] = useGlobalState("activeConversationId");
   const subscribeReceiveSignalEvent = useCallback(
     (connection: HubConnection) => {
       if (!connection) {
         return;
       }
-      connection.on(SignalREvent.RECEIVE_SIGNAL, (signalData: string) => {
+      connection.on(SignalREvent.RECEIVE_SIGNAL, (signalData: string, conversationId: string) => {
         console.log("receive signal");
         setSignalData(JSON.parse(signalData) as SignalData);
+        SetActiveConversationId(conversationId);
         console.log(signalData);
       });
     },

@@ -1,24 +1,34 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Peer, { SignalData } from "simple-peer";
 import { signalRAcceptCall, signalRSendCallSignal, useGlobalState, useSignalREvents } from "@/hooks";
 
-type InitCallerPeerProps = { conversationId?: string, stream?: MediaStream }
+type InitCallerPeerProps = { conversationId?: string, stream: MediaStream }
 
 type InitCalleePeerProps = { conversationId?: string, stream?: MediaStream, callerSignalData: SignalData }
 
 const usePeer = () => {
     const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+    const localVideoRef = useRef<HTMLVideoElement | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
+
     const { invokeAction } = useSignalREvents();
     const [, setSignalData] = useGlobalState("signalData");
-    const [userPeer, setUserPeer] = useGlobalState("userPeer");
+    const [, setUserPeer] = useGlobalState("userPeer");
     const peerRef = useRef<Peer.Instance | null>(null);
+    const [callStatus, setCallStatus] = useState("");
+
+
+
 
     const initiateCallerPeer = useCallback(({ conversationId, stream }: InitCallerPeerProps) => {
+        streamRef.current = stream;
+
         const peer = new Peer({
             initiator: true, // Adjust as necessary, can be set based on context
             trickle: false,
             stream,
         });
+        setCallStatus("Đang kết nối...");
 
         peerRef.current = peer;
         peer.on("signal", (signalData) => {
@@ -27,6 +37,7 @@ const usePeer = () => {
             console.log("send signal caller*****************************", remoteVideoRef)
             const data = JSON.stringify(signalData);
             if (conversationId) {
+                setCallStatus("Đang gọi...");
                 invokeAction(
                     signalRSendCallSignal({
                         signalData: data,
@@ -42,9 +53,7 @@ const usePeer = () => {
             }
             remoteVideoRef.current?.play();
         });
-
         return peer;
-
     }, []);
 
     const initiateCalleePeer = useCallback(({ callerSignalData, stream, conversationId }: InitCalleePeerProps) => {
@@ -53,7 +62,6 @@ const usePeer = () => {
             trickle: false,
             stream,
         });
-
         peerRef.current = peer;
         setUserPeer(peer);
         console.log("global userpeer", peer);
@@ -72,12 +80,45 @@ const usePeer = () => {
             }
             remoteVideoRef.current?.play();
         });
-
         console.log("callersigaldata", callerSignalData)
         console.log("peer 2 signal peer 1")
         peer.signal(callerSignalData);
         return peer;
     }, []);
+
+    const muteMic = (stream: MediaStream): void => {
+        const audioTrack = stream.getAudioTracks()[0];
+        if (audioTrack) audioTrack.enabled = false; // Tắt mic
+    };
+
+    const unmuteMic = (stream: MediaStream): void => {
+        const audioTrack = stream.getAudioTracks()[0];
+        if (audioTrack) audioTrack.enabled = true; // Bật mic
+    };
+
+    const disableCamera = (stream: MediaStream): void => {
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+            videoTrack.enabled = false;
+            //delay to set black remote video
+            setTimeout(() => {
+                videoTrack.stop();
+            }, 100);
+        }
+    };
+
+    const enableCamera = async (stream: MediaStream): Promise<void> => {
+        const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const newVideoTrack = newStream.getVideoTracks()[0];
+        const oldVideoTrack = stream.getVideoTracks()[0];
+        if (oldVideoTrack) {
+            stream.removeTrack(oldVideoTrack);
+            oldVideoTrack.stop();
+        }
+        stream.addTrack(newVideoTrack);
+        peerRef.current?.replaceTrack(oldVideoTrack, newVideoTrack, stream); // Thay thế trong peer (nếu hỗ trợ)
+
+    };
 
     useEffect(() => {
         if (peerRef.current) {
@@ -86,11 +127,7 @@ const usePeer = () => {
         }
     }, [peerRef.current]);
 
-    useEffect(() => {
-        console.log("userPeer changed", userPeer);
-    }, [userPeer]);
-
-    return { remoteVideoRef, initiateCallerPeer, initiateCalleePeer }
+    return { callStatus, localVideoRef, remoteVideoRef, initiateCallerPeer, initiateCalleePeer, muteMic, unmuteMic, disableCamera, enableCamera }
 
 };
 
