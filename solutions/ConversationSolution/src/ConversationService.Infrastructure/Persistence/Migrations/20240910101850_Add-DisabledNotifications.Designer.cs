@@ -4,6 +4,7 @@ using ConversationService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConversationService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240910101850_Add-DisabledNotifications")]
+    partial class AddDisabledNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,7 +77,7 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                     b.ToTable("ConversationUser");
                 });
 
-            modelBuilder.Entity("ConversationService.Domain.Entities.DisabledNotification", b =>
+            modelBuilder.Entity("ConversationService.Domain.Entities.DisabledNotifications", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +93,7 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.ToTable("DisabledNotification");
+                    b.ToTable("DisabledNotifications");
                 });
 
             modelBuilder.Entity("ConversationService.Domain.Entities.GroupConversationInvite", b =>
@@ -187,7 +190,7 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                     b.Navigation("Conversation");
                 });
 
-            modelBuilder.Entity("ConversationService.Domain.Entities.DisabledNotification", b =>
+            modelBuilder.Entity("ConversationService.Domain.Entities.DisabledNotifications", b =>
                 {
                     b.HasOne("ConversationService.Domain.Entities.Conversation", "Conversation")
                         .WithMany()
