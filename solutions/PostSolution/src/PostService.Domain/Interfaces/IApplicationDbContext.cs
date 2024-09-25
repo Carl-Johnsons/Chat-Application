@@ -13,4 +13,8 @@ public interface IApplicationDbContext : IDbContext
     public DbSet<PostInteract> PostInteracts { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
     public DbSet<PostReport> PostReports { get; set; }
+    public DbSet<CommentReplies> CommentReplies { get; set; }
+    public DbSet<UserWarning> UserWarnings { get; set; }
+    public DbSet<UserContentRestrictions> UserContentRestrictions { get; set; }
+    public DbSet<UserContentRestrictionsType> UserContentRestrictionsTypes { get; set; }
 }

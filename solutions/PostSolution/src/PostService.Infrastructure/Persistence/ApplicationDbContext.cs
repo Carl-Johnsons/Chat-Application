@@ -23,6 +23,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PostInteract> PostInteracts { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
     public DbSet<PostReport> PostReports { get; set; }
+    public DbSet<CommentReplies> CommentReplies { get; set; }
+    public DbSet<UserWarning> UserWarnings { get; set; }
+    public DbSet<UserContentRestrictions> UserContentRestrictions { get; set; }
+    public DbSet<UserContentRestrictionsType> UserContentRestrictionsTypes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -86,6 +90,44 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.UpdatedAt)
                   .HasConversion(v => v.ToUniversalTime(),
                                  v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        });
+
+        modelBuilder.Entity<UserWarning>(entity =>
+        {
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        });
+
+        modelBuilder.Entity<UserContentRestrictions>(entity =>
+        {
+            entity.Property(e => e.ExpiredAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.CreatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            entity.Property(e => e.UpdatedAt)
+                  .HasConversion(v => v.ToUniversalTime(),
+                                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        });
+
+        modelBuilder.Entity<CommentReplies>(entity =>
+        {
+            entity.HasOne(cr => cr.Comment)
+             .WithMany()
+             .HasForeignKey(ub => ub.CommentId)
+             .HasConstraintName("Comment_CommentReplies")
+             .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(ub => ub.ReplyComment)
+             .WithMany()
+             .HasForeignKey(ub => ub.ReplyCommentId)
+             .HasConstraintName("ReplyComment_CommentReplies")
+             .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

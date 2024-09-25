@@ -91,7 +91,7 @@ public class PostsController : BaseApiController
                 PostId = updatePostDTO.Id
             });
 
-            foreach (var t in updatePostDTO.TagIds)
+            foreach (var t in updatePostDTO.TagIds!)
             {
                 var postTag = await _sender.Send(new CreatePostTagCommand
                 {
@@ -222,6 +222,7 @@ public class PostsController : BaseApiController
         var result = await _sender.Send(new DeletePostCommand
         {
             PostId = dto.Id,
+            UserId = Guid.Parse(subjectId!)
         });
 
         result.ThrowIfFailure();
