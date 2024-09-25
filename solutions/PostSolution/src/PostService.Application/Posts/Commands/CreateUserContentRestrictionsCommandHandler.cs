@@ -62,8 +62,8 @@ public class CreateUserContentRestrictionsCommandHandler : IRequestHandler<Creat
 
         await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
         {
-            ActionCode = "Post_warning",
-            CategoryCode = "User",
+            ActionCode = "POST_WARNING",
+            CategoryCode = "USER",
             Url = "",
             ActorIds = [request.AdminId],
             OwnerId = request.UserId
