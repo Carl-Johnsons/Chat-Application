@@ -88,7 +88,7 @@ public class SendClientMessageCommandHandler : IRequestHandler<SendClientMessage
                 {
                     ActionCode = "POST_USER_TAG",
                     ActorIds = dto.UserTaggedId,
-                    CategoryCode = ""
+                    CategoryCode = "USER"
                 });
             
         }
