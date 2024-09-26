@@ -2,7 +2,6 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
-WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
@@ -13,9 +12,7 @@ COPY ["./solutions/PostSolution/src/PostService.API/PostService.API.csproj", "./
 COPY ["./solutions/PostSolution/src/PostService.Application/PostService.Application.csproj", "./PostService.Application/"]
 COPY ["./solutions/PostSolution/src/PostService.Infrastructure/PostService.Infrastructure.csproj", "./PostService.Infrastructure/"]
 COPY ["./solutions/PostSolution/src/PostService.Domain/PostService.Domain.csproj", "./PostService.Domain/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.API/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.Application/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "PostService.Infrastructure/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "Contract/"]
 
 WORKDIR /src/PostService.API
 # Copy pre-build lib
@@ -23,13 +20,5 @@ COPY ["./data/nuget/post-api", "./nuget"]
 RUN dotnet restore "./PostService.API.csproj" --packages "./nuget" --verbosity normal
 
 COPY ["./solutions/PostSolution/src/","/src/"]
-RUN dotnet build "./PostService.API.csproj" --packages "./nuget" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./PostService.API.csproj" --packages "./nuget" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "PostService.API.dll"]
+ENTRYPOINT ["dotnet", "watch", "run", "--no-restore"]

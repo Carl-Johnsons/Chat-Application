@@ -2,7 +2,6 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
-WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
@@ -13,9 +12,7 @@ COPY ["./solutions/NotificationSolution/src/NotificationService.API/Notification
 COPY ["./solutions/NotificationSolution/src/NotificationService.Application/NotificationService.Application.csproj", "NotificationService.Application/"]
 COPY ["./solutions/NotificationSolution/src/NotificationService.Infrastructure/NotificationService.Infrastructure.csproj", "NotificationService.Infrastructure/"]
 COPY ["./solutions/NotificationSolution/src/NotificationService.Domain/NotificationService.Domain.csproj", "NotificationService.Domain/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "NotificationService.API/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "NotificationService.Application/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "NotificationService.Infrastructure/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "Contract/"]
 
 # Building the services
 WORKDIR "/src/NotificationService.API"
@@ -23,14 +20,5 @@ WORKDIR "/src/NotificationService.API"
 COPY ["./data/nuget/notification-api", "./nuget"]
 RUN dotnet restore --packages "./nuget" --verbosity normal
 COPY ["./solutions/NotificationSolution/src","/src"]
-RUN dotnet build "./NotificationService.API.csproj" --packages "./nuget" -c $BUILD_CONFIGURATION -o /app/build
 
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./NotificationService.API.csproj" --packages "./nuget" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "NotificationService.API.dll"]
+ENTRYPOINT ["dotnet", "watch", "run", "--no-restore"]

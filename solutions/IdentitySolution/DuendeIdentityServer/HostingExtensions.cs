@@ -20,7 +20,8 @@ internal static class HostingExtensions
     {
         var services = builder.Services;
 
-        services.AddRazorPages();
+        services.AddRazorPages()
+                .AddRazorRuntimeCompilation();
 
         services.AddControllers();
 

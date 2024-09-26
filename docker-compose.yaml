@@ -68,7 +68,7 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: ./dockerfiles/api-gateway/Dockerfile.dev
+      dockerfile: ./dockerfiles/api-gateway/Dockerfile.${DOCKERFILE_API_GATEWAY_ENV:-prod}
     container_name: apigateway
     ports:
       - '${API_GATEWAY_PORT}:80'
@@ -76,11 +76,19 @@ services:
       - back-end
     env_file:
       - ./solutions/APIGatewaySolution/src/APIGateway/.env
+    develop:
+      watch:
+        - path: ./solutions/APIGatewaySolution/src
+          action: sync
+          target: /src
+          ignore:
+           - Contract/
+
 
   identity-api:
     build:
       context: .
-      dockerfile: ./dockerfiles/identity-api/Dockerfile.dev
+      dockerfile: ./dockerfiles/identity-api/Dockerfile.${DOCKERFILE_IDENTITY_ENV:-prod}
     container_name: identity-service
     ports:
       - '${IDENTITY_SERVICE_PORT}:80'
@@ -95,11 +103,18 @@ services:
       - back-end
     env_file:
       - ./solutions/IdentitySolution/DuendeIdentityServer/.env
+    develop:
+      watch:
+        - path: ./solutions/IdentitySolution/DuendeIdentityServer
+          action: sync
+          target: /src/DuendeIdentityServer
+          ignore:
+           - Contract/
 
   upload-api:
     build:
       context: .
-      dockerfile: ./dockerfiles/upload-api/Dockerfile.dev
+      dockerfile: ./dockerfiles/upload-api/Dockerfile.${DOCKERFILE_UPLOAD_ENV:-prod}
     container_name: upload-service
     depends_on:
       sql-server:
@@ -112,11 +127,18 @@ services:
       - back-end
     env_file:
       - ./solutions/UploadFileSolution/src/UploadFileService.API/.env
+    develop:
+      watch:
+        - path: ./solutions/UploadFileSolution/src
+          action: sync
+          target: /src
+          ignore:
+           - Contract/
 
   websocket:
     build:
       context: .
-      dockerfile: ./dockerfiles/websocket/Dockerfile.dev
+      dockerfile: ./dockerfiles/websocket/Dockerfile.${DOCKERFILE_WEBSOCKET_ENV:-prod}
     container_name: chat-hub
     ports:
       - '${SIGNALR_PORT}:80'
@@ -128,11 +150,18 @@ services:
       - front-end
     env_file:
       - ./solutions/ChatHubSolution/src/ChatHub/.env
+    develop:
+      watch:
+        - path: ./solutions/ChatHubSolution/src/ChatHub
+          action: sync
+          target: /src/ChatHub
+          ignore:
+           - Contract/
 
   conversation-api:
     build:
       context: .
-      dockerfile: ./dockerfiles/conversation-api/Dockerfile.dev
+      dockerfile: ./dockerfiles/conversation-api/Dockerfile.${DOCKERFILE_CONVERSATION_ENV:-prod}
     container_name: conversation-service
     depends_on:
       sql-server:
@@ -147,11 +176,18 @@ services:
       - back-end
     env_file:
       - ./solutions/ConversationSolution/src/ConversationService.API/.env
+    develop:
+      watch:
+        - path: ./solutions/ConversationSolution/src
+          action: sync
+          target: /src
+          ignore:
+           - Contract/
 
   post-api:
     build:
       context: .
-      dockerfile: ./dockerfiles/post-api/Dockerfile.dev
+      dockerfile: ./dockerfiles/post-api/Dockerfile.${DOCKERFILE_POST_ENV:-prod}
     container_name: post-service
     depends_on:
       sql-server:
@@ -166,11 +202,18 @@ services:
       - back-end
     env_file:
       - ./solutions/PostSolution/src/PostService.API/.env
+    develop:
+      watch:
+        - path: ./solutions/PostSolution/src
+          action: sync
+          target: /src
+          ignore:
+           - Contract/
 
   notification-api:
     build:
       context: .
-      dockerfile: ./dockerfiles/notification-api/Dockerfile.dev
+      dockerfile: ./dockerfiles/notification-api/Dockerfile.${DOCKERFILE_NOTIFICATION_ENV:-prod}
     container_name: notification-service
     depends_on:
       sql-server:
@@ -185,11 +228,18 @@ services:
       - back-end
     env_file:
       - ./solutions/NotificationSolution/src/NotificationService.API/.env
+    develop:
+      watch:
+        - path: ./solutions/NotificationSolution/src
+          action: sync
+          target: /src
+          ignore:
+           - Contract/
 
   reactapp:
     build:
       context: .
-      dockerfile: ./dockerfiles/client/Dockerfile.dev
+      dockerfile: ./dockerfiles/client/Dockerfile.${DOCKERFILE_REACT_ENV:-prod}
     container_name: react-app
     ports:
       - '${CLIENT_PORT}:3000'

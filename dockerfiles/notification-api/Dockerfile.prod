@@ -3,8 +3,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 80
+EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -13,9 +13,7 @@ COPY ["./solutions/NotificationSolution/src/NotificationService.API/Notification
 COPY ["./solutions/NotificationSolution/src/NotificationService.Application/NotificationService.Application.csproj", "NotificationService.Application/"]
 COPY ["./solutions/NotificationSolution/src/NotificationService.Infrastructure/NotificationService.Infrastructure.csproj", "NotificationService.Infrastructure/"]
 COPY ["./solutions/NotificationSolution/src/NotificationService.Domain/NotificationService.Domain.csproj", "NotificationService.Domain/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "NotificationService.API/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "NotificationService.Application/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "NotificationService.Infrastructure/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "Contract/"]
 
 # Building the services
 WORKDIR "/src/NotificationService.API"
