@@ -79,4 +79,6 @@ dependencies {
     implementation(libs.appauth)
     implementation(libs.material.v1130alpha05)
     implementation(libs.retrofit)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("com.google.code.gson:gson:2.11.0")
 }
