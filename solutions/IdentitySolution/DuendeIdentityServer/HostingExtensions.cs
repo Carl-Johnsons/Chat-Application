@@ -66,7 +66,13 @@ internal static class HostingExtensions
         });
 
         services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Config.GetConnectionString()));
+                options.UseSqlServer(Config.GetConnectionString(), sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorNumbersToAdd: null);
+                }));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()

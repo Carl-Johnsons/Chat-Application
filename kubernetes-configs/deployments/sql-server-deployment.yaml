@@ -30,7 +30,10 @@ spec:
           livenessProbe:
             exec:
               command:
-                - /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P PejOPjrzzBFkWnU0uJtevbZxEzyMfOWV -Q "SELECT 1" || exit 1
+                - /bin/bash
+                - -c
+                - |
+                - /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "${SA_PASSWORD}" -Q "SELECT 1"
             failureThreshold: 10
             initialDelaySeconds: 10
             periodSeconds: 10

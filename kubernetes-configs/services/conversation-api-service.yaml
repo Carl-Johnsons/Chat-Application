@@ -5,14 +5,12 @@ metadata:
     kompose.cmd: C:\Program Files\kcompose\kompose.exe --file .\docker-compose-resolved.yaml convert -o kubernetes-configs
     kompose.version: 1.34.0 (cbf2835db)
   labels:
-    io.kompose.service: sql-server
-  name: sql-server
+    io.kompose.service: conversation-api
+  name: conversation-api
 spec:
-  type: NodePort
   ports:
-    - name: "2001"
-      port: 2001
-      targetPort: 1433
-      nodePort: 32001
+    - name: "5004"
+      port: 5004
+      targetPort: 80
   selector:
-    io.kompose.service: sql-server
+    io.kompose.service: conversation-api

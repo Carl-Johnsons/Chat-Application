@@ -31,6 +31,8 @@ services:
       sql-server:
         condition: service_healthy
     environment:
+      HOST: sql-server
+      DB_PORT: ${DB_PORT}
       ACCEPT_EULA: ${ACCEPT_EULA}
       SA_PASSWORD: ${SA_PASSWORD}
       IdentityDB: ${IdentityDB}
@@ -42,7 +44,7 @@ services:
 
   rabbitmq:
     # login guest:guest
-    image: rabbitmq:3-management
+    image: rabbitmq:4.0.2-management
     hostname: "rabbitmq"
     container_name: service-bus
     labels:
