@@ -29,4 +29,5 @@ RUN dotnet publish "./DuendeIdentityServer.csproj" --packages "./nuget" -c $BUIL
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY ./solutions/IdentitySolution/DuendeIdentityServer/private_key.pem .
 ENTRYPOINT ["dotnet", "DuendeIdentityServer.dll"]

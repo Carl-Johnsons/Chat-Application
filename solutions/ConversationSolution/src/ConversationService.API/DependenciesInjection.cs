@@ -77,9 +77,15 @@ public static class DependenciesInjection
 
         app.UseAuthorization();
 
-        var signalRService = app.Services.GetService<ISignalRService>();
-        await signalRService!.StartConnectionAsync();
-
+        try
+        {
+            var signalRService = app.Services.GetService<ISignalRService>();
+            await signalRService!.StartConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            app.Logger.LogError($"Error connecting to SignalR: {ex.Message}");
+        }
         return app;
     }
 }

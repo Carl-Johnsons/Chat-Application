@@ -10,7 +10,9 @@ using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 namespace DuendeIdentityServer;
 
@@ -89,13 +91,25 @@ internal static class HostingExtensions
                 options.EmitStaticAudienceClaim = true;
                 options.Discovery.CustomEntries.Add("user-api", "~/api/users");
                 options.Discovery.CustomEntries.Add("friend-request-api", "~/api/users/friend-request");
+
+                // Automatic key management
+                options.KeyManagement.RotationInterval = TimeSpan.FromDays(30);
+                //   announce new key 2 days in advance in discovery
+                options.KeyManagement.PropagationTime = TimeSpan.FromDays(2);
+                //   keep old key for 7 days in discovery for validation of tokens
+                options.KeyManagement.RetentionDuration = TimeSpan.FromDays(7);
+                //   don't delete keys after their retention period is over
+                options.KeyManagement.DeleteRetiredKeys = false;
+
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<ApplicationUser>()
-            .AddProfileService<ProfileService>()
-            .AddDeveloperSigningCredential(); // not recommended for production
+            .AddProfileService<ProfileService>();
+
+        //   .AddDeveloperSigningCredential(); // not recommended for production
+
 
         services.AddAuthentication()
             .AddGoogle(options =>
