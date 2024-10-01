@@ -6,6 +6,7 @@ project_root=$(pwd)
 # push global env file
 echo -e "\e[95mPushing global env file ....\e[0m"
 npx dotenv-vault@latest push
+npx dotenv-vault@latest push production
 
 # push API Gateway env file
 echo -e "\e[95mPushing api gateway env file ....\e[0m"

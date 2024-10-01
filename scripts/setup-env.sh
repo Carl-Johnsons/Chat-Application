@@ -6,6 +6,7 @@ project_root=$(pwd)
 # Pull global env file
 echo -e "\e[95mPulling global env file ....\e[0m" && \
 npx dotenv-vault@latest pull && \
+npx dotenv-vault@latest pull production && \
 echo -e "\e[95mPulling api gateway env file ....\e[0m" && \
 (cd ./solutions/APIGatewaySolution/src/APIGateway && npx dotenv-vault@latest pull) && \
 cd "$project_root" && \

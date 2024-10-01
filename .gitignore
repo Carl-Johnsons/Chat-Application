@@ -402,6 +402,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 # certificate and key
+**/private_key.pem
 **/public_key.pem
 **/key.pem
 **/certificate.pem

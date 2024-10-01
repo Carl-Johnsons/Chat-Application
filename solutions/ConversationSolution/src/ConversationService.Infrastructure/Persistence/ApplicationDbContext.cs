@@ -20,10 +20,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        DotNetEnv.Env.Load();
-        var server = DotNetEnv.Env.GetString("SERVER", "Not found").Trim();
-        var db = DotNetEnv.Env.GetString("DB", "Not found").Trim();
-        var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found").Trim();
+        DotNetEnv.Env.Load(".env");
+
+        var server = DotNetEnv.Env.GetString("DB_SERVER") ?? "NOT FOUND";
+        var db = DotNetEnv.Env.GetString("DB", "Not found");
+        var pwd = DotNetEnv.Env.GetString("SA_PASSWORD") ?? "NOT FOUND";
 
         var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true;MultipleActiveResultSets=True";
         Console.WriteLine(connectionString);
