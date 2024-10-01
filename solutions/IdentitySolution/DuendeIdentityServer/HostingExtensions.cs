@@ -10,9 +10,7 @@ using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System.Text;
 
 namespace DuendeIdentityServer;
 
@@ -26,6 +24,16 @@ internal static class HostingExtensions
                 .AddRazorRuntimeCompilation();
 
         services.AddControllers();
+
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(Config.GetConnectionString(), sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 10,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: null);
+            }));
+
 
         // Register automapper
         IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
@@ -42,10 +50,12 @@ internal static class HostingExtensions
             //busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
             busConfig.UsingRabbitMq((context, config) =>
             {
+                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "NOT FOUND";
+                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "NOT FOUND";
                 config.Host("amqp://rabbitmq/", host =>
                 {
-                    host.Username("admin");
-                    host.Password("pass");
+                    host.Username(username);
+                    host.Password(password);
                 });
                 config.ConfigureEndpoints(context);
 
@@ -67,14 +77,6 @@ internal static class HostingExtensions
 
         });
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Config.GetConnectionString(), sqlOptions =>
-                {
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 10,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null);
-                }));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()

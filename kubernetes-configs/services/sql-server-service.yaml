@@ -8,11 +8,12 @@ metadata:
     io.kompose.service: sql-server
   name: sql-server
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: "2001"
       port: 2001
       targetPort: 1433
       nodePort: 32001
+      protocol: TCP
   selector:
     io.kompose.service: sql-server

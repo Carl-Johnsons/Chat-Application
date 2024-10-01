@@ -23,6 +23,8 @@ spec:
       containers:
         - envFrom:
             - secretRef:
+                name: general-secret
+            - secretRef:
                 name: identity-api-secret
           image: localhost:6000/chat-application-identity-api
           name: identity-service

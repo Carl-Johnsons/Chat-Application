@@ -106,8 +106,6 @@ services:
         condition: service_started
     networks:
       - back-end
-    environment:
-      SERVER: "sql-server"
     env_file:
       - .env
       - ./solutions/IdentitySolution/DuendeIdentityServer/.env
@@ -183,8 +181,6 @@ services:
       - "${CONVERSATION_SERVICE_PORT}:80"
     networks:
       - back-end
-    environment:
-      SERVER: "sql-server"
     env_file:
       - .env
       - ./solutions/ConversationSolution/src/ConversationService.API/.env

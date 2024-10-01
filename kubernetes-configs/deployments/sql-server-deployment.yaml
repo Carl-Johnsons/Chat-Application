@@ -42,4 +42,14 @@ spec:
           ports:
             - containerPort: 1433
               protocol: TCP
+          volumeMounts:
+            - name: sql-server-storage
+              mountPath: /var/opt/mssql/data
       restartPolicy: Always
+      volumes:
+        - name: sql-server-storage
+          hostPath:
+            path: /run/desktop/mnt/host/d/_Code/My Project/Chat Application/Chat-Application/data/db
+            type: Directory
+      securityContext:
+        runAsUser: 0 #root

@@ -68,6 +68,9 @@ spec:
           livenessProbe:
             exec:
               command:
+                - /bin/bash
+                - -c
+                - |
                 - rabbitmq-diagnostics -q ping
             failureThreshold: 5
             initialDelaySeconds: 10

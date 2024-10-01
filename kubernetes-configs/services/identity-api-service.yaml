@@ -8,9 +8,12 @@ metadata:
     io.kompose.service: identity-api
   name: identity-api
 spec:
+  type: LoadBalancer
   ports:
     - name: "5001"
       port: 5001
       targetPort: 80
+      nodePort: 30501
+      protocol: TCP
   selector:
     io.kompose.service: identity-api
