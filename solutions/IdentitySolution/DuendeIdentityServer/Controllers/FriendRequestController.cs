@@ -39,7 +39,7 @@ public class FriendRequestController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public IActionResult Get()
     {
         var userId = _httpContextAccessor.HttpContext?.User.Identity.GetSubjectId();
 
@@ -58,7 +58,7 @@ public class FriendRequestController : ControllerBase
     public async Task<IActionResult> Post([FromBody] SendFriendRequestDTO sendFriendRequestDTO)
     {
         var frInput = _mapper.Map<SendFriendRequestDTO, FriendRequest>(sendFriendRequestDTO);
-        frInput.SenderId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        frInput.SenderId = _httpContextAccessor.HttpContext!.User.GetSubjectId();
 
         var friend = _context.Friends
                               .Where(f => (f.UserId == frInput.SenderId && f.FriendId == frInput.ReceiverId) ||
@@ -160,7 +160,7 @@ public class FriendRequestController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromBody] DeleteFriendRequestDTO deleteFriendRequestDTO)
+    public IActionResult Delete([FromBody] DeleteFriendRequestDTO deleteFriendRequestDTO)
     {
         var fr = _context.FriendRequests
                             .Where(fr => fr.Id.ToString() == deleteFriendRequestDTO.FriendRequestId)

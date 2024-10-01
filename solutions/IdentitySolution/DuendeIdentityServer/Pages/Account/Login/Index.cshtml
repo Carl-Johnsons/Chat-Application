@@ -5,9 +5,9 @@
 }
 <partial name="_ValidationSummary" />
 
-<div class="row d-flex justify-content-center align-items-center ">
+<div class="row d-flex justify-content-center align-items-center" style="background-color:azure">
 
-    <div class="card" >
+    <div class="card bg-white shadow" >
         <div class="card-body">
             @if (Model.View.EnableLocalLogin)
             {
@@ -59,7 +59,7 @@
                         @foreach (var provider in Model.View.VisibleExternalProviders)
                         {
                             <li class="list-inline-item">
-                                <a class="btn btn-secondary"
+                                <a class="btn btn-outline-dark text-black-50"
                                    asp-page="/ExternalLogin/Challenge"
                                    asp-route-scheme="@provider.AuthenticationScheme"
                                    asp-route-returnUrl="@Model.Input.ReturnUrl">
