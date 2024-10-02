@@ -14,17 +14,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
     {
-        DotNetEnv.Env.Load();
-        var server = DotNetEnv.Env.GetString("SERVER", "Not found");
-        var db = DotNetEnv.Env.GetString("DB", "Not found");
-        var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found");
-
-        var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
-        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
-        {
-            options.UseSqlServer(connectionString);
-        });
-
+        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>();
 
         // MediatR require repository scope dependency injection
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
@@ -53,9 +43,9 @@ public static class DependencyInjection
 
             busConfig.UsingRabbitMq((context, config) =>
             {
-                var username = Environment.GetEnvironmentVariable("RBMQ_USERNAME") ?? "NOT FOUND";
-                var password = Environment.GetEnvironmentVariable("RBMQ_PASSWORD") ?? "NOT FOUND";
-                Console.WriteLine($"Log in rabbitmq with username:{username}| password:{password}");
+                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "NOT FOUND";
+                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "NOT FOUND";
+
                 config.Host(new Uri("amqp://rabbitmq/"), h =>
                 {
                     h.Username(username);

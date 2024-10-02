@@ -144,7 +144,7 @@ public class Index : PageModel
                 PhoneNumber = Input.PhoneNumber,
             };
 
-            var result = await _userManager.CreateAsync(user, Input.Password);
+            var result = await _userManager.CreateAsync(user, Input.Password!);
 
             if (result.Succeeded)
             {

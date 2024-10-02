@@ -172,10 +172,10 @@ public class UsersController : ControllerBase
 
             await _publishEndpoint.Publish<CreateNotificationEvent>(new CreateNotificationEvent
             {
-                ActorIds = [Guid.Parse(subjectId)],
+                ActorIds = [Guid.Parse(subjectId!)],
                 ActionCode = "UPDATE_PROFILE",
                 CategoryCode = "USER",
-                OwnerId = Guid.Parse(subjectId),
+                OwnerId = Guid.Parse(subjectId!),
                 Url = ""
             });
         };

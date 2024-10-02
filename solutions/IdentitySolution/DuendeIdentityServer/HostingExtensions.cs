@@ -25,6 +25,16 @@ internal static class HostingExtensions
 
         services.AddControllers();
 
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(Config.GetConnectionString(), sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 10,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: null);
+            }));
+
+
         // Register automapper
         IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
         services.AddSingleton(mapper);
@@ -40,10 +50,12 @@ internal static class HostingExtensions
             //busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
             busConfig.UsingRabbitMq((context, config) =>
             {
+                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "NOT FOUND";
+                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "NOT FOUND";
                 config.Host("amqp://rabbitmq/", host =>
                 {
-                    host.Username("admin");
-                    host.Password("pass");
+                    host.Username(username);
+                    host.Password(password);
                 });
                 config.ConfigureEndpoints(context);
 
@@ -65,8 +77,6 @@ internal static class HostingExtensions
 
         });
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Config.GetConnectionString()));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -83,13 +93,25 @@ internal static class HostingExtensions
                 options.EmitStaticAudienceClaim = true;
                 options.Discovery.CustomEntries.Add("user-api", "~/api/users");
                 options.Discovery.CustomEntries.Add("friend-request-api", "~/api/users/friend-request");
+
+                // Automatic key management
+                options.KeyManagement.RotationInterval = TimeSpan.FromDays(30);
+                //   announce new key 2 days in advance in discovery
+                options.KeyManagement.PropagationTime = TimeSpan.FromDays(2);
+                //   keep old key for 7 days in discovery for validation of tokens
+                options.KeyManagement.RetentionDuration = TimeSpan.FromDays(7);
+                //   don't delete keys after their retention period is over
+                options.KeyManagement.DeleteRetiredKeys = false;
+
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<ApplicationUser>()
-            .AddProfileService<ProfileService>()
-            .AddDeveloperSigningCredential(); // not recommended for production
+            .AddProfileService<ProfileService>();
+
+        //   .AddDeveloperSigningCredential(); // not recommended for production
+
 
         services.AddAuthentication()
             .AddGoogle(options =>

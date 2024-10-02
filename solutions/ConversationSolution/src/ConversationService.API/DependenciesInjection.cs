@@ -30,22 +30,27 @@ public static class DependenciesInjection
 
         services.AddHttpContextAccessor();
 
-
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                var IdentityServerEndpoint = "http://identity-api";
+                var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_URL") ?? "").Replace("\"", "");
+                if (IdentityDNS == "")
+                {
+                    throw new Exception("Identity DNS not found");
+                }
+                var IdentityServerEndpoint = $"http://{IdentityDNS}";
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
                 // Clear default Microsoft's JWT claim mapping
                 // Ref: https://stackoverflow.com/questions/70766577/asp-net-core-jwt-token-is-transformed-after-authentication
                 options.MapInboundClaims = false;
 
+                options.TokenValidationParameters.ValidTypes = ["at+jwt"];
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = false,
                     ValidateAudience = false,
-                    ValidateIssuer = false
+                    ValidateIssuer = false,
                 };
                 // For development only
                 options.IncludeErrorDetails = true;
@@ -77,9 +82,15 @@ public static class DependenciesInjection
 
         app.UseAuthorization();
 
-        var signalRService = app.Services.GetService<ISignalRService>();
-        await signalRService!.StartConnectionAsync();
-
+        try
+        {
+            var signalRService = app.Services.GetService<ISignalRService>();
+            await signalRService!.StartConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            app.Logger.LogError($"Error connecting to SignalR: {ex.Message}");
+        }
         return app;
     }
 }
