@@ -25,14 +25,7 @@ internal static class HostingExtensions
 
         services.AddControllers();
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Config.GetConnectionString(), sqlOptions =>
-            {
-                sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 10,
-                    maxRetryDelay: TimeSpan.FromSeconds(5),
-                    errorNumbersToAdd: null);
-            }));
+        services.AddDbContext<ApplicationDbContext>();
 
 
         // Register automapper
@@ -50,9 +43,11 @@ internal static class HostingExtensions
             //busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
             busConfig.UsingRabbitMq((context, config) =>
             {
-                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "NOT FOUND";
-                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "NOT FOUND";
-                config.Host("amqp://rabbitmq/", host =>
+                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "admin";
+                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "pass";
+                var rabbitMQHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost:5672";
+
+                config.Host($"amqp://{rabbitMQHost}/", host =>
                 {
                     host.Username(username);
                     host.Password(password);
@@ -100,8 +95,6 @@ internal static class HostingExtensions
                 options.KeyManagement.PropagationTime = TimeSpan.FromDays(2);
                 //   keep old key for 7 days in discovery for validation of tokens
                 options.KeyManagement.RetentionDuration = TimeSpan.FromDays(7);
-                //   don't delete keys after their retention period is over
-                options.KeyManagement.DeleteRetiredKeys = false;
 
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
@@ -133,7 +126,7 @@ internal static class HostingExtensions
 
         services.AddCors(o => o.AddPolicy("AllowSpecificOrigins", builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://api-gateway")
+            builder.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://api-gateway", "http://localhost:5000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();

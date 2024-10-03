@@ -419,3 +419,6 @@ data/*
 .flaskenv*
 !.env.project
 !.env.vault
+
+# identity provider key
+**/DuendeIdentityServer/keys
