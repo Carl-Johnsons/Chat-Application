@@ -43,10 +43,11 @@ public static class DependencyInjection
 
             busConfig.UsingRabbitMq((context, config) =>
             {
-                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "NOT FOUND";
-                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "NOT FOUND";
+                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "admin";
+                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "pass";
+                var rabbitMQHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost:5672";
 
-                config.Host(new Uri("amqp://rabbitmq/"), h =>
+                config.Host(new Uri($"amqp://{rabbitMQHost}/"), h =>
                 {
                     h.Username(username);
                     h.Password(password);

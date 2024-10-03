@@ -33,12 +33,10 @@ public static class DependenciesInjection
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_URL") ?? "").Replace("\"", "");
-                if (IdentityDNS == "")
-                {
-                    throw new Exception("Identity DNS not found");
-                }
+                var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_URL") ?? "localhost:5001").Replace("\"", "");
                 var IdentityServerEndpoint = $"http://{IdentityDNS}";
+                Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
+
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
                 // Clear default Microsoft's JWT claim mapping

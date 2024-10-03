@@ -22,7 +22,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         DotNetEnv.Env.Load(".env");
 
-        var server = DotNetEnv.Env.GetString("DB_SERVER") ?? "NOT FOUND";
+        var server = DotNetEnv.Env.GetString("DB_SERVER") ?? "localhost, 2001";
         var db = DotNetEnv.Env.GetString("DB", "Not found");
         var pwd = DotNetEnv.Env.GetString("SA_PASSWORD") ?? "NOT FOUND";
 

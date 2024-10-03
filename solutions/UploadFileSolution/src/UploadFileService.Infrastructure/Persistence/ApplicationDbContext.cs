@@ -18,13 +18,19 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         DotNetEnv.Env.Load();
-        var server = DotNetEnv.Env.GetString("SERVER", "Not found").Trim();
+        var server = DotNetEnv.Env.GetString("DB_SERVER", "localhost, 2001").Trim();
         var db = DotNetEnv.Env.GetString("DB", "Not found").Trim();
         var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found").Trim();
 
-        var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
+        var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true;MultipleActiveResultSets=True";
         Console.WriteLine(connectionString);
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 10,
+                maxRetryDelay: TimeSpan.FromSeconds(5),
+                errorNumbersToAdd: null);
+        });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
