@@ -27,19 +27,22 @@ public static class DependenciesInjection
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                var IdentityServerEndpoint = "http://identity-api";
+                var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_URL") ?? "localhost:5001").Replace("\"", "");
+                var IdentityServerEndpoint = $"http://{IdentityDNS}";
+                Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
+
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
                 // Clear default Microsoft's JWT claim mapping
                 // Ref: https://stackoverflow.com/questions/70766577/asp-net-core-jwt-token-is-transformed-after-authentication
                 options.MapInboundClaims = false;
 
+                options.TokenValidationParameters.ValidTypes = ["at+jwt"];
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = false,
                     ValidateAudience = false,
                     ValidateIssuer = false,
-                    RoleClaimType = "role" // map jwt claim to role
                 };
                 // For development only
                 options.IncludeErrorDetails = true;
