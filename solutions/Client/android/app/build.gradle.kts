@@ -31,6 +31,11 @@ android {
                 "\"" + env.IDENTITY_SERVICE_PORT.value + "\""
             )
             buildConfigField("String", "SIGNALR_PORT", "\"" + env.SIGNALR_PORT.value + "\"")
+            buildConfigField(
+                "String",
+                "HOST",
+                "\"" + env.HOST.value + "\""
+            )
         }
         release {
             buildConfigField(
@@ -45,7 +50,11 @@ android {
                 "\"" + env.IDENTITY_SERVICE_PORT.value + "\""
             )
             buildConfigField("String", "SIGNALR_PORT", "\"" + env.SIGNALR_PORT.value + "\"")
-
+            buildConfigField(
+                "String",
+                "HOST",
+                "\"" + env.HOST.value + "\""
+            )
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -79,6 +88,9 @@ dependencies {
     implementation(libs.appauth)
     implementation(libs.material.v1130alpha05)
     implementation(libs.retrofit)
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation ("com.google.code.gson:gson:2.11.0")
+    //implementation(libs.retrofit2.converter.gson)
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation (libs.okhttp)
+    implementation(libs.glide)
+    implementation (libs.gson)
 }

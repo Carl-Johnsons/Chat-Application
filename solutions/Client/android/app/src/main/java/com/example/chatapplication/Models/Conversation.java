@@ -13,6 +13,10 @@ public class Conversation {
         this.time = time;
     }
 
+    public  Conversation(){
+
+    }
+
     public String getEntityName() {
         return entityName;
     }
