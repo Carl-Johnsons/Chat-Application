@@ -13,4 +13,9 @@
     <color name="warning">#FFC87C</color>
     <color name="warning_active">#A48151</color>
     <color name="disabled">#D3D3D3</color>
+    <color name="chat_background">#ecf4f4</color>
+    <color name="message_sent_background">#e4ecfc</color>
+    <color name="message_receive_background">#FFFFFFFF</color>
+
+
 </resources>
