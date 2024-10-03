@@ -13,7 +13,7 @@ public static class Config
             DotNetEnv.Env.Load(".env.production");
         }
 
-        var server = DotNetEnv.Env.GetString("DB_SERVER", "Not found").Trim();
+        var server = DotNetEnv.Env.GetString("DB_SERVER", "localhost, 2001").Trim();
         var db = DotNetEnv.Env.GetString("DB", "Not found").Trim();
         var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found").Trim();
         var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
