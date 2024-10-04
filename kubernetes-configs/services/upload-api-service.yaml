@@ -5,15 +5,12 @@ metadata:
     kompose.cmd: C:\Program Files\kcompose\kompose.exe --file .\docker-compose-resolved.yaml convert -o kubernetes-configs
     kompose.version: 1.34.0 (cbf2835db)
   labels:
-    io.kompose.service: api-gateway
-  name: api-gateway
+    io.kompose.service: upload-api
+  name: upload-api
 spec:
-  type: LoadBalancer
   ports:
-    - name: "5000"
-      port: 5000
+    - name: "5002"
+      port: 5002
       targetPort: 80
-      nodePort: 30500
-      protocol: TCP
   selector:
-    io.kompose.service: api-gateway
+    io.kompose.service: upload-api
