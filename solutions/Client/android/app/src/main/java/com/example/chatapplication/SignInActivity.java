@@ -126,6 +126,7 @@ public class SignInActivity extends AppCompatActivity {
                         return;
                     }
                     String token = res.accessToken;
+                    authStateManager.updateAccessToken(token);
                     if (token == null) {
                         Log.e(TAG, "Token is null.");
                     } else {

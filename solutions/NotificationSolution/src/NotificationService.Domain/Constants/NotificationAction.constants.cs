@@ -13,4 +13,10 @@ public static class NOTIFICATION_ACTION
     public static string POST_REPLY { get; set; } = "POST_REPLY";
     public static string POST_WARNING { get; set; } = "POST_WARNING";
     public static string POST_USER_TAG { get; set; } = "POST_USER_TAG";
+    // User
+    public static string SEND_FRIEND_REQUEST { get; set; } = "SEND_FRIEND_REQUEST";
+    public static string ACCEPT_FRIEND_REQUEST { get; set; } = "ACCEPT_FRIEND_REQUEST";
+    public static string UPDATE_PROFILE { get; set; } = "UPDATE_PROFILE";
+
+
 }

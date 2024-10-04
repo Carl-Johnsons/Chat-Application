@@ -1,10 +1,11 @@
-﻿using MediatR;
+﻿using Contract.Event.NotificationEvent;
+using MediatR;
 using PostService.Domain.Common;
 using PostService.Domain.Errors;
 
 namespace PostService.Application.Comments.Commands;
 
-public class CreateCommentCommand : IRequest<Result>
+public class CreateCommentCommand : IRequest<Result<Comment>>
 {
     public string Content { get; init; } = null!;
     public Guid UserId { get; init; }
@@ -12,18 +13,20 @@ public class CreateCommentCommand : IRequest<Result>
     public Guid PostId { get; init; }
 }
 
-public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, Result>
+public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, Result<Comment>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceBus _serviceBus;
 
-    public CreateCommentCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreateCommentCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _serviceBus = serviceBus;
     }
 
-    public async Task<Result> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Comment>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
     {
 
         var post = _context.Posts
@@ -32,7 +35,7 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
 
         if (post == null)
         {
-            return Result.Failure(PostError.NotFound);
+            return Result<Comment>.Failure(PostError.NotFound)!;
         }
 
         Comment comment = new Comment
@@ -54,6 +57,15 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
 
         await _unitOfWork.SaveChangeAsync();
 
-        return Result.Success();
+        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActionCode = "POST_COMMENT",
+            ActorIds = [request.UserId],
+            CategoryCode = "POST",
+            Url = "",
+            OwnerId = post.UserId,
+        });
+
+        return Result<Comment>.Success(comment);
     }
 }

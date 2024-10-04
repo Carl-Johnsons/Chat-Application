@@ -36,5 +36,15 @@ public static class NotificationActionMockup
             new NotificationAction {
                 Code= NOTIFICATION_ACTION.POST_USER_TAG,
             },
+            // User
+            new NotificationAction {
+                Code= NOTIFICATION_ACTION.SEND_FRIEND_REQUEST,
+            },
+            new NotificationAction {
+                Code= NOTIFICATION_ACTION.ACCEPT_FRIEND_REQUEST,
+            },
+            new NotificationAction {
+                Code= NOTIFICATION_ACTION.UPDATE_PROFILE,
+            }
         ];
 }

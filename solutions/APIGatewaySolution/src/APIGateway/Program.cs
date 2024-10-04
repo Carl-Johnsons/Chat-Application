@@ -9,11 +9,28 @@ builder.UseKestrel()
        .ConfigureAppConfiguration((hostingContext, config) =>
        {
            var env = hostingContext.HostingEnvironment;
+
+           Console.WriteLine("Environment name: " + env.EnvironmentName);
+
            config.
                SetBasePath(env.ContentRootPath)
-               .AddOcelot("Config", env)
                //.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
                .AddEnvironmentVariables();
+
+
+           if (env.IsDevelopment())
+           {
+               config.AddOcelot("Config/development", env);
+           }
+           else if (env.IsEnvironment("Kubernetes"))
+           {
+               config.AddOcelot("Config/kubernetes", env);
+           }
+           else
+           {
+               config.AddOcelot("Config/production", env);
+           }
+
        });
 // Add logging
 builder.ConfigureLogging(options =>
@@ -69,9 +86,9 @@ builder.ConfigureServices(services =>
 builder.Configure(app =>
 {
     app.UseCors("AllowAnyOriginPolicy");
-    
+
     app.UseAuthentication();
-    
+
     app.UseAuthorization();
 
     app.UseOcelot().Wait();

@@ -20,10 +20,11 @@
 	  <ProjectReference Include="..\NotificationService.Infrastructure\NotificationService.Infrastructure.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Reference Include="Contract">
-			<HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup>
+    <Reference Include="Contract">
+		<HintPath Condition="Exists('..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll')">..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+		<HintPath Condition="Exists('..\Contract\Contract.dll')">..\Contract\Contract.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>
