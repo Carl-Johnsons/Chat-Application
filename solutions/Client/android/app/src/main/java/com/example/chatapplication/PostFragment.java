@@ -3,62 +3,77 @@ package com.example.chatapplication;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PostFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.chatapplication.post.Post;
+import com.example.chatapplication.post.PostAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class PostFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RecyclerView recyclerView;
+    private PostAdapter postAdapter;
+    private List<Post> postList;
+    private EditText editTextPost;
+    private Button buttonPost;
 
     public PostFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PostFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PostFragment newInstance(String param1, String param2) {
-        PostFragment fragment = new PostFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public PostFragment(RecyclerView recyclerView, PostAdapter postAdapter, List<Post> postList, EditText editTextPost, Button buttonPost) {
+        this.recyclerView = recyclerView;
+        this.postAdapter = postAdapter;
+        this.postList = postList;
+        this.editTextPost = editTextPost;
+        this.buttonPost = buttonPost;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_post, container, false);
+        View view = inflater.inflate(R.layout.fragment_post, container, false);
+
+        recyclerView = view.findViewById(R.id.recycler_view_posts);
+        editTextPost = view.findViewById(R.id.edit_text_post);
+        buttonPost = view.findViewById(R.id.button_post);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        postList = new ArrayList<>();
+        postList.add(new Post("John Doe", "Hello, this is my first post!", "2 hours ago"));
+        postList.add(new Post("Jane Smith", "Just trying out the new app. Looking good!", "1 hour ago"));
+
+        postAdapter = new PostAdapter(getContext(), postList);
+        recyclerView.setAdapter(postAdapter);
+
+        buttonPost.setOnClickListener(v -> {
+            String newPostContent = editTextPost.getText().toString().trim();
+            if (!newPostContent.isEmpty()) {
+                postList.add(0, new Post("Current User", newPostContent, "Just now"));
+
+                postAdapter.notifyItemInserted(0);
+
+                recyclerView.scrollToPosition(0);
+
+                editTextPost.setText("");
+            } else {
+                Toast.makeText(getContext(), "Please enter some content before posting!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return view;
     }
 }
