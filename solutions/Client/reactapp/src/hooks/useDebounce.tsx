@@ -8,11 +8,11 @@ const useDebounce = (callback: (...args: unknown[]) => void, delay: number) => {
   return debounceCallback;
 };
 
-const useDebounceValue = (initialValue: any, delay: number) => {
+const useDebounceValue = (initialValue: unknown, delay: number) => {
   const [value, setValue] = useState(initialValue);
   const [debouncedValue, setDebouncedValue] = useState(initialValue);
 
-  const setDebounced = useCallback((newValue: any) => {
+  const setDebounced = useCallback((newValue: unknown) => {
     setValue(newValue);
   }, []);
 

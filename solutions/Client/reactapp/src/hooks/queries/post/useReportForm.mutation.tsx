@@ -36,7 +36,7 @@ const useReportPost = () => {
     onMutate: (context: Props) => {
       return context;
     },
-    onSuccess: (_data, _variables, _context) => {
+    onSuccess: () => {
       toast.success("Báo cáo bài đăng thành công");
     },
     onError: (err) => {
