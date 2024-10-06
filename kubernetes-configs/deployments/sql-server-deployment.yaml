@@ -49,7 +49,7 @@ spec:
       volumes:
         - name: sql-server-storage
           hostPath:
-            path: /run/desktop/mnt/host/d/_Code/My Project/Chat Application/Chat-Application/data/db
+            path: /run/desktop/mnt/host/d/_Code/My_Project/Chat_Application/Chat-Application/data/db
             type: Directory
       securityContext:
         runAsUser: 0 #root

@@ -5,11 +5,15 @@ import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 
+import com.example.chatapplication.Chats.ConversationFragment;
 import com.example.chatapplication.auth.AuthStateManager;
 import com.example.chatapplication.databinding.ActivityMainBinding;
 
@@ -18,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "Main";
     ActivityMainBinding binding;
 
-    private final ChatFragment CHAT_FRAGMENT = new ChatFragment();
+    private final ConversationFragment CHAT_FRAGMENT = new ConversationFragment();
     private final ContactFragment CONTACT_FRAGMENT = new ContactFragment();
     private final PostFragment POST_FRAGMENT = new PostFragment();
     private AuthStateManager authStateManager;
@@ -63,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
 //                return true;
 //            }
 //        });
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
     }
 
