@@ -8,9 +8,12 @@ metadata:
     io.kompose.service: api-gateway
   name: api-gateway
 spec:
+  type: LoadBalancer
   ports:
     - name: "5000"
       port: 5000
       targetPort: 80
+      nodePort: 30500
+      protocol: TCP
   selector:
     io.kompose.service: api-gateway

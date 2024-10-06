@@ -25,7 +25,7 @@ public static class DependenciesInjection
         })
          .AddJwtBearer(options =>
          {
-             var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_URL") ?? "localhost:5001").Replace("\"", "");
+             var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
              var IdentityServerEndpoint = $"http://{IdentityDNS}";
              Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
              options.RequireHttpsMetadata = false;

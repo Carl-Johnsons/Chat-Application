@@ -17,9 +17,14 @@ builder.UseKestrel()
                //.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
                .AddEnvironmentVariables();
 
+
            if (env.IsDevelopment())
            {
                config.AddOcelot("Config/development", env);
+           }
+           else if (env.IsEnvironment("Kubernetes"))
+           {
+               config.AddOcelot("Config/kubernetes", env);
            }
            else
            {
