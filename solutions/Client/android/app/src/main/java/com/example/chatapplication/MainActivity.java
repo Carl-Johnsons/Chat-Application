@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.chatapplication.Chats.ConversationFragment;
+import com.example.chatapplication.Notification.NotiFragment;
 import com.example.chatapplication.auth.AuthStateManager;
 import com.example.chatapplication.databinding.ActivityMainBinding;
 
