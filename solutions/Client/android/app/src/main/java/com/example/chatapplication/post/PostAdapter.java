@@ -6,14 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatapplication.R;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -37,20 +38,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post post = postList.get(position);
         holder.userName.setText(post.getUserName());
         holder.postContent.setText(post.getContent());
-        holder.postTime.setText(post.getTimePosted());
 
-        // Xử lý sự kiện cho các nút like, comment, share
-        holder.likeButton.setOnClickListener(v -> {
-            Toast.makeText(context, "Liked post by " + post.getUserName(), Toast.LENGTH_SHORT).show();
-        });
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a, dd MMMM yyyy", Locale.getDefault());
+        String formattedTime = sdf.format(post.getTimePosted());
 
-        holder.commentButton.setOnClickListener(v -> {
-            Toast.makeText(context, "Comment on post by " + post.getUserName(), Toast.LENGTH_SHORT).show();
-        });
+        holder.postTime.setText(formattedTime);
 
-        holder.shareButton.setOnClickListener(v -> {
-            Toast.makeText(context, "Share post by " + post.getUserName(), Toast.LENGTH_SHORT).show();
-        });
     }
 
     @Override

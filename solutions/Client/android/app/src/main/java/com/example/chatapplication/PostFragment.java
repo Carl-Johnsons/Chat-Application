@@ -18,6 +18,7 @@ import com.example.chatapplication.post.Post;
 import com.example.chatapplication.post.PostAdapter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PostFragment extends Fragment {
@@ -53,16 +54,15 @@ public class PostFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         postList = new ArrayList<>();
-        postList.add(new Post("John Doe", "Hello, this is my first post!", "2 hours ago"));
-        postList.add(new Post("Jane Smith", "Just trying out the new app. Looking good!", "1 hour ago"));
 
         postAdapter = new PostAdapter(getContext(), postList);
         recyclerView.setAdapter(postAdapter);
 
+        Date currentTime = new Date();
         buttonPost.setOnClickListener(v -> {
             String newPostContent = editTextPost.getText().toString().trim();
             if (!newPostContent.isEmpty()) {
-                postList.add(0, new Post("Current User", newPostContent, "Just now"));
+                postList.add(0, new Post("Current User", newPostContent, currentTime));
 
                 postAdapter.notifyItemInserted(0);
 
@@ -73,6 +73,7 @@ public class PostFragment extends Fragment {
                 Toast.makeText(getContext(), "Please enter some content before posting!", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         return view;
     }

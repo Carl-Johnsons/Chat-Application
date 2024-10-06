@@ -11,11 +11,13 @@
         android:id="@+id/recycler_view_posts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/create_post_layout" />
+        android:layout_marginTop="60dp"
+        app:layout_constraintBottom_toTopOf="@+id/create_post_layout"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Layout for creating a new post -->
     <LinearLayout
+        android:layout_marginTop="15dp"
         android:id="@+id/create_post_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

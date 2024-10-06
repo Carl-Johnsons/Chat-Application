@@ -71,6 +71,7 @@
                 android:id="@+id/button_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Like"
                 android:src="@drawable/ic_like" />
@@ -79,6 +80,7 @@
                 android:id="@+id/button_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:src="@drawable/ic_comment"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_marginStart="16dp"
@@ -88,6 +90,7 @@
                 android:id="@+id/button_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:src="@drawable/ic_share"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_marginStart="16dp"
