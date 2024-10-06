@@ -8,12 +8,19 @@ import AsideContainer from "@/components/Aside/AsideContainer";
 import NavigationBar from "@/components/Nav/NavigationBar";
 import SidebarContent from "@/components/SideBar/SidebarContent";
 import { MainViewContainer } from "@/components/MainView";
+import { useSession } from "next-auth/react";
 
 const cx = classNames.bind(styles);
 
 const Home = () => {
   const [showAside] = useGlobalState("showAside");
   const [activeNav] = useGlobalState("activeNav");
+  const { data: session, status } = useSession();
+
+  console.log("========================================");
+  console.log({ status });
+  console.log({ session });
+
   //Local state
   //Ref
   const { leftRef, rightRef } = useScreenSectionNavigator();
