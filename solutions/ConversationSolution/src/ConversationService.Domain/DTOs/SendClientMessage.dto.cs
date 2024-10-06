@@ -17,6 +17,6 @@ public class SendClientMessageDTO
     public List<IFormFile>? Files { get; set; } = [];
 
     [JsonProperty("userTaggedIds")]
-    public Guid[] UserTaggedId { get; set; } = null!;
+    public Guid[]? UserTaggedId { get; set; } = null!;
 
 }

@@ -29,7 +29,7 @@ public class FriendController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public IActionResult Get()
     {
         var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
         var friendIdList = _context.Friends
@@ -44,7 +44,7 @@ public class FriendController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromBody] DeleteFriendDTO deleteFriendDTO)
+    public IActionResult Delete([FromBody] DeleteFriendDTO deleteFriendDTO)
     {
         var userId = _httpContextAccessor.HttpContext?.User.GetSubjectId();
         var friendId = deleteFriendDTO.FriendId;
