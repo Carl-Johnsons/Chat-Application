@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+        <!-- ImageView for the image on the left -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/noti_item_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/square"
+            android:layout_marginEnd="8dp"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_toEndOf="@id/noti_item_image"
+            android:layout_toStartOf="@id/noti_item_time"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/noti_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textSize="18sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+            <TextView
+                android:id="@+id/noti_item_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Content"
+                android:textSize="18sp"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/noti_item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="4dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"/>
+    </RelativeLayout>
