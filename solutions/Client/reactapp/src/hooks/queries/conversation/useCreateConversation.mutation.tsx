@@ -44,17 +44,17 @@ const createGroupConversation = async ({
   const url = `/api/conversation/group`;
   const formData = new FormData();
   // Cast object to a more flexible type
-  const conversationAsAny = conversationWithMembersId as { [key: string]: any };
+  const conversationAsAny = conversationWithMembersId as { [key: string]: unknown };
 
   for (const key in conversationAsAny) {
-    if (conversationAsAny.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(conversationAsAny, key)) {
       if (Array.isArray(conversationAsAny[key])) {
         // If the property is an array, append each element separately
         conversationAsAny[key].forEach((item: string) => {
           formData.append(`${key}`, item);
         });
       } else {
-        formData.append(key, conversationAsAny[key]);
+        formData.append(key, conversationAsAny[key] as never);
       }
     }
   }

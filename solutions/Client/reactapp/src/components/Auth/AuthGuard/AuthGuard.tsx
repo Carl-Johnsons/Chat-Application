@@ -1,7 +1,7 @@
-import userManager from "app/oidc-client";
-import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import classNames from "classnames/bind";
 import style from "./AuthGuard.module.scss";
+
 const cx = classNames.bind(style);
 const Loading = () => {
   return (
@@ -12,31 +12,14 @@ const Loading = () => {
 };
 
 const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated: async () => {
+      await signIn("duende-identityserver6");
+    },
+  });
+  const isLoading = status === "loading";
 
-  useEffect(() => {
-    const handleLogin = async () => {
-      setIsLoading(true);
-      try {
-        const user = await userManager.getUser();
-        if (!user) {
-          await userManager.signinRedirect();
-        } else {
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        console.error("Authentication error: ", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    handleLogin();
-  }, []);
-
-  if (!isAuthenticated) {
-    return null;
-  }
   if (isLoading) {
     return <Loading />;
   }

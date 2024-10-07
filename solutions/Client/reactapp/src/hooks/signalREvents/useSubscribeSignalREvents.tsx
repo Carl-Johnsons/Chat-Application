@@ -13,7 +13,9 @@ import {
   useMessageSubscription,
   useNotifyUserTypingSubscription,
   useReceiveCallSubscription,
-  useReportPostSubscription,
+  useReceiveSignalSubscription,
+  useReceiveAcceptCallSubscription,
+  useReportPostSubscription
 } from ".";
 
 const useSubscribeSignalREvents = () => {
@@ -47,6 +49,12 @@ const useSubscribeSignalREvents = () => {
   const { subscribeReceiveCallEvent, unsubscribeReceiveCallEvent } =
     useReceiveCallSubscription();
 
+  const { subscribeReceiveSignalEvent, unsubscribeReceiveSignalEvent } =
+    useReceiveSignalSubscription();
+
+  const { subscribeReceiveAcceptCallEvent, unsubscribeReceiveAcceptCallEvent } =
+    useReceiveAcceptCallSubscription();
+
   const { subscribeForcedLogoutEvent, unsubscribeForcedLogoutEvent } =
     useForcedLogoutSubscription();
 
@@ -74,9 +82,11 @@ const useSubscribeSignalREvents = () => {
       subscribeMessageEvent(connection);
       subscribeNotifyUserTypingEvent(connection);
       subscribeReceiveCallEvent(connection);
+      subscribeReceiveSignalEvent(connection);
+      subscribeReceiveAcceptCallEvent(connection);
       subscribeReportPostEvent(connection);
     },
-    [subscribeDisbandGroupConversationEvent]
+    []
   );
 
   const unsubscribeAllEvents = useCallback((connection: HubConnection) => {
@@ -92,6 +102,8 @@ const useSubscribeSignalREvents = () => {
     unsubscribeMessageEvent(connection);
     unsubscribeNotifyUserTypingEvent(connection);
     unsubscribeReceiveCallEvent(connection);
+    unsubscribeReceiveSignalEvent(connection);
+    unsubscribeReceiveAcceptCallEvent(connection);
     unsubscribeReportPostEvent(connection);
   }, []);
 

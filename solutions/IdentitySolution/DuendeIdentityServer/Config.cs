@@ -53,14 +53,14 @@ public static class Config
                 ClientId = "react.spa",
                 ClientName = "React SPA",
                 RequireClientSecret = false, // TODO: add secret later
-                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowedGrantTypes = GrantTypes.Code,
                 RequirePkce = true,
-                AllowAccessTokensViaBrowser = true,
+                AllowAccessTokensViaBrowser = false,
                 AlwaysIncludeUserClaimsInIdToken = true, // Attach user claim for SPA client
                 AccessTokenLifetime = 3600,
                 RedirectUris = {
-                   "http://localhost:3000/signin-callback",
-                   "http://localhost:3001/signin-callback",
+                   "http://localhost:3000/api/auth/callback/duende-identityserver6",
+                   "http://localhost:3001/api/auth/callback/duende-identityserver6",
                    "https://www.getpostman.com/oauth2/callback"
                 },
                 PostLogoutRedirectUris ={"http://localhost:3000","http://localhost:3001"},

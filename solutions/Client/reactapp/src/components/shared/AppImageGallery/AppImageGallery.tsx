@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import ReactImageGallery from "react-image-gallery";
-import AppButton from "../AppButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import style from "./AppImageGallery.module.scss";
-import classNames from "classnames/bind";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useCallback, useEffect, useRef } from "react";
+import ReactImageGallery from "react-image-gallery";
+
+import AppButton from "../AppButton";
+import classNames from "classnames/bind";
+import style from "./AppImageGallery.module.scss";
 
 const cx = classNames.bind(style);
 
@@ -28,7 +29,7 @@ const AppImageGallery = ({
 
   const handleClickCloseImageGalleryBtn = useCallback(() => {
     setShow(false);
-  }, []);
+  }, [setShow]);
 
   useEffect(() => {
     if (show && currentImageIndex !== null && imageGalleryRef.current) {

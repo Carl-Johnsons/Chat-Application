@@ -32,7 +32,7 @@ const useDisbandGroupConversation = () => {
         groupConversationId,
         axiosInstance: protectedAxiosInstance,
       }),
-    onSuccess: (_data, _variables, _context) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["conversations"],
         exact: true,
