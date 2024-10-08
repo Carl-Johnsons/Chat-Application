@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,8 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.example.chatapplication.post.Post;
-import com.example.chatapplication.post.PostAdapter;
+import com.example.chatapplication.Models.Post;
+import com.example.chatapplication.Adapter.PostAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;

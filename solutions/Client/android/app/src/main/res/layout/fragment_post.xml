@@ -15,10 +15,11 @@
 
         <ImageButton
             android:id="@+id/button_create_post"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/shape_circle_background"
-            android:src="@drawable/ic_create_post" />
+            android:src="@drawable/ic_create_post"
+            android:translationX="330dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_posts"

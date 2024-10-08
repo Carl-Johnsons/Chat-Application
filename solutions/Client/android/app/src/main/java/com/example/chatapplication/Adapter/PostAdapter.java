@@ -1,4 +1,4 @@
-package com.example.chatapplication.post;
+package com.example.chatapplication.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapplication.Models.Post;
 import com.example.chatapplication.R;
 
 import java.text.SimpleDateFormat;
