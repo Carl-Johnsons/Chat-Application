@@ -2,33 +2,32 @@
 using MediatR;
 using PostService.Domain.Common;
 using PostService.Domain.Errors;
-using PostService.Domain.Interfaces;
 
 namespace PostService.Application.Interactions.Commands;
 
-public class CreatePostInteractionCommand : IRequest<Result>
+public record UpdatePostInteractionCommand : IRequest<Result>
 {
     public Guid PostId { get; init; }
     public Guid InteractionId { get; init; }
     public Guid UserId { get; init; }
 }
 
-public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInteractionCommand, Result>
+
+public class UpdatePostInteractionCommandHandler : IRequestHandler<UpdatePostInteractionCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IServiceBus _serviceBus;
 
-    public CreatePostInteractionCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
+    public UpdatePostInteractionCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
     {
         _context = context;
         _unitOfWork = unitOfWork;
         _serviceBus = serviceBus;
     }
 
-    public async Task<Result> Handle(CreatePostInteractionCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdatePostInteractionCommand request, CancellationToken cancellationToken)
     {
-
         var post = _context.Posts
                     .Where(p => p.Id == request.PostId)
                     .FirstOrDefault();
@@ -47,14 +46,16 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
             return Result.Failure(InteractionError.NotFound);
         }
 
-       var postInteraction = _context.PostInteracts
-                            .Where(pi => pi.PostId == request.PostId && pi.UserId == request.UserId)
-                            .FirstOrDefault();
+        var postInteraction = _context.PostInteracts
+                             .Where(pi => pi.PostId == request.PostId && pi.UserId == request.UserId)
+                             .FirstOrDefault();
 
-        if (postInteraction != null)
+        if (postInteraction == null)
         {
-            return Result.Failure(PostError.AlreadyInteractedPost);
+            return Result.Failure(PostError.NotInteractedPost);
         }
+
+        _context.PostInteracts.Remove(postInteraction);
 
         var postInteract = new PostInteract
         {
@@ -64,6 +65,7 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
         };
 
         _context.PostInteracts.Add(postInteract);
+
         await _unitOfWork.SaveChangeAsync();
 
         await _serviceBus.Publish(new CreateNotificationEvent
