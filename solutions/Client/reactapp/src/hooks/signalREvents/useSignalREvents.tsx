@@ -2,7 +2,7 @@ import { useContext, useRef } from "react";
 
 import { FriendRequest } from "@/models";
 
-import { CallDTO, UserTypingNotificationDTO } from "@/models/DTOs";
+import { SendCallSignalDTO, UserTypingNotificationDTO } from "@/models/DTOs";
 import { ChatHubContext } from "contexts/ChatHubContext";
 
 interface InvokeSignalREvent {
@@ -19,7 +19,7 @@ const useSignalREvents = () => {
   const { connection } = context;
 
   // ref
-  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
+  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => { });
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
     if (!connection) {
@@ -60,10 +60,19 @@ export function signalRDisableNotifyUserTyping(
     args: [userTypingNotificationDTO],
   };
 }
-export function signalRCall(callDTO: CallDTO) {
+
+export function signalRSendCallSignal(sendCallSignalDTO: SendCallSignalDTO) {
   return {
-    name: "Call",
-    args: [callDTO],
+    name: "SendCallSignal",
+    args: [sendCallSignalDTO],
   };
 }
+
+export function signalRAcceptCall(sendCallSignalDTO: SendCallSignalDTO) {
+  return {
+    name: "AcceptCall",
+    args: [sendCallSignalDTO],
+  };
+}
+
 export { useSignalREvents };

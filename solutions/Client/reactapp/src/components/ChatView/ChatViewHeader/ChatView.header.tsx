@@ -4,7 +4,6 @@ import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
 import {
-  signalRCall,
   useGlobalState,
   useModal,
   useSignalREvents,
@@ -23,6 +22,7 @@ import { useGetUser } from "@/hooks/queries/user";
 import UserStatus from "../UserStatus";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/navigation";
 
 const cx = classNames.bind(style);
 
@@ -35,6 +35,9 @@ const ChatViewHeader = () => {
   const { invokeAction } = useSignalREvents();
   const { handleShowModal } = useModal();
   const isGroup = conversationType === "GROUP";
+  //
+  const router = useRouter();
+
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
     { conversationId: activeConversationId, other: true },
@@ -44,11 +47,7 @@ const ChatViewHeader = () => {
   );
   const handleToggleAside = () => setShowAside(!showAside);
   const handleCall = useCallback(() => {
-    invokeAction(
-      signalRCall({
-        targetConversationId: activeConversationId,
-      })
-    );
+    router.push("/call/1");
   }, [activeConversationId, invokeAction]);
 
   const handleClickAvatar = useCallback(() => {
@@ -99,7 +98,7 @@ const ChatViewHeader = () => {
     (isGroup
       ? (conversationData as GroupConversation)?.name
       : otherUserData?.name) ?? "";
-      
+
   if (!activeConversationId) {
     return;
   }

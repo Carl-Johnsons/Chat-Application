@@ -15,9 +15,9 @@ export const updateUser = async ({
   const url = "http://localhost:5001/api/users";
   const formData = new FormData();
   // Cast user to a more flexible type
-  const userAsAny = user as { [key: string]: any };
+  const userAsAny = user as { [key: string]: never };
   for (const key in userAsAny) {
-    if (userAsAny.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(userAsAny, key)) {
       formData.append(key, userAsAny[key]);
     }
   }

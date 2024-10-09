@@ -21,11 +21,10 @@ export const toggleUserStatus = async ({
   const data = {
     id: userId,
   };
-  let response;
   if (active) {
-    response = await axiosInstance.put(url, data);
+    await axiosInstance.put(url, data);
   } else {
-    response = await axiosInstance.delete(url, {
+    await axiosInstance.delete(url, {
       data,
     });
   }

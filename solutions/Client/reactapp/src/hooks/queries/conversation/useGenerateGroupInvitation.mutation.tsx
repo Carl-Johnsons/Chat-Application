@@ -32,7 +32,7 @@ const useGenerateGroupInvitation = () => {
         groupId,
         axiosInstance: protectedAxiosInstance,
       }),
-    onSuccess: (_data, variable, _context) => {
+    onSuccess: (_data, variable) => {
       const { groupId } = variable;
       queryClient.invalidateQueries({
         queryKey: ["group", groupId, "invitation"],

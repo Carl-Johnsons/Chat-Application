@@ -10,5 +10,7 @@ export * from "./useJoinConversationSubscription";
 export * from "./useMessageSubscription";
 export * from "./useNotifyUserTypingSubscription";
 export * from "./useReceiveCallSubscription";
+export * from "./useReceiveSignalSubscription";
+export * from "./useReceiveAcceptCallSubscription";
 export * from "./useReportPostSubscription";
 export * from "./useSignalREvents";

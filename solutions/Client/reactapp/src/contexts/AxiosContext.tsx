@@ -1,13 +1,11 @@
-import React, { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import axios, { AxiosInstance } from "axios";
-import { useLocalStorage } from "hooks/useStorage";
-
-const API_DEFAULT_GATEWAY = "http://localhost:5000";
+import { useSession } from "next-auth/react";
+import { API_GATEWAY_URL } from "@/constants/url.constant";
 
 interface AxiosContextType {
   axiosInstance: AxiosInstance;
   protectedAxiosInstance: AxiosInstance;
-  setAccessToken: React.Dispatch<React.SetStateAction<string>>;
 }
 interface Props {
   children: React.ReactNode;
@@ -16,21 +14,23 @@ interface Props {
 const AxiosContext = createContext<AxiosContextType | null>(null);
 
 const AxiosProvider = ({ children }: Props) => {
-  const [localToken] = useLocalStorage("access_token");
-  const [accessToken, setAccessToken] = useState<string>(localToken);
+  const { data: session } = useSession();
+
+  const accessToken = session?.accessToken ?? "";
+
+  console.log("Query axios with access token ", accessToken);
+  console.log("Expire in ", session?.accessToken);
 
   const [axiosInstance] = useState(() =>
     axios.create({
-      baseURL:
-        process.env.NEXT_PUBLIC_API_GATEWAY_PORT_URL ?? API_DEFAULT_GATEWAY,
+      baseURL: API_GATEWAY_URL,
       withCredentials: true,
     })
   );
 
   const [protectedAxiosInstance] = useState(() =>
     axios.create({
-      baseURL:
-        process.env.NEXT_PUBLIC_API_GATEWAY_PORT_URL ?? API_DEFAULT_GATEWAY,
+      baseURL: API_GATEWAY_URL,
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -47,7 +47,7 @@ const AxiosProvider = ({ children }: Props) => {
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => {
-    return { axiosInstance, protectedAxiosInstance, setAccessToken };
+    return { axiosInstance, protectedAxiosInstance };
   }, [axiosInstance, protectedAxiosInstance]);
 
   return (
