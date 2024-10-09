@@ -1,15 +1,5 @@
+import { AppLoading } from "@/components/shared";
 import { signIn, useSession } from "next-auth/react";
-import classNames from "classnames/bind";
-import style from "./AuthGuard.module.scss";
-
-const cx = classNames.bind(style);
-const Loading = () => {
-  return (
-    <div className={cx("container")}>
-      <div className={cx("loader")}></div>
-    </div>
-  );
-};
 
 const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { status } = useSession({
@@ -21,7 +11,7 @@ const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isLoading = status === "loading";
 
   if (isLoading) {
-    return <Loading />;
+    return <AppLoading />;
   }
 
   return <>{children}</>;

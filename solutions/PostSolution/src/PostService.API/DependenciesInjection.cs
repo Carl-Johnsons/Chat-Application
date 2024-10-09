@@ -2,7 +2,6 @@
 using PostService.Infrastructure;
 using PostService.API.Middleware;
 using Microsoft.IdentityModel.Tokens;
-using PostService.Infrastructure.Utilities;
 using PostService.Domain.Interfaces;
 
 namespace PostService.API;
