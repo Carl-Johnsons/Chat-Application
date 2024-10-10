@@ -35,13 +35,13 @@ public static class DependenciesInjection
                 // Clear default Microsoft's JWT claim mapping
                 // Ref: https://stackoverflow.com/questions/70766577/asp-net-core-jwt-token-is-transformed-after-authentication
                 options.MapInboundClaims = false;
-
                 options.TokenValidationParameters.ValidTypes = ["at+jwt"];
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false,
                     ValidateIssuer = false,
+                    RoleClaimType = "role"
                 };
                 // For development only
                 options.IncludeErrorDetails = true;
