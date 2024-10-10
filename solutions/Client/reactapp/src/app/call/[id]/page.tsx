@@ -1,85 +1,76 @@
 "use client";
-import { useParams } from "next/navigation";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import SimplePeer, { SignalData } from "simple-peer";
+import React, { useEffect, useRef, useState } from "react";
+import { useGlobalState, usePeer } from "@/hooks";
 
-const CallPage = () => {
-  const [incomingData, setIsncomingData] = useState();
-  const [outGoingData, setOutGoingData] = useState();
-  const params = useParams();
-  const Id = params["id"];
-  const videoRef = useRef<HTMLVideoElement>(null); // Create a ref for the video element
+const VideoCall: React.FC = () => {
+  const streamRef = useRef<MediaStream | null>(null);
+  const [isMicOn, setIsMicOn] = useState(true);
+  const [isCameraOn, setIsCameraOn] = useState(true);
+  const [signalData] = useGlobalState("signalData");
+  const [userPeer] = useGlobalState("userPeer");
+  const [activeConversationId] = useGlobalState("activeConversationId");
+  const { callStatus, remoteVideoRef, localVideoRef, initiateCallerPeer, initiateCalleePeer, muteMic, unmuteMic, enableCamera, disableCamera } = usePeer();
+  console.log("call status", callStatus);
+  const handleToggleMic = () => {
+    if (streamRef.current) {
+      if (isMicOn) {
+        muteMic(streamRef.current);
+      } else {
+        unmuteMic(streamRef.current);
+      }
+      setIsMicOn(!isMicOn);
+    }
+  };
 
-  // This allows you to determine whether the microphone and camera are ready for use.
-  navigator.mediaDevices.enumerateDevices().then(function (devices) {
-    devices.forEach(function (device) {
-      console.log(
-        device.kind + ": " + device.label + " id = " + device.deviceId
-      );
-    });
-  });
-  let p: SimplePeer.Instance | undefined;
+  const handleToggleCamera = () => {
+    if (streamRef.current) {
+      if (isCameraOn) {
+        disableCamera(streamRef.current);
+      } else {
+        enableCamera(streamRef.current);
+      }
+      setIsCameraOn(!isCameraOn);
+    }
+  };
 
-  navigator.mediaDevices
-    .getUserMedia({ video: true, audio: true })
-    .then((stream) => {
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
+
+  useEffect(() => {
+    const startVideoCall = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      streamRef.current = stream;
+
+      if (userPeer) return;
+
+      if (signalData) {
+        console.log("create callee peer********************************");
+        initiateCalleePeer({ callerSignalData: signalData, stream, conversationId: activeConversationId })
+      } else {
+        console.log("create caller peer*******************************");
+        initiateCallerPeer({ conversationId: activeConversationId, stream })
       }
 
-      // p = new SimplePeer({
-      //   initiator: location.hash === "#1",
-      //   trickle: false,
-      //   stream,
-      // });
-      // p.on("error", (err) => console.error("error", err));
-      // p.on("signal", (data) => {
-      //   console.log("SIGNAL", JSON.stringify(data));
-      //   setOutGoingData(JSON.stringify(data));
-      // });
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+    }
+    startVideoCall();
+  }, []);
 
-      // p.on("connect", () => {
-      //   console.log("CONNECT");
-      //   p?.send("whatever" + Math.random()); // Or Files
-      // });
 
-      // p.on("data", (data) => {
-      //   console.log("data: " + data);
-      // });
-      // p.on("stream", function (stream) {
-      //   console.log("stream");
 
-      //   if (videoRef.current && stream) {
-      //     videoRef.current.srcObject = stream;
-      //     videoRef.current.play().catch((error) => {
-      //       console.error("Error attempting to play", error);
-      //     });
-      //   }
-      // });
-    });
-
-  const handleSubmit = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      e.preventDefault();
-      p?.signal(incomingData);
-    },
-    [incomingData, p]
-  );
 
   return (
     <div>
-      Call {Id}
-      <form>
-        <textarea id="incoming"></textarea>
-        <button type="submit" onClick={(e) => handleSubmit(e)}>
-          submit
-        </button>
-      </form>
-      <pre>{outGoingData}</pre>
-      <video ref={videoRef}></video>
+      <h1>Video Call</h1>
+      <div>
+        <video ref={localVideoRef} autoPlay muted style={{ width: "300px" }} />
+        <video ref={remoteVideoRef} autoPlay style={{ width: "300px" }} />
+        <button onClick={handleToggleMic}>{isMicOn ? 'Tắt Mic' : 'Bật Mic'}</button>
+        <button onClick={handleToggleCamera}>{isCameraOn ? 'Tắt Camera' : 'Bật Camera'}</button>
+        <h1>Status: {callStatus}</h1>
+      </div>
     </div>
   );
 };
 
-export default CallPage;
+export default VideoCall;

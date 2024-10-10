@@ -9,7 +9,6 @@ using DuendeIdentityServer.Models;
 using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace DuendeIdentityServer;

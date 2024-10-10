@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-
-import style from "./PostInput.container.module.scss";
-import classNames from "classnames/bind";
 import { EditorEvent, Editor as TinyMCEEditor } from "tinymce";
-import AppButton from "@/components/shared/AppButton";
-import { ClearableFile } from "@/components/shared";
-import { TagInputContainer } from "../TagInputContainer";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+
 import {
   useCreatePost,
   useGetPostByd,
   useUpdatePost,
 } from "@/hooks/queries/post";
+import { ClearableFile } from "@/components/shared";
 import { Tag } from "@/models";
-import { useModal } from "hooks/useModal";
+import { TagInputContainer } from "../TagInputContainer";
 import { useGlobalState } from "@/hooks";
+import { useModal } from "hooks/useModal";
+import AppButton from "@/components/shared/AppButton";
+import classNames from "classnames/bind";
+import style from "./PostInput.container.module.scss";
 
 const cx = classNames.bind(style);
 
@@ -108,7 +108,7 @@ const PostInputContainer = () => {
       active: true,
     });
     handleHideModal();
-  }, [modalEntityId, tags]);
+  }, [handleHideModal, modalEntityId, tags, updatePostMutate]);
 
   useEffect(() => {
     if (!postData) {

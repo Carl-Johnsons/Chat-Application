@@ -5,7 +5,6 @@ import { useModal } from "..";
 
 const useReceiveCallSubscription = () => {
   const { handleShowModal } = useModal();
-
   const subscribeReceiveCallEvent = useCallback(
     (connection: HubConnection) => {
       if (!connection) {

@@ -56,7 +56,7 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
             return Result.Failure(PostError.AlreadyInteractedPost);
         }
 
-        PostInteract postInteract = new PostInteract
+        var postInteract = new PostInteract
         {
             PostId = request.PostId,
             InteractionId = request.InteractionId,
@@ -66,7 +66,7 @@ public class CreatePostInteractionCommandHandler : IRequestHandler<CreatePostInt
         _context.PostInteracts.Add(postInteract);
         await _unitOfWork.SaveChangeAsync();
 
-        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        await _serviceBus.Publish(new CreateNotificationEvent
         {
             ActionCode = "POST_INTERACTION",
             ActorIds = [request.UserId],

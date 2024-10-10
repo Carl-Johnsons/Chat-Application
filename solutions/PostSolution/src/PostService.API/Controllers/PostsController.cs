@@ -124,6 +124,24 @@ public class PostsController : BaseApiController
         return Ok();
     }
 
+    [HttpPut("interact")]
+    public async Task<IActionResult> UpdatePostInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var result = await _sender.Send(new UpdatePostInteractionCommand
+        {
+            PostId = createPostInteractionDTO.PostId,
+            InteractionId = createPostInteractionDTO.InteractionId,
+            UserId = Guid.Parse(subjectId!)
+        });
+
+        result.ThrowIfFailure();
+
+        return Ok();
+    }
+
     [HttpGet("interact")]
     public async Task<IActionResult> GetInteractionByPostId([FromQuery] Guid id)
     {
