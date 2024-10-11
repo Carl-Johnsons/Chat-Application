@@ -109,7 +109,7 @@ const AppPost = ({
           variant="avatar-img-45px"
           src={authorAvatar}
           alt="author avatar"
-        ></Avatar>
+        />
         <div className={cx("author-name", "fw-medium", "me-auto")}>
           {authorName}
         </div>
