@@ -166,6 +166,19 @@ const ModalContentMapper = (): ModalContent[] => {
             ),
           },
         ];
+      case "BlockedUser":
+        return [
+          {
+            title: "Thông tin tài khoản",
+            ref: profileRef,
+            modalContent: (
+              <ProfileModalContent
+                type="BlockedUser"
+                modalEntityId={modalEntityId}
+              />
+            ),
+          },
+        ];
       case "Group":
         return [
           {
@@ -262,12 +275,21 @@ const ModalContentMapper = (): ModalContent[] => {
         return [];
     }
   }, [
-    modalEntityId,
     modalType,
-    sendFriendRequestMutate,
     setActiveModal,
-    currentMemberId,
+    sendFriendRequestMutate,
+    modalEntityId,
+    blockUserMutate,
+    disbandConversationMutate,
+    activeConversationId,
+    handleHideModal,
+    leaveGroupMutate,
     currentUserData?.id,
+    setActiveNav,
+    refetchConversation,
+    setActiveConversationId,
+    createConversationMutate,
+    currentMemberId,
   ]);
 
   return content;
