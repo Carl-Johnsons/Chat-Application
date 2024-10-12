@@ -56,11 +56,16 @@ type GroupVariant = BaseVariant & {
   onClickLeaveGroup?: () => void;
 };
 
+type BlockedUserVariant = BaseVariant & {
+  type: "BlockedUser";
+};
+
 type Variants =
   | PersonalVariant
   | FriendVariant
   | StrangerVariant
-  | GroupVariant;
+  | GroupVariant
+  | BlockedUserVariant;
 
 const ProfileModalContent = (variant: Variants) => {
   const { type } = variant;
@@ -88,6 +93,7 @@ const ProfileModalContent = (variant: Variants) => {
   const isFriend = type === "Friend";
   const isStranger = type === "Stranger";
   const isGroup = type === "Group";
+  const isBlockedUser = type === "BlockedUser";
 
   const { data: currentUserData } = useGetCurrentUser();
 
@@ -100,6 +106,8 @@ const ProfileModalContent = (variant: Variants) => {
   } else if (isStranger) {
     ({ onClickSendFriendRequest, onClickMessaging, onClickBlockUser } =
       variant);
+  } else if (isBlockedUser) {
+    /* empty */
   } else {
     ({
       onClickMessaging,
@@ -220,7 +228,7 @@ const ProfileModalContent = (variant: Variants) => {
                 !isGroup && "pt-5"
               )}
             >
-              {!isGroup && (
+              {!isGroup && !isBlockedUser && (
                 <AppButton
                   variant="app-btn-primary"
                   className={cx("info-button", "fw-medium", "flex-grow-1")}
@@ -229,14 +237,15 @@ const ProfileModalContent = (variant: Variants) => {
                   {isFriend ? "Gọi điện" : "Kết bạn"}
                 </AppButton>
               )}
-
-              <AppButton
-                variant="app-btn-tertiary"
-                className={cx("info-button", "fw-medium", "flex-grow-1")}
-                onClick={onClickMessaging}
-              >
-                Nhắn tin
-              </AppButton>
+              {!isBlockedUser && (
+                <AppButton
+                  variant="app-btn-tertiary"
+                  className={cx("info-button", "fw-medium", "flex-grow-1")}
+                  onClick={onClickMessaging}
+                >
+                  Nhắn tin
+                </AppButton>
+              )}
             </div>
 
             <div

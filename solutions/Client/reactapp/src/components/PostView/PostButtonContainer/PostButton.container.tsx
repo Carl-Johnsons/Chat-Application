@@ -22,6 +22,7 @@ import { useUpdatePostInteraction } from "hooks/queries/post/useUpdatePostIntera
 import AppButton from "@/components/shared/AppButton";
 import classNames from "classnames/bind";
 import style from "./PostButton.container.module.scss";
+import Image from "next/image";
 
 const cx = classNames.bind(style);
 
@@ -82,7 +83,7 @@ const PostButtonContainer = ({
   );
 
   const handleLikeBtnClick = useCallback(() => {
-    if (!isInteracted) {
+    if (isInteracted) {
       undoInteractPostMutateAsync({ postId });
     }
   }, [isInteracted, postId, undoInteractPostMutateAsync]);
@@ -176,7 +177,7 @@ const PostButtonContainer = ({
               onClick={handleClick}
             >
               {emoji ? (
-                <img src={emoji.gif} alt="emoji" width={20} />
+                <Image src={emoji.gif} alt="emoji" width={20} height={20} />
               ) : (
                 <>
                   <FontAwesomeIcon className={cx("me-2")} icon={iconSrc} />
