@@ -102,6 +102,11 @@ const CreateGroupModalContent = () => {
       return;
     }
 
+    if(!form.avatarFile){
+      toast.error("Nhóm avatar chưa có");
+      return;
+    }
+
     const members = selectedUser.map((f) => f.id);
 
     const model: GroupConversationWithMembersIdDTO = {
