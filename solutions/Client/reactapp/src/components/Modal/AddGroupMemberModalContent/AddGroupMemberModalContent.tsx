@@ -30,7 +30,7 @@ const AddGroupMembersModalContent = () => {
   const { data: friendList } = useGetFriendList();
   const { data: memberListData } = useGetMemberListByConversationId(
     {
-      conversationId: modalEntityId,
+      conversationId: modalEntityId!,
     },
     {
       enabled: !!modalEntityId,
@@ -86,10 +86,16 @@ const AddGroupMembersModalContent = () => {
 
   const handleClickUpdateGroupBtn = useCallback(() => {
     const members = selectedUser.map((f) => f.id);
-
-    updateGroupConversationMutate({ id: modalEntityId, membersId: members });
-    handleHideModal();
-  }, [selectedUser]);
+    if (modalEntityId) {
+      updateGroupConversationMutate({ id: modalEntityId, membersId: members });
+      handleHideModal();
+    }
+  }, [
+    handleHideModal,
+    modalEntityId,
+    selectedUser,
+    updateGroupConversationMutate,
+  ]);
 
   return (
     <div className={cx("create-group-modal-content")}>

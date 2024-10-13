@@ -90,7 +90,9 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
               ref={inputRef}
               className={cx("form-control", "rounded-3")}
               placeholder="Write your thought"
-              onClick={() => handleShowModal({ modalType: "PostInput" })}
+              onClick={() =>
+                handleShowModal({ modalType: "PostInput", entityId: undefined })
+              }
               onFocus={handleFocus}
             />
           </div>

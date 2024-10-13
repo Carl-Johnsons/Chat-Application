@@ -25,7 +25,7 @@ import { AppDivider } from "@/components/shared";
 const cx = classNames.bind(style);
 
 type BaseVariant = {
-  modalEntityId: string;
+  modalEntityId: string | undefined;
 };
 
 type PersonalVariant = BaseVariant & {
@@ -116,7 +116,7 @@ const ProfileModalContent = (variant: Variants) => {
       onClickLeaveGroup,
     } = variant);
   }
-  const { data: otherUserData } = useGetUser(modalEntityId, {
+  const { data: otherUserData } = useGetUser(modalEntityId!, {
     enabled: (isFriend || isStranger) && !!modalEntityId,
   });
   const { data: conversationData } = useGetConversation(
@@ -129,7 +129,7 @@ const ProfileModalContent = (variant: Variants) => {
   );
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
-    { conversationId: modalEntityId, other: false },
+    { conversationId: modalEntityId!, other: false },
     {
       enabled: isGroup && !!modalEntityId,
     }

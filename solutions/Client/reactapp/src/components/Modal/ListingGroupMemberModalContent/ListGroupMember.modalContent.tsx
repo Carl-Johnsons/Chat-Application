@@ -25,7 +25,7 @@ const ListGroupMemberModalContent = ({
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
   const { data: conversationData } = useGetMemberListByConversationId(
-    { conversationId: modalEntityId },
+    { conversationId: modalEntityId! },
     {
       enabled: !!modalEntityId,
     }
@@ -43,7 +43,7 @@ const ListGroupMemberModalContent = ({
       return;
     }
     onClickAddGroupMember();
-  }, [modalEntityId]);
+  }, [isGroup, onClickAddGroupMember]);
 
   return (
     <div className={cx("list-group-member-content", "m-0", "ps-3", "pe-3")}>

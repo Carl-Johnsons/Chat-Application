@@ -1,18 +1,18 @@
-import style from "./Calling.container.module.scss";
-import classNames from "classnames/bind";
-import { useGlobalState, useModal } from "@/hooks";
 import { useGetUser } from "@/hooks/queries/user";
-import Avatar from "@/components/shared/Avatar";
-import images from "@/assets";
-import AppButton from "@/components/shared/AppButton";
+import { useGlobalState, useModal } from "@/hooks";
 import { useRouter } from "next/navigation";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import classNames from "classnames/bind";
+import images from "@/assets";
+import style from "./Calling.container.module.scss";
 
 const cx = classNames.bind(style);
 
 const CallingContainer = () => {
   const [entityId] = useGlobalState("modalEntityId");
   const router = useRouter();
-  const { data: caller } = useGetUser(entityId, {
+  const { data: caller } = useGetUser(entityId!, {
     enabled: !!entityId,
   });
   const { handleHideModal } = useModal();
@@ -23,7 +23,7 @@ const CallingContainer = () => {
 
   const handleAcceptCall = () => {
     router.push("/call/1");
-  }
+  };
 
   return (
     <div className={cx("d-flex", "flex-column", "align-items-center")}>
