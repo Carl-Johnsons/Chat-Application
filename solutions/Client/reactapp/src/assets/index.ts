@@ -23,6 +23,12 @@ import userGroupSolid from "./images/user-group-solid.svg";
 import userIcon from "./images/user.png";
 import userSolid from "./images/user-solid.svg";
 import zaloLogo from "./images/zalo-logo.png";
+import micIcon from "./images/mic-enable-btn.png";
+import muteIcon from "./images/mic-disable-btn.png";
+import videoOnIcon from "./images/video-enable-btn.png";
+import videoOffIcon from "./images/video-disable-btn.png";
+
+
 
 const images = {
   addUserIcon,
@@ -50,5 +56,9 @@ const images = {
   userIcon,
   userSolid,
   zaloLogo,
+  micIcon,
+  muteIcon,
+  videoOnIcon,
+  videoOffIcon
 };
 export default images;

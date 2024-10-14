@@ -1,0 +1,76 @@
+.video-call-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: #202124;
+  
+    h1 {
+      margin-top: 10px;
+      color: #fff;
+    }
+  
+    .videos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-grow: 1;
+      width: 100%;
+      position: relative;
+      gap: 20px;
+  
+      video {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        background-color: #000;
+      }
+  
+      .local-video {
+        width: 50%;
+        height: 70%;
+      }
+  
+      .remote-video {
+        width: 40%;;
+        height: 60%;
+        display: none;
+      }
+  
+      &.has-remote-video {
+        .local-video {
+            width: 40%;
+            height: 60%;
+        }
+  
+        .remote-video {
+            display: block;
+        }
+      }
+    }
+  
+    .controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+  
+      button {
+        padding: 10px 20px;
+        margin: 0 10px;
+        background-color: transparent;
+        border: #fff;
+        border-width: 2px;
+        border-radius: 50%;
+        border-style: solid;
+        color: transparent;
+        cursor: pointer;
+      }
+    }
+  
+    .status {
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  }
+  

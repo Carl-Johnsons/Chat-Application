@@ -26,8 +26,8 @@ const initialState = {
   // ModalType
   modalType: null as unknown as ModalType,
   //Peer
-  userPeer: null as unknown as Instance,
-  signalData: null as unknown as SignalData,
+  userPeer: null as unknown as Instance | null,
+  signalData: null as unknown as SignalData | null,
   // streamData: null as unknown as MediaStream
 };
 

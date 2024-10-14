@@ -11,6 +11,7 @@ const cx = classNames.bind(style);
 
 const CallingContainer = () => {
   const [entityId] = useGlobalState("modalEntityId");
+  const [activeConversationId] = useGlobalState("activeConversationId");
   const router = useRouter();
   const { data: caller } = useGetUser(entityId!, {
     enabled: !!entityId,
@@ -22,8 +23,10 @@ const CallingContainer = () => {
   };
 
   const handleAcceptCall = () => {
-    router.push("/call/1");
-  };
+    handleHideModal();
+    var url = "/call/1?activeConversationId=" + encodeURI(activeConversationId);
+    router.push(url);
+  }
 
   return (
     <div className={cx("d-flex", "flex-column", "align-items-center")}>

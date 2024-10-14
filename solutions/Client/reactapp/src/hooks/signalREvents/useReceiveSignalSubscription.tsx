@@ -1,14 +1,21 @@
 import { HubConnection } from "@microsoft/signalr";
 import { SignalREvent } from "../../data/constants";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useGlobalState } from "../globalState";
 import { SignalData } from "simple-peer";
 
-
 const useReceiveSignalSubscription = () => {
+
 
   const [, setSignalData] = useGlobalState("signalData");
   const [, SetActiveConversationId] = useGlobalState("activeConversationId");
+  const [userPeer, setUserPeer] = useGlobalState("userPeer")
+  const userPeerRef = useRef(userPeer);
+
+  useEffect(() => {
+    userPeerRef.current = userPeer;
+  }, [userPeer]);
+
   const subscribeReceiveSignalEvent = useCallback(
     (connection: HubConnection) => {
       if (!connection) {
@@ -16,9 +23,14 @@ const useReceiveSignalSubscription = () => {
       }
       connection.on(SignalREvent.RECEIVE_SIGNAL, (signalData: string, conversationId: string) => {
         console.log("receive signal");
+        if (userPeerRef.current) {
+          console.log("has userpeer so connect again");
+          userPeerRef.current.destroy();
+          userPeerRef.current = null;
+          setUserPeer(null);
+        }
         setSignalData(JSON.parse(signalData) as SignalData);
         SetActiveConversationId(conversationId);
-        console.log(signalData);
       });
     },
     []

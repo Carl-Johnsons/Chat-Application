@@ -90,7 +90,7 @@ const ChatHubProvider = ({ children }: Props) => {
         connection: connectionRef.current,
         startConnection,
         stopConnection,
-        connected: !!waitingToReconnect,
+        connected: !waitingToReconnect,
       }}
     >
       {children}

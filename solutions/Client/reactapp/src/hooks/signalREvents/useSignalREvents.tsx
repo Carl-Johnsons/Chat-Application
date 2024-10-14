@@ -3,6 +3,7 @@ import { useContext, useRef } from "react";
 import { FriendRequest } from "@/models";
 import { SendCallSignalDTO, UserTypingNotificationDTO } from "@/models/DTOs";
 import { ChatHubContext } from "contexts/ChatHubContext";
+import { useSession } from "next-auth/react";
 
 interface InvokeSignalREvent {
   name: string;
@@ -15,23 +16,27 @@ const useSignalREvents = () => {
   if (!context) {
     throw new Error("useSignalREvents must be used within ChatHubProvider");
   }
-  const { connection } = context;
+  const { connection, connected } = context;
+  const { data } = useSession();
 
   // ref
-  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
+  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => { });
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
     if (!connection) {
       return;
     }
 
-    connection.invoke(name, ...args).catch((err) => {
+    connection.invoke(name, ...args).then(() => {
+      console.log("data:", data?.accessToken);
+
+    }).catch((err) => {
       console.error(`Error invoking ${name}: ${err}`);
     });
   };
 
   return {
-    invokeAction: invokeActionRef.current,
+    invokeAction: invokeActionRef.current, connected
   };
 };
 

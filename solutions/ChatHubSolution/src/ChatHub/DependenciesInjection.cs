@@ -59,6 +59,8 @@ public static class DependenciesInjection
                  OnMessageReceived = context =>
                  {
                      var accessToken = context.Request.Query["access_token"];
+                     Console.WriteLine("------------------------");
+                     Console.WriteLine(accessToken);
                      // If the request is for our hub...
                      var path = context.HttpContext.Request.Path;
                      if (!string.IsNullOrEmpty(accessToken) &&
