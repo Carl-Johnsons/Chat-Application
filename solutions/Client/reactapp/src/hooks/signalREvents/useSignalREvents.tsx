@@ -1,7 +1,6 @@
 import { useContext, useRef } from "react";
 
 import { FriendRequest } from "@/models";
-
 import { SendCallSignalDTO, UserTypingNotificationDTO } from "@/models/DTOs";
 import { ChatHubContext } from "contexts/ChatHubContext";
 
@@ -19,7 +18,7 @@ const useSignalREvents = () => {
   const { connection } = context;
 
   // ref
-  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => { });
+  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
     if (!connection) {

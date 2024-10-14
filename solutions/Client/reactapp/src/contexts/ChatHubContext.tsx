@@ -18,6 +18,7 @@ interface ChatHubContextType {
   connection: HubConnection | null;
   startConnection: () => Promise<void>;
   stopConnection: () => Promise<void>;
+  connected: boolean;
 }
 
 interface Props {
@@ -75,18 +76,21 @@ const ChatHubProvider = ({ children }: Props) => {
 
     startConnection();
   }, [
+    accessToken,
     currentUser,
     hubURL,
     startConnection,
     subscribeAllEvents,
     waitingToReconnect,
   ]);
+
   return (
     <ChatHubContext.Provider
       value={{
         connection: connectionRef.current,
         startConnection,
         stopConnection,
+        connected: !!waitingToReconnect,
       }}
     >
       {children}
