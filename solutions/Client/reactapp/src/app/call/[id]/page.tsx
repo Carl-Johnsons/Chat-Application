@@ -4,56 +4,68 @@ import className from "classnames/bind";
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGlobalState, usePeer } from "@/hooks";
 
 const VideoCall: React.FC = () => {
   const cx = className.bind(style);
-  const streamRef = useRef<MediaStream | null>(null);
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(true);
   // const [hasRemoteVideo, setHasRemoteVideo] = useState(false);
   const [signalData] = useGlobalState("signalData");
   const [userPeer] = useGlobalState("userPeer");
-  const { callStatus, remoteVideoRef, localVideoRef, initiateCallerPeer, initiateCalleePeer, muteMic, unmuteMic, enableCamera, disableCamera, exitCall } = usePeer();
+  const {
+    callStatus,
+    remoteVideoRef,
+    localVideoRef,
+    initiateCallerPeer,
+    initiateCalleePeer,
+    muteMic,
+    unmuteMic,
+    enableCamera,
+    disableCamera,
+    exitCall,
+  } = usePeer();
   //const [activeConversationId] = useGlobalState("activeConversationId");
   //const activeConversationId = new URLSearchParams(window.location.search).get("activeConversationId") || undefined;
-  const [activeConversationId, setActiveConversationId] = useState<string | undefined>(undefined);
-  const handleToggleMic = () => {
-    if (streamRef.current) {
-      if (isMicOn) {
-        muteMic(streamRef.current);
-      } else {
-        unmuteMic(streamRef.current);
-      }
-      setIsMicOn(!isMicOn);
-    }
-  };
+  const [activeConversationId, setActiveConversationId] = useState<
+    string | undefined
+  >(undefined);
 
-  const handleToggleCamera = () => {
-    if (streamRef.current) {
-      if (isCameraOn) {
-        disableCamera(streamRef.current);
-      } else {
-        enableCamera(streamRef.current);
-      }
-      setIsCameraOn(!isCameraOn);
+  const handleToggleMic = () => {
+    if (isMicOn) {
+      muteMic();
+    } else {
+      unmuteMic();
     }
+    setIsMicOn(!isMicOn);
+  };
+  const handleToggleCamera = () => {
+    if (isCameraOn) {
+      disableCamera();
+    } else {
+      enableCamera();
+    }
+    setIsCameraOn(!isCameraOn);
   };
 
   const handleExitCall = () => {
     exitCall();
-  }
+  };
+
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("activeConversationId") || undefined;
+    const id =
+      new URLSearchParams(window.location.search).get("activeConversationId") ||
+      undefined;
     setActiveConversationId(id);
   }, []);
 
-
   useEffect(() => {
     const startVideoCall = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      streamRef.current = stream;
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       console.log("activeId:", activeConversationId);
 
       if (activeConversationId === undefined) return;
@@ -62,23 +74,36 @@ const VideoCall: React.FC = () => {
 
       if (signalData) {
         console.log("create callee peer********************************");
-        initiateCalleePeer({ callerSignalData: signalData, stream, conversationId: activeConversationId })
+        initiateCalleePeer({
+          callerSignalData: signalData,
+          stream,
+          conversationId: activeConversationId,
+        });
       } else {
         console.log("create caller peer*******************************");
-        initiateCallerPeer({ conversationId: activeConversationId, stream })
+        initiateCallerPeer({ conversationId: activeConversationId, stream });
       }
 
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
-    }
+    };
     startVideoCall();
   }, [activeConversationId]);
 
   return (
     <div className={cx("video-call-container")}>
-      <div className={cx("videos", { "has-remote-video": !!remoteVideoRef.current?.srcObject })}>
-        <video ref={localVideoRef} className={cx("local-video")} autoPlay muted />
+      <div
+        className={cx("videos", {
+          "has-remote-video": !!remoteVideoRef.current?.srcObject,
+        })}
+      >
+        <video
+          ref={localVideoRef}
+          className={cx("local-video")}
+          autoPlay
+          muted
+        />
         <video ref={remoteVideoRef} className={cx("remote-video")} autoPlay />
       </div>
       <div className={cx("controls")}>

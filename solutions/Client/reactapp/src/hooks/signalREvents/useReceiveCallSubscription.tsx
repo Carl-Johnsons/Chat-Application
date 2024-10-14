@@ -13,7 +13,7 @@ const useReceiveCallSubscription = () => {
       connection.on(SignalREvent.RECEIVE_CALL, (callerId: string) => {
         console.log("receive call");
         console.log({ callerId });
-        handleShowModal({ entityId: callerId, modalType: "Calling" });
+        //handleShowModal({ entityId: callerId, modalType: "Calling" });
       });
     },
     [handleShowModal]

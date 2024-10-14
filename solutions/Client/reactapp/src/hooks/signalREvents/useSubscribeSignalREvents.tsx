@@ -84,21 +84,7 @@ const useSubscribeSignalREvents = () => {
     subscribeReceiveSignalEvent(connection);
     subscribeReceiveAcceptCallEvent(connection);
     subscribeReportPostEvent(connection);
-  }, [subscribeAcceptFriendRequestEvent,
-    subscribeConnectedEvent,
-    subscribeDeletePostEvent,
-    subscribeDisableNotifyUserTypingEvent,
-    subscribeDisbandGroupConversationEvent,
-    subscribeDisconnectedEvent,
-    subscribeForcedLogoutEvent,
-    subscribeFriendRequestEvent,
-    subscribeJoinConversationEvent,
-    subscribeMessageEvent,
-    subscribeNotifyUserTypingEvent,
-    subscribeReceiveAcceptCallEvent,
-    subscribeReceiveCallEvent,
-    subscribeReceiveSignalEvent,
-    subscribeReportPostEvent,]);
+  }, []);
 
   const unsubscribeAllEvents = useCallback((connection: HubConnection) => {
     unsubscribeAcceptFriendRequestEvent(connection);

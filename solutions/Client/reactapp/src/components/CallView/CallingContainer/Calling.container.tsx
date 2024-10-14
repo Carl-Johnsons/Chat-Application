@@ -23,10 +23,11 @@ const CallingContainer = () => {
   };
 
   const handleAcceptCall = () => {
-    handleHideModal();
-    var url = "/call/1?activeConversationId=" + encodeURI(activeConversationId);
+    const url =
+      "/call/1?activeConversationId=" + encodeURI(activeConversationId);
     router.push(url);
-  }
+    handleHideModal();
+  };
 
   return (
     <div className={cx("d-flex", "flex-column", "align-items-center")}>

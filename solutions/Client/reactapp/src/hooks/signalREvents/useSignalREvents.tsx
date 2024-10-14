@@ -3,7 +3,6 @@ import { useContext, useRef } from "react";
 import { FriendRequest } from "@/models";
 import { SendCallSignalDTO, UserTypingNotificationDTO } from "@/models/DTOs";
 import { ChatHubContext } from "contexts/ChatHubContext";
-import { useSession } from "next-auth/react";
 
 interface InvokeSignalREvent {
   name: string;
@@ -17,26 +16,23 @@ const useSignalREvents = () => {
     throw new Error("useSignalREvents must be used within ChatHubProvider");
   }
   const { connection, connected } = context;
-  const { data } = useSession();
 
   // ref
-  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => { });
+  const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
 
   invokeActionRef.current = ({ name, args }: InvokeSignalREvent) => {
     if (!connection) {
       return;
     }
 
-    connection.invoke(name, ...args).then(() => {
-      console.log("data:", data?.accessToken);
-
-    }).catch((err) => {
+    connection.invoke(name, ...args).catch((err) => {
       console.error(`Error invoking ${name}: ${err}`);
     });
   };
 
   return {
-    invokeAction: invokeActionRef.current, connected
+    invokeAction: invokeActionRef.current,
+    connected,
   };
 };
 
@@ -66,6 +62,8 @@ export function signalRDisableNotifyUserTyping(
 }
 
 export function signalRSendCallSignal(sendCallSignalDTO: SendCallSignalDTO) {
+  console.log("call signalR OKKKK");
+
   return {
     name: "SendCallSignal",
     args: [sendCallSignalDTO],
