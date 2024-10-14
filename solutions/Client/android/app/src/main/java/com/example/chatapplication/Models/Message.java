@@ -12,6 +12,8 @@ public class Message {
     public String attachedFilesURL;
     public boolean active;
 
+    public Message(){}
+
     public Message(Date createdAt, boolean isSender, String content, String senderId, boolean isShowUsername, String attachedFilesURL) {
         this.createdAt = createdAt;
         this.isSender = isSender;

@@ -93,6 +93,7 @@ public class ConversationFragment extends Fragment {
                             @Override
                             public void onSuccess(UserDTO user) {
                                 System.out.println("call user thanh cong");
+                                cvs.setId(conversation.getId());
                                 cvs.setEntityName(user.getName());
                                 cvs.setAvatarUrl(user.getAvatarUrl());
                                 System.out.println(user.getAvatarUrl());

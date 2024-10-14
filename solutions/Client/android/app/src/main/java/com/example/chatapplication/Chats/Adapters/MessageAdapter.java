@@ -12,10 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapplication.Models.File;
 import com.example.chatapplication.utils.DateLibs;
 import com.example.chatapplication.Models.Message;
 import com.example.chatapplication.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -82,10 +86,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void bind(Message message) {
             messageText.setText(message.getContent());
             messageTime.setText(DateLibs.FormatDate("hh:mm", message.getCreatedAt()));
-            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("")){
+            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("[]")){
+                Gson gson = new Gson();
+                Type listType = new TypeToken<List<File>>() {}.getType();
+                List<File> fileList = gson.fromJson(message.attachedFilesURL, listType);
+
                 messageImage.setVisibility(View.VISIBLE);
                 Glide.with(messageImage.getContext())
-                        .load(message.getAttachedFilesURL())
+                        .load(fileList.get(0).getUrl())
                         .override(messageImage.getMaxWidth(), messageImage.getMaxHeight())
                         .fitCenter()
                         .into(messageImage);
@@ -124,11 +132,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 senderUsername.setVisibility(View.GONE);
             }
 
-            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("")){
+            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("[]")){
+                Gson gson = new Gson();
+                Type listType = new TypeToken<List<File>>() {}.getType();
+                List<File> fileList = gson.fromJson(message.attachedFilesURL, listType);
+
                 messageImage.setVisibility(View.VISIBLE);
 
                 Glide.with(messageImage.getContext())
-                        .load(message.getAttachedFilesURL())
+                        .load(fileList.get(0).getUrl())
                         .override(messageImage.getMaxWidth(), messageImage.getMaxHeight())
                         .fitCenter()
                         .into(messageImage);
