@@ -35,6 +35,7 @@ const ModalContainer = () => {
 
   //  Update the initialize width, height of the element.
   // But didn't update when the div update dimension
+
   useEffect(() => {
     modalContentsRef.current = modalContents;
     modalContents.forEach((item, index) => {
@@ -42,12 +43,23 @@ const ModalContainer = () => {
         observedDiv.current = item.ref.current;
       }
     });
-    if (!observedDiv.current) return;
+    if (
+      !observedDiv.current ||
+      (observedDiv.current.offsetWidth === modalBodyDimension.width &&
+        observedDiv.current.offsetHeight === modalBodyDimension.height)
+    )
+      return;
     setModalBodyDimension({
       width: observedDiv.current.offsetWidth,
       height: observedDiv.current.offsetHeight,
     });
-  }, [activeModal, modalContents, showModal]);
+  }, [
+    activeModal,
+    modalBodyDimension.height,
+    modalBodyDimension.width,
+    modalContents,
+    showModal,
+  ]);
 
   //  Observe the div if the it update its width and height
   // in order to flexible update modal body width and height
@@ -82,7 +94,9 @@ const ModalContainer = () => {
     <Modal
       show={showModal}
       onHide={
-        !modalContents[activeModal]?.disableHideModal ? handleHideModal : () => {}
+        !modalContents[activeModal]?.disableHideModal
+          ? handleHideModal
+          : () => {}
       }
       className={cx("info-modal")}
       centered
