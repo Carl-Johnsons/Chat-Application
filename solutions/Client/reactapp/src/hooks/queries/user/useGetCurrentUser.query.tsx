@@ -1,3 +1,4 @@
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 import { useAxios } from "@/hooks";
 import { AxiosProps, User } from "@/models";
 import {
@@ -18,7 +19,7 @@ interface Props extends AxiosProps {}
 const getUserProfile = async ({
   axiosInstance,
 }: Props): Promise<User | null> => {
-  const url = "http://localhost:5001/connect/userinfo";
+  const url = `${IDENTITY_SERVER_URL}/connect/userinfo`;
   const response = await axiosInstance.get(url);
   // The json response from identity server 4 is snake_case by default
   const transformedUserClaimResponseData = camelcaseKeysDeep(
