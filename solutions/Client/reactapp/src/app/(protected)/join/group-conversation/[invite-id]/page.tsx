@@ -44,11 +44,15 @@ const JoinGroupConversationPage = () => {
       groupId: groupInvitationData?.groupConversation.id,
       invitationId: groupInvitationData?.id,
     });
-  }, [groupInvitationData]);
+  }, [
+    groupInvitationData?.groupConversation,
+    groupInvitationData?.id,
+    joinGroupConversationMutate,
+  ]);
 
   const handleClickBackToHomePage = useCallback(() => {
     router.push("/");
-  }, []);
+  }, [router]);
 
   return (
     <div
