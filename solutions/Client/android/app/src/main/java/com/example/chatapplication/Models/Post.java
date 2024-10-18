@@ -1,28 +1,38 @@
 package com.example.chatapplication.Models;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class Post {
-    private String userName;
+    private String id;
+    private String userId;
     private String content;
-    private Date timePosted;
+    private String createdAt;
     private List<Comment> comments;
 
-    public Post(String userName, String content, Date timePosted) {
-        this.userName = userName;
+    public Post(String userId, String content, String createdAt) {
+        this.id = UUID.randomUUID().toString();;
+        this.userId = userId;
         this.content = content;
-        this.timePosted = timePosted;
+        this.createdAt = createdAt;
         this.comments = new ArrayList<>();
     }
 
-    public String getUserName() {
-        return userName;
+    public String getId() {
+        return id;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getContent() {
@@ -33,16 +43,16 @@ public class Post {
         this.content = content;
     }
 
-    public Date getTimePosted() {
-        return timePosted;
-    }
-
-    public void setTimePosted(Date timePosted) {
-        this.timePosted = timePosted;
-    }
-
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void addComment(Comment comment) {

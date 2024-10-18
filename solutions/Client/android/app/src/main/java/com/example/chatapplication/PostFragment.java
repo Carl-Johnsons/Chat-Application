@@ -16,11 +16,18 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.chatapplication.Models.Post;
-import com.example.chatapplication.Adapter.PostAdapter;
+import com.example.chatapplication.Post.PaginatedResponse;
+import com.example.chatapplication.Post.Adapter.PostAdapter;
+import com.example.chatapplication.Services.PostService;
+import com.example.chatapplication.Services.RetrofitClient;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PostFragment extends Fragment {
 
@@ -31,8 +38,6 @@ public class PostFragment extends Fragment {
     private List<Post> postList;
     private ImageButton buttonCreatePost;
     private Button buttonCancelPost;
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +56,67 @@ public class PostFragment extends Fragment {
 
         buttonCreatePost.setOnClickListener(v -> showCreatePostPopup());
 
+        fetchPostIds();
+
         return view;
+    }
+
+    private void fetchPostIds() {
+        PostService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(PostService.class);
+        Call<PaginatedResponse<String>> call = apiService.getPostIds();
+
+        call.enqueue(new Callback<PaginatedResponse<String>>() {
+            @Override
+            public void onResponse(Call<PaginatedResponse<String>> call, Response<PaginatedResponse<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    PaginatedResponse<String> paginatedResponse = response.body();
+                    List<String> postIds = paginatedResponse.getPaginatedData();
+
+                    if (postIds != null && !postIds.isEmpty()) {
+                        for (String postId : postIds) {
+                            fetchPostDetails(postId);
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "No post IDs found", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Failed to load post IDs", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PaginatedResponse<String>> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchPostDetails(String postId) {
+        PostService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(PostService.class);
+        Call<Post> call = apiService.getPostDetails(postId);
+
+        call.enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Post post = response.body();
+                    if (post != null) {  // Kiểm tra post có khác null không
+                        Toast.makeText(getContext(), post.getId(), Toast.LENGTH_SHORT).show();
+                        postList.add(post);
+                        postAdapter.notifyItemInserted(postList.size() - 1); // Cập nhật RecyclerView chỉ định vị trí thêm
+                    } else {
+                        Toast.makeText(getContext(), "Post is null", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Failed to load post details", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showCreatePostPopup() {
@@ -70,12 +135,13 @@ public class PostFragment extends Fragment {
             String newPostContent = editTextPostContent.getText().toString().trim();
             Date currentTime = new Date();
             if (!newPostContent.isEmpty()) {
-                postList.add(0, new Post("Current User", newPostContent, currentTime));
+                postList.add(0, new Post("Current User", newPostContent, currentTime.toString()));
                 postAdapter.notifyItemInserted(0);
                 recyclerView.scrollToPosition(0);
                 dialog.dismiss();
             } else {
                 Toast.makeText(getContext(), "Please enter some content!", Toast.LENGTH_SHORT).show();
+
             }
         });
 

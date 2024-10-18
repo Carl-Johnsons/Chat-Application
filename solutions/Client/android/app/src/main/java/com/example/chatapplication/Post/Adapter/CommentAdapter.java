@@ -1,4 +1,4 @@
-package com.example.chatapplication.Adapter;
+package com.example.chatapplication.Post.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,7 +13,6 @@ import com.example.chatapplication.Models.Comment;
 import com.example.chatapplication.R;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,7 +47,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public int getItemCount() {
-        return commentList.size();
+        if (commentList != null) {
+            return commentList.size();
+        } else {
+            return 0;
+        }
     }
 
 

@@ -1,8 +1,7 @@
-package com.example.chatapplication.Adapter;
+package com.example.chatapplication.Post.Adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,16 +45,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostAdapter.PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        holder.userName.setText(post.getUserName());
+        holder.userName.setText(post.getUserId());
         holder.postContent.setText(post.getContent());
 
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a, dd MMMM yyyy", Locale.getDefault());
-        String formattedTime = sdf.format(post.getTimePosted());
+        //String formattedTime = sdf.format(post.getCreatedAt());
 
-        holder.postTime.setText(formattedTime);
-
-        sortPosts(postList);
-        //sortComments(post.getComments());
+        holder.postTime.setText(post.getCreatedAt());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(holder.recyclerViewComments.getContext());
         holder.recyclerViewComments.setLayoutManager(layoutManager);
@@ -101,10 +97,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
         dialog.show();
-    }
-
-    public void sortPosts(List<Post> postList) {
-        Collections.sort(postList, (post1, post2) -> post2.getTimePosted().compareTo(post1.getTimePosted()));
     }
 
     private void sortComments(List<Comment> commentList) {
