@@ -15,16 +15,19 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.chatapplication.DTOs.UserDTO;
 import com.example.chatapplication.Models.Post;
 import com.example.chatapplication.Post.PaginatedResponse;
 import com.example.chatapplication.Post.Adapter.PostAdapter;
 import com.example.chatapplication.Services.PostService;
 import com.example.chatapplication.Services.RetrofitClient;
+import com.example.chatapplication.Services.UserService;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,7 +40,6 @@ public class PostFragment extends Fragment {
     private PostAdapter postAdapter;
     private List<Post> postList;
     private ImageButton buttonCreatePost;
-    private Button buttonCancelPost;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,10 +102,9 @@ public class PostFragment extends Fragment {
             public void onResponse(Call<Post> call, Response<Post> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Post post = response.body();
-                    if (post != null) {  // Kiểm tra post có khác null không
-                        Toast.makeText(getContext(), post.getId(), Toast.LENGTH_SHORT).show();
-                        postList.add(post);
-                        postAdapter.notifyItemInserted(postList.size() - 1); // Cập nhật RecyclerView chỉ định vị trí thêm
+                    if (post != null) {
+                        fetchUserDetails(post.getUserId(), post);
+                        //postAdapter.notifyItemInserted(postList.size() - 1);
                     } else {
                         Toast.makeText(getContext(), "Post is null", Toast.LENGTH_SHORT).show();
                     }
@@ -114,6 +115,34 @@ public class PostFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Post> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchUserDetails(String userId, Post post) {
+        UserService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
+        Call<UserDTO> call = apiService.getUserById(userId);
+
+        call.enqueue(new Callback<UserDTO>() {
+            @Override
+            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserDTO user = response.body();
+                    if (user != null) {
+                        post.setUserId(user.getName());
+                        postList.add(post);
+                        postAdapter.notifyItemInserted(postList.size() - 1);
+                    } else {
+                        Toast.makeText(getContext(), "User is null", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Failed to load user details", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserDTO> call, Throwable t) {
                 Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -133,11 +162,8 @@ public class PostFragment extends Fragment {
 
         buttonSubmitPost.setOnClickListener(v -> {
             String newPostContent = editTextPostContent.getText().toString().trim();
-            Date currentTime = new Date();
             if (!newPostContent.isEmpty()) {
-                postList.add(0, new Post("Current User", newPostContent, currentTime.toString()));
-                postAdapter.notifyItemInserted(0);
-                recyclerView.scrollToPosition(0);
+                createPost(newPostContent);
                 dialog.dismiss();
             } else {
                 Toast.makeText(getContext(), "Please enter some content!", Toast.LENGTH_SHORT).show();
@@ -151,4 +177,32 @@ public class PostFragment extends Fragment {
 
         dialog.show();
     }
+
+    private void createPost(String content) {
+        PostService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(PostService.class);
+
+        RequestBody contentPart = RequestBody.create(MediaType.parse("multipart/form-data"), content);
+        Call<Post> call = apiService.createPost(contentPart);
+
+        call.enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Post createdPost = response.body();
+                    postList.add(0, createdPost);
+                    postAdapter.notifyItemInserted(0);
+                    recyclerView.scrollToPosition(0);
+                    Toast.makeText(getContext(), "Post created successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Failed to create post", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }
