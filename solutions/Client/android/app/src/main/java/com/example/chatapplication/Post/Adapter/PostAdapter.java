@@ -1,5 +1,7 @@
 package com.example.chatapplication.Post.Adapter;
 
+import static java.security.AccessController.getContext;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,15 +17,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapplication.DTOs.UserDTO;
 import com.example.chatapplication.Models.Comment;
 import com.example.chatapplication.Models.Post;
+import com.example.chatapplication.Post.CommentRequest;
+import com.example.chatapplication.Post.CommentResponse;
 import com.example.chatapplication.R;
+import com.example.chatapplication.Services.PostService;
+import com.example.chatapplication.Services.RetrofitClient;
+import com.example.chatapplication.Services.UserService;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -49,20 +63,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postContent.setText(post.getContent());
 
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a, dd MMMM yyyy", Locale.getDefault());
-        //String formattedTime = sdf.format(post.getCreatedAt());
-
         holder.postTime.setText(post.getCreatedAt());
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(holder.recyclerViewComments.getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         holder.recyclerViewComments.setLayoutManager(layoutManager);
 
         CommentAdapter commentAdapter = new CommentAdapter(context, post.getComments());
         holder.recyclerViewComments.setAdapter(commentAdapter);
 
-        holder.commentButton.setOnClickListener(v -> {
-            showAddCommentDialog(holder.itemView.getContext(), post, commentAdapter);
-        });
+        fetchComments(post.getId(), commentAdapter);
 
+        holder.commentButton.setOnClickListener(v -> {
+            showAddCommentDialog(context, post, commentAdapter);
+        });
     }
 
     private void showAddCommentDialog(Context context, Post post, CommentAdapter commentAdapter) {
@@ -82,14 +95,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         buttonSubmit.setOnClickListener(v -> {
             String commentContent = editTextComment.getText().toString().trim();
-            Date currentTime = new Date();
             if (!commentContent.isEmpty()) {
-                Comment newComment = new Comment("Current User", commentContent, currentTime);
-                post.addComment(newComment);
-                sortComments(post.getComments());
+                CommentRequest commentRequest = new CommentRequest(post.getId(), commentContent);
 
-                commentAdapter.updateComments(post.getComments());
-
+                createComment(commentRequest, post, commentAdapter);
                 dialog.dismiss();
             } else {
                 Toast.makeText(context, "Please enter a comment", Toast.LENGTH_SHORT).show();
@@ -99,8 +108,50 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         dialog.show();
     }
 
-    private void sortComments(List<Comment> commentList) {
-        Collections.sort(commentList, (comment1, comment2) -> comment2.getTimePosted().compareTo(comment1.getTimePosted()));
+    private void createComment(CommentRequest commentRequest, Post post, CommentAdapter commentAdapter) {
+        PostService apiService = RetrofitClient.getRetrofitInstance(context).create(PostService.class);
+        Call<Comment> call = apiService.createComment(commentRequest);
+
+        call.enqueue(new Callback<Comment>() {
+            @Override
+            public void onResponse(Call<Comment> call, Response<Comment> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Comment createdComment = response.body();
+                    post.addComment(createdComment);
+                    commentAdapter.updateComments(post.getComments());
+                    Toast.makeText(context, "Comment added successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Failed to add comment", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Comment> call, Throwable t) {
+                Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchComments(String postId, CommentAdapter commentAdapter) {
+        PostService apiService = RetrofitClient.getRetrofitInstance(context).create(PostService.class);
+        Call<CommentResponse> call = apiService.getCommentsByPostId(postId);
+
+        call.enqueue(new Callback<CommentResponse>() {
+            @Override
+            public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Comment> commentList = response.body().getPaginatedData();
+                    commentAdapter.updateComments(commentList);
+                } else {
+                    Toast.makeText(context, "Failed to load comments", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CommentResponse> call, Throwable t) {
+                Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

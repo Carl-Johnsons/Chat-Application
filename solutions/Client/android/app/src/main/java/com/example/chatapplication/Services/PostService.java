@@ -1,10 +1,16 @@
 package com.example.chatapplication.Services;
 
+import com.example.chatapplication.Models.Comment;
 import com.example.chatapplication.Models.Post;
+import com.example.chatapplication.Post.CommentRequest;
+import com.example.chatapplication.Post.CommentResponse;
 import com.example.chatapplication.Post.PaginatedResponse;
+
+import java.util.List;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -21,4 +27,10 @@ public interface PostService {
     @Multipart
     @POST("http://10.0.2.2:5005/api/post")
     Call<Post> createPost(@Part("content") RequestBody content);
+
+    @GET("http://10.0.2.2:5005/api/post/comment")
+    Call<CommentResponse> getCommentsByPostId(@Query("postId") String postId);
+
+    @POST("http://10.0.2.2:5005/api/post/comment")
+    Call<Comment> createComment(@Body CommentRequest commentRequest);
 }

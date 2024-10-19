@@ -2,7 +2,6 @@ package com.example.chatapplication.Models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Post {
     private String id;
@@ -12,7 +11,6 @@ public class Post {
     private List<Comment> comments;
 
     public Post(String userId, String content, String createdAt) {
-        this.id = UUID.randomUUID().toString();;
         this.userId = userId;
         this.content = content;
         this.createdAt = createdAt;

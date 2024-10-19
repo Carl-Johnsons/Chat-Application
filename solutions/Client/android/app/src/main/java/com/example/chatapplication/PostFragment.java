@@ -189,9 +189,7 @@ public class PostFragment extends Fragment {
             public void onResponse(Call<Post> call, Response<Post> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Post createdPost = response.body();
-                    postList.add(0, createdPost);
-                    postAdapter.notifyItemInserted(0);
-                    recyclerView.scrollToPosition(0);
+                    fetchUserNameAndUpdatePost(createdPost);
                     Toast.makeText(getContext(), "Post created successfully!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Failed to create post", Toast.LENGTH_SHORT).show();
@@ -200,6 +198,35 @@ public class PostFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Post> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchUserNameAndUpdatePost(Post post) {
+        // Giả sử có một UserService để lấy thông tin user
+        UserService userService = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
+        Call<UserDTO> call = userService.getUserById(post.getUserId());
+
+        call.enqueue(new Callback<UserDTO>() {
+            @Override
+            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserDTO user = response.body();
+                    // Cập nhật userName cho bài post
+                    post.setUserId(user.getName());
+
+                    // Thêm post đã được cập nhật userName vào danh sách và cập nhật giao diện
+                    postList.add(0, post);
+                    postAdapter.notifyItemInserted(0);
+                    recyclerView.scrollToPosition(0);
+                } else {
+                    Toast.makeText(getContext(), "Failed to load user details", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserDTO> call, Throwable t) {
                 Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

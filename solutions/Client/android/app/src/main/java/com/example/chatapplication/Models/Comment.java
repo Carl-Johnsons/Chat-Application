@@ -4,25 +4,38 @@ import java.util.Date;
 
 public class Comment
 {
-    private String userName;
+    private  String id;
+    private String userId;
     private String content;
-    private Date timePosted;
+    private String createdAt;
 
-    public Comment(String userName, String content, Date timePosted) {
-        this.userName = userName;
+    public Comment(String userId, String content, String createdAt) {
+        this.userId = userId;
         this.content = content;
-        this.timePosted = timePosted;
+        this.createdAt = createdAt;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
     public String getContent() {
         return content;
     }
 
-    public Date getTimePosted() {
-        return timePosted;
+    public String getTimePosted() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

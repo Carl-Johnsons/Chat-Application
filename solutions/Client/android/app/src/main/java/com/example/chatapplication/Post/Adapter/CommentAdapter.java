@@ -36,13 +36,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = commentList.get(position);
-        holder.userName.setText(comment.getUserName());
+        holder.userName.setText(comment.getUserId());
         holder.commentContent.setText(comment.getContent());
-
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a, dd MMMM yyyy", Locale.getDefault());
-        String formattedTime = sdf.format(comment.getTimePosted());
-
-        holder.commentTime.setText(formattedTime);
+        holder.commentTime.setText(comment.getTimePosted());
     }
 
     @Override
@@ -53,8 +49,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             return 0;
         }
     }
-
-
 
     public void updateComments(List<Comment> newCommentList) {
         this.commentList = newCommentList;
