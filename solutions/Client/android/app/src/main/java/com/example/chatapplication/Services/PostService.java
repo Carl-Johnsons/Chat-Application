@@ -5,6 +5,7 @@ import com.example.chatapplication.Models.Post;
 import com.example.chatapplication.Post.CommentRequest;
 import com.example.chatapplication.Post.CommentResponse;
 import com.example.chatapplication.Post.PaginatedResponse;
+import com.example.chatapplication.Post.ReportRequest;
 
 import java.util.List;
 
@@ -32,5 +33,8 @@ public interface PostService {
     Call<CommentResponse> getCommentsByPostId(@Query("postId") String postId);
 
     @POST("http://10.0.2.2:5005/api/post/comment")
-    Call<Comment> createComment(@Body CommentRequest commentRequest);
+    Call<Void> createComment(@Body CommentRequest commentRequest);
+
+    @POST("http://10.0.2.2:5005/api/post/report")
+    Call<Void> reportPost(@Body ReportRequest reportRequest);
 }

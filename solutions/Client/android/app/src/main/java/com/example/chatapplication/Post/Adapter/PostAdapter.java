@@ -1,7 +1,5 @@
 package com.example.chatapplication.Post.Adapter;
 
-import static java.security.AccessController.getContext;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -17,24 +15,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.chatapplication.DTOs.UserDTO;
 import com.example.chatapplication.Models.Comment;
 import com.example.chatapplication.Models.Post;
 import com.example.chatapplication.Post.CommentRequest;
 import com.example.chatapplication.Post.CommentResponse;
+import com.example.chatapplication.Post.ReportRequest;
 import com.example.chatapplication.R;
 import com.example.chatapplication.Services.PostService;
 import com.example.chatapplication.Services.RetrofitClient;
-import com.example.chatapplication.Services.UserService;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -76,6 +69,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.commentButton.setOnClickListener(v -> {
             showAddCommentDialog(context, post, commentAdapter);
         });
+
+        holder.reportButton.setOnClickListener(v -> {
+            showReportDialog(context, post.getId());
+        });
     }
 
     private void showAddCommentDialog(Context context, Post post, CommentAdapter commentAdapter) {
@@ -110,23 +107,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private void createComment(CommentRequest commentRequest, Post post, CommentAdapter commentAdapter) {
         PostService apiService = RetrofitClient.getRetrofitInstance(context).create(PostService.class);
-        Call<Comment> call = apiService.createComment(commentRequest);
+        Call<Void> call = apiService.createComment(commentRequest);
 
-        call.enqueue(new Callback<Comment>() {
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Comment> call, Response<Comment> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Comment createdComment = response.body();
-                    post.addComment(createdComment);
-                    commentAdapter.updateComments(post.getComments());
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+
                     Toast.makeText(context, "Comment added successfully!", Toast.LENGTH_SHORT).show();
+
+                    fetchComments(post.getId(), commentAdapter);
                 } else {
                     Toast.makeText(context, "Failed to add comment", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<Comment> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -161,7 +158,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView userName, postContent, postTime;
-        ImageButton likeButton, commentButton, shareButton;
+        ImageButton likeButton, commentButton, reportButton;
         RecyclerView recyclerViewComments;
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -170,9 +167,60 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             postTime = itemView.findViewById(R.id.post_time);
             likeButton = itemView.findViewById(R.id.button_like);
             commentButton = itemView.findViewById(R.id.button_comment);
-            shareButton = itemView.findViewById(R.id.button_share);
+            reportButton = itemView.findViewById(R.id.button_report);
             recyclerViewComments = itemView.findViewById(R.id.recycler_view_comments);
         }
+    }
+
+    private void showReportDialog(Context context, String postId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Report Post");
+
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_report_post, null);
+        builder.setView(dialogView);
+
+        EditText editTextReason = dialogView.findViewById(R.id.edit_text_report_reason);
+        Button buttonCancel = dialogView.findViewById(R.id.button_cancel_report);
+        Button buttonSubmit = dialogView.findViewById(R.id.button_submit_report);
+
+        AlertDialog dialog = builder.create();
+
+        buttonCancel.setOnClickListener(v -> dialog.dismiss());
+
+        buttonSubmit.setOnClickListener(v -> {
+            String reason = editTextReason.getText().toString().trim();
+            if (!reason.isEmpty()) {
+                sendReport(postId, reason);
+                dialog.dismiss();
+            } else {
+                Toast.makeText(context, "Please enter a reason for reporting", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void sendReport(String postId, String reason) {
+        ReportRequest reportRequest = new ReportRequest(postId, reason);
+
+        PostService apiService = RetrofitClient.getRetrofitInstance(context).create(PostService.class);
+        Call<Void> call = apiService.reportPost(reportRequest);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(context, "Report submitted successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Failed to submit report", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
 

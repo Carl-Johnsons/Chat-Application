@@ -9,17 +9,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapplication.DTOs.UserDTO;
 import com.example.chatapplication.Models.Comment;
 import com.example.chatapplication.R;
+import com.example.chatapplication.Services.RetrofitClient;
+import com.example.chatapplication.Services.UserService;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
 
     private Context context;
     private List<Comment> commentList;
+    private Map<String, String> userCache = new HashMap<>();
 
     public CommentAdapter(Context context, List<Comment> commentList) {
         this.context = context;
@@ -36,8 +46,32 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = commentList.get(position);
-        holder.userName.setText(comment.getUserId());
         holder.commentContent.setText(comment.getContent());
+
+        if (userCache.containsKey(comment.getUserId())) {
+            holder.userName.setText(userCache.get(comment.getUserId()));
+        } else {
+            UserService userService = RetrofitClient.getRetrofitInstance(context).create(UserService.class);
+            Call<UserDTO> call = userService.getUserById(comment.getUserId());
+            call.enqueue(new Callback<UserDTO>() {
+                @Override
+                public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String userName = response.body().getName();
+                        userCache.put(comment.getUserId(), userName);
+                        holder.userName.setText(userName);
+                    } else {
+                        holder.userName.setText("Unknown User");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserDTO> call, Throwable t) {
+                    holder.userName.setText("Error");
+                }
+            });
+        }
+
         holder.commentTime.setText(comment.getTimePosted());
     }
 

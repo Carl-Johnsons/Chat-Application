@@ -73,7 +73,7 @@
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Like"
-                android:src="@drawable/ic_like" />
+                android:src="@drawable/ic_out_like" />
 
             <ImageButton
                 android:id="@+id/button_comment"
@@ -86,11 +86,11 @@
                 android:contentDescription="Comment" />
 
             <ImageButton
-                android:id="@+id/button_share"
+                android:id="@+id/button_report"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_share"
+                android:src="@drawable/ic_report"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_marginStart="16dp"
                 android:contentDescription="Share" />
