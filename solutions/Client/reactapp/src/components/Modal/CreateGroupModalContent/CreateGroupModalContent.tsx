@@ -1,18 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toast } from "react-toastify";
 import { faCamera, faClose, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import AppButton from "@/components/shared/AppButton";
-import Avatar from "@/components/shared/Avatar";
+import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
+import { useCreateGroupConversation } from "@/hooks/queries/conversation";
+import { useGetFriendList } from "@/hooks/queries/user";
 import { useModal } from "@/hooks";
 import { User } from "@/models";
-
-import style from "./CreateGroupModalContent.module.scss";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
 import classnames from "classnames/bind";
-import { useGetFriendList } from "@/hooks/queries/user";
-import { useCreateGroupConversation } from "@/hooks/queries/conversation";
-import { GroupConversationWithMembersIdDTO } from "@/models/DTOs";
-import { toast } from "react-toastify";
+import style from "./CreateGroupModalContent.module.scss";
 
 const cx = classnames.bind(style);
 

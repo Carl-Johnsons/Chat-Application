@@ -3,11 +3,7 @@ import { memo, useCallback, useState } from "react";
 import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
-import {
-  useGlobalState,
-  useModal,
-  useSignalREvents,
-} from "@/hooks";
+import { useGlobalState, useModal, useSignalREvents } from "@/hooks";
 
 import { GroupConversation, ModalType } from "@/models";
 
@@ -37,7 +33,6 @@ const ChatViewHeader = () => {
   const isGroup = conversationType === "GROUP";
   //
   const router = useRouter();
-
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
     { conversationId: activeConversationId, other: true },
@@ -93,7 +88,7 @@ const ChatViewHeader = () => {
   const avatar =
     (isGroup
       ? (conversationData as GroupConversation)?.imageURL
-      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+      : otherUserData?.avatarUrl) || images.userIcon.src;
   const name =
     (isGroup
       ? (conversationData as GroupConversation)?.name
