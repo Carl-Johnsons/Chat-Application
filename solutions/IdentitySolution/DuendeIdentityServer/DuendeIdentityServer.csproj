@@ -43,6 +43,7 @@
 	<ItemGroup>
 		<Folder Include="Data\Migrations\" />
 		<Folder Include="EventHandler\" />
+		<Folder Include="wwwroot\img\" />
 	</ItemGroup>
 
 	<ItemGroup>

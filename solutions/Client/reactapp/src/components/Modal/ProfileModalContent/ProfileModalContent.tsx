@@ -300,9 +300,6 @@ const ProfileModalContent = (variant: Variants) => {
             <div className={cx("row-name")}>Điện thoại</div>
             <div className={cx("row-detail")}>{phone}</div>
           </div>
-          <div className={cx("note")}>
-            Chỉ bạn bè có lưu số của bạn trong danh bạ máy xem được số này
-          </div>
         </div>
       )}
       {/* Group information */}

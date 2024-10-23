@@ -11,7 +11,7 @@ interface Props extends AxiosProps {}
 const getFriendList = async ({
   axiosInstance,
 }: Props): Promise<User[] | null> => {
-  const url = `h${IDENTITY_SERVER_URL}/api/friend`;
+  const url = `${IDENTITY_SERVER_URL}/api/friend`;
   const response = await axiosInstance.get(url);
   const users: User[] = response.data;
   console.log(users);
