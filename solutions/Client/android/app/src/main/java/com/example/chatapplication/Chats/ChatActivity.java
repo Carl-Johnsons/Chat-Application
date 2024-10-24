@@ -23,9 +23,11 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapplication.BuildConfig;
 import com.example.chatapplication.Chats.Adapters.MessageAdapter;
 import com.example.chatapplication.Chats.DTOs.ConversationResponseDTO;
 import com.example.chatapplication.Chats.DTOs.MessageResponseDTO;
+import com.example.chatapplication.Contexts.ChatHubContext;
 import com.example.chatapplication.DTOs.CurrentUserResponseDTO;
 import com.example.chatapplication.Models.Conversation;
 import com.example.chatapplication.Models.Message;
@@ -48,6 +50,7 @@ public class ChatActivity extends AppCompatActivity {
     private List<Message> messageList;
     private ConversationService conversationService;
     private CurrentUserResponseDTO currentUser;
+    private ChatHubContext chatHubContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +87,9 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
+        //set up signalR
+        chatHubContext = chatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
+        chatHubContext.onReceiveMessage(messageList, messageAdapter, recyclerView,this);
         loadMessages();
 
         findViewById(R.id.chatRecyclerView).setOnTouchListener(new View.OnTouchListener() {
