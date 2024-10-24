@@ -119,7 +119,7 @@ const ContactRow = (variant: Variant) => {
   const avatar =
     (isGroup
       ? (entityData as GroupConversation)?.imageURL
-      : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
+      : (entityData as User)?.avatarUrl) || images.defaultAvatarImg.src;
 
   const name =
     (isGroup

@@ -10,6 +10,7 @@ import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
 import { useGetMemberListByConversationId } from "@/hooks/queries/conversation";
 import { useCallback } from "react";
+import images from "@/assets";
 
 interface Props {
   onClickMember?: (memberId: string) => void;
@@ -83,7 +84,7 @@ const ListGroupMemberModalContent = ({
                 onClick={() => onClickMember(user.id)}
               >
                 <Avatar
-                  src={user.avatarUrl}
+                  src={user.avatarUrl || images.defaultAvatarImg.src}
                   alt="user avatar"
                   className={cx("me-2")}
                   avatarClassName={cx("rounded-circle")}

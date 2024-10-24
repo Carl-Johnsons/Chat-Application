@@ -15,7 +15,7 @@ const useSignalREvents = () => {
   if (!context) {
     throw new Error("useSignalREvents must be used within ChatHubProvider");
   }
-  const { connection } = context;
+  const { connection, connected } = context;
 
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
@@ -32,6 +32,7 @@ const useSignalREvents = () => {
 
   return {
     invokeAction: invokeActionRef.current,
+    connected,
   };
 };
 
@@ -61,6 +62,8 @@ export function signalRDisableNotifyUserTyping(
 }
 
 export function signalRSendCallSignal(sendCallSignalDTO: SendCallSignalDTO) {
+  console.log("call signalR OKKKK");
+
   return {
     name: "SendCallSignal",
     args: [sendCallSignalDTO],

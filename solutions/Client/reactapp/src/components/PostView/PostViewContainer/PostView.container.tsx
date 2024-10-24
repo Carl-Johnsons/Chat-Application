@@ -81,7 +81,7 @@ const PostViewContainer = ({ className, disableInput = false }: Props) => {
             <div className={cx("me-3")}>
               <Avatar
                 avatarClassName={cx("rounded-circle", "shadow")}
-                src={userData?.avatarUrl ?? images.defaultAvatarImg.src}
+                src={userData?.avatarUrl || images.defaultAvatarImg.src}
                 alt="user avatar"
               />
             </div>

@@ -66,3 +66,12 @@ export enum FILE_TYPE {
   VIDEO = "Video",
   RAW = "Raw",
 }
+
+export enum CALL_STATUS {
+  PREPARING = "Preparing",
+  CONNECTING = "Connecting",
+  CALLING = "Calling",
+  CONNECTED = "Connected",
+  DECLINED = "Declined",
+  EXITED = "Exited"
+}

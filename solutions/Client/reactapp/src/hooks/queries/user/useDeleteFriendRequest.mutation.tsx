@@ -1,3 +1,4 @@
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 import { useAxios } from "@/hooks";
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +15,7 @@ export const deleteFriendRequest = async ({
   const data = {
     friendRequestId,
   };
-  const url = "http://localhost:5001/api/users/friend-request";
+  const url = `${IDENTITY_SERVER_URL}/api/users/friend-request`;
   const response = await axiosInstance.delete(url, {
     data,
   });

@@ -8,3 +8,4 @@ export * from "./useScreenSectionNavigator";
 export * from "./useSortableArray";
 export * from "./useStorage";
 export * from "./useTimeout";
+export * from "./useWindow";

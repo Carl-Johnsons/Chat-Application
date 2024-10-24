@@ -63,7 +63,7 @@ const AppPost = ({
     .tz(tz)
     .fromNow();
 
-  const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
+  const authorAvatar = authorData?.avatarUrl || images.defaultAvatarImg.src;
   const authorName = authorData?.name ?? "Loading...";
   const files: CloudinaryImage[] = JSON.parse(
     postData?.attachedFilesURL ?? "[]"

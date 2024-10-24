@@ -4,6 +4,7 @@ using Contract.Event.ConversationEvent;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
@@ -37,7 +38,15 @@ public static class DependenciesInjection
              {
                  ValidateAudience = false,
                  ValidateIssuer = false,
-                 RoleClaimType = "role" // map the role claim to jwt
+                 RoleClaimType = "role", // map the role claim to jwt
+
+                 ValidateIssuerSigningKey = false,
+                 SignatureValidator = delegate (string token, TokenValidationParameters parameters)
+                 {
+                     var jwt = new JsonWebToken(token);
+
+                     return jwt;
+                 },
              };
              // For development only
              options.IncludeErrorDetails = true;
@@ -59,6 +68,8 @@ public static class DependenciesInjection
                  OnMessageReceived = context =>
                  {
                      var accessToken = context.Request.Query["access_token"];
+                     Console.WriteLine("------------------------");
+                     Console.WriteLine(accessToken);
                      // If the request is for our hub...
                      var path = context.HttpContext.Request.Path;
                      if (!string.IsNullOrEmpty(accessToken) &&

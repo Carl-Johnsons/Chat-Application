@@ -1,3 +1,4 @@
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "hooks/useAxios";
@@ -15,7 +16,7 @@ export const toggleUserStatus = async ({
   active,
   axiosInstance,
 }: FetchProps): Promise<void> => {
-  const url = `http://localhost:5001/api/users/${
+  const url = `${IDENTITY_SERVER_URL}/api/users/${
     active ? "enable" : "disable"
   }`;
   const data = {

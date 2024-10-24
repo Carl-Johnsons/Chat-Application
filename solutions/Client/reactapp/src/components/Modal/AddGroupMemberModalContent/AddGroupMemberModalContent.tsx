@@ -14,6 +14,7 @@ import {
   useGetMemberListByConversationId,
   useUpdateGroupConversation,
 } from "@/hooks/queries/conversation";
+import images from "@/assets";
 
 const cx = classnames.bind(style);
 
@@ -156,7 +157,7 @@ const AddGroupMembersModalContent = () => {
                     <Avatar
                       className={cx("me-2")}
                       avatarClassName={cx("rounded-circle")}
-                      src={avatarUrl}
+                      src={avatarUrl || images.defaultAvatarImg.src}
                       alt="user avatar"
                     />
                     <div> {name}</div>
@@ -204,7 +205,7 @@ const AddGroupMembersModalContent = () => {
                   <Avatar
                     variant="avatar-img-30px"
                     avatarClassName={cx("rounded-circle")}
-                    src={avatar}
+                    src={avatar || images.defaultAvatarImg.src}
                     alt="user avatar"
                   />
                   <div
