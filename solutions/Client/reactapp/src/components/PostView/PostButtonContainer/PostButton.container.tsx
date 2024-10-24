@@ -1,7 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useState } from "react";
-import style from "./PostButton.container.module.scss";
-import classNames from "classnames/bind";
-import AppButton from "@/components/shared/AppButton";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
@@ -9,17 +6,23 @@ import {
   faThumbsUp,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
-import { InteractionContainer } from "..";
-import { useModal } from "hooks/useModal";
-import { Interaction } from "@/models";
+
 import {
   useDeletePost,
   useGetInteractionByPostId,
   useInteractPost,
   useUndoInteractPost,
 } from "@/hooks/queries/post";
-import { useGlobalState } from "@/hooks";
 import { BUTTON } from "data/constants";
+import { Interaction } from "@/models";
+import { InteractionContainer } from "..";
+import { useGlobalState } from "@/hooks";
+import { useModal } from "hooks/useModal";
+import { useUpdatePostInteraction } from "hooks/queries/post/useUpdatePostInteraction.mutation";
+import AppButton from "@/components/shared/AppButton";
+import classNames from "classnames/bind";
+import style from "./PostButton.container.module.scss";
+import Image from "next/image";
 
 const cx = classNames.bind(style);
 
@@ -45,10 +48,12 @@ const PostButtonContainer = ({
 }: Props) => {
   const [isHover, setIsHover] = useState(false);
   const [isInteracted, setIsInteracted] = useState(false);
-  const { mutate: interactPostMutate } = useInteractPost();
-  const { mutate: undoInteractPostMutate } = useUndoInteractPost();
+  const { mutateAsync: interactPostMutateAsync } = useInteractPost();
+  const { mutateAsync: undoInteractPostMutateAsync } = useUndoInteractPost();
   const { mutate: deletePostMutate } = useDeletePost();
   const [, setModalEntityId] = useGlobalState("modalEntityId");
+  const { mutateAsync: updatePostInteractionMutateAsync } =
+    useUpdatePostInteraction();
 
   const { data: interactionData } = useGetInteractionByPostId(
     { postId, isCurrentUser: true },
@@ -58,28 +63,41 @@ const PostButtonContainer = ({
   );
   const { handleShowModal } = useModal();
 
-  const handleEmojiBtnClick = useCallback((emojiId: string) => {
-    if (!isInteracted) {
-      interactPostMutate({ postId, interactionId: emojiId });
-    }
-  }, []);
+  const handleEmojiBtnClick = useCallback(
+    async (emojiId: string) => {
+      if (isInteracted) {
+        await updatePostInteractionMutateAsync({
+          postId,
+          interactionId: emojiId,
+        });
+      } else {
+        await interactPostMutateAsync({ postId, interactionId: emojiId });
+      }
+    },
+    [
+      interactPostMutateAsync,
+      isInteracted,
+      postId,
+      updatePostInteractionMutateAsync,
+    ]
+  );
 
   const handleLikeBtnClick = useCallback(() => {
-    if (!isInteracted) {
-      undoInteractPostMutate({ postId });
+    if (isInteracted) {
+      undoInteractPostMutateAsync({ postId });
     }
-  }, []);
+  }, [isInteracted, postId, undoInteractPostMutateAsync]);
 
   const handleReportBtnClick = useCallback(() => {
     setModalEntityId(postId);
     handleShowModal({ modalType: "PostReport" });
-  }, [handleShowModal]);
+  }, [handleShowModal, postId, setModalEntityId]);
 
   const handleDeleteBtnClick = useCallback(() => {
     deletePostMutate({
       id: postId,
     });
-  }, []);
+  }, [deletePostMutate, postId]);
 
   const buttonsContent: ButtonContent[] = [
     {
@@ -159,7 +177,7 @@ const PostButtonContainer = ({
               onClick={handleClick}
             >
               {emoji ? (
-                <img src={emoji.gif} alt="emoji" width={20} />
+                <Image src={emoji.gif} alt="emoji" width={20} height={20} />
               ) : (
                 <>
                   <FontAwesomeIcon className={cx("me-2")} icon={iconSrc} />

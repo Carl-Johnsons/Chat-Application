@@ -61,4 +61,29 @@ public class CommentsController : BaseApiController
         return Ok();
     }
 
+    [HttpPost("reply")]
+    public async Task<IActionResult> Reply([FromBody] CreateReplyCommentDTO createCommentDTO)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var comment = await _sender.Send(new CreateCommentCommand
+        {
+            Content = createCommentDTO.Content,
+            UserId = Guid.Parse(subjectId!),
+            PostId = createCommentDTO.PostId,
+        });
+
+        comment.ThrowIfFailure();
+
+        var reply = await _sender.Send(new CreateReplyCommand
+        {
+            CommentId = createCommentDTO.CommentId,
+            ReplyCommentId = comment.Value.Id,
+        });
+        
+        reply.ThrowIfFailure();
+
+        return Ok();
+    }
 }

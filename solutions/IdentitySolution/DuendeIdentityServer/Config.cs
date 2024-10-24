@@ -8,12 +8,12 @@ public static class Config
     public static string GetConnectionString()
     {
         DotNetEnv.Env.Load(".env");
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
         {
-            DotNetEnv.Env.Load(".env.development");
+            DotNetEnv.Env.Load(".env.production");
         }
 
-        var server = DotNetEnv.Env.GetString("SERVER", "Not found").Trim();
+        var server = DotNetEnv.Env.GetString("DB_SERVER", "localhost, 2001").Trim();
         var db = DotNetEnv.Env.GetString("DB", "Not found").Trim();
         var pwd = DotNetEnv.Env.GetString("SA_PASSWORD", "Not found").Trim();
         var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true";
@@ -53,14 +53,14 @@ public static class Config
                 ClientId = "react.spa",
                 ClientName = "React SPA",
                 RequireClientSecret = false, // TODO: add secret later
-                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowedGrantTypes = GrantTypes.Code,
                 RequirePkce = true,
-                AllowAccessTokensViaBrowser = true,
+                AllowAccessTokensViaBrowser = false,
                 AlwaysIncludeUserClaimsInIdToken = true, // Attach user claim for SPA client
                 AccessTokenLifetime = 3600,
                 RedirectUris = {
-                   "http://localhost:3000/signin-callback",
-                   "http://localhost:3001/signin-callback",
+                   "http://localhost:3000/api/auth/callback/duende-identityserver6",
+                   "http://localhost:3001/api/auth/callback/duende-identityserver6",
                    "https://www.getpostman.com/oauth2/callback"
                 },
                 PostLogoutRedirectUris ={"http://localhost:3000","http://localhost:3001"},

@@ -135,7 +135,7 @@ do
       echo -e "${LIGHT_BLUE}Rebuilding service: ${LIGHT_CYAN}$SELECTED_SERVICE${NC}"
       docker-compose -f "$DOCKER_COMPOSE_FILE" up --force-recreate --no-deps -d --build "$SELECTED_SERVICE" 2>&1 | colorize_output
       echo -e "Service ${LIGHT_BLUE}$SELECTED_SERVICE${NC} has been rebuilt."
-      prune_docker
+
       read -p "Press Enter to continue..."
     fi
 done

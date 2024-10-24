@@ -2,34 +2,24 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
-WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+# Copy pre-build lib
+COPY ["./data/nuget", "./ConversationService.API/nuget"]
+
 COPY ["./solutions/ConversationSolution/src/ConversationService.API/ConversationService.API.csproj", "ConversationService.API/"]
 COPY ["./solutions/ConversationSolution/src/ConversationService.Application/ConversationService.Application.csproj", "ConversationService.Application/"]
 COPY ["./solutions/ConversationSolution/src/ConversationService.Domain/ConversationService.Domain.csproj", "ConversationService.Domain/"]
 COPY ["./solutions/ConversationSolution/src/ConversationService.Infrastructure/ConversationService.Infrastructure.csproj", "ConversationService.Infrastructure/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationService.API/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationService.Application/"]
-COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "ConversationService.Infrastructure/"]
+COPY ["./solutions/Contract/Contract/bin/Release/net8.0/Contract.dll", "Contract/"]
 
 # Building the services
 WORKDIR "/src/ConversationService.API"
-# Copy pre-build lib
-COPY ["./data/nuget/conversation-api", "./nuget"]
 RUN dotnet restore --packages "./nuget" --verbosity normal
 COPY ["./solutions/ConversationSolution/src","/src"]
-RUN dotnet build "./ConversationService.API.csproj" --packages "./nuget" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ConversationService.API.csproj" --packages "./nuget" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ConversationService.API.dll"]
+ENTRYPOINT ["dotnet", "watch", "run","--no-restore"]

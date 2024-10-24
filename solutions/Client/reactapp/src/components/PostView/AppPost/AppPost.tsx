@@ -1,9 +1,9 @@
-import moment from "moment";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useGetPostByd } from "@/hooks/queries/post";
 import htmlParser from "html-react-parser";
-import style from "./AppPost.module.scss";
-import classNames from "classnames/bind";
-import Avatar from "@/components/shared/Avatar";
-import images from "@/assets";
+import moment from "moment";
+
 import {
   CommentContainer,
   InteractionCounterContainer,
@@ -11,15 +11,16 @@ import {
   UserReportContainer,
 } from "../";
 import { AppDivider, AppImageGallery, AppTag } from "@/components/shared";
-import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
 import { BUTTON, FILE_TYPE } from "data/constants";
 import { CloudinaryImage } from "@/models";
-import { useGetPostByd } from "@/hooks/queries/post";
 import { useCallback, useState } from "react";
+import { useGetCurrentUser, useGetUser } from "@/hooks/queries/user";
+import { useModal } from "@/hooks";
 import AppButton from "@/components/shared/AppButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { useModal } from "hooks/useModal";
+import Avatar from "@/components/shared/Avatar";
+import classNames from "classnames/bind";
+import images from "@/assets";
+import style from "./AppPost.module.scss";
 
 const cx = classNames.bind(style);
 
@@ -62,7 +63,7 @@ const AppPost = ({
     .tz(tz)
     .fromNow();
 
-  const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
+  const authorAvatar = authorData?.avatarUrl || images.defaultAvatarImg.src;
   const authorName = authorData?.name ?? "Loading...";
   const files: CloudinaryImage[] = JSON.parse(
     postData?.attachedFilesURL ?? "[]"
@@ -87,7 +88,7 @@ const AppPost = ({
 
   const handleClickUpdatePost = useCallback(() => {
     handleShowModal({ entityId: postId, modalType: "PostInput" });
-  }, []);
+  }, [handleShowModal, postId]);
 
   return (
     <div
@@ -108,7 +109,7 @@ const AppPost = ({
           variant="avatar-img-45px"
           src={authorAvatar}
           alt="author avatar"
-        ></Avatar>
+        />
         <div className={cx("author-name", "fw-medium", "me-auto")}>
           {authorName}
         </div>
@@ -184,7 +185,7 @@ const AppPost = ({
       )}
 
       <AppDivider />
-      {disableComment && <CommentContainer postId={postId} />}
+      {!disableComment && <CommentContainer postId={postId} />}
       {isReport && <UserReportContainer postId={postId} />}
       <AppImageGallery
         show={showImageGallery}

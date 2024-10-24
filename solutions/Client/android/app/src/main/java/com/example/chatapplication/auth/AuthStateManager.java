@@ -16,6 +16,7 @@ import net.openid.appauth.RegistrationResponse;
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,6 +26,8 @@ public class AuthStateManager {
     private static final String TAG = "AuthStateManager";
     private static final String STORE_NAME = "AuthState";
     private static final String KEY_STATE = "state";
+    private static final String ACCESS_TOKEN_KEY_NAME = "access_token";
+
 
     private final SharedPreferences mPrefs;
     private final ReentrantLock mPrefsLock;
@@ -123,6 +126,33 @@ public class AuthStateManager {
             if (!editor.commit()) {
                 throw new IllegalStateException("Failed to write state to shared pref");
             }
+        } finally {
+            mPrefsLock.unlock();
+        }
+    }
+
+    public void updateAccessToken(@Nullable String token) {
+        mPrefsLock.lock();
+        try {
+            SharedPreferences.Editor editor = mPrefs.edit();
+            if (token == null) {
+                editor.remove(ACCESS_TOKEN_KEY_NAME);
+            } else {
+                editor.putString(ACCESS_TOKEN_KEY_NAME, token);
+            }
+            if (!editor.commit()) {
+                throw new IllegalStateException("Failed to write state to shared pref");
+            }
+        } finally {
+            mPrefsLock.unlock();
+        }
+    }
+
+    public String getAccessToken() {
+        mPrefsLock.lock();
+        try {
+            String currentAccessToken = mPrefs.getString(ACCESS_TOKEN_KEY_NAME, null);
+            return Objects.requireNonNullElse(currentAccessToken, "");
         } finally {
             mPrefsLock.unlock();
         }

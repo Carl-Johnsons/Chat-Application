@@ -91,7 +91,7 @@ public class PostsController : BaseApiController
                 PostId = updatePostDTO.Id
             });
 
-            foreach (var t in updatePostDTO.TagIds)
+            foreach (var t in updatePostDTO.TagIds!)
             {
                 var postTag = await _sender.Send(new CreatePostTagCommand
                 {
@@ -113,6 +113,24 @@ public class PostsController : BaseApiController
         var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
         var result = await _sender.Send(new CreatePostInteractionCommand
+        {
+            PostId = createPostInteractionDTO.PostId,
+            InteractionId = createPostInteractionDTO.InteractionId,
+            UserId = Guid.Parse(subjectId!)
+        });
+
+        result.ThrowIfFailure();
+
+        return Ok();
+    }
+
+    [HttpPut("interact")]
+    public async Task<IActionResult> UpdatePostInteraction([FromBody] CreatePostInteractionDTO createPostInteractionDTO)
+    {
+        var claims = _httpContextAccessor.HttpContext?.User.Claims;
+        var subjectId = claims?.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+        var result = await _sender.Send(new UpdatePostInteractionCommand
         {
             PostId = createPostInteractionDTO.PostId,
             InteractionId = createPostInteractionDTO.InteractionId,
@@ -222,6 +240,7 @@ public class PostsController : BaseApiController
         var result = await _sender.Send(new DeletePostCommand
         {
             PostId = dto.Id,
+            UserId = Guid.Parse(subjectId!)
         });
 
         result.ThrowIfFailure();

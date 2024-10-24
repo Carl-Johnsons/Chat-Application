@@ -1,4 +1,4 @@
-export * from "./Call.dto";
+export * from "./SendCallSignal.dto";
 export * from "./Conversation.response.dto";
 export * from "./FriendRequest.response.dto";
 export * from "./GroupConversationWithMembersIdDTO";

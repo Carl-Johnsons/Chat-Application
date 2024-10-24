@@ -15,4 +15,9 @@
       android:enabled="true"
       android:icon="@drawable/ic_menu_post"
       android:title="post" />
+  <item
+    android:id="@+id/nav_noti"
+    android:enabled="true"
+    android:icon="@drawable/ic_menu_chat"
+    android:title="notification"/>
 </menu>

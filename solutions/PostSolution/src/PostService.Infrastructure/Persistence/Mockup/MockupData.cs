@@ -172,4 +172,23 @@ internal class MockupData
         await _unitOfWork.SaveChangeAsync();
         await Console.Out.WriteLineAsync("=================DONE seeding add data=================");
     }
+
+    public async Task SeedContentRestrictionsTypeData()
+    {
+        if (_context.UserContentRestrictionsTypes.Any())
+        {
+            return;
+        }
+
+        await Console.Out.WriteLineAsync("=================Begin seeding Content Restrictions Type data=================");
+        foreach (var action in UserContentRestrictionsTypeMockup.Data)
+        {
+            _context.UserContentRestrictionsTypes.Add(new Domain.Entities.UserContentRestrictionsType
+            {
+                Code = action.Code,
+            });
+        }
+        await _unitOfWork.SaveChangeAsync();
+        await Console.Out.WriteLineAsync("=================Done seeding Content Restrictions Type data=================");
+    }
 }

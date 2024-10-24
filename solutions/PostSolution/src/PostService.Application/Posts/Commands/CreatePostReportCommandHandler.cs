@@ -48,7 +48,23 @@ public class CreatePostReportCommandHandler : IRequestHandler<CreatePostReportCo
             PostId = request.PostId,
             UserId = request.UserId,
             Reason = request.Reason,
-        };
+        };        
+
+        var warning = _context.UserWarnings
+                        .Where(w => w.UserId == rp.UserId)
+                        .SingleOrDefault();
+
+        if (warning != null)
+        {
+            warning.WarningCount += 1;
+        } else
+        {
+            _context.UserWarnings.Add(new UserWarning
+            {
+                UserId = rp.UserId,
+                WarningCount = 1,
+            });
+        }
 
         _context.PostReports.Add(rp);
         await _unitOfWork.SaveChangeAsync(cancellationToken);

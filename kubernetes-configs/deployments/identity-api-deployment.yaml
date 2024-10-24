@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Program Files\kcompose\kompose.exe --file .\docker-compose-resolved.yaml convert -o kubernetes-configs
+    kompose.version: 1.34.0 (cbf2835db)
+  labels:
+    io.kompose.service: identity-api
+  name: identity-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: identity-api
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Program Files\kcompose\kompose.exe --file .\docker-compose-resolved.yaml convert -o kubernetes-configs
+        kompose.version: 1.34.0 (cbf2835db)
+      labels:
+        io.kompose.service: identity-api
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: general-secret
+            - secretRef:
+                name: identity-api-secret
+          image: localhost:6000/chat-application-identity-api
+          name: identity-service
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always

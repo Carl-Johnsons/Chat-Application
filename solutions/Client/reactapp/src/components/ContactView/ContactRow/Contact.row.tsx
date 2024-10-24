@@ -68,7 +68,7 @@ type Variant =
 const ContactRow = (variant: Variant) => {
   //Extract type
   const { className, type } = variant;
-  let entityId: string = variant.entityId;
+  const entityId: string = variant.entityId;
   let onClickBtnAcceptFriendRequest: ((entityId: string) => void) | undefined;
   let onClickBtnDetail: ((entityId: string) => void) | undefined;
   let onClickBtnDelFriend: ((entityId: string) => void) | undefined;
@@ -119,7 +119,7 @@ const ContactRow = (variant: Variant) => {
   const avatar =
     (isGroup
       ? (entityData as GroupConversation)?.imageURL
-      : (entityData as User)?.avatarUrl) ?? images.userIcon.src;
+      : (entityData as User)?.avatarUrl) || images.defaultAvatarImg.src;
 
   const name =
     (isGroup

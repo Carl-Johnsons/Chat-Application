@@ -1,4 +1,5 @@
 ﻿
+using Contract.Event.NotificationEvent;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Conversations.Commands;
@@ -11,11 +12,13 @@ public class JoinGroupConversationCommandHandler : IRequestHandler<JoinGroupConv
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceBus _serviceBus;
 
-    public JoinGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public JoinGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _serviceBus = serviceBus;
     }
 
     public async Task<Result> Handle(JoinGroupConversationCommand request, CancellationToken cancellationToken)
@@ -61,6 +64,14 @@ public class JoinGroupConversationCommandHandler : IRequestHandler<JoinGroupConv
         _context.ConversationUsers.Add(conversationUser);
 
         await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActionCode = "JOIN_CONVERSATION",
+            ActorIds = [conversationUser.UserId],
+            CategoryCode = "GROUP",
+            Url = ""
+        });
 
         return Result.Success();
     }

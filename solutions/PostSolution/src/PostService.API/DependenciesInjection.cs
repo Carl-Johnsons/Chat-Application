@@ -2,7 +2,6 @@
 using PostService.Infrastructure;
 using PostService.API.Middleware;
 using Microsoft.IdentityModel.Tokens;
-using PostService.Infrastructure.Utilities;
 using PostService.Domain.Interfaces;
 
 namespace PostService.API;
@@ -27,19 +26,22 @@ public static class DependenciesInjection
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                var IdentityServerEndpoint = "http://identity-api";
+                var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
+                var IdentityServerEndpoint = $"http://{IdentityDNS}";
+                Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
+
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
                 // Clear default Microsoft's JWT claim mapping
                 // Ref: https://stackoverflow.com/questions/70766577/asp-net-core-jwt-token-is-transformed-after-authentication
                 options.MapInboundClaims = false;
+                options.TokenValidationParameters.ValidTypes = ["at+jwt"];
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = false,
                     ValidateAudience = false,
                     ValidateIssuer = false,
-                    RoleClaimType = "role" // map jwt claim to role
+                    RoleClaimType = "role"
                 };
                 // For development only
                 options.IncludeErrorDetails = true;
@@ -72,8 +74,15 @@ public static class DependenciesInjection
 
         app.MapControllers();
 
-        var signalRService = app.Services.GetService<ISignalRService>();
-        await signalRService!.StartConnectionAsync();
+        try
+        {
+            var signalRService = app.Services.GetService<ISignalRService>();
+            await signalRService!.StartConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            app.Logger.LogError($"Error connecting to SignalR: {ex.Message}");
+        }
         return app;
     }
 }

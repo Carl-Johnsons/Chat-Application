@@ -75,7 +75,12 @@ const ClearableFile = ({
             : img.naturalHeight,
       });
     };
-  }, [minDimension.height, minDimension.width]);
+  }, [
+    maxDimension.height,
+    maxDimension.width,
+    minDimension.height,
+    minDimension.width,
+  ]);
 
   return (
     <div
@@ -109,7 +114,7 @@ const ClearableFile = ({
       <div className={cx("file-display-container", "overflow-hidden")}>
         <Image
           alt={"file"}
-          src={previewUrl ?? images.defaultAvatarImg}
+          src={previewUrl || images.defaultAvatarImg}
           className={cx(
             "file",
             !isImageLoaded ? " opacity-0" : " opacity-100",

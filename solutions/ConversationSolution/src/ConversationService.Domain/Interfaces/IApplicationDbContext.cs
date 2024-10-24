@@ -9,4 +9,5 @@ public interface IApplicationDbContext : IDbContext
     DbSet<ConversationUser> ConversationUsers { get; set; }
     DbSet<GroupConversationInvite> GroupConversationInvites { get; set; }
     DbSet<Message> Messages { get; set; }
+    DbSet<DisabledNotification> DisabledNotifications { get; set; }
 }

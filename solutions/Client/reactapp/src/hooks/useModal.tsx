@@ -24,7 +24,7 @@ const useModal = () => {
         const friend = (friendList ?? []).filter((f) => f.id === entityId);
         type = friend[0] ? "Friend" : "Stranger";
       }
-      entityId && setModalEntityId(entityId);
+      setModalEntityId(entityId);
       setModalType(modalType ?? type);
       setShowModal(true);
     },

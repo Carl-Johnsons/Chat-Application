@@ -1,3 +1,4 @@
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 import { useAxios } from "@/hooks";
 import { AxiosProps, DefaultUser, User } from "@/models";
 import {
@@ -16,7 +17,7 @@ const getUser = async ({
   userId,
   axiosInstance,
 }: Props): Promise<User | null> => {
-  const url = "http://localhost:5001/api/users";
+  const url = `${IDENTITY_SERVER_URL}/api/users`;
 
   const response = await axiosInstance.get(url, {
     params: {

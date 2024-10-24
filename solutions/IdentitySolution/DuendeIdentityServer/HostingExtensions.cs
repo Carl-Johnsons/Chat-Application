@@ -9,7 +9,6 @@ using DuendeIdentityServer.Models;
 using DuendeIdentityServer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace DuendeIdentityServer;
@@ -20,9 +19,13 @@ internal static class HostingExtensions
     {
         var services = builder.Services;
 
-        services.AddRazorPages();
+        services.AddRazorPages()
+                .AddRazorRuntimeCompilation();
 
         services.AddControllers();
+
+        services.AddDbContext<ApplicationDbContext>();
+
 
         // Register automapper
         IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
@@ -39,10 +42,14 @@ internal static class HostingExtensions
             //busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
             busConfig.UsingRabbitMq((context, config) =>
             {
-                config.Host("amqp://rabbitmq/", host =>
+                var username = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER") ?? "admin";
+                var password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS") ?? "pass";
+                var rabbitMQHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost:5672";
+
+                config.Host($"amqp://{rabbitMQHost}/", host =>
                 {
-                    host.Username("admin");
-                    host.Password("pass");
+                    host.Username(username);
+                    host.Password(password);
                 });
                 config.ConfigureEndpoints(context);
 
@@ -64,8 +71,6 @@ internal static class HostingExtensions
 
         });
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Config.GetConnectionString()));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -82,13 +87,23 @@ internal static class HostingExtensions
                 options.EmitStaticAudienceClaim = true;
                 options.Discovery.CustomEntries.Add("user-api", "~/api/users");
                 options.Discovery.CustomEntries.Add("friend-request-api", "~/api/users/friend-request");
+
+                // Automatic key management
+                options.KeyManagement.RotationInterval = TimeSpan.FromDays(30);
+                //   announce new key 2 days in advance in discovery
+                options.KeyManagement.PropagationTime = TimeSpan.FromDays(2);
+                //   keep old key for 7 days in discovery for validation of tokens
+                options.KeyManagement.RetentionDuration = TimeSpan.FromDays(7);
+
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<ApplicationUser>()
-            .AddProfileService<ProfileService>()
-            .AddDeveloperSigningCredential(); // not recommended for production
+            .AddProfileService<ProfileService>();
+
+        //   .AddDeveloperSigningCredential(); // not recommended for production
+
 
         services.AddAuthentication()
             .AddGoogle(options =>
@@ -110,7 +125,7 @@ internal static class HostingExtensions
 
         services.AddCors(o => o.AddPolicy("AllowSpecificOrigins", builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://api-gateway")
+            builder.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://api-gateway", "http://localhost:5000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();

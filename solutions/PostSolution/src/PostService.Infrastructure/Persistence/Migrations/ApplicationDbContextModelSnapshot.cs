@@ -46,6 +46,21 @@ namespace PostService.Infrastructure.Persistence.Migrations
                     b.ToTable("Comment");
                 });
 
+            modelBuilder.Entity("PostService.Domain.Entities.CommentReplies", b =>
+                {
+                    b.Property<Guid>("CommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ReplyCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CommentId", "ReplyCommentId");
+
+                    b.HasIndex("ReplyCommentId");
+
+                    b.ToTable("CommentReplies");
+                });
+
             modelBuilder.Entity("PostService.Domain.Entities.Interaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -208,6 +223,93 @@ namespace PostService.Infrastructure.Persistence.Migrations
                     b.ToTable("Tag");
                 });
 
+            modelBuilder.Entity("PostService.Domain.Entities.UserContentRestrictions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserContentRestrictionsTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserContentRestrictionsTypeId");
+
+                    b.ToTable("UserContentRestrictions");
+                });
+
+            modelBuilder.Entity("PostService.Domain.Entities.UserContentRestrictionsType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserContentRestrictionsType");
+                });
+
+            modelBuilder.Entity("PostService.Domain.Entities.UserWarning", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("WarningCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserWarning");
+                });
+
+            modelBuilder.Entity("PostService.Domain.Entities.CommentReplies", b =>
+                {
+                    b.HasOne("PostService.Domain.Entities.Comment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("Comment_CommentReplies");
+
+                    b.HasOne("PostService.Domain.Entities.Comment", "ReplyComment")
+                        .WithMany()
+                        .HasForeignKey("ReplyCommentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("ReplyComment_CommentReplies");
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("ReplyComment");
+                });
+
             modelBuilder.Entity("PostService.Domain.Entities.PostComment", b =>
                 {
                     b.HasOne("PostService.Domain.Entities.Comment", "Comment")
@@ -274,6 +376,17 @@ namespace PostService.Infrastructure.Persistence.Migrations
                     b.Navigation("Post");
 
                     b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("PostService.Domain.Entities.UserContentRestrictions", b =>
+                {
+                    b.HasOne("PostService.Domain.Entities.UserContentRestrictionsType", "UserRestrictionsType")
+                        .WithMany()
+                        .HasForeignKey("UserContentRestrictionsTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserRestrictionsType");
                 });
 #pragma warning restore 612, 618
         }

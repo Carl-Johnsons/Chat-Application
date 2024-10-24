@@ -1,3 +1,4 @@
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 import { useAxios } from "@/hooks";
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ export const deleteFriend = async ({
   friendId,
   axiosInstance,
 }: Props): Promise<boolean | null> => {
-  const url = "http://localhost:5001/api/friend";
+  const url = `${IDENTITY_SERVER_URL}/api/friend`;
   const response = await axiosInstance.delete(url, {
     data: {
       friendId,
