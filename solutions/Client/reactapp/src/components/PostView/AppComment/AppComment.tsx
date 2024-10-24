@@ -22,7 +22,7 @@ const AppComment = ({ comment }: Props) => {
 
   const formattedTime = formatRelativeTime(createdAt);
 
-  const userAvatar = userData?.avatarUrl ?? images.defaultAvatarImg.src;
+  const userAvatar = userData?.avatarUrl || images.defaultAvatarImg.src;
   const userName = userData?.name ?? "Loading...";
 
   return (

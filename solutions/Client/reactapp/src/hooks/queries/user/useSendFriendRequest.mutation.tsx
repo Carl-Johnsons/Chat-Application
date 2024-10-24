@@ -2,6 +2,7 @@ import { AxiosProps, FriendRequest } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signalRSendFriendRequest, useAxios, useSignalREvents } from "@/hooks";
 import { toast } from "react-toastify";
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 
 interface Props extends AxiosProps {
   receiverId: string;
@@ -15,7 +16,7 @@ const sendFriendRequest = async ({
     receiverId: receiverId,
     content: "Hello",
   };
-  const url = "http://localhost:5001/api/users/friend-request";
+  const url = `${IDENTITY_SERVER_URL}/api/users/friend-request`;
   const response = await axiosInstance.post(url, data);
   return response.data;
 };

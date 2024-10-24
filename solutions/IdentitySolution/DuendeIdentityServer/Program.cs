@@ -1,4 +1,4 @@
-﻿using DuendeIdentityServer;
+using DuendeIdentityServer;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()

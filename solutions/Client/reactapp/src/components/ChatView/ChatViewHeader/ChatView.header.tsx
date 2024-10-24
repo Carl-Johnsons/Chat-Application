@@ -93,7 +93,7 @@ const ChatViewHeader = () => {
   const avatar =
     (isGroup
       ? (conversationData as GroupConversation)?.imageURL
-      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+      : otherUserData?.avatarUrl) || images.userIcon.src;
   const name =
     (isGroup
       ? (conversationData as GroupConversation)?.name

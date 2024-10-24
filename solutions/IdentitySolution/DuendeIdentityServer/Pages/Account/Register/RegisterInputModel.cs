@@ -19,16 +19,7 @@ public class RegisterInputModel
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public IFormFile AvatarFile { get; set; } = null!;
-
-    [Required]
-    public IFormFile BackgroundFile { get; set; } = null!;
-
-    [Required]
     public DateTime Dob { get; set; }
-
-    [Required]
-    public string PhoneNumber { get; set; } = string.Empty;
 
     [Required]
     public string Gender { get; set; } = string.Empty;
