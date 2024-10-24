@@ -1,0 +1,19 @@
+$navbar-width: 60px;
+$left-width: 354px;
+$chat-info-width: 344px;
+
+// body::-webkit-scrollbar {
+//     display: none;
+// }
+.navbar-section {
+    flex-basis: $navbar-width;
+}
+
+.left {
+    flex-basis: $left-width;
+    border-right: 1px solid var(--border-color);
+}
+
+.chat-info {
+    flex-basis: $chat-info-width;
+}
