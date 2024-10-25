@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginTop="24dp">
+
+    <Button
+        android:id="@+id/btnRequestFriendList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableLeft="@drawable/ic_list_friend_request"
+        android:drawablePadding="8dp"
+        android:gravity="start|center_vertical"
+        android:padding="10dp"
+        android:text="Friend Request"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btnBlockList"
+        android:drawablePadding="8dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableLeft="@drawable/ic_block_list"
+        android:gravity="start|center_vertical"
+        android:padding="10dp"
+        android:text="Block List"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewFriends"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

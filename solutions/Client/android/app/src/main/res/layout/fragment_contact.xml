@@ -5,11 +5,46 @@
     android:layout_height="match_parent"
     tools:context=".ContactFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnFragmentFriends"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Friends"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/btnFragmentGroups"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Groups"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="contact fragment"
-        android:textSize="50sp" />
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:padding="16dp"
+        android:layout_marginTop="32dp">
+
+    </LinearLayout>
 </FrameLayout>
