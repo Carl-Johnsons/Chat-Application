@@ -9,12 +9,15 @@ public class Post {
     private String content;
     private String createdAt;
     private List<Comment> comments;
+    private boolean isLiked;
+    private String userAvatarUrl;
 
-    public Post(String userId, String content, String createdAt) {
+    public Post(String userId, String content, String createdAt, String userAvatarUrl) {
         this.userId = userId;
         this.content = content;
         this.createdAt = createdAt;
         this.comments = new ArrayList<>();
+        this.userAvatarUrl = userAvatarUrl;
     }
 
     public String getId() {
@@ -51,6 +54,22 @@ public class Post {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
+    }
+
+    public String getUserAvatarUrl() {
+        return userAvatarUrl;
+    }
+
+    public void setUserAvatarUrl(String userAvatarUrl) {
+        this.userAvatarUrl = userAvatarUrl;
     }
 
     public void addComment(Comment comment) {

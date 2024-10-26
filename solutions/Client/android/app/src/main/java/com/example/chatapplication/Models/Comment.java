@@ -1,18 +1,18 @@
 package com.example.chatapplication.Models;
 
-import java.util.Date;
-
 public class Comment
 {
-    private  String id;
+    private String id;
     private String userId;
+    private String userAvatarUrl;
     private String content;
     private String createdAt;
 
-    public Comment(String userId, String content, String createdAt) {
+    public Comment(String userId, String content, String createdAt, String userAvatarUrl) {
         this.userId = userId;
         this.content = content;
         this.createdAt = createdAt;
+        this.userAvatarUrl = userAvatarUrl;
     }
 
     public String getUserId() {
@@ -37,5 +37,13 @@ public class Comment
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUserAvatarUrl() {
+        return userAvatarUrl;
+    }
+
+    public void setUserAvatarUrl(String userAvatarUrl) {
+        this.userAvatarUrl = userAvatarUrl;
     }
 }

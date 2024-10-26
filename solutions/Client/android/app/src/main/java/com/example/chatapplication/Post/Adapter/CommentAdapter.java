@@ -4,21 +4,21 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.chatapplication.DTOs.UserDTO;
 import com.example.chatapplication.Models.Comment;
 import com.example.chatapplication.R;
 import com.example.chatapplication.Services.RetrofitClient;
 import com.example.chatapplication.Services.UserService;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -48,9 +48,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         Comment comment = commentList.get(position);
         holder.commentContent.setText(comment.getContent());
 
-        if (userCache.containsKey(comment.getUserId())) {
-            holder.userName.setText(userCache.get(comment.getUserId()));
-        } else {
+
             UserService userService = RetrofitClient.getRetrofitInstance(context).create(UserService.class);
             Call<UserDTO> call = userService.getUserById(comment.getUserId());
             call.enqueue(new Callback<UserDTO>() {
@@ -58,8 +56,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                 public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         String userName = response.body().getName();
+                        String avtUrl = response.body().getAvatarUrl();
                         userCache.put(comment.getUserId(), userName);
                         holder.userName.setText(userName);
+
+                        Glide.with(context)
+                                .load(avtUrl)
+                                .circleCrop()
+                                .into(holder.userAvatar);
+
                     } else {
                         holder.userName.setText("Unknown User");
                     }
@@ -70,7 +75,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                     holder.userName.setText("Error");
                 }
             });
-        }
+
+
+
 
         holder.commentTime.setText(comment.getTimePosted());
     }
@@ -91,12 +98,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
             TextView userName, commentContent, commentTime;
-
+            ImageView userAvatar;
             public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
             userName = itemView.findViewById(R.id.comment_user_name);
             commentContent = itemView.findViewById(R.id.comment_content);
             commentTime = itemView.findViewById(R.id.comment_time);
+            userAvatar = itemView.findViewById(R.id.profile_image);
         }
     }
 }

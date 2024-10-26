@@ -8,22 +8,30 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.chatapplication.Models.Comment;
+import com.example.chatapplication.Models.Interact;
 import com.example.chatapplication.Models.Post;
 import com.example.chatapplication.Post.CommentRequest;
 import com.example.chatapplication.Post.CommentResponse;
+import com.example.chatapplication.Post.InteractRequest;
+import com.example.chatapplication.Post.InteractResponse;
 import com.example.chatapplication.Post.ReportRequest;
+import com.example.chatapplication.Post.UndoInteractRequest;
 import com.example.chatapplication.R;
 import com.example.chatapplication.Services.PostService;
 import com.example.chatapplication.Services.RetrofitClient;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -55,11 +63,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.userName.setText(post.getUserId());
         holder.postContent.setText(post.getContent());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a, dd MMMM yyyy", Locale.getDefault());
         holder.postTime.setText(post.getCreatedAt());
+
+        Glide.with(context)
+                .load(post.getUserAvatarUrl())
+                .circleCrop()
+                .into(holder.userImage);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         holder.recyclerViewComments.setLayoutManager(layoutManager);
+
+        holder.reportButton.setOnClickListener(v -> {
+            showReportDialog(context, post.getId());
+        });
+
+        holder.likeButton.setOnClickListener(v -> {
+            interactWithPost(post.getId(), holder.likeButton);
+        });
+
+        checkInteractionStatus(post.getId(), holder.likeButton);
 
         CommentAdapter commentAdapter = new CommentAdapter(context, post.getComments());
         holder.recyclerViewComments.setAdapter(commentAdapter);
@@ -70,9 +92,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             showAddCommentDialog(context, post, commentAdapter);
         });
 
-        holder.reportButton.setOnClickListener(v -> {
-            showReportDialog(context, post.getId());
-        });
+    }
+
+    private void updateLikeButtonUI(ImageButton likeButton, boolean liked) {
+        if (liked) {
+            likeButton.setImageResource(R.drawable.ic_like);
+        } else {
+            likeButton.setImageResource(R.drawable.ic_out_like);
+        }
     }
 
     private void showAddCommentDialog(Context context, Post post, CommentAdapter commentAdapter) {
@@ -160,6 +187,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         TextView userName, postContent, postTime;
         ImageButton likeButton, commentButton, reportButton;
         RecyclerView recyclerViewComments;
+        ImageView userImage;
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             userName = itemView.findViewById(R.id.post_user_name);
@@ -169,6 +197,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             commentButton = itemView.findViewById(R.id.button_comment);
             reportButton = itemView.findViewById(R.id.button_report);
             recyclerViewComments = itemView.findViewById(R.id.recycler_view_comments);
+            userImage = itemView.findViewById(R.id.profile_image);
         }
     }
 
@@ -222,5 +251,87 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
     }
+
+    private void interactWithPost(String postId, ImageButton likeButton) {
+        PostService apiService = RetrofitClient.getRetrofitInstance(context).create(PostService.class);
+
+        String interactionId = "4D48E460-2629-4FFE-877D-71E1683E159D";
+        InteractRequest request = new InteractRequest(postId, interactionId);
+
+        Call<Void> call = apiService.interactPost(request);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    updateLikeButtonUI(likeButton, true);
+                } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+
+                        if (errorBody.contains("PostError.AlreadyInteractedPost")) {
+                            deleteInteraction(postId, likeButton);
+                        } else {
+                            Toast.makeText(context, "Error: " + errorBody, Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void deleteInteraction(String postId, ImageButton likeButton) {
+        PostService apiService = RetrofitClient.getRetrofitInstance(context).create(PostService.class);
+
+        UndoInteractRequest undoInteractRequest = new UndoInteractRequest(postId);
+
+        Call<Void> call = apiService.unInteractPost(undoInteractRequest);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    updateLikeButtonUI(likeButton, false);
+                } else {
+                    Toast.makeText(context, "Failed to remove interaction!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void checkInteractionStatus(String postId, ImageButton likeButton) {
+        PostService apiService = RetrofitClient.getRetrofitInstance(context).create(PostService.class);
+
+        Call<List<Interact>> call = apiService.getInteractPostByUserId(postId);
+        call.enqueue(new Callback<List<Interact>>() {
+            @Override
+            public void onResponse(Call<List<Interact>> call, Response<List<Interact>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    updateLikeButtonUI(likeButton, true);
+                } else {
+                    updateLikeButtonUI(likeButton, false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Interact>> call, Throwable t) {
+                Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 }
 

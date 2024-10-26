@@ -131,6 +131,7 @@ public class PostFragment extends Fragment {
                     UserDTO user = response.body();
                     if (user != null) {
                         post.setUserId(user.getName());
+                        post.setUserAvatarUrl(user.getAvatarUrl());
                         postList.add(post);
                         postAdapter.notifyItemInserted(postList.size() - 1);
                     } else {
@@ -204,7 +205,6 @@ public class PostFragment extends Fragment {
     }
 
     private void fetchUserNameAndUpdatePost(Post post) {
-        // Giả sử có một UserService để lấy thông tin user
         UserService userService = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
         Call<UserDTO> call = userService.getUserById(post.getUserId());
 
@@ -213,10 +213,8 @@ public class PostFragment extends Fragment {
             public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     UserDTO user = response.body();
-                    // Cập nhật userName cho bài post
                     post.setUserId(user.getName());
-
-                    // Thêm post đã được cập nhật userName vào danh sách và cập nhật giao diện
+                    post.setUserAvatarUrl(user.getAvatarUrl());
                     postList.add(0, post);
                     postAdapter.notifyItemInserted(0);
                     recyclerView.scrollToPosition(0);
