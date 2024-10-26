@@ -88,6 +88,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         fetchComments(post.getId(), commentAdapter);
 
+        holder.btnLoadMoreComment.setOnClickListener(v -> {
+            fetchComments(post.getId(), commentAdapter); // Tải thêm comment
+        });
+
         holder.commentButton.setOnClickListener(v -> {
             showAddCommentDialog(context, post, commentAdapter);
         });
@@ -184,7 +188,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        TextView userName, postContent, postTime;
+        TextView userName, postContent, postTime, btnLoadMoreComment;
         ImageButton likeButton, commentButton, reportButton;
         RecyclerView recyclerViewComments;
         ImageView userImage;
@@ -198,6 +202,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             reportButton = itemView.findViewById(R.id.button_report);
             recyclerViewComments = itemView.findViewById(R.id.recycler_view_comments);
             userImage = itemView.findViewById(R.id.profile_image);
+            btnLoadMoreComment = itemView.findViewById(R.id.btn_load_more_comments);
         }
     }
 

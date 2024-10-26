@@ -26,7 +26,7 @@ import retrofit2.http.Query;
 
 public interface PostService {
     @GET("http://10.0.2.2:5005/api/post/all")
-    Call<PaginatedResponse<String>> getPostIds();
+    Call<PaginatedResponse<String>> getPostIds(@Query("skip") int skip);
 
     @GET("http://10.0.2.2:5005/api/post")
     Call<Post> getPostDetails(@Query("id") String postId);

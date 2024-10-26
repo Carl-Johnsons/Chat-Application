@@ -101,13 +101,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical" />
-        <Button
-            android:id="@+id/button_show_more_comments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show More"
-            android:layout_gravity="center"
-            android:visibility="gone" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

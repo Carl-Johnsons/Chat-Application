@@ -40,6 +40,7 @@ public class PostFragment extends Fragment {
     private PostAdapter postAdapter;
     private List<Post> postList;
     private ImageButton buttonCreatePost;
+    private int skip = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,14 +59,24 @@ public class PostFragment extends Fragment {
 
         buttonCreatePost.setOnClickListener(v -> showCreatePostPopup());
 
+        skip = 0;
+        postList.clear();
         fetchPostIds();
+
+        Button loadMoreButton = view.findViewById(R.id.btnLoadMorePost);
+        loadMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchPostIds();
+            }
+        });
 
         return view;
     }
 
     private void fetchPostIds() {
         PostService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(PostService.class);
-        Call<PaginatedResponse<String>> call = apiService.getPostIds();
+        Call<PaginatedResponse<String>> call = apiService.getPostIds(skip);
 
         call.enqueue(new Callback<PaginatedResponse<String>>() {
             @Override
@@ -78,8 +89,9 @@ public class PostFragment extends Fragment {
                         for (String postId : postIds) {
                             fetchPostDetails(postId);
                         }
+                        skip += 1;
                     } else {
-                        Toast.makeText(getContext(), "No post IDs found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "No more post to load", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(getContext(), "Failed to load post IDs", Toast.LENGTH_SHORT).show();
@@ -104,7 +116,6 @@ public class PostFragment extends Fragment {
                     Post post = response.body();
                     if (post != null) {
                         fetchUserDetails(post.getUserId(), post);
-                        //postAdapter.notifyItemInserted(postList.size() - 1);
                     } else {
                         Toast.makeText(getContext(), "Post is null", Toast.LENGTH_SHORT).show();
                     }
