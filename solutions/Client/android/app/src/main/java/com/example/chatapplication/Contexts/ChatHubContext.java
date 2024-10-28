@@ -106,6 +106,10 @@ public class ChatHubContext {
         hubConnection.on("ReportPost", ()->{
 
         });
+
+        hubConnection.on("ReceiveMessage", (messageJson)->{
+
+        },SignalRMessageDTO.class);
     }
 
     public void stopConnection() {
@@ -119,8 +123,6 @@ public class ChatHubContext {
     public void onReceiveMessage(List<Message> messageList, MessageAdapter messageAdapter, RecyclerView messageListView, Context context) {
         System.out.println("dang ky reveice message event");
         hubConnection.on("ReceiveMessage", (messageJson) -> {
-//            Gson gson = new Gson();
-//            SignalRMessageDTO signalRMessage = gson.fromJson(messageJson, SignalRMessageDTO.class);
             Message message = new Message();
             message.setSenderId(messageJson.getSenderId());
             message.setContent(messageJson.getContent());

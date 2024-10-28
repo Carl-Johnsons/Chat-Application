@@ -10,8 +10,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -43,6 +46,7 @@ import java.util.List;
 import java.util.Random;
 
 public class ChatActivity extends AppCompatActivity {
+    private int SkipBatch = 0;
     private Toolbar toolbar;
     private Conversation conversation;
     private RecyclerView recyclerView;
@@ -90,7 +94,7 @@ public class ChatActivity extends AppCompatActivity {
         //set up signalR
         chatHubContext = chatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
         chatHubContext.onReceiveMessage(messageList, messageAdapter, recyclerView,this);
-        loadMessages();
+        loadMessages(SkipBatch);
 
         findViewById(R.id.chatRecyclerView).setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -101,7 +105,31 @@ public class ChatActivity extends AppCompatActivity {
                 return false;
             }
         });
+        //Ad scroll event to recycler view
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (!recyclerView.canScrollVertically(-1)) {
+                    int msgNum = messageList.size();
+                    if((msgNum/10)-SkipBatch == 1){
+                        SkipBatch++;
+                        loadMessages(SkipBatch);
+                    }
+                }
+            }
+        });
         //send message
+        ImageButton btnSend = findViewById(R.id.buttonSend);
+        EditText edtMessage = findViewById(R.id.editTextMessage);
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(edtMessage.getText().equals("")) return;
+                sendMessage(edtMessage.getText().toString());
+                edtMessage.setText("");
+            }
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -139,13 +167,39 @@ public class ChatActivity extends AppCompatActivity {
 
     };
 
-    public  void loadMessages(){
+    public  void sendMessage(String message){
+        ApiUtil.callApi(conversationService.sendMessage(conversation.getId(), message), new ApiUtil.ApiCallback<MessageResponseDTO.MessageDTO>() {
+            @Override
+            public void onSuccess(MessageResponseDTO.MessageDTO message) {
+                Message msg = new Message();
+                msg.setId(message.getId());
+                msg.setSenderId(message.getSenderId());
+                msg.setContent(message.getContent());
+                msg.setShowUsername(false);
+                msg.setCreatedAt(message.getCreatedAt());
+                msg.setAttachedFilesURL(message.getAttachedFilesURL());
+                msg.setSender(true);
+                messageList.add(msg);
+                messageAdapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(messageList.size()-1);
+            }
 
-        ApiUtil.callApi(conversationService.getMessagesByConversationId(conversation.getId(), 0), new ApiUtil.ApiCallback<MessageResponseDTO>() {
+            @Override
+            public void onError(Throwable t) {
+
+            }
+        });
+    }
+
+    public void loadMessages(int SkipBatch){
+        ApiUtil.callApi(conversationService.getMessagesByConversationId(conversation.getId(), SkipBatch), new ApiUtil.ApiCallback<MessageResponseDTO>() {
             @Override
             public void onSuccess(MessageResponseDTO response) {
+                int count = 0;
                 var messages = response.getPaginatedData();
+                List<Message> temp = new ArrayList<>();
                 for (MessageResponseDTO.MessageDTO message : messages) {
+                    count++;
                     Message msg = new Message();
                     msg.setId(message.getId());
                     msg.setSenderId(message.getSenderId());
@@ -154,64 +208,22 @@ public class ChatActivity extends AppCompatActivity {
                     msg.setCreatedAt(message.getCreatedAt());
                     msg.setAttachedFilesURL(message.getAttachedFilesURL());
                     msg.setSender(currentUser.getSub().equals(message.senderId));
-                    messageList.add(msg);
+                    temp.add(msg);
                     System.out.println("add message ok:"+msg.getContent());
                 }
+                temp.addAll(messageList);
+                messageList.clear();
+                messageList.addAll(temp);
                 messageAdapter.notifyDataSetChanged();
-            }
+                recyclerView.scrollToPosition(count-1);
 
+            }
             @Override
             public void onError(Throwable t) {
 
             }
         });
-
-
-
-
-
-        ///////////////////////////////////
-//        Random random = new Random();
-//        String[] sampleContents = {
-//                "Hello!",
-//                "How are you?",
-//                "What are you doing?",
-//                "Let's meet up!",
-//                "Happy Birthday!",
-//                "Good morning!",
-//                "Good night!",
-//                "See you later!",
-//                "Nice to see you!",
-//                "How's your day?",
-//                "Can you send me the file?",
-//                "What's your plan for today?",
-//                "I'm at the cafe.",
-//                "Are you coming?",
-//                "Don't forget our meeting.",
-//                "I love this song!",
-//                "This is a great place.",
-//                "Did you watch the game?",
-//                "I'm feeling great!",
-//                "Let's catch up soon."
-//        };
-//        for (int i = 0; i < 40; i++) {
-//            Date createdAt = new Date(); // Current date and time
-//            String content = sampleContents[random.nextInt(sampleContents.length)]; // Random message content
-//            String senderId = "user" + (random.nextInt(2) + 1); // Random sender ID (user1 or user2)
-//            boolean isSender = random.nextBoolean(); // Randomly determine if this message is sent by the current user
-//            boolean isShowUsername = random.nextBoolean(); // Randomly determine if username should be shown
-//            String attachedFile = "";
-//            if(i == 1){
-//                attachedFile = "https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Chika_Fujiwara_Anime.jpg/220px-Chika_Fujiwara_Anime.jpg";
-//            }
-//            if(i == 39){
-//                attachedFile = "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/02/hayasaka-flustered-in-kaguya-sama.jpg";
-//            }
-//            messageList.add(new Message(createdAt, isSender, content, senderId, isShowUsername, attachedFile));
-//        }
-//        messageAdapter.notifyDataSetChanged();
     }
-
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
