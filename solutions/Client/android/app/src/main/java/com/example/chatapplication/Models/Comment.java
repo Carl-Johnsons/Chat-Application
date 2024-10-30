@@ -23,7 +23,7 @@ public class Comment
         return content;
     }
 
-    public String getTimePosted() {
+    public String getCreatedAt() {
         return createdAt;
     }
 

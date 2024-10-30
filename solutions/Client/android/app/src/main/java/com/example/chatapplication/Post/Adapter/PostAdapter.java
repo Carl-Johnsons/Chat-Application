@@ -33,6 +33,11 @@ import com.example.chatapplication.Services.RetrofitClient;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,11 +64,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull PostAdapter.PostViewHolder holder, int position) {
+        sortPostsByDate();
+
         Post post = postList.get(position);
         holder.userName.setText(post.getUserId());
         holder.postContent.setText(post.getContent());
 
-        holder.postTime.setText(post.getCreatedAt());
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse(post.getCreatedAt());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
+        LocalDateTime dateTime = offsetDateTime.toLocalDateTime();
+        String formattedDate = dateTime.format(formatter);
+
+        holder.postTime.setText(formattedDate);
 
         Glide.with(context)
                 .load(post.getUserAvatarUrl())
@@ -88,14 +100,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         fetchComments(post.getId(), commentAdapter);
 
-        holder.btnLoadMoreComment.setOnClickListener(v -> {
-            fetchComments(post.getId(), commentAdapter); // Tải thêm comment
-        });
+//        holder.btnLoadMoreComment.setOnClickListener(v -> {
+//            fetchComments(post.getId(), commentAdapter);
+//        });
 
         holder.commentButton.setOnClickListener(v -> {
             showAddCommentDialog(context, post, commentAdapter);
         });
 
+    }
+
+    private void sortPostsByDate() {
+        Collections.sort(postList, new Comparator<Post>() {
+            @Override
+            public int compare(Post post1, Post post2) {
+                OffsetDateTime dateTime1 = OffsetDateTime.parse(post1.getCreatedAt());
+                OffsetDateTime dateTime2 = OffsetDateTime.parse(post2.getCreatedAt());
+                LocalDateTime localDateTime1 = dateTime1.toLocalDateTime();
+                LocalDateTime localDateTime2 = dateTime2.toLocalDateTime();
+                return localDateTime2.compareTo(localDateTime1);
+            }
+        });
     }
 
     private void updateLikeButtonUI(ImageButton likeButton, boolean liked) {
@@ -202,7 +227,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             reportButton = itemView.findViewById(R.id.button_report);
             recyclerViewComments = itemView.findViewById(R.id.recycler_view_comments);
             userImage = itemView.findViewById(R.id.profile_image);
-            btnLoadMoreComment = itemView.findViewById(R.id.btn_load_more_comments);
         }
     }
 

@@ -13,10 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.chatapplication.DTOs.UserDTO;
 import com.example.chatapplication.Models.Comment;
+import com.example.chatapplication.Models.Post;
 import com.example.chatapplication.R;
 import com.example.chatapplication.Services.RetrofitClient;
 import com.example.chatapplication.Services.UserService;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +51,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
+        sortCommentsByDate();
+
         Comment comment = commentList.get(position);
         holder.commentContent.setText(comment.getContent());
 
@@ -76,10 +84,25 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                 }
             });
 
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse(comment.getCreatedAt());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
+        LocalDateTime dateTime = offsetDateTime.toLocalDateTime();
+        String formattedDate = dateTime.format(formatter);
 
+        holder.commentTime.setText(formattedDate);
+    }
 
-
-        holder.commentTime.setText(comment.getTimePosted());
+    private void sortCommentsByDate() {
+        Collections.sort(commentList, new Comparator<Comment>() {
+            @Override
+            public int compare(Comment comment1, Comment comment2) {
+                OffsetDateTime dateTime1 = OffsetDateTime.parse(comment1.getCreatedAt());
+                OffsetDateTime dateTime2 = OffsetDateTime.parse(comment2.getCreatedAt());
+                LocalDateTime localDateTime1 = dateTime1.toLocalDateTime();
+                LocalDateTime localDateTime2 = dateTime2.toLocalDateTime();
+                return localDateTime2.compareTo(localDateTime1);
+            }
+        });
     }
 
     @Override
