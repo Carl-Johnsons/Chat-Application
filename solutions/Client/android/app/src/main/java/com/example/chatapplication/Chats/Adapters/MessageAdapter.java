@@ -20,7 +20,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_SENT = 1;
@@ -28,6 +30,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private Context context;
     private List<Message> messages;
+    public static Map<String, String> userIdAvtUrlMap = new HashMap<String, String>();
+    public static Map<String, String> userIdUserName = new HashMap<String, String>();
+
 
     public MessageAdapter(Context context, List<Message> messages) {
         this.context = context;
@@ -127,7 +132,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Glide.with(avatar.getContext()).load(getUserAvatarURL(message.getSenderId())).circleCrop().into(avatar);
 
             if(message.isShowUsername()){
-                senderUsername.setText(getUsername(message.getSenderId()));
+                senderUsername.setText(getUserName(message.getSenderId()));
             }else {
                 senderUsername.setVisibility(View.GONE);
             }
@@ -148,11 +153,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 messageImage.setVisibility(View.GONE);
             }
         }
+
         public String getUserAvatarURL(String userId){
-            return "https://cellphones.com.vn/sforum/wp-content/uploads/2024/01/avartar-anime-6.jpg";
+            return userIdAvtUrlMap.get(userId);
         }
-        public String getUsername(String userId){
-            return "John Nathan";
+
+        public String getUserName(String userId){
+            return userIdUserName.get(userId);
         }
     }
 }

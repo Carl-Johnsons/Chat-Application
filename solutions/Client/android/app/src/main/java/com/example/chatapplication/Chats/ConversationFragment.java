@@ -16,6 +16,7 @@ import com.example.chatapplication.Chats.DTOs.ConversationResponseDTO;
 import com.example.chatapplication.Constants.ConversationType;
 import com.example.chatapplication.DTOs.UserDTO;
 import com.example.chatapplication.Models.Conversation;
+import com.example.chatapplication.Models.User;
 import com.example.chatapplication.R;
 import com.example.chatapplication.Services.ConversationService;
 import com.example.chatapplication.Services.RetrofitClient;
@@ -84,25 +85,29 @@ public class ConversationFragment extends Fragment {
             @Override
             public void onSuccess(ConversationResponseDTO response) {
                 var conversations = response.getConversations();
-                for (ConversationResponseDTO.ConversationDTO conversation : conversations) {
+                for (ConversationResponseDTO.ConversationDTO conversationDTO : conversations) {
                     final Conversation cvs = new Conversation();
-                    if(conversation.getType().equals(ConversationType.INDIVIDUAL.getValue())){
-                        System.out.println("lay conversaton check individual thanh cong");
-                        String userId = conversation.getUsers().get(0).getUserId();
+                    if(conversationDTO.getType().equals(ConversationType.INDIVIDUAL.getValue())){
+                        String userId = conversationDTO.getUsers().get(0).getUserId();
                         ApiUtil.callApi(userService.getUserById(userId), new ApiUtil.ApiCallback<UserDTO>() {
                             @Override
                             public void onSuccess(UserDTO user) {
-                                System.out.println("call user thanh cong");
-                                cvs.setId(conversation.getId());
+                                cvs.setId(conversationDTO.getId());
                                 cvs.setEntityName(user.getName());
                                 cvs.setAvatarUrl(user.getAvatarUrl());
-                                System.out.println(user.getAvatarUrl());
-                                System.out.println(user.getId());
-
-                                if(conversation.getLastMessage() != null){
-                                    cvs.setContent(conversation.getLastMessage().getContent());
+                                List<User> users = new ArrayList<>();
+                                for(ConversationResponseDTO.ConversationDTO.UserDTO userDTO : conversationDTO.getUsers()){
+                                    User u = new User();
+                                    u.userId = userDTO.getUserId();
+                                    u.avatarUrl = user.getAvatarUrl();
+                                    u.name = user.getName();
+                                    users.add(u);
+                                }
+                                cvs.setUsers(users);
+                                if(conversationDTO.getLastMessage() != null){
+                                    cvs.setContent(conversationDTO.getLastMessage().getContent());
                                     var formatter = new SimpleDateFormat("HH:mm");
-                                    String formattedDate = formatter.format(conversation.getLastMessage().getCreatedAt());
+                                    String formattedDate = formatter.format(conversationDTO.getLastMessage().getCreatedAt());
                                     cvs.setTime(formattedDate);
                                 }else{
                                     cvs.setContent("");

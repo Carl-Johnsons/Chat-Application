@@ -67,12 +67,13 @@ public class MainActivity extends AppCompatActivity {
         if (userJson != null) {
             Gson gson = new Gson();
             currentUser = gson.fromJson(userJson, CurrentUserResponseDTO.class);
+            System.out.println("start signalR connection");
+            chatHubContext = ChatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
+            chatHubContext.startConnection();
         }
 
-        chatHubContext = chatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
 
         // Sử dụng signalRClient
-        chatHubContext.startConnection();
 
 
 
@@ -105,5 +106,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("Main activity destroit");
     }
 }

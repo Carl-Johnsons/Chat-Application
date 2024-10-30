@@ -84,6 +84,10 @@ public class ChatActivity extends AppCompatActivity {
         String conversationJson = getIntent().getStringExtra("CONVERSATION_DATA");
         Gson gson = new Gson();
         conversation = gson.fromJson(conversationJson, Conversation.class);
+        //set up avatar in conversation
+        MessageAdapter.userIdAvtUrlMap.put(conversation.getUsers().get(0).userId, conversation.getUsers().get(0).avatarUrl);
+        MessageAdapter.userIdUserName.put(conversation.getUsers().get(0).userId, conversation.getUsers().get(0).name);
+
 
         // Set up Toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -92,7 +96,7 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         //set up signalR
-        chatHubContext = chatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
+        chatHubContext = ChatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
         chatHubContext.onReceiveMessage(messageList, messageAdapter, recyclerView,this);
         loadMessages(SkipBatch);
 
@@ -231,5 +235,17 @@ public class ChatActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             view.clearFocus();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        chatHubContext.unsubscribeReceiveMessage();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        chatHubContext.unsubscribeReceiveMessage();
     }
 }
