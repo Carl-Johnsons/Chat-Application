@@ -19,7 +19,7 @@ const useReceiveAcceptCallSubscription = () => {
       connection.on(SignalREvent.RECEICE_ACCEPT_CALL, (signalData: string) => {
         console.log("receive accept call to pair");
         console.log("peer 1 signal to peer 2", userPeerRef.current);
-        userPeerRef.current.signal(JSON.parse(signalData));
+        userPeerRef.current?.signal(JSON.parse(signalData));
       });
     },
     []

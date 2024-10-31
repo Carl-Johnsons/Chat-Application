@@ -33,6 +33,7 @@ public class ChatHubServer : Hub<IChatClient>
         var userId = _httpContextAccessor.HttpContext?.Request.Query["userId"].ToString();
         try
         {
+
             if (string.IsNullOrEmpty(userId))
             {
                 var RequestUrl = Context.GetHttpContext()?.Request.GetDisplayUrl() ?? "Unknown";

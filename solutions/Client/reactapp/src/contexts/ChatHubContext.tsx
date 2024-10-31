@@ -5,7 +5,7 @@ import {
 } from "@microsoft/signalr";
 import { useGetCurrentUser } from "hooks/queries/user/useGetCurrentUser.query";
 import { useSubscribeSignalREvents } from "hooks/signalREvents/useSubscribeSignalREvents";
-import { useLocalStorage } from "hooks/useStorage";
+import { useSession } from "next-auth/react";
 import React, {
   createContext,
   useCallback,
@@ -29,12 +29,11 @@ const ChatHubContext = createContext<ChatHubContextType | null>(null);
 
 const ChatHubProvider = ({ children }: Props) => {
   const hubURL = process.env.NEXT_PUBLIC_SIGNALR_URL ?? "";
-  const [waitingToReconnect, setWaitingToReconnect] = useState(false);
-  const [accessToken] = useLocalStorage("access_token");
+  const [waitingToReconnect, setWaitingToReconnect] = useState(true);
   const { data: currentUser } = useGetCurrentUser();
   const { subscribeAllEvents, unsubscribeAllEvents } =
     useSubscribeSignalREvents();
-
+  const { data: session } = useSession();
   const connectionRef = useRef<HubConnection | null>(null);
 
   const startConnection = useCallback(async () => {
@@ -47,6 +46,7 @@ const ChatHubProvider = ({ children }: Props) => {
       .then(() => {
         connectionRef.current && subscribeAllEvents(connectionRef.current);
         setWaitingToReconnect(false);
+        console.log("signalR connected");
       })
       .catch((err) => console.error(err));
   }, [subscribeAllEvents]);
@@ -61,14 +61,13 @@ const ChatHubProvider = ({ children }: Props) => {
   }, [unsubscribeAllEvents]);
 
   useEffect(() => {
-    if (waitingToReconnect || connectionRef.current || !currentUser) {
+    if (connectionRef.current || !currentUser) {
       return;
     }
-    setWaitingToReconnect(true);
 
     connectionRef.current = new HubConnectionBuilder()
       .withUrl(`${hubURL}?userId=${currentUser.id}`, {
-        accessTokenFactory: () => accessToken,
+        accessTokenFactory: () => session?.accessToken ?? "",
       })
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
@@ -76,7 +75,7 @@ const ChatHubProvider = ({ children }: Props) => {
 
     startConnection();
   }, [
-    accessToken,
+    session?.accessToken,
     currentUser,
     hubURL,
     startConnection,
@@ -90,7 +89,7 @@ const ChatHubProvider = ({ children }: Props) => {
         connection: connectionRef.current,
         startConnection,
         stopConnection,
-        connected: !!waitingToReconnect,
+        connected: !waitingToReconnect,
       }}
     >
       {children}

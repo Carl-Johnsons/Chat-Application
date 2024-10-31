@@ -11,6 +11,7 @@ const cx = classNames.bind(style);
 
 const CallingContainer = () => {
   const [entityId] = useGlobalState("modalEntityId");
+  const [activeConversationId] = useGlobalState("activeConversationId");
   const router = useRouter();
   const { data: caller } = useGetUser(entityId!, {
     enabled: !!entityId,
@@ -22,7 +23,10 @@ const CallingContainer = () => {
   };
 
   const handleAcceptCall = () => {
-    router.push("/call/1");
+    const url =
+      "/call/1?activeConversationId=" + encodeURI(activeConversationId);
+    router.push(url);
+    handleHideModal();
   };
 
   return (

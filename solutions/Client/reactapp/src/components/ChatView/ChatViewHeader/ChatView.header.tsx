@@ -3,7 +3,7 @@ import { memo, useCallback, useState } from "react";
 import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
-import { useGlobalState, useModal, useSignalREvents } from "@/hooks";
+import { useGlobalState, useModal, useSignalREvents, useWindow } from "@/hooks";
 
 import { GroupConversation, ModalType } from "@/models";
 
@@ -19,6 +19,7 @@ import UserStatus from "../UserStatus";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const cx = classNames.bind(style);
 
@@ -27,12 +28,14 @@ const ChatViewHeader = () => {
   const [conversationType] = useGlobalState("conversationType");
   const [activeConversationId] = useGlobalState("activeConversationId");
   const [isCalling, setIsCalling] = useState(false);
-  // hook
-  const { invokeAction } = useSignalREvents();
-  const { handleShowModal } = useModal();
-  const isGroup = conversationType === "GROUP";
-  //
+
   const router = useRouter();
+
+  // hook
+  const { handleShowModal } = useModal();
+  const { openCallWindow } = useWindow();
+
+  const isGroup = conversationType === "GROUP";
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
     { conversationId: activeConversationId, other: true },
@@ -42,8 +45,10 @@ const ChatViewHeader = () => {
   );
   const handleToggleAside = () => setShowAside(!showAside);
   const handleCall = useCallback(() => {
-    router.push("/call/1");
-  }, [activeConversationId, invokeAction]);
+    var url = "call/1/?activeConversationId=" + encodeURI(activeConversationId);
+    router.push(url);
+    //openCallWindow("call/1", activeConversationId);
+  }, [activeConversationId]);
 
   const handleClickAvatar = useCallback(() => {
     const modalType: ModalType =
