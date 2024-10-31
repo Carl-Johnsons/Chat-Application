@@ -6,6 +6,7 @@ import Avatar from "@/components/shared/Avatar";
 import images from "@/assets";
 import React, { useEffect, useState } from "react";
 import { useGlobalState, usePeer } from "@/hooks";
+import { useSignalR } from "hooks/signalREvents/useSignalR";
 
 const VideoCall: React.FC = () => {
   const cx = className.bind(style);
@@ -26,6 +27,9 @@ const VideoCall: React.FC = () => {
     disableCamera,
     exitCall,
   } = usePeer();
+
+  const { connection: signalRConnection, connected: signalRConnected } =
+    useSignalR();
   //const [activeConversationId] = useGlobalState("activeConversationId");
   //const activeConversationId = new URLSearchParams(window.location.search).get("activeConversationId") || undefined;
   const [activeConversationId, setActiveConversationId] = useState<
@@ -89,7 +93,7 @@ const VideoCall: React.FC = () => {
       }
     };
     startVideoCall();
-  }, [activeConversationId]);
+  }, [activeConversationId, signalRConnection, signalRConnected]);
 
   return (
     <div className={cx("video-call-container")}>

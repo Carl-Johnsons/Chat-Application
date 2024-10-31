@@ -29,7 +29,7 @@ const ChatHubContext = createContext<ChatHubContextType | null>(null);
 
 const ChatHubProvider = ({ children }: Props) => {
   const hubURL = process.env.NEXT_PUBLIC_SIGNALR_URL ?? "";
-  const [waitingToReconnect, setWaitingToReconnect] = useState(false);
+  const [waitingToReconnect, setWaitingToReconnect] = useState(true);
   const { data: currentUser } = useGetCurrentUser();
   const { subscribeAllEvents, unsubscribeAllEvents } =
     useSubscribeSignalREvents();
@@ -46,6 +46,7 @@ const ChatHubProvider = ({ children }: Props) => {
       .then(() => {
         connectionRef.current && subscribeAllEvents(connectionRef.current);
         setWaitingToReconnect(false);
+        console.log("signalR connected");
       })
       .catch((err) => console.error(err));
   }, [subscribeAllEvents]);
@@ -60,10 +61,9 @@ const ChatHubProvider = ({ children }: Props) => {
   }, [unsubscribeAllEvents]);
 
   useEffect(() => {
-    if (waitingToReconnect || connectionRef.current || !currentUser) {
+    if (connectionRef.current || !currentUser) {
       return;
     }
-    setWaitingToReconnect(true);
 
     connectionRef.current = new HubConnectionBuilder()
       .withUrl(`${hubURL}?userId=${currentUser.id}`, {

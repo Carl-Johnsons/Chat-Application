@@ -8,6 +8,7 @@ import {
 } from "@/hooks";
 import { CALL_STATUS } from "../data/constants";
 import { useRouter } from "next/navigation";
+import { useSignalR } from "./signalREvents";
 
 type InitCallerPeerProps = { conversationId?: string; stream: MediaStream };
 
@@ -22,19 +23,27 @@ const usePeer = () => {
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const { invokeAction, connected: signalRConnected } = useSignalREvents();
+  const { invokeAction } = useSignalREvents();
   const [, setSignalData] = useGlobalState("signalData");
   const [, setUserPeer] = useGlobalState("userPeer");
   const peerRef = useRef<Peer.Instance | null>(null);
   const [callStatus, setCallStatus] = useState(CALL_STATUS.PREPARING);
   const router = useRouter();
+  const { connection: signalRConnection, connected: signalRConnected } =
+    useSignalR();
+
   const initiateCallerPeer = useCallback(
     ({ conversationId, stream }: InitCallerPeerProps) => {
       if (!signalRConnected) {
         console.log("signalR not connected");
         return;
       }
+      if (!signalRConnection) {
+        console.log("signalR connection not found", signalRConnection);
+        return;
+      }
       console.log("signalR connected");
+      console.log(signalRConnection?.connectionId);
 
       setCallStatus(CALL_STATUS.CONNECTING);
       streamRef.current = stream;
@@ -81,6 +90,7 @@ const usePeer = () => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = null;
         }
+        exitCall();
       });
       peer.on("error", () => {
         console.log("Callee error");
@@ -88,10 +98,11 @@ const usePeer = () => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = null;
         }
+        exitCall();
       });
       return peer;
     },
-    [signalRConnected]
+    [signalRConnected, signalRConnection]
   );
 
   const initiateCalleePeer = useCallback(
@@ -141,6 +152,7 @@ const usePeer = () => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = null;
         }
+        exitCall();
       });
       peer.on("error", () => {
         console.log("Caller error");
@@ -148,6 +160,7 @@ const usePeer = () => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = null;
         }
+        exitCall();
       });
       console.log("caller sigaldata", callerSignalData);
       console.log("peer 2 signal peer 1");
@@ -174,6 +187,7 @@ const usePeer = () => {
   };
 
   const disableCamera = (): void => {
+    //stopVideo();
     if (streamRef.current) {
       console.log("dis cam");
       const videoTrack = streamRef.current.getVideoTracks()[0];
@@ -186,6 +200,30 @@ const usePeer = () => {
       }
     }
   };
+
+  const stopVideoAndAudio = useCallback(() => {
+    streamRef.current?.getTracks().forEach((track) => {
+      if (track.readyState == "live") {
+        track.stop();
+      }
+    });
+  }, [streamRef.current]);
+
+  const stopAudio = useCallback(() => {
+    streamRef.current?.getTracks().forEach((track) => {
+      if (track.readyState == "live" && track.kind === "audio") {
+        track.stop();
+      }
+    });
+  }, [streamRef.current]);
+
+  const stopVideo = useCallback(() => {
+    streamRef.current?.getTracks().forEach((track) => {
+      if (track.readyState == "live" && track.kind === "video") {
+        track.stop();
+      }
+    });
+  }, [streamRef.current]);
 
   const enableCamera = async (): Promise<void> => {
     if (streamRef.current) {
@@ -208,17 +246,21 @@ const usePeer = () => {
     }
   };
 
-  const exitCall = (): void => {
+  //const exitCall = (): void => {};
+
+  const exitCall = useCallback(() => {
     console.log("exit call");
-    peerRef.current?.destroy();
     setUserPeer(null);
+    peerRef.current?.destroy();
     setSignalData(null);
-    const tracks = streamRef.current?.getTracks();
-    tracks?.forEach((track) => {
-      track.stop();
-    });
+    stopVideoAndAudio();
+    // const tracks = streamRef.current?.getTracks();
+    // tracks?.forEach((track) => {
+    //   track.stop();
+    // });
     router.push("/");
-  };
+    streamRef.current = null;
+  }, [streamRef.current, peerRef.current]);
 
   useEffect(() => {
     if (peerRef.current) {
@@ -226,10 +268,6 @@ const usePeer = () => {
       console.log("set userPeer", peerRef.current);
     }
   }, [peerRef.current]);
-
-  useEffect(() => {
-    console.log("stream ref thay doi");
-  }, [streamRef.current]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {

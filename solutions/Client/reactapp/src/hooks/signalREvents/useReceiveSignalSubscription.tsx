@@ -24,16 +24,8 @@ const useReceiveSignalSubscription = () => {
         SignalREvent.RECEIVE_SIGNAL,
         (signalData: string, conversationId: string) => {
           console.log("receive signal");
-          if (userPeerRef.current) {
-            console.log("has userpeer so connect again");
-            userPeerRef.current.destroy();
-            userPeerRef.current = null;
-            setUserPeer(null);
-          }
           setSignalData(JSON.parse(signalData) as SignalData);
           SetActiveConversationId(conversationId);
-          var url = "call/1/?activeConversationId=" + encodeURI(conversationId);
-          router.push(url);
         }
       );
     },
