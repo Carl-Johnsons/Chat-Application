@@ -7,6 +7,7 @@ using MassTransit;
 using Contract.Event.ConversationEvent;
 using ChatHub.Models;
 using ChatHub.Constants;
+using Serilog;
 
 namespace ChatHub.Hubs;
 
@@ -35,33 +36,33 @@ public class ChatHubServer : Hub<IChatClient>
             if (string.IsNullOrEmpty(userId))
             {
                 var RequestUrl = Context.GetHttpContext()?.Request.GetDisplayUrl() ?? "Unknown";
-                await Console.Out.WriteLineAsync($"Service with url {RequestUrl} has connected to signalR sucessfully!");
+                Log.Information($"Service with url {RequestUrl} has connected to signalR sucessfully!");
             }
             else
             {
-                await Console.Out.WriteLineAsync($"user with id {userId} has connected to signalR sucessfully!");
+                Log.Information($"user with id {userId} has connected to signalR sucessfully!");
                 await ConnectWithUserIdAsync(Guid.Parse(userId));
             }
 
         }
         catch (Exception ex)
         {
-            await Console.Out.WriteLineAsync($"Error: {ex.Message}");
+            Log.Error($"Error: {ex.Message}");
         }
 
         await base.OnConnectedAsync();
     }
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        await Console.Out.WriteLineAsync($"Disconnecting from signalR!");
+        Log.Information($"Disconnecting from signalR!");
         if (UserConnectionMap.TryRemove(Context.ConnectionId, out Guid userDisconnectedId))
         {
-            await Console.Out.WriteLineAsync($"Connection {Context.ConnectionId} disconnected and removed from UserConnectionMap.");
+            Log.Information($"Connection {Context.ConnectionId} disconnected and removed from UserConnectionMap.");
             await Clients.All.Disconnected(userDisconnectedId);
         }
         else
         {
-            await Console.Out.WriteLineAsync($"Connection {Context.ConnectionId} disconnected, but it was not found in UserConnectionMap.");
+            Log.Error($"Connection {Context.ConnectionId} disconnected, but it was not found in UserConnectionMap.");
         }
 
         await base.OnDisconnectedAsync(exception);
@@ -70,11 +71,11 @@ public class ChatHubServer : Hub<IChatClient>
     {
         try
         {
-            await Clients.OthersInGroup(messageDTO.ConversationId.ToString()).ReceiveMessage(messageDTO);
+            await Clients.Group(messageDTO.ConversationId.ToString()).ReceiveMessage(messageDTO);
         }
         catch (Exception ex)
         {
-            await Console.Out.WriteLineAsync(ex.Message);
+            Log.Error(ex.Message);
         }
     }
 
@@ -117,7 +118,7 @@ public class ChatHubServer : Hub<IChatClient>
         }
         foreach (var senderConnectionId in senderConnectionIdList)
         {
-            await Console.Out.WriteLineAsync("Sending to client");
+            Log.Information("Sending to client");
             await Clients.Client(senderConnectionId).ReceiveAcceptFriendRequest(friendDTO);
         }
     }
@@ -209,15 +210,16 @@ public class ChatHubServer : Hub<IChatClient>
             CallerId = callerId,
             ConversationId = conversationId
         });
-        await Console.Out.WriteLineAsync("Day la send sygnal**************************************");
+        Log.Information("Day la send sygnal**************************************");
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveSignal(sendCallSignalDTO.SignalData, conversationId);
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
 
     }
 
-    public async Task AcceptCall(SendCallSignalDTO sendCallSignalDTO) {
+    public async Task AcceptCall(SendCallSignalDTO sendCallSignalDTO)
+    {
         var conversationId = sendCallSignalDTO.TargetConversationId;
-        await Console.Out.WriteLineAsync("Day la accepp sygnal**************************************");
+        Log.Information("Day la accepp sygnal**************************************");
         await Clients.OthersInGroup(conversationId.ToString()).ReceiveAcceptCall(sendCallSignalDTO.SignalData);
     }
 
@@ -253,26 +255,26 @@ public class ChatHubServer : Hub<IChatClient>
     private async Task ConnectWithUserIdAsync(Guid userId)
     {
         UserConnectionMap[Context.ConnectionId] = userId;
-        await Console.Out.WriteLineAsync($"Map user complete with {Context.ConnectionId} and {userId}");
-        await Console.Out.WriteLineAsync(userId + " Connected");
+        Log.Information($"Map user complete with {Context.ConnectionId} and {userId}");
+        Log.Information(userId + " Connected");
 
         // Admin user
         if (Context.User != null && Context.User.IsInRole("Admin"))
         {
-            await Console.Out.WriteLineAsync("Add admin to group admin");
+            Log.Information("Add admin to group admin");
             await Groups.AddToGroupAsync(Context.ConnectionId, "Admin");
             return;
         }
         // Public user
-        Console.WriteLine("=================Call conversation service by sending message to queue===============");
+        Log.Information("=================Call conversation service by sending message to queue===============");
         var requestClient = _bus.CreateRequestClient<GetConversationByUserIdEvent>();
         var conversationsResponse = await requestClient.GetResponse<ConversationEventResponse>(new GetConversationByUserIdEvent
         {
             UserId = userId
         });
 
-        Console.WriteLine(JsonConvert.SerializeObject(conversationsResponse.Message.Conversations));
-        Console.WriteLine("=================Call conversation service by sending message to queue===============");
+        Log.Information(JsonConvert.SerializeObject(conversationsResponse.Message.Conversations));
+        Log.Information("=================Call conversation service by sending message to queue===============");
 
         foreach (var c in conversationsResponse.Message.Conversations)
         {
@@ -281,7 +283,7 @@ public class ChatHubServer : Hub<IChatClient>
 
         foreach (var key in UserConnectionMap.Keys)
         {
-            await Console.Out.WriteLineAsync($"{key}: {UserConnectionMap[key]}");
+            Log.Information($"{key}: {UserConnectionMap[key]}");
         }
         var userIdOnlineList = UserConnectionMap.Select(uc => uc.Value);
         await Clients.All.Connected(userIdOnlineList);

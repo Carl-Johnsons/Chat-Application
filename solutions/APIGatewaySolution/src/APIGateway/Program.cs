@@ -2,6 +2,10 @@ using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
+DotNetEnv.Env.Load();
+
+var reactUrl = Environment.GetEnvironmentVariable("REACT_URL") ?? "http://localhost:3000";
+
 var builder = new WebHostBuilder();
 builder.UseKestrel()
        .UseContentRoot(Directory.GetCurrentDirectory())
@@ -44,7 +48,7 @@ builder.ConfigureServices(services =>
     services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>
         {
-            var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
+            var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "192.168.1.9:5001").Replace("\"", "");
             var IdentityServerEndpoint = $"http://{IdentityDNS}";
             Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
 
@@ -74,7 +78,7 @@ builder.ConfigureServices(services =>
         options.AddPolicy("AllowAnyOriginPolicy",
             builder =>
             {
-                builder.WithOrigins("http://localhost:3001", "http://localhost:3000")
+                builder.WithOrigins(reactUrl)
                        .AllowAnyMethod()
                        .AllowAnyHeader()
                        .AllowCredentials();
