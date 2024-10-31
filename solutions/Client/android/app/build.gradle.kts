@@ -90,7 +90,9 @@ dependencies {
     implementation(libs.retrofit)
     //implementation(libs.retrofit2.converter.gson)
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation (libs.okhttp)
     implementation(libs.glide)
     implementation (libs.gson)
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.0")
 }
