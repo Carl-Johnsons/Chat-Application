@@ -65,7 +65,7 @@ public class JoinGroupConversationCommandHandler : IRequestHandler<JoinGroupConv
 
         await _unitOfWork.SaveChangeAsync(cancellationToken);
 
-        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        await _serviceBus.Publish(new CreateNotificationEvent
         {
             ActionCode = "JOIN_CONVERSATION",
             ActorIds = [conversationUser.UserId],
