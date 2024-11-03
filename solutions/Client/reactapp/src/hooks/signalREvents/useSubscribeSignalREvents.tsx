@@ -15,7 +15,7 @@ import {
   useReceiveCallSubscription,
   useReceiveSignalSubscription,
   useReceiveAcceptCallSubscription,
-  useReportPostSubscription
+  useReportPostSubscription,
 } from ".";
 
 const useSubscribeSignalREvents = () => {
@@ -68,26 +68,23 @@ const useSubscribeSignalREvents = () => {
     unsubscribeDisbandGroupConversationEvent,
   } = useDisbandGroupConversationSubscription();
 
-  const subscribeAllEvents = useCallback(
-    (connection: HubConnection) => {
-      subscribeAcceptFriendRequestEvent(connection);
-      subscribeConnectedEvent(connection);
-      subscribeDeletePostEvent(connection);
-      subscribeDisableNotifyUserTypingEvent(connection);
-      subscribeDisbandGroupConversationEvent(connection);
-      subscribeDisconnectedEvent(connection);
-      subscribeForcedLogoutEvent(connection);
-      subscribeFriendRequestEvent(connection);
-      subscribeJoinConversationEvent(connection);
-      subscribeMessageEvent(connection);
-      subscribeNotifyUserTypingEvent(connection);
-      subscribeReceiveCallEvent(connection);
-      subscribeReceiveSignalEvent(connection);
-      subscribeReceiveAcceptCallEvent(connection);
-      subscribeReportPostEvent(connection);
-    },
-    []
-  );
+  const subscribeAllEvents = useCallback((connection: HubConnection) => {
+    subscribeAcceptFriendRequestEvent(connection);
+    subscribeConnectedEvent(connection);
+    subscribeDeletePostEvent(connection);
+    subscribeDisableNotifyUserTypingEvent(connection);
+    subscribeDisbandGroupConversationEvent(connection);
+    subscribeDisconnectedEvent(connection);
+    subscribeForcedLogoutEvent(connection);
+    subscribeFriendRequestEvent(connection);
+    subscribeJoinConversationEvent(connection);
+    subscribeMessageEvent(connection);
+    subscribeNotifyUserTypingEvent(connection);
+    subscribeReceiveCallEvent(connection);
+    subscribeReceiveSignalEvent(connection);
+    subscribeReceiveAcceptCallEvent(connection);
+    subscribeReportPostEvent(connection);
+  }, []);
 
   const unsubscribeAllEvents = useCallback((connection: HubConnection) => {
     unsubscribeAcceptFriendRequestEvent(connection);

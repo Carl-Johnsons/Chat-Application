@@ -44,7 +44,7 @@ const CommentContainer = ({ postId }: Props) => {
         <div className={cx("current-user-avatar", "me-3")}>
           <Avatar
             avatarClassName={cx("rounded-circle")}
-            src={userData?.avatarUrl ?? images.defaultAvatarImg.src}
+            src={userData?.avatarUrl || images.defaultAvatarImg.src}
             alt="current user avatar"
           />
         </div>

@@ -63,7 +63,7 @@ const AppPost = ({
     .tz(tz)
     .fromNow();
 
-  const authorAvatar = authorData?.avatarUrl ?? images.defaultAvatarImg.src;
+  const authorAvatar = authorData?.avatarUrl || images.defaultAvatarImg.src;
   const authorName = authorData?.name ?? "Loading...";
   const files: CloudinaryImage[] = JSON.parse(
     postData?.attachedFilesURL ?? "[]"
@@ -109,7 +109,7 @@ const AppPost = ({
           variant="avatar-img-45px"
           src={authorAvatar}
           alt="author avatar"
-        ></Avatar>
+        />
         <div className={cx("author-name", "fw-medium", "me-auto")}>
           {authorName}
         </div>

@@ -10,6 +10,7 @@ import classNames from "classnames/bind";
 import Avatar from "@/components/shared/Avatar";
 import { useGetMemberListByConversationId } from "@/hooks/queries/conversation";
 import { useCallback } from "react";
+import images from "@/assets";
 
 interface Props {
   onClickMember?: (memberId: string) => void;
@@ -25,7 +26,7 @@ const ListGroupMemberModalContent = ({
   const [modalEntityId] = useGlobalState("modalEntityId");
   const [modalType] = useGlobalState("modalType");
   const { data: conversationData } = useGetMemberListByConversationId(
-    { conversationId: modalEntityId },
+    { conversationId: modalEntityId! },
     {
       enabled: !!modalEntityId,
     }
@@ -43,7 +44,7 @@ const ListGroupMemberModalContent = ({
       return;
     }
     onClickAddGroupMember();
-  }, [modalEntityId]);
+  }, [isGroup, onClickAddGroupMember]);
 
   return (
     <div className={cx("list-group-member-content", "m-0", "ps-3", "pe-3")}>
@@ -83,7 +84,7 @@ const ListGroupMemberModalContent = ({
                 onClick={() => onClickMember(user.id)}
               >
                 <Avatar
-                  src={user.avatarUrl}
+                  src={user.avatarUrl || images.defaultAvatarImg.src}
                   alt="user avatar"
                   className={cx("me-2")}
                   avatarClassName={cx("rounded-circle")}

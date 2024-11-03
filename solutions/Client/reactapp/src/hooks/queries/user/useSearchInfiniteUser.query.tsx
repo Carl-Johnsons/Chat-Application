@@ -1,3 +1,4 @@
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 import { useAxios } from "@/hooks";
 import { AxiosProps } from "@/models";
 import { PaginatedUserListResponse } from "@/models/DTOs";
@@ -27,7 +28,7 @@ const searchUser = async ({
     skip: skipBatch,
     limit: limit,
   };
-  const url = "http://localhost:5001/api/users/search";
+  const url = `${IDENTITY_SERVER_URL}/api/users/search`;
   const response = await axiosInstance.get(url, {
     params,
   });

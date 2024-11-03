@@ -84,7 +84,7 @@ const ScreenSectionProvider: React.FC<{ children: ReactNode }> = ({
         return;
       }
     });
-  });
+  }, []);
   const contextValue: ScreenSectionContextProps = {
     leftRef,
     rightRef,

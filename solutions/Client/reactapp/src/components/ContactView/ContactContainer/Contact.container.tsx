@@ -32,7 +32,7 @@ const ContactContainer = ({ className }: Props) => {
   const { data: friendList } = useGetFriendList();
   const { data: conversationResponse } = useGetConversationList();
   const { data: friendRequestList } = useGetFriendRequestList();
-  const { data: userBlockList} = useGetBlockList();
+  const { data: userBlockList } = useGetBlockList();
 
   // hooks
   const { handleShowModal } = useModal();
@@ -82,16 +82,18 @@ const ContactContainer = ({ className }: Props) => {
             );
           })}
         {activeContactType === MenuContactIndex.GROUP_LIST &&
-          conversationResponse?.groupConversations   &&
-          conversationResponse?.groupConversations.map((gc) => {
-            return (
-              <ContactRow
-                key={gc.id}
-                type="Group"
-                entityId={gc.id}
-                onClickBtnDetail={() => handleClickBtnDetail(gc.id, "Group")}
-              />
-            );
+          conversationResponse?.conversations &&
+          conversationResponse?.conversations.map((gc) => {
+            if (gc.type === "GROUP") {
+              return (
+                <ContactRow
+                  key={gc.id}
+                  type="Group"
+                  entityId={gc.id}
+                  onClickBtnDetail={() => handleClickBtnDetail(gc.id, "Group")}
+                />
+              );
+            }
           })}
         {activeContactType === MenuContactIndex.FRIEND_REQUEST_LIST &&
           friendRequestList &&
@@ -120,20 +122,18 @@ const ContactContainer = ({ className }: Props) => {
         {activeContactType === MenuContactIndex.USER_BLACK_LIST &&
           userBlockList &&
           userBlockList.map((ub) => {
-            return (                  
+            return (
               ub.id && (
-                    <ContactRow
-                      type="UserBlock"
-                      key={ub.id}                      
-                      entityId={ub.id}
-                      onClickBtnDetail={() =>
-                        handleClickBtnDetail(ub.id, "Stranger")
-                      }                      
-                      onClickBtnUnblock={() => 
-                        handleClickUnblockUser(ub.id)
-                      }
-                    />   
-              )               
+                <ContactRow
+                  type="UserBlock"
+                  key={ub.id}
+                  entityId={ub.id}
+                  onClickBtnDetail={() =>
+                    handleClickBtnDetail(ub.id, "BlockedUser")
+                  }
+                  onClickBtnUnblock={() => handleClickUnblockUser(ub.id)}
+                />
+              )
             );
           })}
       </div>

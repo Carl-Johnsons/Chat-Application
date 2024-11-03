@@ -7,6 +7,7 @@ import {
 import { AxiosProps } from "@/models";
 import { PaginatedUserListResponse } from "@/models/DTOs";
 import { useAxios } from "@/hooks";
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 
 interface Props {
   skipBatch: number;
@@ -18,7 +19,7 @@ const getUserList = async ({
   skipBatch,
   axiosInstance,
 }: FetchProps): Promise<PaginatedUserListResponse> => {
-  const url = `http://localhost:5001/api/users/all`;
+  const url = `${IDENTITY_SERVER_URL}/api/users/all`;
   const response = await axiosInstance.get(url, {
     params: {
       skip: skipBatch,

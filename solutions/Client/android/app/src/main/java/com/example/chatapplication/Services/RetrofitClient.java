@@ -4,9 +4,13 @@ package com.example.chatapplication.Services;
 import android.content.Context;
 
 import com.example.chatapplication.BuildConfig;
+import com.example.chatapplication.GsonFactory.DateDeserializer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 
 import okhttp3.Cache;
@@ -29,10 +33,13 @@ public class RetrofitClient {
                     .addInterceptor(new AuthInterceptor(context))
                     .addNetworkInterceptor(new CacheInterceptor())
                     .build();
+            Gson gson = new GsonBuilder()
+                    //.registerTypeAdapter(Date.class, new DateDeserializer())
+                    .create();
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofit;

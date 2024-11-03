@@ -1,20 +1,25 @@
 package com.example.chatapplication.Models;
 
+
+
+import java.util.List;
+
 public class Conversation {
+    public String id;
     public String entityName;
     public  String avatarUrl;
     public  String content;
     public  String time;
-
-    public Conversation(String entityName, String avatarUrl, String content, String time) {
-        this.entityName = entityName;
-        this.avatarUrl = avatarUrl;
-        this.content = content;
-        this.time = time;
+    public List<User> Users;
+    public Conversation(){
     }
 
-    public  Conversation(){
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getEntityName() {
@@ -48,4 +53,11 @@ public class Conversation {
     public void setTime(String time) {
         this.time = time;
     }
+
+    public List<User> getUsers() {
+        return Users;
+    }
+
+    public void setUsers(List<User> users){this.Users = users;}
+
 }

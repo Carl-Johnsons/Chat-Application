@@ -27,22 +27,18 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   const path = usePathname();
   const currentPath = path;
 
-  // Define the route you want to exclude
-  const excludeSignalRContext: string[] = [];
-  // Check if the current route is in the exclude list
-  const isExcluded = excludeSignalRContext.some((route) =>
-    currentPath.startsWith(route)
-  );
+  // // Define the route you want to exclude
+  // const excludeSignalRContext: string[] = [];
+  // // Check if the current route is in the exclude list
+  // const isExcluded = excludeSignalRContext.some((route) =>
+  //   currentPath.startsWith(route)
+  // );
 
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         <AxiosProvider>
-          {isExcluded ? (
-            children
-          ) : (
-            <ChatHubProvider>{children}</ChatHubProvider>
-          )}
+          <ChatHubProvider>{children}</ChatHubProvider>
           <ReactQueryDevtools />
           <ToastContainer
             position="bottom-right"

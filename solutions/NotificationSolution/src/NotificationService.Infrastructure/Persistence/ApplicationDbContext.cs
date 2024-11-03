@@ -17,8 +17,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationAction> NotificationActions { get; set; }
     public DbSet<NotificationCategory> NotificationCategories { get; set; }
-    public DbSet<NotificationReceiver> NotificationReceivers { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         DotNetEnv.Env.Load();
@@ -47,7 +45,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.UpdatedAt)
                   .HasConversion(v => v.ToUniversalTime(),
                                  v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
-
         });
     }
 }

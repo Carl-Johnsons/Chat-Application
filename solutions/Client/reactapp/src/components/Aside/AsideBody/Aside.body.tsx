@@ -69,7 +69,7 @@ const AsideBody = () => {
   const avatar =
     (isGroup
       ? (conversation as GroupConversation)?.imageURL
-      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+      : otherUserData?.avatarUrl) || images.userIcon.src;
   const name = isGroup
     ? (conversation as GroupConversation)?.name
     : otherUserData?.name ?? "";
@@ -110,7 +110,7 @@ const AsideBody = () => {
     }
 
     generateGroupInvitationMutate({ groupId: id });
-  }, [conversation?.id]);
+  }, [conversation?.id, generateGroupInvitationMutate]);
 
   const handleClickAddGroupMemberBtn = useCallback(() => {
     if (!conversation?.id) {
@@ -121,7 +121,7 @@ const AsideBody = () => {
       modalType: "AddGroupMember",
       entityId: conversation?.id,
     });
-  }, [conversation?.id]);
+  }, [conversation?.id, handleShowModal]);
 
   if (!activeConversationId) {
     return;

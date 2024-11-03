@@ -15,12 +15,14 @@ const ReportPostContainer = () => {
   const { handleHideModal } = useModal();
 
   const handleClick = useCallback(() => {
-    reportPostMutate({
-      postId: modalEntityId,
-      reason: inputValue,
-    });
+    if (modalEntityId) {
+      reportPostMutate({
+        postId: modalEntityId,
+        reason: inputValue,
+      });
+    }
     handleHideModal();
-  }, [inputValue]);
+  }, [handleHideModal, inputValue, modalEntityId, reportPostMutate]);
 
   return (
     <div className={cx("d-flex", "flex-column", "align-items-center")}>

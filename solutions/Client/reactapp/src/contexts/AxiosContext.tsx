@@ -14,7 +14,7 @@ interface Props {
 const AxiosContext = createContext<AxiosContextType | null>(null);
 
 const AxiosProvider = ({ children }: Props) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const accessToken = session?.accessToken ?? "";
 
@@ -37,13 +37,50 @@ const AxiosProvider = ({ children }: Props) => {
       withCredentials: true,
     })
   );
-
   useEffect(() => {
-    // Update protectedAxiosInstance headers when accessToken changes
-    protectedAxiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`;
-    console.log("re-render protected axios");
-    console.log(accessToken);
-  }, [accessToken, protectedAxiosInstance]);
+    const getAccessToken = () => {
+      return new Promise<string>((resolve, reject) => {
+        if (status === "authenticated" && session.accessToken) {
+          resolve(session.accessToken);
+        } else if (status === "unauthenticated") {
+          reject("Unauthorized");
+        } else {
+          const interval = setInterval(() => {
+            if (session?.accessToken) {
+              resolve(session.accessToken);
+              clearInterval(interval);
+            }
+          }, 100);
+        }
+      });
+    };
+
+    const requestInterceptor = protectedAxiosInstance.interceptors.request.use(
+      async (config) => {
+        try {
+          console.log("Request interceptor");
+          const token = await getAccessToken();
+
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
+          return config;
+        } catch (err) {
+          return Promise.reject(err);
+        }
+      },
+      (err) => {
+        return Promise.reject(err);
+      }
+    );
+    return () => {
+      protectedAxiosInstance.interceptors.request.eject(requestInterceptor);
+    };
+  }, [
+    protectedAxiosInstance.interceptors.request,
+    session?.accessToken,
+    status,
+  ]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => {

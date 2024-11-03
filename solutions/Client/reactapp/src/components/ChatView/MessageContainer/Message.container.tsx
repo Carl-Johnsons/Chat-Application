@@ -7,6 +7,7 @@ import classNames from "classnames/bind";
 import { useGetUser } from "@/hooks/queries/user";
 import { ConversationType, Message as MessageModel } from "@/models";
 import Message from "../Message";
+import images from "@/assets";
 
 const cx = classNames.bind(style);
 
@@ -32,7 +33,7 @@ const MessageContainer = ({
         <Avatar
           className={cx("me-2")}
           avatarClassName={cx("rounded-circle")}
-          src={user.data.avatarUrl}
+          src={user.data.avatarUrl || images.defaultAvatarImg.src}
           alt="avatar"
         />
       )}

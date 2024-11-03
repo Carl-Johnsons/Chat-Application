@@ -3,6 +3,7 @@ using PostService.Infrastructure;
 using PostService.API.Middleware;
 using Microsoft.IdentityModel.Tokens;
 using PostService.Domain.Interfaces;
+using Serilog;
 
 namespace PostService.API;
 
@@ -15,6 +16,12 @@ public static class DependenciesInjection
 
         var services = builder.Services;
         var config = builder.Configuration;
+        var host = builder.Host;
+
+        host.UseSerilog((context, config) =>
+        {
+            config.ReadFrom.Configuration(context.Configuration);
+        });
 
         services.AddApplicationServices();
         services.AddInfrastructureServices();
@@ -28,7 +35,7 @@ public static class DependenciesInjection
             {
                 var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
                 var IdentityServerEndpoint = $"http://{IdentityDNS}";
-                Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
+                Log.Information("Connect to Identity Provider: " + IdentityServerEndpoint);
 
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
@@ -64,6 +71,8 @@ public static class DependenciesInjection
             app.UseSwaggerUI();
         }
 
+        app.UseSerilogRequestLogging();
+
         app.UseHttpsRedirection();
 
         app.UseAuthentication();
@@ -81,7 +90,7 @@ public static class DependenciesInjection
         }
         catch (Exception ex)
         {
-            app.Logger.LogError($"Error connecting to SignalR: {ex.Message}");
+            Log.Error($"Error connecting to SignalR: {ex.Message}");
         }
         return app;
     }
