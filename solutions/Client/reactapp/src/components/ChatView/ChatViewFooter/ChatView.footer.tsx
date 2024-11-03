@@ -126,6 +126,7 @@ const ChatViewFooter = () => {
   const handleCancelAllBlobs = () => {
     setBlobs([]);
   };
+  
   if (!activeConversationId) {
     return;
   }

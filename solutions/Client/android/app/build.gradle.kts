@@ -36,6 +36,11 @@ android {
                 "HOST",
                 "\"" + env.HOST.value + "\""
             )
+            buildConfigField(
+                "String",
+                "SIGNALR_URL",
+                "\"" + env.SIGNALR_URL.value + "\""
+            )
         }
         release {
             buildConfigField(
@@ -54,6 +59,11 @@ android {
                 "String",
                 "HOST",
                 "\"" + env.HOST.value + "\""
+            )
+            buildConfigField(
+                "String",
+                "SIGNALR_URL",
+                "\"" + env.SIGNALR_URL.value + "\""
             )
             isMinifyEnabled = false
             proguardFiles(
@@ -82,6 +92,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -89,8 +100,12 @@ dependencies {
     implementation(libs.material.v1130alpha05)
     implementation(libs.retrofit)
     //implementation(libs.retrofit2.converter.gson)
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.0")
+    implementation (libs.squareup.converter.gson)
     implementation (libs.okhttp)
-    implementation(libs.glide)
+    implementation (libs.glide)
     implementation (libs.gson)
+    implementation (libs.signalr)
+    implementation (libs.slf4j.jdk14)
 }

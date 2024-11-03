@@ -14,6 +14,11 @@ internal class MockupData
 
     public async Task SeedConversationData()
     {
+        if (_context.Conversations.Any())
+        {
+            return;
+        }
+
         await Console.Out.WriteLineAsync("=================Begin seeding conversation data=================");
         foreach (var friend in FriendData.Data)
         {

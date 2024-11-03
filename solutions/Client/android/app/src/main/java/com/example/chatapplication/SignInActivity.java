@@ -17,8 +17,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.chatapplication.DTOs.CurrentUserResponseDTO;
+import com.example.chatapplication.Services.ConversationService;
+import com.example.chatapplication.Services.RetrofitClient;
+import com.example.chatapplication.Services.UserService;
 import com.example.chatapplication.auth.AuthStateManager;
+import com.example.chatapplication.utils.ApiUtil;
 import com.example.chatapplication.utils.UriUtility;
+import com.google.gson.Gson;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthState;
@@ -136,6 +142,38 @@ public class SignInActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+
+                UserService userServide = RetrofitClient.getRetrofitInstance(this).create(UserService.class);
+                ApiUtil.callApi(userServide.getCurrentUser(), new ApiUtil.ApiCallback<CurrentUserResponseDTO>() {
+                    @Override
+                    public void onSuccess(CurrentUserResponseDTO response) {
+                        var currentUser = new CurrentUserResponseDTO();
+                        currentUser.setSub(response.getSub());
+                        currentUser.setGender(response.getGender());
+                        currentUser.setName(response.getName());
+                        currentUser.setEmail(response.getEmail());
+                        //currentUser.setDob(response.getDob());
+                        currentUser.setPreferredUsername(response.getPreferredUsername());
+                        currentUser.setAvartarUrl(response.getAvartarUrl());
+                        currentUser.setBackgroundUrl(response.getBackgroundUrl());
+                        currentUser.setPhoneNumber(response.getPhoneNumber());
+
+                        Gson gson = new Gson();
+                        String userJson = gson.toJson(currentUser);
+                        SharedPreferences prefs = getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString("CurrentUser", userJson);
+                        editor.apply();
+                        System.out.println("save current user success");
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        System.out.println("save current user fail");
+                        System.out.println(t.getMessage());
+                    }
+                });
+
             }
     );
 

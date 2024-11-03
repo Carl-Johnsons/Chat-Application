@@ -1,6 +1,4 @@
-﻿using Azure;
-using Contract.Common;
-using Contract.Event.ConversationEvent;
+﻿using Contract.Common;
 using Contract.Event.NotificationEvent;
 using MassTransit;
 using NotificationService.Application.Notifications.Commands;
@@ -29,6 +27,7 @@ public class CreateNotificationConsumer : IConsumer<CreateNotificationEvent>
             CategoryCode = context.Message.CategoryCode,
             ActionCode = context.Message.ActionCode,
             Url = context.Message.Url,
+            ReceiverId = context.Message.ReceiverId,
         };
 
         var result = await _sender.Send(command);

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NotificationService.Domain.Errors;
-using NotificationService.Domain.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace NotificationService.Application.Notifications.Commands;
@@ -16,6 +15,7 @@ public sealed record CreateNotificationCommand : IRequest<Result<Notification?>>
     public Guid[] ActorIds { get; init; } = [];
     public Guid OwnerId { get; set; }
     public string Url { get; set; } = null!;
+    public Guid ReceiverId { get; set; }
 }
 
 public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificationCommand, Result<Notification?>>
@@ -58,6 +58,7 @@ public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificati
             Url = request.Url,
             OwnerId = request.OwnerId,
             ActorIds = formattedActorIds,
+            ReceiverId = request.ReceiverId,
         };
 
         _context.Notifications.Add(notification);

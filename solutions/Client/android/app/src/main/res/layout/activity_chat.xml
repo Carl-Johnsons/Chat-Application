@@ -61,7 +61,8 @@
             android:layout_height="64dp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:hint="Type a message"/>
+            android:hint="Type a message"
+            android:textColor="#000000" />
 
         <ImageButton
             android:id="@+id/buttonSend"

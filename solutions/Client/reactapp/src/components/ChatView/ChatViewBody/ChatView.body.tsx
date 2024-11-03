@@ -73,7 +73,8 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     return () => {
       ele.removeEventListener("scroll", onScroll);
     };
-  }, [onScroll]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onScroll, messageContainerRef.current]);
 
   const scrollToLastMessage = useCallback(() => {
     if (
@@ -83,6 +84,8 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     ) {
       return;
     }
+    console.log("scroll last");
+
     const ele = messageContainerRef.current as HTMLElement;
     ele.scrollTop = ele.scrollHeight;
     prevActiveConversationRef.current = activeConversationId;
@@ -96,6 +99,8 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     ) {
       return;
     }
+    console.log("scroll first old");
+
     const containerEle = messageContainerRef.current as HTMLElement;
     const ele = document.getElementById(
       `message_${firstOldMessageIdRef.current}`
@@ -103,7 +108,7 @@ const ChatViewBody = (...htmlProp: HTMLProps<HTMLDivElement>[]) => {
     if (!ele) {
       return;
     }
-    containerEle.scrollTop = ele.offsetTop - 20;
+    containerEle.scrollTop = ele.offsetTop - 100;
   }, [activeConversationId]);
 
   const scrollToMessage = () => {
