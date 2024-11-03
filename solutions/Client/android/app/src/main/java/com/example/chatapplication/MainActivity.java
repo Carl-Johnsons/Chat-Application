@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             Gson gson = new Gson();
             currentUser = gson.fromJson(userJson, CurrentUserResponseDTO.class);
             System.out.println("start signalR connection");
-            chatHubContext = ChatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
+            chatHubContext = ChatHubContext.getInstance(BuildConfig.SIGNALR_URL+"?userId="+currentUser.getSub(), this);
             chatHubContext.startConnection();
         }
 

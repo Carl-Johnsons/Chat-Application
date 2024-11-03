@@ -96,7 +96,7 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         //set up signalR
-        chatHubContext = ChatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
+        chatHubContext = ChatHubContext.getInstance(BuildConfig.SIGNALR_URL+"?userId="+currentUser.getSub(), this);
         chatHubContext.onReceiveMessage(messageList, messageAdapter, recyclerView,this);
         loadMessages(SkipBatch);
 

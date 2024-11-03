@@ -48,7 +48,7 @@ builder.ConfigureServices(services =>
     services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>
         {
-            var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "192.168.1.9:5001").Replace("\"", "");
+            var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
             var IdentityServerEndpoint = $"http://{IdentityDNS}";
             Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
 

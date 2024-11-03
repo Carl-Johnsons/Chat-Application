@@ -38,8 +38,8 @@ android {
             )
             buildConfigField(
                 "String",
-                "NEXT_PUBLIC_SIGNALR_URL",
-                "\"" + env.NEXT_PUBLIC_SIGNALR_URL.value + "\""
+                "SIGNALR_URL",
+                "\"" + env.SIGNALR_URL.value + "\""
             )
         }
         release {
@@ -62,8 +62,8 @@ android {
             )
             buildConfigField(
                 "String",
-                "NEXT_PUBLIC_SIGNALR_URL",
-                "\"" + env.NEXT_PUBLIC_SIGNALR_URL.value + "\""
+                "SIGNALR_URL",
+                "\"" + env.SIGNALR_URL.value + "\""
             )
             isMinifyEnabled = false
             proguardFiles(

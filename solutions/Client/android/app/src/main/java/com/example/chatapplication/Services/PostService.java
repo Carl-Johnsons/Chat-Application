@@ -25,31 +25,31 @@ import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface PostService {
-    @GET("http://10.0.2.2:5005/api/post/all")
+    @GET("api/post/all")
     Call<PaginatedResponse<String>> getPostIds(@Query("skip") int skip);
 
-    @GET("http://10.0.2.2:5005/api/post")
+    @GET("api/post")
     Call<Post> getPostDetails(@Query("id") String postId);
 
     @Multipart
-    @POST("http://10.0.2.2:5005/api/post")
+    @POST("api/post")
     Call<Post> createPost(@Part("content") RequestBody content);
 
-    @GET("http://10.0.2.2:5005/api/post/comment")
+    @GET("api/post/comment")
     Call<CommentResponse> getCommentsByPostId(@Query("postId") String postId);
 
-    @POST("http://10.0.2.2:5005/api/post/comment")
+    @POST("api/post/comment")
     Call<Void> createComment(@Body CommentRequest commentRequest);
 
-    @POST("http://10.0.2.2:5005/api/post/report")
+    @POST("api/post/report")
     Call<Void> reportPost(@Body ReportRequest reportRequest);
 
-    @POST("http://10.0.2.2:5005/api/post/interact")
+    @POST("api/post/interact")
     Call<Void> interactPost(@Body InteractRequest interactRequest);
 
-    @HTTP(method = "DELETE", path = "http://10.0.2.2:5005/api/post/interact", hasBody = true)
+    @HTTP(method = "DELETE", path = "api/post/interact", hasBody = true)
     Call<Void> unInteractPost(@Body UndoInteractRequest undoInteractRequest);
 
-    @GET("http://10.0.2.2:5005/api/post/interact/user")
+    @GET("api/post/interact/user")
     Call<List<Interact>> getInteractPostByUserId(@Query("id") String postId);
 }
