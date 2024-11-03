@@ -36,6 +36,11 @@ android {
                 "HOST",
                 "\"" + env.HOST.value + "\""
             )
+            buildConfigField(
+                "String",
+                "NEXT_PUBLIC_SIGNALR_URL",
+                "\"" + env.NEXT_PUBLIC_SIGNALR_URL.value + "\""
+            )
         }
         release {
             buildConfigField(
@@ -54,6 +59,11 @@ android {
                 "String",
                 "HOST",
                 "\"" + env.HOST.value + "\""
+            )
+            buildConfigField(
+                "String",
+                "NEXT_PUBLIC_SIGNALR_URL",
+                "\"" + env.NEXT_PUBLIC_SIGNALR_URL.value + "\""
             )
             isMinifyEnabled = false
             proguardFiles(
@@ -89,8 +99,10 @@ dependencies {
     implementation(libs.material.v1130alpha05)
     implementation(libs.retrofit)
     //implementation(libs.retrofit2.converter.gson)
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation (libs.squareup.converter.gson)
     implementation (libs.okhttp)
     implementation(libs.glide)
     implementation (libs.gson)
+    implementation (libs.signalr)
+    implementation (libs.slf4j.jdk14)
 }
