@@ -2,6 +2,7 @@
 using NotificationService.API.Middleware;
 using NotificationService.Application;
 using NotificationService.Infrastructure;
+using Serilog;
 using System.Text.Json.Serialization;
 
 namespace NotificationService.API;
@@ -11,10 +12,14 @@ public static class DependenciesInjection
 {
     public static WebApplicationBuilder AddAPIServices(this WebApplicationBuilder builder)
     {
-        builder.Logging.AddConsole();
-
         var services = builder.Services;
         var config = builder.Configuration;
+        var host = builder.Host;
+
+        host.UseSerilog((context, config) =>
+        {
+            config.ReadFrom.Configuration(context.Configuration);
+        });
 
         services.AddApplicationServices();
         services.AddInfrastructureServices(config);
@@ -35,7 +40,7 @@ public static class DependenciesInjection
             {
                 var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
                 var IdentityServerEndpoint = $"http://{IdentityDNS}";
-                Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
+                Log.Information("Connect to Identity Provider: " + IdentityServerEndpoint);
 
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
@@ -69,6 +74,8 @@ public static class DependenciesInjection
 
             await next(); // Call the next middleware
         });
+
+        app.UseSerilogRequestLogging();
 
         app.UseHttpsRedirection();
 

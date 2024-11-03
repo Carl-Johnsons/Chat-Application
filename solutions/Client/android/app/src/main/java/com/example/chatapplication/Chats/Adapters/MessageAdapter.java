@@ -12,11 +12,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapplication.Models.File;
 import com.example.chatapplication.utils.DateLibs;
 import com.example.chatapplication.Models.Message;
 import com.example.chatapplication.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_SENT = 1;
@@ -24,6 +30,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private Context context;
     private List<Message> messages;
+    public static Map<String, String> userIdAvtUrlMap = new HashMap<String, String>();
+    public static Map<String, String> userIdUserName = new HashMap<String, String>();
+
 
     public MessageAdapter(Context context, List<Message> messages) {
         this.context = context;
@@ -82,10 +91,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void bind(Message message) {
             messageText.setText(message.getContent());
             messageTime.setText(DateLibs.FormatDate("hh:mm", message.getCreatedAt()));
-            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("")){
+            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("[]")){
+                Gson gson = new Gson();
+                Type listType = new TypeToken<List<File>>() {}.getType();
+                List<File> fileList = gson.fromJson(message.attachedFilesURL, listType);
+
                 messageImage.setVisibility(View.VISIBLE);
                 Glide.with(messageImage.getContext())
-                        .load(message.getAttachedFilesURL())
+                        .load(fileList.get(0).getUrl())
                         .override(messageImage.getMaxWidth(), messageImage.getMaxHeight())
                         .fitCenter()
                         .into(messageImage);
@@ -119,16 +132,20 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Glide.with(avatar.getContext()).load(getUserAvatarURL(message.getSenderId())).circleCrop().into(avatar);
 
             if(message.isShowUsername()){
-                senderUsername.setText(getUsername(message.getSenderId()));
+                senderUsername.setText(getUserName(message.getSenderId()));
             }else {
                 senderUsername.setVisibility(View.GONE);
             }
 
-            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("")){
+            if(message.attachedFilesURL != null && !message.attachedFilesURL.equals("[]")){
+                Gson gson = new Gson();
+                Type listType = new TypeToken<List<File>>() {}.getType();
+                List<File> fileList = gson.fromJson(message.attachedFilesURL, listType);
+
                 messageImage.setVisibility(View.VISIBLE);
 
                 Glide.with(messageImage.getContext())
-                        .load(message.getAttachedFilesURL())
+                        .load(fileList.get(0).getUrl())
                         .override(messageImage.getMaxWidth(), messageImage.getMaxHeight())
                         .fitCenter()
                         .into(messageImage);
@@ -136,11 +153,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 messageImage.setVisibility(View.GONE);
             }
         }
+
         public String getUserAvatarURL(String userId){
-            return "https://cellphones.com.vn/sforum/wp-content/uploads/2024/01/avartar-anime-6.jpg";
+            return userIdAvtUrlMap.get(userId);
         }
-        public String getUsername(String userId){
-            return "John Nathan";
+
+        public String getUserName(String userId){
+            return userIdUserName.get(userId);
         }
     }
 }

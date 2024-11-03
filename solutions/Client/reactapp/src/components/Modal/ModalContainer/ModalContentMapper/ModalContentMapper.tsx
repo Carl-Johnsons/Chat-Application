@@ -73,10 +73,10 @@ const ModalContentMapper = (): ModalContent[] => {
     };
 
     const handleClickSendFriendRequest = async () => {
-      sendFriendRequestMutate({ receiverId: modalEntityId });
+      if (modalEntityId) sendFriendRequestMutate({ receiverId: modalEntityId });
     };
-    const handleClickBlockUser = (userId: string) => {
-      blockUserMutate({ userId });
+    const handleClickBlockUser = (userId: string | undefined) => {
+      userId && blockUserMutate({ userId });
     };
     const handleClickDisbandGroup = () => {
       disbandConversationMutate({ groupConversationId: activeConversationId });
@@ -86,7 +86,7 @@ const ModalContentMapper = (): ModalContent[] => {
       leaveGroupMutate({ groupConversationId: activeConversationId });
       handleHideModal();
     };
-    const handleClickMessaging = async (otherUserId: string) => {
+    const handleClickMessaging = async (otherUserId?: string) => {
       if (currentUserData?.id === otherUserId) {
         toast.error("Không thể cuộc trò chuyện với bản thân");
         return;
@@ -94,12 +94,16 @@ const ModalContentMapper = (): ModalContent[] => {
       setActiveNav(1);
       const { data: refetchConversationData } = await refetchConversation();
       if (!refetchConversationData) {
-        const newConversation = await createConversationMutate({ otherUserId });
-        if (!newConversation) {
-          toast.error("Lỗi khi tạo cuộc hội thoại! Hãy thử lại");
-          return;
+        if (otherUserId) {
+          const newConversation = await createConversationMutate({
+            otherUserId,
+          });
+          if (!newConversation) {
+            toast.error("Lỗi khi tạo cuộc hội thoại! Hãy thử lại");
+            return;
+          }
+          setActiveConversationId(newConversation.id);
         }
-        setActiveConversationId(newConversation.id);
         return;
       }
       setActiveConversationId(refetchConversationData.id);
@@ -162,6 +166,19 @@ const ModalContentMapper = (): ModalContent[] => {
                 onClickSendFriendRequest={handleClickSendFriendRequest}
                 onClickBlockUser={() => handleClickBlockUser(modalEntityId)}
                 onClickMessaging={() => handleClickMessaging(modalEntityId)}
+              />
+            ),
+          },
+        ];
+      case "BlockedUser":
+        return [
+          {
+            title: "Thông tin tài khoản",
+            ref: profileRef,
+            modalContent: (
+              <ProfileModalContent
+                type="BlockedUser"
+                modalEntityId={modalEntityId}
               />
             ),
           },
@@ -262,12 +279,21 @@ const ModalContentMapper = (): ModalContent[] => {
         return [];
     }
   }, [
-    modalEntityId,
     modalType,
-    sendFriendRequestMutate,
     setActiveModal,
-    currentMemberId,
+    sendFriendRequestMutate,
+    modalEntityId,
+    blockUserMutate,
+    disbandConversationMutate,
+    activeConversationId,
+    handleHideModal,
+    leaveGroupMutate,
     currentUserData?.id,
+    setActiveNav,
+    refetchConversation,
+    setActiveConversationId,
+    createConversationMutate,
+    currentMemberId,
   ]);
 
   return content;

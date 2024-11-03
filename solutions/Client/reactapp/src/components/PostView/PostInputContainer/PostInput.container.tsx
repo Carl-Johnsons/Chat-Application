@@ -28,7 +28,7 @@ const PostInputContainer = () => {
   const { mutate: updatePostMutate } = useUpdatePost();
 
   const { data: postData } = useGetPostByd(
-    { postId: modalEntityId },
+    { postId: modalEntityId! },
     { enabled: !!modalEntityId }
   );
 
@@ -101,12 +101,14 @@ const PostInputContainer = () => {
   };
 
   const handleUpdatePost = useCallback(() => {
-    updatePostMutate({
-      postId: modalEntityId,
-      tagIds: tags.flatMap((t) => t.id),
-      content: editorRef.current?.getContent() ?? "",
-      active: true,
-    });
+    if (modalEntityId) {
+      updatePostMutate({
+        postId: modalEntityId,
+        tagIds: tags.flatMap((t) => t.id),
+        content: editorRef.current?.getContent() ?? "",
+        active: true,
+      });
+    }
     handleHideModal();
   }, [handleHideModal, modalEntityId, tags, updatePostMutate]);
 

@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useGetCurrentUser } from ".";
 import { AxiosProps, User } from "@/models";
 import { useAxios } from "@/hooks";
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 
 const QUERY_KEY = "blockList";
 
@@ -10,7 +11,7 @@ interface Props extends AxiosProps {}
 const getBlockUser = async ({
   axiosInstance,
 }: Props): Promise<User[] | null> => {
-  const url = "http://localhost:5001/api/users/block";
+  const url = `${IDENTITY_SERVER_URL}/api/users/block`;
   const response = await axiosInstance.get(url);  
   const users: User[] = response.data;
   return users;  

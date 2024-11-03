@@ -13,6 +13,8 @@ public class Notification : BaseAuditableEntity
     public Guid OwnerId { get; set; }
 
     public string Url { get; set; } = null!;
+    public Guid ReceiverId { get; set; }
+    public bool Read { get; set; } = false;
 
     public virtual NotificationAction Action { get; set; } = null!;
 

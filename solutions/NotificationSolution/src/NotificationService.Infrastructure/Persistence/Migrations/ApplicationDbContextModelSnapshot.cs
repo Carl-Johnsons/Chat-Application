@@ -44,6 +44,12 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -94,25 +100,6 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                     b.ToTable("NotificationCategories");
                 });
 
-            modelBuilder.Entity("NotificationService.Domain.Entities.NotificationReceiver", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("NotificationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ReceiverId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NotificationId");
-
-                    b.ToTable("NotificationReceivers");
-                });
-
             modelBuilder.Entity("NotificationService.Domain.Entities.Notification", b =>
                 {
                     b.HasOne("NotificationService.Domain.Entities.NotificationAction", "Action")
@@ -130,17 +117,6 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                     b.Navigation("Action");
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("NotificationService.Domain.Entities.NotificationReceiver", b =>
-                {
-                    b.HasOne("NotificationService.Domain.Entities.Notification", "Notification")
-                        .WithMany()
-                        .HasForeignKey("NotificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Notification");
                 });
 #pragma warning restore 612, 618
         }

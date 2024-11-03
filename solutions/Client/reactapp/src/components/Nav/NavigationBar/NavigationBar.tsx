@@ -39,7 +39,7 @@ const NavigationBar = () => {
       {
         dataContent: "info-modal",
         href: "#",
-        image: currentUser?.avatarUrl || images.userIcon.src,
+        image: currentUser?.avatarUrl || images.defaultAvatarImg.src,
         imageAlt: "User Icon",
         navLinkClassName: cx("nav-avatar"),
       },
@@ -61,7 +61,7 @@ const NavigationBar = () => {
       {
         dataContent: "info-modal",
         href: "#",
-        image: currentUser?.avatarUrl || images.userIcon.src,
+        image: currentUser?.avatarUrl || images.defaultAvatarImg.src,
         imageAlt: "User Icon",
         navLinkClassName: cx("nav-avatar"),
       },

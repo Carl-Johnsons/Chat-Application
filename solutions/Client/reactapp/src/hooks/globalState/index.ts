@@ -2,7 +2,6 @@ import { ConversationType, ModalType, User } from "../../models";
 import { createGlobalState } from "react-hooks-global-state";
 import { Instance, SignalData } from "simple-peer";
 
-
 const initialState = {
   // Number
   activeContactType: 0,
@@ -11,7 +10,7 @@ const initialState = {
   activeModal: 0,
   // string
   activeConversationId: "",
-  modalEntityId: null as unknown as string,
+  modalEntityId: null as unknown as string | undefined,
   userTypingId: null as unknown as string | null,
   userIdsOnlineList: [] as string[],
   // User
@@ -27,8 +26,8 @@ const initialState = {
   // ModalType
   modalType: null as unknown as ModalType,
   //Peer
-  userPeer: null as unknown as Instance,
-  signalData: null as unknown as SignalData,
+  userPeer: null as unknown as Instance | null,
+  signalData: null as unknown as SignalData | null,
   // streamData: null as unknown as MediaStream
 };
 

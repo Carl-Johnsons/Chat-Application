@@ -17,6 +17,15 @@ internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
+        DotNetEnv.Env.Load(".env");
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+        {
+            DotNetEnv.Env.Load(".env.production");
+        }
+        var reactUrl = Environment.GetEnvironmentVariable("REACT_URL") ?? "http://localhost:3000";
+        var issuer = Environment.GetEnvironmentVariable("ISSUER") ?? "http://localhost:5001";
+
+
         var services = builder.Services;
 
         services.AddRazorPages()
@@ -78,6 +87,8 @@ internal static class HostingExtensions
         services
             .AddIdentityServer(options =>
             {
+                options.IssuerUri = issuer;
+
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
@@ -123,9 +134,10 @@ internal static class HostingExtensions
 
         services.AddLocalApiAuthentication();
 
+
         services.AddCors(o => o.AddPolicy("AllowSpecificOrigins", builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://api-gateway", "http://localhost:5000")
+            builder.WithOrigins(reactUrl, "http://api-gateway", "http://localhost:5000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();

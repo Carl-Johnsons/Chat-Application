@@ -13,4 +13,5 @@ public class CreateNotificationEvent
     public Guid[] ActorIds { get; init; } = [];
     public Guid OwnerId { get; set; }
     public string Url { get; set; } = null!;
+    public Guid ReceiverId { get; set; }
 }

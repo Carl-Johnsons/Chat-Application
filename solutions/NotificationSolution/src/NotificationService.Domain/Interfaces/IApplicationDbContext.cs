@@ -10,8 +10,4 @@ public interface IApplicationDbContext : IDbContext
     DbSet<NotificationAction> NotificationActions { get; set; }
 
     DbSet<NotificationCategory> NotificationCategories { get; set; } 
-
-    DbSet<NotificationReceiver> NotificationReceivers { get; set; }
-
-
 }

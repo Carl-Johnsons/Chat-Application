@@ -27,6 +27,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         var pwd = DotNetEnv.Env.GetString("SA_PASSWORD") ?? "NOT FOUND";
 
         var connectionString = $"Server={server};Database={db};User Id=sa;Password='{pwd}';TrustServerCertificate=true;MultipleActiveResultSets=True";
+        
         Console.WriteLine(connectionString);
         optionsBuilder.UseSqlServer(connectionString);
     }

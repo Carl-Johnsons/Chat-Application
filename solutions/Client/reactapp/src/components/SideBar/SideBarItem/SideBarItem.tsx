@@ -116,14 +116,14 @@ const SideBarItem = (variant: Variants) => {
     enabled: !!otherUserId,
   });
 
-  const otherUserAvatar = otherUserData?.avatarUrl ?? images.userIcon.src;
+  const otherUserAvatar = otherUserData?.avatarUrl || images.userIcon.src;
   const otherUserName = otherUserData?.name ?? "";
   const entityAvatar =
     (isConversation
       ? otherUserAvatar
       : isGroupConversation
       ? (conversation as GroupConversation)?.imageURL
-      : image) ?? images.userIcon.src;
+      : image) || images.userIcon.src;
 
   const entityName = isConversation
     ? otherUserName

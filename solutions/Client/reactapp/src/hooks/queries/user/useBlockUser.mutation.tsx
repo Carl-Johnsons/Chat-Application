@@ -1,3 +1,4 @@
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 import { useAxios } from "@/hooks";
 import { AxiosProps } from "@/models";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -10,7 +11,7 @@ const blockUser = async ({ userId, axiosInstance }: Props): Promise<void> => {
   const data = {
     blockUserId: userId,
   };
-  const url = "http://localhost:5001/api/users/block"; 
+  const url = `${IDENTITY_SERVER_URL}/api/users/block`;
   const response = await axiosInstance.post(url, data);
   return response.data;
 };

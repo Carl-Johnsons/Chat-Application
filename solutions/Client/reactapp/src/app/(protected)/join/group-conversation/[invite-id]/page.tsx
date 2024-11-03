@@ -1,17 +1,18 @@
 "use client";
+import { useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import style from "./page.module.scss";
 import classNames from "classnames/bind";
-import Avatar from "@/components/shared/Avatar";
-import images from "@/assets";
+
 import {
   useGetGroupInvitationByInviteId,
   useJoinGroupConversation,
 } from "@/hooks/queries/conversation";
 import { formatRelativeFutureTime } from "utils/DateUtils";
-import AppButton from "@/components/shared/AppButton";
 import { roboto } from "app/fonts";
-import { useCallback } from "react";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import images from "@/assets";
+import style from "./page.module.scss";
 
 const cx = classNames.bind(style);
 
@@ -29,7 +30,7 @@ const JoinGroupConversationPage = () => {
 
   const group = groupInvitationData?.groupConversation;
   const isExpired = groupInvitationData?.isExpired ?? false;
-  const avatar = group?.imageURL ?? images.defaultAvatarImg.src;
+  const avatar = group?.imageURL || images.defaultAvatarImg.src;
   const groupName = group?.name ?? "Loading..";
   const formattedExpireTime = groupInvitationData?.expiresAt
     ? formatRelativeFutureTime(groupInvitationData?.expiresAt)
@@ -44,11 +45,15 @@ const JoinGroupConversationPage = () => {
       groupId: groupInvitationData?.groupConversation.id,
       invitationId: groupInvitationData?.id,
     });
-  }, [groupInvitationData]);
+  }, [
+    groupInvitationData?.groupConversation,
+    groupInvitationData?.id,
+    joinGroupConversationMutate,
+  ]);
 
   const handleClickBackToHomePage = useCallback(() => {
     router.push("/");
-  }, []);
+  }, [router]);
 
   return (
     <div

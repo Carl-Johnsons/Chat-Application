@@ -1,5 +1,7 @@
 package com.example.chatapplication;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -13,19 +15,24 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.chatapplication.Chats.ConversationFragment;
+import com.example.chatapplication.Contexts.ChatHubContext;
+import com.example.chatapplication.DTOs.CurrentUserResponseDTO;
 import com.example.chatapplication.Notification.NotiFragment;
 import com.example.chatapplication.auth.AuthStateManager;
 import com.example.chatapplication.databinding.ActivityMainBinding;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "Main";
     ActivityMainBinding binding;
-
+    private CurrentUserResponseDTO currentUser;
     private final ConversationFragment CHAT_FRAGMENT = new ConversationFragment();
     private final ContactFragment CONTACT_FRAGMENT = new ContactFragment();
     private final PostFragment POST_FRAGMENT = new PostFragment();
     private final NotiFragment NOTI_FRAGMENT = new NotiFragment();
     private AuthStateManager authStateManager;
+
+    private ChatHubContext chatHubContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,22 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+
+        //Innitialize current user
+        SharedPreferences sharedPreferences = getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+        String userJson = sharedPreferences.getString("CurrentUser", null);
+        if (userJson != null) {
+            Gson gson = new Gson();
+            currentUser = gson.fromJson(userJson, CurrentUserResponseDTO.class);
+            System.out.println("start signalR connection");
+            chatHubContext = ChatHubContext.getInstance(BuildConfig.NEXT_PUBLIC_SIGNALR_URL+"?userId="+currentUser.getSub(), this);
+            chatHubContext.startConnection();
+        }
+
+
+        // Sử dụng signalRClient
+
+
 
         // BottomNavigationView navigation = (BottomNavigationView)
         // findViewById(R.id.bottom_nav_bar);
@@ -85,4 +108,9 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("Main activity destroit");
+    }
 }

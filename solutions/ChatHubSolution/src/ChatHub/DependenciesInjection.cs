@@ -4,17 +4,28 @@ using Contract.Event.ConversationEvent;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace ChatHub;
 
 public static class DependenciesInjection
 {
-
     public static WebApplicationBuilder AddChatHubServices(this WebApplicationBuilder builder)
     {
+        DotNetEnv.Env.Load();
+
+        var reactUrl = Environment.GetEnvironmentVariable("REACT_URL") ?? "http://localhost:3000";
+
         var services = builder.Services;
+        var host = builder.Host;
+
+        host.UseSerilog((context, config) =>
+        {
+            config.ReadFrom.Configuration(context.Configuration);
+        });
 
         services.AddHttpContextAccessor();
 
@@ -27,7 +38,7 @@ public static class DependenciesInjection
          {
              var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
              var IdentityServerEndpoint = $"http://{IdentityDNS}";
-             Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
+             Log.Information("Connect to Identity Provider: " + IdentityServerEndpoint);
              options.RequireHttpsMetadata = false;
              // Clear default Microsoft's JWT claim mapping
              // Ref: https://stackoverflow.com/questions/70766577/asp-net-core-jwt-token-is-transformed-after-authentication
@@ -37,7 +48,15 @@ public static class DependenciesInjection
              {
                  ValidateAudience = false,
                  ValidateIssuer = false,
-                 RoleClaimType = "role" // map the role claim to jwt
+                 RoleClaimType = "role", // map the role claim to jwt
+
+                 ValidateIssuerSigningKey = false,
+                 SignatureValidator = delegate (string token, TokenValidationParameters parameters)
+                 {
+                     var jwt = new JsonWebToken(token);
+
+                     return jwt;
+                 },
              };
              // For development only
              options.IncludeErrorDetails = true;
@@ -59,6 +78,8 @@ public static class DependenciesInjection
                  OnMessageReceived = context =>
                  {
                      var accessToken = context.Request.Query["access_token"];
+                     Console.WriteLine("------------------------");
+                     Console.WriteLine(accessToken);
                      // If the request is for our hub...
                      var path = context.HttpContext.Request.Path;
                      if (!string.IsNullOrEmpty(accessToken) &&
@@ -105,15 +126,16 @@ public static class DependenciesInjection
         });
 
 
-        services.AddCors(option =>
+        services.AddCors(options =>
         {
-            option.AddPolicy(name: "AllowSPAClientOrigin", builder =>
-            {
-                builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-            });
+            options.AddPolicy("AllowSPAClientOrigin",
+                builder =>
+                {
+                    builder.WithOrigins(reactUrl)
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
         });
         return builder;
     }
@@ -121,10 +143,11 @@ public static class DependenciesInjection
     public static WebApplication UseChatHubService(this WebApplication app)
     {
         // Set endpoint for a chat hub
+        app.UseSerilogRequestLogging();
+        app.UseCors("AllowSPAClientOrigin");
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapHub<ChatHubServer>("/chat-hub");
-        app.UseCors("AllowSPAClientOrigin");
         return app;
     }
 }

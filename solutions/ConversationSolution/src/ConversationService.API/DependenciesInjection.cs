@@ -4,6 +4,7 @@ using ConversationService.Infrastructure;
 using ConversationService.Application;
 using ConversationService.Domain.Interfaces;
 using ConversationService.API.Middleware;
+using Serilog;
 
 namespace ConversationService.API;
 
@@ -12,10 +13,14 @@ public static class DependenciesInjection
 {
     public static WebApplicationBuilder AddAPIServices(this WebApplicationBuilder builder)
     {
-        builder.Logging.AddConsole();
-
         var services = builder.Services;
         var config = builder.Configuration;
+        var host = builder.Host;
+
+        host.UseSerilog((context, config) =>
+        {
+            config.ReadFrom.Configuration(context.Configuration);
+        });
 
         services.AddApplicationServices();
         services.AddInfrastructureServices(config);
@@ -69,6 +74,8 @@ public static class DependenciesInjection
 
             await next(); // Call the next middleware
         });
+
+        app.UseSerilogRequestLogging();
 
         app.UseHttpsRedirection();
 
