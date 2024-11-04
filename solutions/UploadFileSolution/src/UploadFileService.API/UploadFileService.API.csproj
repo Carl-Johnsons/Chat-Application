@@ -16,6 +16,8 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 		<PackageReference Include="DotNetEnv" Version="3.0.0" />
 		<PackageReference Include="MediatR" Version="12.2.0" />
+		<PackageReference Include="Serilog" Version="4.1.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -24,9 +26,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="Contract">
-	    <HintPath>..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
-	  </Reference>
+		<Reference Include="Contract">
+			<HintPath Condition="Exists('..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll')">..\..\..\Contract\Contract\bin\Release\net8.0\Contract.dll</HintPath>
+			<HintPath Condition="Exists('..\Contract\Contract.dll')">..\Contract\Contract.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 </Project>

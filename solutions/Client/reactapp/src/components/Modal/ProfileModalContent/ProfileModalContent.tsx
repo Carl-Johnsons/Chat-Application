@@ -25,7 +25,7 @@ import { AppDivider } from "@/components/shared";
 const cx = classNames.bind(style);
 
 type BaseVariant = {
-  modalEntityId: string;
+  modalEntityId: string | undefined;
 };
 
 type PersonalVariant = BaseVariant & {
@@ -56,11 +56,16 @@ type GroupVariant = BaseVariant & {
   onClickLeaveGroup?: () => void;
 };
 
+type BlockedUserVariant = BaseVariant & {
+  type: "BlockedUser";
+};
+
 type Variants =
   | PersonalVariant
   | FriendVariant
   | StrangerVariant
-  | GroupVariant;
+  | GroupVariant
+  | BlockedUserVariant;
 
 const ProfileModalContent = (variant: Variants) => {
   const { type } = variant;
@@ -88,6 +93,7 @@ const ProfileModalContent = (variant: Variants) => {
   const isFriend = type === "Friend";
   const isStranger = type === "Stranger";
   const isGroup = type === "Group";
+  const isBlockedUser = type === "BlockedUser";
 
   const { data: currentUserData } = useGetCurrentUser();
 
@@ -100,6 +106,8 @@ const ProfileModalContent = (variant: Variants) => {
   } else if (isStranger) {
     ({ onClickSendFriendRequest, onClickMessaging, onClickBlockUser } =
       variant);
+  } else if (isBlockedUser) {
+    /* empty */
   } else {
     ({
       onClickMessaging,
@@ -108,7 +116,7 @@ const ProfileModalContent = (variant: Variants) => {
       onClickLeaveGroup,
     } = variant);
   }
-  const { data: otherUserData } = useGetUser(modalEntityId, {
+  const { data: otherUserData } = useGetUser(modalEntityId!, {
     enabled: (isFriend || isStranger) && !!modalEntityId,
   });
   const { data: conversationData } = useGetConversation(
@@ -121,7 +129,7 @@ const ProfileModalContent = (variant: Variants) => {
   );
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
-    { conversationId: modalEntityId, other: false },
+    { conversationId: modalEntityId!, other: false },
     {
       enabled: isGroup && !!modalEntityId,
     }
@@ -142,9 +150,10 @@ const ProfileModalContent = (variant: Variants) => {
   const gender = userData?.gender;
   const dob = convertISODateToVietnameseFormat(userData?.dob);
   const phone = userData?.phoneNumber;
-  const avatar = isGroup
-    ? (conversationData as GroupConversation)?.imageURL
-    : userData?.avatarUrl;
+  const avatar =
+    (isGroup
+      ? (conversationData as GroupConversation)?.imageURL
+      : userData?.avatarUrl) || images.defaultAvatarImg.src;
   const background = userData?.backgroundUrl;
 
   const userRole = conversationUsersData?.filter(
@@ -220,7 +229,7 @@ const ProfileModalContent = (variant: Variants) => {
                 !isGroup && "pt-5"
               )}
             >
-              {!isGroup && (
+              {!isGroup && !isBlockedUser && (
                 <AppButton
                   variant="app-btn-primary"
                   className={cx("info-button", "fw-medium", "flex-grow-1")}
@@ -229,14 +238,15 @@ const ProfileModalContent = (variant: Variants) => {
                   {isFriend ? "Gọi điện" : "Kết bạn"}
                 </AppButton>
               )}
-
-              <AppButton
-                variant="app-btn-tertiary"
-                className={cx("info-button", "fw-medium", "flex-grow-1")}
-                onClick={onClickMessaging}
-              >
-                Nhắn tin
-              </AppButton>
+              {!isBlockedUser && (
+                <AppButton
+                  variant="app-btn-tertiary"
+                  className={cx("info-button", "fw-medium", "flex-grow-1")}
+                  onClick={onClickMessaging}
+                >
+                  Nhắn tin
+                </AppButton>
+              )}
             </div>
 
             <div
@@ -289,9 +299,6 @@ const ProfileModalContent = (variant: Variants) => {
           <div className={cx("personal-information-row")}>
             <div className={cx("row-name")}>Điện thoại</div>
             <div className={cx("row-detail")}>{phone}</div>
-          </div>
-          <div className={cx("note")}>
-            Chỉ bạn bè có lưu số của bạn trong danh bạ máy xem được số này
           </div>
         </div>
       )}

@@ -1,9 +1,7 @@
-import { useContext, useRef } from "react";
-
+import { useRef } from "react";
 import { FriendRequest } from "@/models";
-
-import { CallDTO, UserTypingNotificationDTO } from "@/models/DTOs";
-import { ChatHubContext } from "contexts/ChatHubContext";
+import { SendCallSignalDTO, UserTypingNotificationDTO } from "@/models/DTOs";
+import { useSignalR } from "./useSignalR";
 
 interface InvokeSignalREvent {
   name: string;
@@ -11,12 +9,7 @@ interface InvokeSignalREvent {
 }
 
 const useSignalREvents = () => {
-  // global state
-  const context = useContext(ChatHubContext);
-  if (!context) {
-    throw new Error("useSignalREvents must be used within ChatHubProvider");
-  }
-  const { connection } = context;
+  const { connection } = useSignalR();
 
   // ref
   const invokeActionRef = useRef<(e: InvokeSignalREvent) => void>(() => {});
@@ -60,10 +53,20 @@ export function signalRDisableNotifyUserTyping(
     args: [userTypingNotificationDTO],
   };
 }
-export function signalRCall(callDTO: CallDTO) {
+
+export function signalRSendCallSignal(sendCallSignalDTO: SendCallSignalDTO) {
+  console.log("call signalR OKKKK:", sendCallSignalDTO);
   return {
-    name: "Call",
-    args: [callDTO],
+    name: "SendCallSignal",
+    args: [sendCallSignalDTO],
   };
 }
+
+export function signalRAcceptCall(sendCallSignalDTO: SendCallSignalDTO) {
+  return {
+    name: "AcceptCall",
+    args: [sendCallSignalDTO],
+  };
+}
+
 export { useSignalREvents };

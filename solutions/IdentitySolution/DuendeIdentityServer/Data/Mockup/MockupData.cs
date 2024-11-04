@@ -20,7 +20,7 @@ public class MockupData
     {
         foreach (var user in ApplicationUserData.Data)
         {
-            var userResult = _userManager.FindByNameAsync(user.UserName).Result;
+            var userResult = _userManager.FindByNameAsync(user.UserName!).Result;
             if (userResult == null)
             {
                 var result = _userManager.CreateAsync(user, "Pass123$").Result;

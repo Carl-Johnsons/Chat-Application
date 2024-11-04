@@ -1,5 +1,5 @@
 #!/bin/bash
-server="sql-server"
+server="$HOST"
 username="sa"
 password="$SA_PASSWORD" 
 script_file="create_database.sql"
@@ -30,13 +30,18 @@ BEGIN
 END
 EOF
 
-/opt/mssql-tools/bin/sqlcmd -S $server -U $username -P $password -i $script_file
-# Check if the command was successful
-if [ $? -eq 0 ]; then
-    echo "Database creation '$identityDB', '$messageDB', '$fileDB', '$postDB' script executed successfully!"
-else
-    echo "Error executing database creation script"
-fi
+while true; do
+    echo "Login to '$server' with user: '$username' and password: '$password'"
+    /opt/mssql-tools18/bin/sqlcmd -C -S '$server' -U $username -P $password -i $script_file
+    
+    if [ $? -eq 0 ]; then
+        echo "Database creation '$identityDB', '$messageDB', '$fileDB', '$postDB' script executed successfully!"
+        break 
+    else
+        echo "Error executing database creation script. Retrying in 5 seconds..."
+        sleep 5
+    fi
+done
 
 # Remove the script file
 rm $script_file

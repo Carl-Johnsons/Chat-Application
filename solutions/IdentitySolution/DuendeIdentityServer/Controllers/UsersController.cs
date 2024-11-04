@@ -17,6 +17,8 @@ using Sprache;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
 using static Duende.IdentityServer.IdentityServerConstants;
+using Contract.Event.NotificationEvent;
+
 
 namespace DuendeIdentityServer.Controllers;
 
@@ -167,6 +169,15 @@ public class UsersController : ControllerBase
             {
                 user.AvatarUrl = response.Message.Url;
             }
+
+            await _publishEndpoint.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+            {
+                ActorIds = [Guid.Parse(subjectId!)],
+                ActionCode = "UPDATE_PROFILE",
+                CategoryCode = "USER",
+                OwnerId = Guid.Parse(subjectId!),
+                Url = ""
+            });
         };
         if (updateUserDTO.BackgroundFile != null)
         {
@@ -193,6 +204,8 @@ public class UsersController : ControllerBase
 
         _context.Users.Update(user);
         _context.SaveChanges();
+
+        
 
         return Ok();
     }

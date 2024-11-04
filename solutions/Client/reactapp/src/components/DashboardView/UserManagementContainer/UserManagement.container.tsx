@@ -35,7 +35,7 @@ const UserManagementContainer = () => {
     refetch: refetchUL,
     isFetchingNextPage: isFetchingNextUL,
   } = useSearchInfiniteUser({
-    searchValue: debouncedSearchValue,
+    searchValue: debouncedSearchValue as string,
     limit: 8,
   });
 

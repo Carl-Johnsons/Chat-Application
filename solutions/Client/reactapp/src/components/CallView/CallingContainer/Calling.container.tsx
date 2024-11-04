@@ -1,23 +1,31 @@
-import React from "react";
-import style from "./Calling.container.module.scss";
-import classNames from "classnames/bind";
-import { useGlobalState, useModal } from "@/hooks";
 import { useGetUser } from "@/hooks/queries/user";
-import Avatar from "@/components/shared/Avatar";
-import images from "@/assets";
+import { useGlobalState, useModal } from "@/hooks";
+import { useRouter } from "next/navigation";
 import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import classNames from "classnames/bind";
+import images from "@/assets";
+import style from "./Calling.container.module.scss";
 
 const cx = classNames.bind(style);
 
 const CallingContainer = () => {
   const [entityId] = useGlobalState("modalEntityId");
-  //hook
-  const { data: caller } = useGetUser(entityId, {
+  const [activeConversationId] = useGlobalState("activeConversationId");
+  const router = useRouter();
+  const { data: caller } = useGetUser(entityId!, {
     enabled: !!entityId,
   });
   const { handleHideModal } = useModal();
 
   const handleDeclineCall = () => {
+    handleHideModal();
+  };
+
+  const handleAcceptCall = () => {
+    const url =
+      "/call/1?activeConversationId=" + encodeURI(activeConversationId);
+    router.push(url);
     handleHideModal();
   };
 
@@ -34,6 +42,7 @@ const CallingContainer = () => {
         <AppButton
           className={cx("p-2", "rounded-circle")}
           variant="app-btn-phone-call"
+          onClick={handleAcceptCall}
         >
           <Avatar
             avatarClassName={cx("rounded-circle")}

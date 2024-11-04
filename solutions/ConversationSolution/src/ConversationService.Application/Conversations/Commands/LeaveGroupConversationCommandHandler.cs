@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Contract.Event.NotificationEvent;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConversationService.Application.Conversations.Commands;
 
@@ -13,11 +14,13 @@ public class LeaveGroupConversationCommandHandler : IRequestHandler<LeaveGroupCo
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceBus _serviceBus;
 
-    public LeaveGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public LeaveGroupConversationCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IServiceBus serviceBus)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _serviceBus = serviceBus;
     }
 
     public async Task<Result> Handle(LeaveGroupConversationCommand request, CancellationToken cancellationToken)
@@ -35,6 +38,14 @@ public class LeaveGroupConversationCommandHandler : IRequestHandler<LeaveGroupCo
         _context.ConversationUsers.Remove(conversationUser);
         
         await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+        await _serviceBus.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActionCode = "LEAVE_CONVERSATION",
+            ActorIds = [conversationUser.UserId],
+            CategoryCode = "GROUP",
+            Url = ""
+        });
 
         return Result.Success();
     }

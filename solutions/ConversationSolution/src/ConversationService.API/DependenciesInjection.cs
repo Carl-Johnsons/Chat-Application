@@ -4,6 +4,7 @@ using ConversationService.Infrastructure;
 using ConversationService.Application;
 using ConversationService.Domain.Interfaces;
 using ConversationService.API.Middleware;
+using Serilog;
 
 namespace ConversationService.API;
 
@@ -12,10 +13,14 @@ public static class DependenciesInjection
 {
     public static WebApplicationBuilder AddAPIServices(this WebApplicationBuilder builder)
     {
-        builder.Logging.AddConsole();
-
         var services = builder.Services;
         var config = builder.Configuration;
+        var host = builder.Host;
+
+        host.UseSerilog((context, config) =>
+        {
+            config.ReadFrom.Configuration(context.Configuration);
+        });
 
         services.AddApplicationServices();
         services.AddInfrastructureServices(config);
@@ -30,22 +35,25 @@ public static class DependenciesInjection
 
         services.AddHttpContextAccessor();
 
-
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                var IdentityServerEndpoint = "http://identity-api";
+                var IdentityDNS = (Environment.GetEnvironmentVariable("IDENTITY_SERVER_HOST") ?? "localhost:5001").Replace("\"", "");
+                var IdentityServerEndpoint = $"http://{IdentityDNS}";
+                Console.WriteLine("Connect to Identity Provider: " + IdentityServerEndpoint);
+
                 options.Authority = IdentityServerEndpoint;
                 options.RequireHttpsMetadata = false;
                 // Clear default Microsoft's JWT claim mapping
                 // Ref: https://stackoverflow.com/questions/70766577/asp-net-core-jwt-token-is-transformed-after-authentication
                 options.MapInboundClaims = false;
 
+                options.TokenValidationParameters.ValidTypes = ["at+jwt"];
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = false,
                     ValidateAudience = false,
-                    ValidateIssuer = false
+                    ValidateIssuer = false,
                 };
                 // For development only
                 options.IncludeErrorDetails = true;
@@ -67,6 +75,8 @@ public static class DependenciesInjection
             await next(); // Call the next middleware
         });
 
+        app.UseSerilogRequestLogging();
+
         app.UseHttpsRedirection();
 
         app.MapControllers();
@@ -77,9 +87,15 @@ public static class DependenciesInjection
 
         app.UseAuthorization();
 
-        var signalRService = app.Services.GetService<ISignalRService>();
-        await signalRService!.StartConnectionAsync();
-
+        try
+        {
+            var signalRService = app.Services.GetService<ISignalRService>();
+            await signalRService!.StartConnectionAsync();
+        }
+        catch (Exception ex)
+        {
+            app.Logger.LogError($"Error connecting to SignalR: {ex.Message}");
+        }
         return app;
     }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AppButton from "@/components/shared/AppButton";
 import Avatar from "@/components/shared/Avatar";
 
@@ -37,7 +37,7 @@ const SearchBar = () => {
     isFetchingNextPage: isFetchingNextUL,
   } = useSearchInfiniteUser(
     {
-      searchValue: debouncedSearchValue,
+      searchValue: debouncedSearchValue as string,
       limit: 10,
     },
     {}
@@ -47,31 +47,24 @@ const SearchBar = () => {
     setDebouncedSearchValue(inputValue);
   }, [inputValue, setDebouncedSearchValue]);
 
-  const users =
-    infiniteUL?.pages?.flatMap((query) => query?.data?.paginatedData) ?? [];
+  const users = useMemo(
+    () =>
+      infiniteUL?.pages?.flatMap((query) => query?.data?.paginatedData) ?? [],
+    [infiniteUL?.pages]
+  );
 
   useEffect(() => {
     if (isFetchingNextUL) {
       return;
     }
     setSearchResult(users);
-  }, [infiniteUL, isFetchingNextUL, setSearchResult]);
+  }, [infiniteUL, isFetchingNextUL, setSearchResult, users]);
 
   useEffect(() => {
     refetchUL();
-  }, [debouncedSearchValue]);
+  }, [debouncedSearchValue, refetchUL]);
 
   const searchButtons: SearchButtonProps[] = [
-    {
-      className: buttonClass,
-      children: (
-        <Avatar
-          variant="avatar-img-16px"
-          src={images.addUserIcon.src}
-          alt="add user icon"
-        />
-      ),
-    },
     {
       className: buttonClass,
       children: (
@@ -95,10 +88,10 @@ const SearchBar = () => {
   };
   const handleClick = (index: number) => {
     switch (index) {
-      case 1:
+      case 0:
         handleShowModal({ modalType: "CreateGroup" });
         break;
-      case 2:
+      case 1:
         setButtonClass(cx("btn-add-friend", "me-1"));
         setCloseBtnClass(cx("btn-add-friend", "me-1", "d-none"));
         setIsSearchBarFocus(false);

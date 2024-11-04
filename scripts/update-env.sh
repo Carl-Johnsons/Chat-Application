@@ -6,6 +6,7 @@ project_root=$(pwd)
 # push global env file
 echo -e "\e[95mPushing global env file ....\e[0m"
 npx dotenv-vault@latest push
+npx dotenv-vault@latest push production
 
 # push API Gateway env file
 echo -e "\e[95mPushing api gateway env file ....\e[0m"
@@ -40,6 +41,11 @@ cd "$project_root"
 # push React App env file
 echo -e "\e[95mPushing react-app env file ....\e[0m"
 (cd ./solutions/Client/reactapp && npx dotenv-vault@latest push)
+cd "$project_root"
+
+# push android env file
+echo -e "\e[95mPushing android env file ....\e[0m"
+(cd ./solutions/Client/android && npx dotenv-vault@latest push)
 cd "$project_root"
 
 

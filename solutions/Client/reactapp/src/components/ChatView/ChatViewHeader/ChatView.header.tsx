@@ -3,12 +3,7 @@ import { memo, useCallback, useState } from "react";
 import Avatar from "@/components/shared/Avatar";
 import AppButton from "@/components/shared/AppButton";
 
-import {
-  signalRCall,
-  useGlobalState,
-  useModal,
-  useSignalREvents,
-} from "@/hooks";
+import { useGlobalState, useModal, useSignalREvents, useWindow } from "@/hooks";
 
 import { GroupConversation, ModalType } from "@/models";
 
@@ -23,6 +18,8 @@ import { useGetUser } from "@/hooks/queries/user";
 import UserStatus from "../UserStatus";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const cx = classNames.bind(style);
 
@@ -31,9 +28,13 @@ const ChatViewHeader = () => {
   const [conversationType] = useGlobalState("conversationType");
   const [activeConversationId] = useGlobalState("activeConversationId");
   const [isCalling, setIsCalling] = useState(false);
+
+  const router = useRouter();
+
   // hook
-  const { invokeAction } = useSignalREvents();
   const { handleShowModal } = useModal();
+  const { openCallWindow } = useWindow();
+
   const isGroup = conversationType === "GROUP";
 
   const { data: conversationUsersData } = useGetMemberListByConversationId(
@@ -44,12 +45,10 @@ const ChatViewHeader = () => {
   );
   const handleToggleAside = () => setShowAside(!showAside);
   const handleCall = useCallback(() => {
-    invokeAction(
-      signalRCall({
-        targetConversationId: activeConversationId,
-      })
-    );
-  }, [activeConversationId, invokeAction]);
+    var url = "call/1/?activeConversationId=" + encodeURI(activeConversationId);
+    router.push(url);
+    //openCallWindow("call/1", activeConversationId);
+  }, [activeConversationId]);
 
   const handleClickAvatar = useCallback(() => {
     const modalType: ModalType =
@@ -94,12 +93,12 @@ const ChatViewHeader = () => {
   const avatar =
     (isGroup
       ? (conversationData as GroupConversation)?.imageURL
-      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+      : otherUserData?.avatarUrl) || images.userIcon.src;
   const name =
     (isGroup
       ? (conversationData as GroupConversation)?.name
       : otherUserData?.name) ?? "";
-      
+
   if (!activeConversationId) {
     return;
   }

@@ -3,6 +3,7 @@ import { useGetCurrentUser } from ".";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FriendRequestResponseDTO } from "models/DTOs/FriendRequest.response.dto";
 import { useAxios } from "@/hooks";
+import { IDENTITY_SERVER_URL } from "@/constants/url.constant";
 
 const QUERY_KEY = "friendRequestList";
 
@@ -10,7 +11,7 @@ interface Props extends AxiosProps {}
 const getFriendRequestList = async ({
   axiosInstance,
 }: Props): Promise<FriendRequestResponseDTO[] | null> => {
-  const url = "http://localhost:5001/api/users/friend-request";
+  const url = `${IDENTITY_SERVER_URL}/api/users/friend-request`;
   const response = await axiosInstance.get(url);
   return response.data;
 };

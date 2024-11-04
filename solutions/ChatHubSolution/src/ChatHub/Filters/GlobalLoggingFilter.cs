@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace ChatHub.Filters;
 
@@ -8,11 +9,11 @@ public class GlobalLoggingFilter : IHubFilter
     public async ValueTask<object> InvokeMethodAsync(
     HubInvocationContext invocationContext, Func<HubInvocationContext, ValueTask<object>> next)
     {
-        Console.WriteLine($"Calling hub method '{invocationContext.HubMethodName}'");
+        Log.Information($"Calling hub method '{invocationContext.HubMethodName}'");
         // Log the parameters
         if (invocationContext.HubMethodArguments != null && invocationContext.HubMethodArguments.Count > 0)
         {
-            Console.WriteLine("Parameters:");
+            Log.Information("Parameters:");
             await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(invocationContext.HubMethodArguments));
         }
         try
@@ -21,7 +22,7 @@ public class GlobalLoggingFilter : IHubFilter
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception calling '{invocationContext.HubMethodName}': {ex}");
+            Log.Information($"Exception calling '{invocationContext.HubMethodName}': {ex}");
             throw;
         }
     }

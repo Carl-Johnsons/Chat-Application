@@ -57,6 +57,7 @@ const PostManagementContainer = () => {
             type="report"
             postId={postId}
             reportCount={count}
+            disableComment
           />
         );
       })}

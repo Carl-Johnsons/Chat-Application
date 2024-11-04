@@ -1,14 +1,14 @@
-import Avatar from "@/components/shared/Avatar";
-
-import style from "./UpdateAvatarModalContent.module.scss";
-import classNames from "classnames/bind";
-import images from "@/assets";
-import { useGetCurrentUser, useUpdateUser } from "@/hooks/queries/user";
-import { useCallback, useState } from "react";
-import AppButton from "@/components/shared/AppButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useCallback, useState } from "react";
+import classNames from "classnames/bind";
+
+import { useGetCurrentUser, useUpdateUser } from "@/hooks/queries/user";
 import { useModal } from "hooks/useModal";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import images from "@/assets";
+import style from "./UpdateAvatarModalContent.module.scss";
 
 const cx = classNames.bind(style);
 
@@ -32,8 +32,8 @@ const UpdateAvatarModalContent = () => {
     }
   };
 
-  const currentAvatar = userData?.avatarUrl ?? images.defaultAvatarImg.src;
-  const previewAvatar = previewImg ?? images.defaultAvatarImg.src;
+  const currentAvatar = userData?.avatarUrl || images.defaultAvatarImg.src;
+  const previewAvatar = previewImg || images.defaultAvatarImg.src;
 
   const handleUpdateBtnClick = useCallback(() => {
     updateUserMutate({
@@ -42,7 +42,7 @@ const UpdateAvatarModalContent = () => {
       },
     });
     handleHideModal();
-  }, [avatarBlob]);
+  }, [avatarBlob, handleHideModal, updateUserMutate]);
 
   return (
     <div className={cx("update-avatar-modal-content", "m-0", "p-2", "pb-3")}>

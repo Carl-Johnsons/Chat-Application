@@ -104,14 +104,14 @@ namespace DuendeIdentityServer.Pages.ExternalLogin
             CaptureExternalLoginContext(result, additionalLocalClaims, localSignInProps);
 
             // issue authentication cookie for user
-            await _signInManager.SignInWithClaimsAsync(user, localSignInProps, additionalLocalClaims);
+            await _signInManager.SignInWithClaimsAsync(user!, localSignInProps, additionalLocalClaims);
 
             // delete temporary cookie used during external authentication
             await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             // check if external login is in the context of an OIDC request
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.Id, user.UserName, true, context?.Client.ClientId));
+            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user!.Id, user.UserName, true, context?.Client.ClientId));
             Telemetry.Metrics.UserLogin(context?.Client.ClientId, provider!);
 
             if (context != null)

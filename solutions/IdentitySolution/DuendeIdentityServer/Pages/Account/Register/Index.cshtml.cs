@@ -1,6 +1,3 @@
-using Contract.DTOs;
-using Contract.Event.UploadEvent;
-using Contract.Event.UploadEvent.EventModel;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
@@ -9,11 +6,9 @@ using DuendeIdentityServer.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 
 namespace DuendeIdentityServer.Pages.Account.Register;
 
@@ -102,49 +97,16 @@ public class Index : PageModel
 
         if (ModelState.IsValid)
         {
-            var requestClient = _bus.CreateRequestClient<UploadMultipleFileEvent>();
-
-            var avtFileStreamEvent = new FileStreamEvent
-            {
-                FileName = Input.AvatarFile.FileName,
-                ContentType = Input.AvatarFile.ContentType,
-                Stream = new BinaryReader(Input.AvatarFile.OpenReadStream()).ReadBytes((int)Input.AvatarFile.Length)
-            };
-
-            var bgFileStreamEvent = new FileStreamEvent
-            {
-                FileName = Input.BackgroundFile.FileName,
-                ContentType = Input.BackgroundFile.ContentType,
-                Stream = new BinaryReader(Input.BackgroundFile.OpenReadStream()).ReadBytes((int)Input.BackgroundFile.Length)
-            };
-
-            var response = await requestClient.GetResponse<UploadMultipleFileEventResponseDTO>(new UploadMultipleFileEvent
-            {
-                FileStreamEvents = [avtFileStreamEvent, bgFileStreamEvent]
-            });
-
-            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(response));
-
-            if (response == null || response.Message.Files.Count != 2)
-            {
-                throw new Exception("Invalid upload file response");
-            }
-            var AvtUrl = response.Message.Files[0].Url;
-            var BgUrl = response.Message.Files[1].Url;
-
             var user = new ApplicationUser
             {
                 UserName = Input.Username,
                 Email = Input.Email,
-                AvatarUrl = AvtUrl,
-                BackgroundUrl = BgUrl,
                 Dob = Input.Dob,
                 Gender = Input.Gender,
                 Name = Input.Name,
-                PhoneNumber = Input.PhoneNumber,
             };
 
-            var result = await _userManager.CreateAsync(user, Input.Password);
+            var result = await _userManager.CreateAsync(user, Input.Password!);
 
             if (result.Succeeded)
             {
@@ -182,22 +144,9 @@ public class Index : PageModel
                 }
             }
 
-            var requestClientDelete = _bus.CreateRequestClient<DeleteMultipleFileEvent>();
-
-            var responseClientDelete = await requestClientDelete.GetResponse<DeleteMultipleFileEventResponseDTO>(new DeleteMultipleFileEvent
-            {
-                FileIds = [response.Message.Files[0].Id, response.Message.Files[1].Id]
-            });
-
-            if (responseClientDelete == null)
-            {
-                throw new Exception("Invalid delete file response");
-            }
-
             await Console.Out.WriteLineAsync("InvalidCredentialsErrorMessage ********************************************");
             ModelState.AddModelError(string.Empty, RegisterOptions.InvalidCredentialsErrorMessage);
         }
-        // clear uploaded cloudinary file
 
         // something went wrong, show form with error
         await BuildModelAsync(Input.ReturnUrl);

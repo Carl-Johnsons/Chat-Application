@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract.Event.FriendEvent;
+using Contract.Event.NotificationEvent;
 using Duende.IdentityServer.Extensions;
 using DuendeIdentityServer.Constants;
 using DuendeIdentityServer.Data;
@@ -38,7 +39,7 @@ public class FriendRequestController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public IActionResult Get()
     {
         var userId = _httpContextAccessor.HttpContext?.User.Identity.GetSubjectId();
 
@@ -57,7 +58,7 @@ public class FriendRequestController : ControllerBase
     public async Task<IActionResult> Post([FromBody] SendFriendRequestDTO sendFriendRequestDTO)
     {
         var frInput = _mapper.Map<SendFriendRequestDTO, FriendRequest>(sendFriendRequestDTO);
-        frInput.SenderId = _httpContextAccessor.HttpContext.User.GetSubjectId();
+        frInput.SenderId = _httpContextAccessor.HttpContext!.User.GetSubjectId();
 
         var friend = _context.Friends
                               .Where(f => (f.UserId == frInput.SenderId && f.FriendId == frInput.ReceiverId) ||
@@ -96,6 +97,15 @@ public class FriendRequestController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Update failed");
         }
+
+        await _publishEndpoint.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActorIds = [Guid.Parse(frInput.SenderId)],
+            ActionCode = "SEND_FRIEND_REQUEST",
+            CategoryCode = "USER",
+            OwnerId = Guid.Parse(frInput.ReceiverId),
+            Url = ""
+        });
 
         return Ok(frInput);
     }
@@ -136,12 +146,21 @@ public class FriendRequestController : ControllerBase
         await Console.Out.WriteLineAsync("Done sending friendCreatedEvent");
 
         await _signalRService.InvokeAction(SignalREvent.SEND_ACCEPT_FRIEND_REQUEST_ACTION, friend);
-        
+
+        await _publishEndpoint.Publish<CreateNotificationEvent>(new CreateNotificationEvent
+        {
+            ActorIds = [Guid.Parse(friend.FriendId)],
+            ActionCode = "ACCEPT_FRIEND_REQUEST",
+            CategoryCode = "USER",
+            OwnerId = Guid.Parse(friend.UserId),
+            Url = ""
+        });
+
         return Ok(friend);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromBody] DeleteFriendRequestDTO deleteFriendRequestDTO)
+    public IActionResult Delete([FromBody] DeleteFriendRequestDTO deleteFriendRequestDTO)
     {
         var fr = _context.FriendRequests
                             .Where(fr => fr.Id.ToString() == deleteFriendRequestDTO.FriendRequestId)

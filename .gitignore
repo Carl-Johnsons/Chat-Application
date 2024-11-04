@@ -402,6 +402,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 # certificate and key
+**/private_key.pem
 **/public_key.pem
 **/key.pem
 **/certificate.pem
@@ -410,11 +411,12 @@ FodyWeavers.xsd
 # Data bind mount
 data/*
 !data/sh
-# appsettings
-**appsettings.*
 # IdentityServer4
 **/tempkey.jwk
 .env*
 .flaskenv*
 !.env.project
 !.env.vault
+
+# identity provider key
+**/DuendeIdentityServer/keys

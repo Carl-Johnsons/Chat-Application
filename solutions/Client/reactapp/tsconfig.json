@@ -34,7 +34,9 @@
       "@/models/DTOs": ["models/DTOs/index"],
       "@/assets": ["assets/index"],
       "@/services/*": ["services/*/index"],
-      "@/utils": ["utils/index"]
+      "@/utils": ["utils/index"],
+      "@/libs/*": ["libs/*"],
+      "@/constants/*": ["constants/*"]
     }
   },
   "include": [

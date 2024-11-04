@@ -15,6 +15,11 @@ internal class MockupData
 
     public async Task SeedTagData()
     {
+        if (_context.Tags.Any())
+        {
+            return;
+        }
+
         await Console.Out.WriteLineAsync("=================Begin seeding tag data=================");
         foreach (var tag in TagData.Data)
         {
@@ -40,6 +45,11 @@ internal class MockupData
 
     public async Task SeedInteractionData()
     {
+        if (_context.Interactions.Any())
+        {
+            return;
+        }
+
         await Console.Out.WriteLineAsync("=================Begin seeding interaction data=================");
         foreach (var interaction in InteractionData.Data)
         {
@@ -65,6 +75,11 @@ internal class MockupData
 
     public async Task SeedPostData()
     {
+        if (_context.Posts.Any())
+        {
+            return;
+        }
+
         await Console.Out.WriteLineAsync("=================Begin seeding post data=================");
         foreach (var post in PostData.Data)
         {
@@ -106,6 +121,11 @@ internal class MockupData
 
     public async Task SeedCommentData()
     {
+        if (_context.Comments.Any())
+        {
+            return;
+        }
+
         await Console.Out.WriteLineAsync("=================Begin seeding comment data=================");
         foreach (var comment in CommentData.Data)
         {
@@ -144,6 +164,11 @@ internal class MockupData
 
     public async Task SeedPostInteractData()
     {
+        if (_context.PostInteracts.Any())
+        {
+            return;
+        }
+
         await Console.Out.WriteLineAsync("=================Begin seeding post interact data=================");
         foreach (var interact in PostInteractData.Data)
         {
@@ -171,5 +196,24 @@ internal class MockupData
         }
         await _unitOfWork.SaveChangeAsync();
         await Console.Out.WriteLineAsync("=================DONE seeding add data=================");
+    }
+
+    public async Task SeedContentRestrictionsTypeData()
+    {
+        if (_context.UserContentRestrictionsTypes.Any())
+        {
+            return;
+        }
+
+        await Console.Out.WriteLineAsync("=================Begin seeding Content Restrictions Type data=================");
+        foreach (var action in UserContentRestrictionsTypeMockup.Data)
+        {
+            _context.UserContentRestrictionsTypes.Add(new Domain.Entities.UserContentRestrictionsType
+            {
+                Code = action.Code,
+            });
+        }
+        await _unitOfWork.SaveChangeAsync();
+        await Console.Out.WriteLineAsync("=================Done seeding Content Restrictions Type data=================");
     }
 }

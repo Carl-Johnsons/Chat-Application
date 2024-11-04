@@ -1,6 +1,5 @@
-import style from "./Aside.body.module.scss";
-import classnames from "classnames/bind";
-
+import { toast } from "react-toastify";
+import { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
@@ -12,24 +11,22 @@ import {
   faUserGroup,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
-// component
-import AppButton from "@/components/shared/AppButton";
-import Avatar from "@/components/shared/Avatar";
-import images from "@/assets";
 
-//hook
-import { useGlobalState, useModal } from "@/hooks";
-// model
 import {
   useGenerateGroupInvitation,
   useGetConversation,
   useGetGroupInvitationByGroupId,
   useGetMemberListByConversationId,
 } from "@/hooks/queries/conversation";
-import { useGetUser } from "@/hooks/queries/user";
+import { CLIENT_BASE_URL } from "@/constants/url.constant";
 import { GroupConversation } from "models/GroupConversation.model";
-import { useCallback } from "react";
-import { toast } from "react-toastify";
+import { useGetUser } from "@/hooks/queries/user";
+import { useGlobalState, useModal } from "@/hooks";
+import AppButton from "@/components/shared/AppButton";
+import Avatar from "@/components/shared/Avatar";
+import classnames from "classnames/bind";
+import images from "@/assets";
+import style from "./Aside.body.module.scss";
 
 const cx = classnames.bind(style);
 
@@ -72,7 +69,7 @@ const AsideBody = () => {
   const avatar =
     (isGroup
       ? (conversation as GroupConversation)?.imageURL
-      : otherUserData?.avatarUrl) ?? images.userIcon.src;
+      : otherUserData?.avatarUrl) || images.userIcon.src;
   const name = isGroup
     ? (conversation as GroupConversation)?.name
     : otherUserData?.name ?? "";
@@ -92,15 +89,18 @@ const AsideBody = () => {
       return;
     }
 
-    const baseAddress =
-      process.env.NEXT_PUBLIC_CLIENT_BASE_URL ?? "http://localhost:3000";
     navigator.clipboard.writeText(
       `Link tham gia nhóm ${
         (conversation as GroupConversation).name
-      }: ${baseAddress}/join/group-conversation/${groupInvitationData.id}`
+      }: ${CLIENT_BASE_URL}/join/group-conversation/${groupInvitationData.id}`
     );
     toast.success("Copy link nhóm thành công");
-  }, [conversation, groupInvitationData]);
+  }, [
+    conversation,
+    groupInvitationData?.id,
+    groupInvitationData?.isExpired,
+    isGroup,
+  ]);
 
   const handleClickRefreshGroupInvitation = useCallback(() => {
     const id = conversation?.id;
@@ -110,7 +110,7 @@ const AsideBody = () => {
     }
 
     generateGroupInvitationMutate({ groupId: id });
-  }, [conversation?.id]);
+  }, [conversation?.id, generateGroupInvitationMutate]);
 
   const handleClickAddGroupMemberBtn = useCallback(() => {
     if (!conversation?.id) {
@@ -121,7 +121,7 @@ const AsideBody = () => {
       modalType: "AddGroupMember",
       entityId: conversation?.id,
     });
-  }, [conversation?.id]);
+  }, [conversation?.id, handleShowModal]);
 
   if (!activeConversationId) {
     return;

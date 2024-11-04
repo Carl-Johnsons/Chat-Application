@@ -18,7 +18,7 @@ const AppReportReason = ({ userId, reason, createdAt }: Props) => {
     enabled: !!userId,
   });
   const name = userData?.name ?? "Loading...";
-  const avatar = userData?.avatarUrl ?? images.defaultAvatarImg.src;
+  const avatar = userData?.avatarUrl || images.defaultAvatarImg.src;
   const formattedTime = formatRelativeTime(createdAt);
 
   return (

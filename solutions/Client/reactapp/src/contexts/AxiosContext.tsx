@@ -1,13 +1,11 @@
-import React, { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import axios, { AxiosInstance } from "axios";
-import { useLocalStorage } from "hooks/useStorage";
-
-const API_DEFAULT_GATEWAY = "http://localhost:5000";
+import { useSession } from "next-auth/react";
+import { API_GATEWAY_URL } from "@/constants/url.constant";
 
 interface AxiosContextType {
   axiosInstance: AxiosInstance;
   protectedAxiosInstance: AxiosInstance;
-  setAccessToken: React.Dispatch<React.SetStateAction<string>>;
 }
 interface Props {
   children: React.ReactNode;
@@ -16,38 +14,77 @@ interface Props {
 const AxiosContext = createContext<AxiosContextType | null>(null);
 
 const AxiosProvider = ({ children }: Props) => {
-  const [localToken] = useLocalStorage("access_token");
-  const [accessToken, setAccessToken] = useState<string>(localToken);
+  const { data: session, status } = useSession();
+
+  const accessToken = session?.accessToken ?? "";
+
+  console.log("Query axios with access token ", accessToken);
+  console.log("Expire in ", session?.accessToken);
 
   const [axiosInstance] = useState(() =>
     axios.create({
-      baseURL:
-        process.env.NEXT_PUBLIC_API_GATEWAY_PORT_URL ?? API_DEFAULT_GATEWAY,
+      baseURL: API_GATEWAY_URL,
       withCredentials: true,
     })
   );
 
   const [protectedAxiosInstance] = useState(() =>
     axios.create({
-      baseURL:
-        process.env.NEXT_PUBLIC_API_GATEWAY_PORT_URL ?? API_DEFAULT_GATEWAY,
+      baseURL: API_GATEWAY_URL,
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       withCredentials: true,
     })
   );
-
   useEffect(() => {
-    // Update protectedAxiosInstance headers when accessToken changes
-    protectedAxiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`;
-    console.log("re-render protected axios");
-    console.log(accessToken);
-  }, [accessToken, protectedAxiosInstance]);
+    const getAccessToken = () => {
+      return new Promise<string>((resolve, reject) => {
+        if (status === "authenticated" && session.accessToken) {
+          resolve(session.accessToken);
+        } else if (status === "unauthenticated") {
+          reject("Unauthorized");
+        } else {
+          const interval = setInterval(() => {
+            if (session?.accessToken) {
+              resolve(session.accessToken);
+              clearInterval(interval);
+            }
+          }, 100);
+        }
+      });
+    };
+
+    const requestInterceptor = protectedAxiosInstance.interceptors.request.use(
+      async (config) => {
+        try {
+          console.log("Request interceptor");
+          const token = await getAccessToken();
+
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
+          return config;
+        } catch (err) {
+          return Promise.reject(err);
+        }
+      },
+      (err) => {
+        return Promise.reject(err);
+      }
+    );
+    return () => {
+      protectedAxiosInstance.interceptors.request.eject(requestInterceptor);
+    };
+  }, [
+    protectedAxiosInstance.interceptors.request,
+    session?.accessToken,
+    status,
+  ]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => {
-    return { axiosInstance, protectedAxiosInstance, setAccessToken };
+    return { axiosInstance, protectedAxiosInstance };
   }, [axiosInstance, protectedAxiosInstance]);
 
   return (

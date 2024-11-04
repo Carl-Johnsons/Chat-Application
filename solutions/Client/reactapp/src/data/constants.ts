@@ -29,9 +29,11 @@ export enum SignalREvent {
   RECEIVE_NOTIFY_USER_TYPING = "ReceiveNotifyUserTyping",
   RECEIVE_DISBAND_CONVERSATION = "ReceiveDisbandConversation",
   RECEIVE_CALL = "ReceiveCall",
+  RECEIVE_SIGNAL = "ReceiveSignal",
   FORCED_LOGOUT = "ForcedLogout",
   DELETE_POST = "DeletePost",
   REPORT_POST = "ReportPost",
+  RECEICE_ACCEPT_CALL = "ReceiveAcceptCall"
 }
 
 export const menuContacts: MenuContact[] = [
@@ -63,4 +65,13 @@ export enum FILE_TYPE {
   IMAGE = "Image",
   VIDEO = "Video",
   RAW = "Raw",
+}
+
+export enum CALL_STATUS {
+  PREPARING = "Preparing",
+  CONNECTING = "Connecting",
+  CALLING = "Calling",
+  CONNECTED = "Connected",
+  DECLINED = "Declined",
+  EXITED = "Exited"
 }

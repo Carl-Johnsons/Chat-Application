@@ -74,6 +74,25 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                     b.ToTable("ConversationUser");
                 });
 
+            modelBuilder.Entity("ConversationService.Domain.Entities.DisabledNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("DisabledNotification");
+                });
+
             modelBuilder.Entity("ConversationService.Domain.Entities.GroupConversationInvite", b =>
                 {
                     b.Property<Guid>("Id")
@@ -161,6 +180,17 @@ namespace ConversationService.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("ConversationService.Domain.Entities.Conversation", "Conversation")
                         .WithMany("Users")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("ConversationService.Domain.Entities.DisabledNotification", b =>
+                {
+                    b.HasOne("ConversationService.Domain.Entities.Conversation", "Conversation")
+                        .WithMany()
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

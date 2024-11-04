@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#0068ff</color>
+    <color name="primary_active">#00378a</color>
+    <color name="secondary">#e5efff</color>
+    <color name="secondary_active">#abcdff</color>
+    <color name="danger">#e76161</color>
+    <color name="danger_active">#A04545</color>
+    <color name="success">#45B145</color>
+    <color name="success_active">#286628</color>
+    <color name="warning">#FFC87C</color>
+    <color name="warning_active">#A48151</color>
+    <color name="disabled">#D3D3D3</color>
+    <color name="chat_background">#ecf4f4</color>
+    <color name="message_sent_background">#e4ecfc</color>
+    <color name="message_receive_background">#FFFFFFFF</color>
+
+
+</resources>

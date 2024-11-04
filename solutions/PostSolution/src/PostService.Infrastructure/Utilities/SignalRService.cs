@@ -12,8 +12,10 @@ public sealed class SignalRService : ISignalRService
     public SignalRService(ILogger<SignalRService> logger)
     {
         _logger = logger;
+        var websocketHost = (Environment.GetEnvironmentVariable("WEBSOCKET_HOST") ?? "localhost:5003").Replace("\"", "");
+        Console.WriteLine("Connect to chat hub " + websocketHost);
         HubConnection = new HubConnectionBuilder()
-            .WithUrl("http://websocket/chat-hub")
+            .WithUrl($"http://{websocketHost}/chat-hub")
             .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30)])
             .ConfigureLogging(logging =>
             {

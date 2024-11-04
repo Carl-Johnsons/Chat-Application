@@ -1,0 +1,120 @@
+.video-call-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background-color: #202124;
+  padding-bottom: 80px; // Để tránh phần video đè lên controls
+
+  h1 {
+    margin-top: 10px;
+    color: #fff;
+  }
+
+  .videos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    position: relative;
+    gap: 20px;
+
+    video {
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      background-color: #000;
+    }
+
+    .local-video,
+    .remote-video {
+      min-width: 300px;
+      min-height: 240px;
+      max-width: 500px;
+      max-height: 400px;
+    }
+
+    .local-video {
+      width: 40%;
+      height: 60%;
+    }
+
+    .remote-video {
+      width: 40%;
+      height: 60%;
+      display: none;
+    }
+
+    &.has-remote-video {
+      .remote-video {
+        display: block;
+      }
+    }
+  }
+
+  .controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10;
+
+    button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      background-color: transparent;
+      border: #fff;
+      border-width: 2px;
+      border-radius: 50%;
+      border-style: solid;
+      color: transparent;
+      cursor: pointer;
+    }
+  }
+
+  .status {
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+.video-call-container {
+  .videos {
+    flex-direction: column;
+    gap: 10px;
+
+    .local-video,
+    .remote-video {
+      width: 90%;
+      height: 40%;
+    }
+
+    &.has-remote-video {
+      .remote-video {
+        display: block;
+      }
+
+      .local-video {
+        order: 2;
+      }
+
+      .remote-video {
+        order: 1;
+      }
+    }
+  }
+}
+}
+
+@media (max-height: 600px) {
+  .video-call-container .videos .local-video {
+    display: none;
+  }
+}

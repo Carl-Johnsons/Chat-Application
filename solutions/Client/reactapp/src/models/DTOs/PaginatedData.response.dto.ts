@@ -5,9 +5,9 @@ export type MessageListMetaData = {
   lastMessage?: Message;
 };
 
-export type PostListMetadata = {};
+export type PostListMetadata = object;
 
-export type EmptyMetadata = {};
+export type EmptyMetadata = object;
 
 export type CommonPaginatedMetadata = {
   totalPage: number;

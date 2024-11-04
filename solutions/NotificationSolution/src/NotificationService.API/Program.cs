@@ -1,25 +1,29 @@
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Hosting.Server;
+using NotificationService.API;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var app = builder.AddAPIServices()
+                 .Build();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+app.UseAPIServicesAsync();
 
-var app = builder.Build();
+app.Start();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var server = app.Services.GetService<IServer>();
+var addresses = server?.Features.Get<IServerAddressesFeature>()?.Addresses;
+
+if (addresses != null)
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    foreach (var address in addresses)
+    {
+        Console.WriteLine($"API is listening on: {address}");
+    }
+}
+else
+{
+    Console.WriteLine("Could not retrieve server addresses.");
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+app.WaitForShutdown();
