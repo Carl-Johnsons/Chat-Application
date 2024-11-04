@@ -69,7 +69,7 @@ public static class Config
                     RequirePkce = true,
                     AllowAccessTokensViaBrowser = false,
                     AlwaysIncludeUserClaimsInIdToken = true, // Attach user claim for SPA client
-                    AccessTokenLifetime = 3600,
+                    AccessTokenLifetime = 2592000,
                     RedirectUris = {
                        $"{reactUrl}/api/auth/callback/duende-identityserver6",
                        "https://www.getpostman.com/oauth2/callback"

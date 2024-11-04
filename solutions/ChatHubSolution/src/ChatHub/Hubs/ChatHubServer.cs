@@ -206,14 +206,22 @@ public class ChatHubServer : Hub<IChatClient>
         // Forward the signal to the target peer
         var conversationId = sendCallSignalDTO.TargetConversationId;
         var callerId = UserConnectionMap[Context.ConnectionId];
+
+        var callerConnectionIds = UserConnectionMap.
+            Where(pair => pair.Value == callerId)
+            .Select(pair => pair.Key)
+            .ToList();
+
+
         callOffers.Add(new CallOffer
         {
             CallerId = callerId,
             ConversationId = conversationId
         });
+
         Log.Information("Day la send sygnal**************************************");
-        await Clients.OthersInGroup(conversationId.ToString()).ReceiveSignal(sendCallSignalDTO.SignalData, conversationId);
-        await Clients.OthersInGroup(conversationId.ToString()).ReceiveCall(callerId);
+        await Clients.GroupExcept(conversationId.ToString(), callerConnectionIds).ReceiveSignal(sendCallSignalDTO.SignalData, conversationId);
+        await Clients.GroupExcept(conversationId.ToString(), callerConnectionIds).ReceiveCall(callerId);
 
     }
 
