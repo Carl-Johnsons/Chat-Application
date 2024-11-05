@@ -1,9 +1,12 @@
 package com.example.chatapplication.DTOs;
 
+import java.io.File;
+
 public class UpdateUserDTO {
     private String name;
     private String introduction;
     private String gender;
+    private File avatarImage;
 
     public UpdateUserDTO() {
     }
@@ -32,5 +35,11 @@ public class UpdateUserDTO {
         this.gender = gender;
     }
 
+    public File getAvatarImage() {
+        return avatarImage;
+    }
 
+    public void setAvatarImage(File avatarImage) {
+        this.avatarImage = avatarImage;
+    }
 }

@@ -100,7 +100,6 @@ dependencies {
     implementation(libs.material.v1130alpha05)
     implementation(libs.retrofit)
     //implementation(libs.retrofit2.converter.gson)
-    implementation (libs.circleimageview)
     annotationProcessor(libs.compiler)
     implementation (libs.squareup.converter.gson)
     implementation (libs.okhttp)
