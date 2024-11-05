@@ -24,22 +24,13 @@
         android:padding="8dp" />
 
     <EditText
-        android:id="@+id/edit_phone_number"
+        android:id="@+id/edit_introduction"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="Phone Number"
+        android:hint="Introduction"
         android:inputType="phone"
         android:padding="8dp" />
 
-
-
-    <EditText
-        android:id="@+id/edit_dob"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Date of Birth (YYYY-MM-DD)"
-        android:inputType="date"
-        android:padding="8dp" />
 
     <RadioGroup
         android:id="@+id/radioGroupGender"
@@ -85,8 +76,8 @@
             android:id="@+id/button_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/danger"
             android:text="Cancel"
+            android:backgroundTint="@color/danger"
             android:layout_marginEnd="8dp"/>
     </LinearLayout>
 
