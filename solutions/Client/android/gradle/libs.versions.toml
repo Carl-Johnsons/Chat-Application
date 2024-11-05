@@ -1,6 +1,8 @@
 [versions]
 agp = "8.5.1"
 appauth = "0.11.1"
+circleimageview = "3.1.0"
+compiler = "4.15.0"
 converterGson = "2.9.0"
 converterGsonVersion = "2.9.0"
 glide = "4.16.0"
@@ -25,6 +27,8 @@ slf4jJdk14 = "1.7.25"
 
 [libraries]
 appauth = { module = "net.openid:appauth", version.ref = "appauth" }
+circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

@@ -47,7 +47,7 @@ public class SignInActivity extends AppCompatActivity {
     private AuthorizationServiceConfiguration authConfig;
     private AuthorizationService authService;
     private AuthStateManager authStateManager;
-    private final String BASE_IDENTITY_URI = "http://localhost:" + BuildConfig.IDENTITY_SERVICE_PORT;
+    private final String BASE_IDENTITY_URI = "http://"+ BuildConfig.HOST + ":" + BuildConfig.IDENTITY_SERVICE_PORT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +144,7 @@ public class SignInActivity extends AppCompatActivity {
                 });
 
                 UserService userServide = RetrofitClient.getRetrofitInstance(this).create(UserService.class);
-                ApiUtil.callApi(userServide.getCurrentUser(), new ApiUtil.ApiCallback<CurrentUserResponseDTO>() {
+                ApiUtil.callApi(userServide.getCurrentUser(), new ApiUtil.ApiCallback<>() {
                     @Override
                     public void onSuccess(CurrentUserResponseDTO response) {
                         var currentUser = new CurrentUserResponseDTO();
@@ -152,7 +152,6 @@ public class SignInActivity extends AppCompatActivity {
                         currentUser.setGender(response.getGender());
                         currentUser.setName(response.getName());
                         currentUser.setEmail(response.getEmail());
-                        //currentUser.setDob(response.getDob());
                         currentUser.setPreferredUsername(response.getPreferredUsername());
                         currentUser.setAvartarUrl(response.getAvartarUrl());
                         currentUser.setBackgroundUrl(response.getBackgroundUrl());
@@ -169,11 +168,9 @@ public class SignInActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable t) {
-                        System.out.println("save current user fail");
-                        System.out.println(t.getMessage());
+                        Log.e(TAG,"save current user fail" + t.getMessage() );
                     }
                 });
-
             }
     );
 

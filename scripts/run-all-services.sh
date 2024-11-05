@@ -53,6 +53,7 @@ run_service() {
 
     env SA_PASSWORD="$SA_PASSWORD" \
         ASPNETCORE_ENVIRONMENT=Development \
+        IDENTITY_SERVER_HOST=localhost:5001 \
         ASPNETCORE_URLS="http://0.0.0.0:$port" \
         dotnet watch run \
         --no-launch-profile \

@@ -1,29 +1,37 @@
 package com.example.chatapplication.User_Profile;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapplication.DTOs.CurrentUserResponseDTO;
+import com.example.chatapplication.DTOs.UpdateUserDTO;
 import com.example.chatapplication.R;
 import com.example.chatapplication.Services.RetrofitClient;
-import com.example.chatapplication.Services.UserInfoService;
+import com.example.chatapplication.Services.UserService;
+import com.example.chatapplication.utils.ApiUtil;
+import com.google.gson.Gson;
 
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class UserProfileFragment extends Fragment {
     private TextView preferredName;
@@ -31,11 +39,10 @@ public class UserProfileFragment extends Fragment {
     private TextView gender;
     private ImageView backgroundImage;
     private CircleImageView profileImage;
-    private TextView userName;
-    private TextView userEmail;
-    private TextView dob;
     private Button updateButton;
-    private UserProfile userProfile;
+
+    private CurrentUserResponseDTO CurrentUser;
+
     public UserProfileFragment(){
 
     }
@@ -45,22 +52,12 @@ public class UserProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.user_profile_layout, container, false);
 
         backgroundImage = view.findViewById(R.id.background_image);
-
         phoneNumber = view.findViewById(R.id.phone_number);
-
         gender = view.findViewById(R.id.gender);
-
         preferredName = view.findViewById(R.id.preferred_name);
-
         profileImage = view.findViewById(R.id.profile_image);
 
-        userName = view.findViewById(R.id.user_name);
-
-        userEmail = view.findViewById(R.id.user_email);
-
-        dob = view.findViewById(R.id.dob);
-
-        updateButton = view.findViewById(R.id.update_button); // Add this line to find the button
+        updateButton = view.findViewById(R.id.update_button);
         updateButton.setOnClickListener(v -> showEditDialog());
 
         loadUserInfo();
@@ -69,40 +66,23 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void loadUserInfo() {
-        UserInfoService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(UserInfoService.class);
-
-        Call<UserProfile> call = apiService.getUserInfo();
-
-        call.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
-                if (response.isSuccessful() && response.body() != null){
-                    userProfile = response.body();
-                    updateUI(userProfile);
-                } else {
-                    Log.e("API Error", "Response Code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getActivity(), "Failed to fetch user info", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserProfile> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+        String userJson = sharedPreferences.getString("CurrentUser", null);
+        if (userJson != null) {
+            Gson gson = new Gson();
+            CurrentUser = gson.fromJson(userJson, CurrentUserResponseDTO.class);
+            updateUI(CurrentUser);
+        }
     }
 
-    private void updateUI(UserProfile userProfile){
-        Glide.with(this).load(userProfile.getBackground_url() != null ? userProfile.getAvatar_url() : R.drawable.default_avatar) // Use a default image if null
+    private void updateUI(CurrentUserResponseDTO userProfile){
+        Glide.with(this).load(userProfile.getBackgroundUrl() != null ? userProfile.getBackgroundUrl() : R.drawable.default_avatar)
                 .into(backgroundImage);
-        Glide.with(this).load(userProfile.getAvatar_url() != null ? userProfile.getAvatar_url() : R.drawable.default_avatar) // Use a default image if null
+        Glide.with(this).load(userProfile.getAvartarUrl() != null ? userProfile.getAvartarUrl() : R.drawable.default_avatar)
                 .into(profileImage);
-        preferredName.setText(userProfile.getPreferred_username());
-        phoneNumber.setText(userProfile.getPhone_number());
+        preferredName.setText(userProfile.getName());
+        phoneNumber.setText(userProfile.getPhoneNumber());
         gender.setText(userProfile.getGender());
-        userName.setText(userProfile.getName());
-        userEmail.setText(userProfile.getEmail());
-        dob.setText(userProfile.getDob());
     }
 
     private void showEditDialog() {
@@ -111,24 +91,40 @@ public class UserProfileFragment extends Fragment {
 
         EditText editPreferredName = dialog.findViewById(R.id.edit_preferred_name);
         EditText editPhoneNumber = dialog.findViewById(R.id.edit_phone_number);
-        EditText editGender = dialog.findViewById(R.id.edit_gender);
-        EditText editUserName = dialog.findViewById(R.id.edit_user_name);
-        EditText editUserEmail = dialog.findViewById(R.id.edit_user_email);
-        EditText editDob = dialog.findViewById(R.id.edit_dob);
         Button saveButton = dialog.findViewById(R.id.button_save);
         Button cancelButton = dialog.findViewById(R.id.button_cancel);
         editPreferredName.setText(preferredName.getText());
         editPhoneNumber.setText(phoneNumber.getText());
-        editGender.setText(gender.getText());
-        editUserName.setText(userName.getText());
-        editUserEmail.setText(userEmail.getText());
-        editDob.setText(dob.getText());
+
+//        RadioGroup radioGroupGender = dialog.findViewById(R.id.radioGroupGender);
+//        int selectedId = radioGroupGender.getCheckedRadioButtonId();
+//        RadioButton selectedRadioButton = dialog.findViewById(selectedId);
+//        String gender = selectedRadioButton.getText().toString();
+
+
+
 
         saveButton.setOnClickListener(v -> {
-            saveUserInfo(editPreferredName.getText().toString(), editPhoneNumber.getText().toString(),
-                    editGender.getText().toString(), editUserName.getText().toString(),
-                    editUserEmail.getText().toString(), editDob.getText().toString());
-            dialog.dismiss(); // Dismiss dialog after saving
+            var userService  = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
+            var dto = new UpdateUserDTO();
+            dto.setName(editPreferredName.getText().toString());
+//            dto.setGender(editGender.getText().toString());
+            var dtoMap = convertDtoToRequestBodyMap(dto);
+
+            ApiUtil.callApi(userService.updateCurrentUser(dtoMap), new ApiUtil.StatusCallback() {
+                @Override
+                public void onSuccess() {
+                    System.out.println("Update success");
+                    dialog.dismiss();
+                    loadUser();
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    System.out.println("Update failed " + t.getMessage());
+                }
+            });
+
         });
 
         cancelButton.setOnClickListener(v -> {
@@ -136,41 +132,45 @@ public class UserProfileFragment extends Fragment {
         });
         dialog.show();
     }
-    private void saveUserInfo(String updatedPreferredName, String updatedPhoneNumber,
-                              String updatedGender, String updatedUserName,
-                              String updatedUserEmail, String updatedDob) {
-        UserInfoService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(UserInfoService.class);
 
-        Call<UserProfile> updateCall = apiService.updateUserInfo(
-                updatedPreferredName,
-                updatedUserName,
-                updatedPhoneNumber,
-                updatedUserEmail,
-                updatedGender,
-                userProfile.getAvatar_url(),
-                userProfile.getBackground_url(),
-                updatedDob
-        );
+    private Map<String, RequestBody> convertDtoToRequestBodyMap(UpdateUserDTO dto) {
+        Map<String, RequestBody> map = new HashMap<>();
+        map.put("name", RequestBody.create(MediaType.parse("multipart/form-data"), dto.getName()));
+//        map.put("email", RequestBody.create(MediaType.parse("multipart/form-data"), dto.getGender()));
+        return map;
+    }
 
-        // Enqueue the request
-        updateCall.enqueue(new Callback<>() {
+    private void loadUser(){
+        UserService userService = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
+        ApiUtil.callApi(userService.getCurrentUser(), new ApiUtil.ApiCallback<>() {
             @Override
-            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    userProfile = response.body();
-                    Log.e("Response", "Response Body: " + userProfile);
-                    updateUI(userProfile);  // Update UI with updated profile info
-                    Toast.makeText(getActivity(), "User info updated successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.e("API Error", "Response Code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getActivity(), "Failed to update user info", Toast.LENGTH_SHORT).show();
-                }
+            public void onSuccess(CurrentUserResponseDTO response) {
+                var currentUser = new CurrentUserResponseDTO();
+                currentUser.setSub(response.getSub());
+                currentUser.setGender(response.getGender());
+                currentUser.setName(response.getName());
+                currentUser.setEmail(response.getEmail());
+                currentUser.setPreferredUsername(response.getPreferredUsername());
+                currentUser.setAvartarUrl(response.getAvartarUrl());
+                currentUser.setBackgroundUrl(response.getBackgroundUrl());
+                currentUser.setPhoneNumber(response.getPhoneNumber());
+
+                Gson gson = new Gson();
+                String userJson = gson.toJson(currentUser);
+                SharedPreferences prefs = requireContext().getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("CurrentUser", userJson);
+                editor.apply();
+                System.out.println("load current user success");
+                loadUserInfo();
             }
 
             @Override
-            public void onFailure(Call<UserProfile> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onError(Throwable t) {
+                System.out.println("load current user success");
             }
         });
     }
+
+
 }
