@@ -107,4 +107,5 @@ dependencies {
     implementation (libs.gson)
     implementation (libs.signalr)
     implementation (libs.slf4j.jdk14)
+    implementation (libs.viewpager2)
 }

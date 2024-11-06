@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.chatapplication.Chats.ConversationFragment;
+import com.example.chatapplication.Contact.ContactFragment;
 import com.example.chatapplication.Contexts.ChatHubContext;
 import com.example.chatapplication.DTOs.CurrentUserResponseDTO;
 import com.example.chatapplication.User_Profile.UserProfileFragment;

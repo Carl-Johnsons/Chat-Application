@@ -115,13 +115,20 @@ public class ConversationFragment extends Fragment {
                                 }
                                 conversationList.add(cvs);
                                 conversationAdapter.notifyDataSetChanged();
-
                             }
+
                             @Override
                             public void onError(Throwable t) {
                                 System.out.println(t.getMessage());
                             }
                         });
+                    }else {
+//                        cvs.setId(conversationDTO.getId());
+//                        cvs.setEntityName(conversationDTO.getName());
+//                        cvs.setAvatarUrl(conversationDTO.getImageURL());
+//                        cvs.setTime("");
+//                        cvs.setContent("");
+//                        conversationList.add(cvs);
                     }
                 }
             }
