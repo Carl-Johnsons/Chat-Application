@@ -15,9 +15,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.chatapplication.Chats.ConversationFragment;
+import com.example.chatapplication.Contact.ContactFragment;
 import com.example.chatapplication.Contexts.ChatHubContext;
 import com.example.chatapplication.DTOs.CurrentUserResponseDTO;
-import com.example.chatapplication.Notification.NotiFragment;
 import com.example.chatapplication.User_Profile.UserProfileFragment;
 import com.example.chatapplication.auth.AuthStateManager;
 import com.example.chatapplication.databinding.ActivityMainBinding;
@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     private final ConversationFragment CHAT_FRAGMENT = new ConversationFragment();
     private final ContactFragment CONTACT_FRAGMENT = new ContactFragment();
     private final PostFragment POST_FRAGMENT = new PostFragment();
-    private final NotiFragment NOTI_FRAGMENT = new NotiFragment();
     private final UserProfileFragment USER_PROFILE_FRAGMENT = new UserProfileFragment();
     private AuthStateManager authStateManager;
 
@@ -57,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(CONTACT_FRAGMENT);
             } else if (item.getItemId() == R.id.nav_post) {
                 replaceFragment(POST_FRAGMENT);
-            } else if (item.getItemId() == R.id.nav_noti) {
-                replaceFragment(NOTI_FRAGMENT);
             } else if (item.getItemId() == R.id.nav_user_profile) {
                 replaceFragment(USER_PROFILE_FRAGMENT);
             }

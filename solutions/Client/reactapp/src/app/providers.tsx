@@ -39,7 +39,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       <QueryClientProvider client={queryClient}>
         <AxiosProvider>
           <ChatHubProvider>{children}</ChatHubProvider>
-          <ReactQueryDevtools />
+          {/* <ReactQueryDevtools /> */}
           <ToastContainer
             position="bottom-right"
             autoClose={5000}

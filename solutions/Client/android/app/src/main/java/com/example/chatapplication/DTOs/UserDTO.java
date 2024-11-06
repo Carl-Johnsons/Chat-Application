@@ -8,7 +8,6 @@ public class UserDTO {
     private String avatarUrl;
     private String backgroundUrl;
     private String introduction;
-//    private Date dob;
     private String phoneNumber;
     private String gender;
     private boolean active;
@@ -19,7 +18,6 @@ public class UserDTO {
         this.avatarUrl = avatarUrl;
         this.backgroundUrl = backgroundUrl;
         this.introduction = introduction;
-//        this.dob = dob;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.active = active;

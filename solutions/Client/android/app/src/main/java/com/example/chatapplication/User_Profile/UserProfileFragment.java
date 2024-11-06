@@ -1,41 +1,66 @@
 package com.example.chatapplication.User_Profile;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.Manifest;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
+import com.example.chatapplication.DTOs.CurrentUserResponseDTO;
+import com.example.chatapplication.DTOs.UpdateUserDTO;
 import com.example.chatapplication.R;
 import com.example.chatapplication.Services.RetrofitClient;
-import com.example.chatapplication.Services.UserInfoService;
+import com.example.chatapplication.Services.UserService;
+import com.example.chatapplication.utils.ApiUtil;
+import com.example.chatapplication.utils.FileUtil;
+import com.google.gson.Gson;
 
 
-import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class UserProfileFragment extends Fragment {
+    private static final int PICK_IMAGE = 1;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2;
+    private boolean hasReadExternalFilePermitsion = false;
+
     private TextView preferredName;
     private TextView phoneNumber;
     private TextView gender;
     private ImageView backgroundImage;
-    private CircleImageView profileImage;
-    private TextView userName;
-    private TextView userEmail;
-    private TextView dob;
+    private ImageView profileImage;
     private Button updateButton;
-    private UserProfile userProfile;
+    private  ImageView profileImageEdit;
+
+    private CurrentUserResponseDTO CurrentUser;
+
     public UserProfileFragment(){
 
     }
@@ -45,23 +70,18 @@ public class UserProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.user_profile_layout, container, false);
 
         backgroundImage = view.findViewById(R.id.background_image);
-
         phoneNumber = view.findViewById(R.id.phone_number);
-
         gender = view.findViewById(R.id.gender);
-
         preferredName = view.findViewById(R.id.preferred_name);
-
         profileImage = view.findViewById(R.id.profile_image);
 
-        userName = view.findViewById(R.id.user_name);
-
-        userEmail = view.findViewById(R.id.user_email);
-
-        dob = view.findViewById(R.id.dob);
-
-        updateButton = view.findViewById(R.id.update_button); // Add this line to find the button
+        updateButton = view.findViewById(R.id.update_button);
         updateButton.setOnClickListener(v -> showEditDialog());
+
+        profileImageEdit = view.findViewById(R.id.profile_image_edit);
+        profileImageEdit.setOnClickListener(v -> openImageChooser());
+
+        checkReadExternalFile();
 
         loadUserInfo();
 
@@ -69,40 +89,24 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void loadUserInfo() {
-        UserInfoService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(UserInfoService.class);
-
-        Call<UserProfile> call = apiService.getUserInfo();
-
-        call.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
-                if (response.isSuccessful() && response.body() != null){
-                    userProfile = response.body();
-                    updateUI(userProfile);
-                } else {
-                    Log.e("API Error", "Response Code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getActivity(), "Failed to fetch user info", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserProfile> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+        String userJson = sharedPreferences.getString("CurrentUser", null);
+        if (userJson != null) {
+            Gson gson = new Gson();
+            CurrentUser = gson.fromJson(userJson, CurrentUserResponseDTO.class);
+            updateUI(CurrentUser);
+        }
     }
 
-    private void updateUI(UserProfile userProfile){
-        Glide.with(this).load(userProfile.getBackground_url() != null ? userProfile.getAvatar_url() : R.drawable.default_avatar) // Use a default image if null
+    private void updateUI(CurrentUserResponseDTO userProfile){
+        Glide.with(this).load(userProfile.getBackgroundUrl() != null ? userProfile.getBackgroundUrl() : R.drawable.default_avatar)
                 .into(backgroundImage);
-        Glide.with(this).load(userProfile.getAvatar_url() != null ? userProfile.getAvatar_url() : R.drawable.default_avatar) // Use a default image if null
+        Glide.with(this).load(userProfile.getAvartarUrl() != null ? userProfile.getAvartarUrl() : R.drawable.default_avatar).circleCrop()
                 .into(profileImage);
-        preferredName.setText(userProfile.getPreferred_username());
-        phoneNumber.setText(userProfile.getPhone_number());
+
+        preferredName.setText(userProfile.getName());
+        phoneNumber.setText(userProfile.getPhoneNumber());
         gender.setText(userProfile.getGender());
-        userName.setText(userProfile.getName());
-        userEmail.setText(userProfile.getEmail());
-        dob.setText(userProfile.getDob());
     }
 
     private void showEditDialog() {
@@ -110,25 +114,47 @@ public class UserProfileFragment extends Fragment {
         dialog.setContentView(R.layout.diaglog_user_profile_update);
 
         EditText editPreferredName = dialog.findViewById(R.id.edit_preferred_name);
-        EditText editPhoneNumber = dialog.findViewById(R.id.edit_phone_number);
-        EditText editGender = dialog.findViewById(R.id.edit_gender);
-        EditText editUserName = dialog.findViewById(R.id.edit_user_name);
-        EditText editUserEmail = dialog.findViewById(R.id.edit_user_email);
-        EditText editDob = dialog.findViewById(R.id.edit_dob);
         Button saveButton = dialog.findViewById(R.id.button_save);
         Button cancelButton = dialog.findViewById(R.id.button_cancel);
         editPreferredName.setText(preferredName.getText());
-        editPhoneNumber.setText(phoneNumber.getText());
-        editGender.setText(gender.getText());
-        editUserName.setText(userName.getText());
-        editUserEmail.setText(userEmail.getText());
-        editDob.setText(dob.getText());
+
+        RadioGroup radioGroupGender = dialog.findViewById(R.id.radioGroupGender);
+        RadioButton rdoMale = dialog.findViewById(R.id.radioMale);
+        RadioButton rdoFemale = dialog.findViewById(R.id.radioFemale);
+
+        if(CurrentUser.gender.equals("Nam")){
+            rdoMale.setChecked(true);
+        }else{
+            rdoFemale.setChecked(true);
+        }
+
+
 
         saveButton.setOnClickListener(v -> {
-            saveUserInfo(editPreferredName.getText().toString(), editPhoneNumber.getText().toString(),
-                    editGender.getText().toString(), editUserName.getText().toString(),
-                    editUserEmail.getText().toString(), editDob.getText().toString());
-            dialog.dismiss(); // Dismiss dialog after saving
+            int selectedId = radioGroupGender.getCheckedRadioButtonId();
+            RadioButton selectedRadioButton = dialog.findViewById(selectedId);
+            String gender = selectedRadioButton.getText().toString();
+
+            var userService  = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
+            var dto = new UpdateUserDTO();
+            dto.setName(editPreferredName.getText().toString());
+            dto.setGender(gender);
+            var dtoMap = convertDtoToRequestBodyMap(dto);
+
+            ApiUtil.callApi(userService.updateCurrentUser(dtoMap), new ApiUtil.StatusCallback() {
+                @Override
+                public void onSuccess() {
+                    System.out.println("Update success");
+                    dialog.dismiss();
+                    loadUser();
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    System.out.println("Update failed " + t.getMessage());
+                }
+            });
+
         });
 
         cancelButton.setOnClickListener(v -> {
@@ -136,41 +162,116 @@ public class UserProfileFragment extends Fragment {
         });
         dialog.show();
     }
-    private void saveUserInfo(String updatedPreferredName, String updatedPhoneNumber,
-                              String updatedGender, String updatedUserName,
-                              String updatedUserEmail, String updatedDob) {
-        UserInfoService apiService = RetrofitClient.getRetrofitInstance(getContext()).create(UserInfoService.class);
 
-        Call<UserProfile> updateCall = apiService.updateUserInfo(
-                updatedPreferredName,
-                updatedUserName,
-                updatedPhoneNumber,
-                updatedUserEmail,
-                updatedGender,
-                userProfile.getAvatar_url(),
-                userProfile.getBackground_url(),
-                updatedDob
-        );
+    private Map<String, RequestBody> convertDtoToRequestBodyMap(UpdateUserDTO dto) {
+        Map<String, RequestBody> map = new HashMap<>();
+        if(dto.getName() != null){
+            map.put("name", RequestBody.create(MediaType.parse("multipart/form-data"), dto.getName()));
+        }
+        if(dto.getGender() != null){
+            map.put("gender", RequestBody.create(MediaType.parse("multipart/form-data"), dto.getGender()));
+        }
+        if(dto.getIntroduction() != null){
+            map.put("introduction", RequestBody.create(MediaType.parse("multipart/form-data"), dto.getIntroduction()));
+        }
+        return map;
+    }
 
-        // Enqueue the request
-        updateCall.enqueue(new Callback<>() {
+    private void loadUser(){
+        UserService userService = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
+        ApiUtil.callApi(userService.getCurrentUser(), new ApiUtil.ApiCallback<>() {
             @Override
-            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    userProfile = response.body();
-                    Log.e("Response", "Response Body: " + userProfile);
-                    updateUI(userProfile);  // Update UI with updated profile info
-                    Toast.makeText(getActivity(), "User info updated successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.e("API Error", "Response Code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getActivity(), "Failed to update user info", Toast.LENGTH_SHORT).show();
-                }
+            public void onSuccess(CurrentUserResponseDTO response) {
+                var currentUser = new CurrentUserResponseDTO();
+                currentUser.setSub(response.getSub());
+                currentUser.setGender(response.getGender());
+                currentUser.setName(response.getName());
+                currentUser.setEmail(response.getEmail());
+                currentUser.setPreferredUsername(response.getPreferredUsername());
+                currentUser.setAvartarUrl(response.getAvartarUrl());
+                currentUser.setBackgroundUrl(response.getBackgroundUrl());
+                currentUser.setPhoneNumber(response.getPhoneNumber());
+
+                Gson gson = new Gson();
+                String userJson = gson.toJson(currentUser);
+                SharedPreferences prefs = requireContext().getSharedPreferences("CurrentUser", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("CurrentUser", userJson);
+                editor.apply();
+                System.out.println("load current user success");
+                loadUserInfo();
             }
 
             @Override
-            public void onFailure(Call<UserProfile> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onError(Throwable t) {
+                System.out.println("load current user success");
             }
         });
     }
+
+    private void openImageChooser() {
+        if (!hasReadExternalFilePermitsion) {
+            checkReadExternalFile();
+            return;
+        }
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE);
+    }
+
+    private void checkReadExternalFile(){
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        } else {
+            hasReadExternalFilePermitsion = true;
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                hasReadExternalFilePermitsion = true;
+            } else {
+                hasReadExternalFilePermitsion = false;
+                Toast.makeText(getActivity(), "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+            if (imageUri != null) {
+                Glide.with(this).load(imageUri).circleCrop().into(profileImage);
+                var userService = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
+                var dto = new UpdateUserDTO();
+                dto.setAvatarImage(FileUtil.uriToFile(imageUri, getContext()));
+                if(dto.getAvatarImage() == null){
+                    return;
+                }
+                MultipartBody.Part filePart = MultipartBody.Part.createFormData("avatarFile", dto.getAvatarImage().getName(), RequestBody.create(MediaType.parse("image/*"), dto.getAvatarImage()));
+                ApiUtil.callApi(userService.updateUserAvatar(filePart), new ApiUtil.StatusCallback() {
+                    @Override
+                    public void onSuccess() {
+                        System.out.println("Update avatar thanh cong");
+                        loadUser();
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        System.out.println("Update failed " + t.getMessage());
+                    }
+                });
+            } else {
+                Toast.makeText(getActivity(), "Không thể lấy URI từ hình ảnh", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
