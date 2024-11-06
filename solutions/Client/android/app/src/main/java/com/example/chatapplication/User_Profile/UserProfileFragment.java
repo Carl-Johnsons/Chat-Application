@@ -114,7 +114,6 @@ public class UserProfileFragment extends Fragment {
         dialog.setContentView(R.layout.diaglog_user_profile_update);
 
         EditText editPreferredName = dialog.findViewById(R.id.edit_preferred_name);
-        EditText editIntroduction = dialog.findViewById(R.id.edit_introduction);
         Button saveButton = dialog.findViewById(R.id.button_save);
         Button cancelButton = dialog.findViewById(R.id.button_cancel);
         editPreferredName.setText(preferredName.getText());
@@ -140,7 +139,6 @@ public class UserProfileFragment extends Fragment {
             var dto = new UpdateUserDTO();
             dto.setName(editPreferredName.getText().toString());
             dto.setGender(gender);
-            dto.setIntroduction(editIntroduction.getText().toString());
             var dtoMap = convertDtoToRequestBodyMap(dto);
 
             ApiUtil.callApi(userService.updateCurrentUser(dtoMap), new ApiUtil.StatusCallback() {
@@ -222,9 +220,9 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void checkReadExternalFile(){
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_MEDIA_IMAGES)
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
         } else {
             hasReadExternalFilePermitsion = true;
         }
@@ -250,7 +248,7 @@ public class UserProfileFragment extends Fragment {
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
             if (imageUri != null) {
-                Glide.with(this).load(imageUri).into(profileImage);
+                Glide.with(this).load(imageUri).circleCrop().into(profileImage);
                 var userService = RetrofitClient.getRetrofitInstance(getContext()).create(UserService.class);
                 var dto = new UpdateUserDTO();
                 dto.setAvatarImage(FileUtil.uriToFile(imageUri, getContext()));

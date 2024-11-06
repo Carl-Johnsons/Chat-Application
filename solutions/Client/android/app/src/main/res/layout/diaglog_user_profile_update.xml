@@ -23,15 +23,6 @@
         android:inputType="text"
         android:padding="8dp" />
 
-    <EditText
-        android:id="@+id/edit_introduction"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Introduction"
-        android:inputType="phone"
-        android:padding="8dp" />
-
-
     <RadioGroup
         android:id="@+id/radioGroupGender"
         android:layout_width="wrap_content"
